@@ -105,6 +105,33 @@ export default function LoginPage() {
           </button>
         </form>
 
+        {/* Admin Quick Login (Development) */}
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={async () => {
+              setLoading(true);
+              setError(null);
+              const supabase = createClient();
+              const { error } = await supabase.auth.signInWithPassword({
+                email: 'admin@imperoyal.de',
+                password: 'admin123',
+              });
+              if (error) {
+                setError('Admin-Login fehlgeschlagen. Bitte Admin-Account erstellen.');
+                setLoading(false);
+                return;
+              }
+              router.push('/dashboard');
+              router.refresh();
+            }}
+            disabled={loading}
+            className="w-full bg-slate-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50 transition-all"
+          >
+            {loading ? 'Anmelden...' : 'Admin Login (Demo)'}
+          </button>
+        </div>
+
         {/* Footer */}
         <div className="mt-6 text-center">
           <a
