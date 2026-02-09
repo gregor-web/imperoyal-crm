@@ -1,20 +1,18 @@
-import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next({
-    request,
-  });
-
-  // Skip middleware if Supabase is not configured
+  // Skip middleware completely if Supabase is not configured
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    return response;
+    return NextResponse.next();
   }
 
   try {
+    // Dynamic import to avoid edge runtime issues
+    const { createServerClient } = await import('@supabase/ssr');
+
     let supabaseResponse = NextResponse.next({
       request,
     });
@@ -73,10 +71,9 @@ export async function middleware(request: NextRequest) {
     }
 
     return supabaseResponse;
-  } catch (error) {
-    // If Supabase fails, allow the request to continue
-    console.error('Middleware error:', error);
-    return response;
+  } catch {
+    // If anything fails, allow the request to continue
+    return NextResponse.next();
   }
 }
 
