@@ -144,8 +144,8 @@ export default function OnboardingPage() {
     });
   };
 
-  const fillTestData = () => {
-    setFormData({
+  const fillTestDataAndSubmit = async () => {
+    const testData: FormData = {
       name: 'Müller Immobilien GmbH',
       ansprechpartner: 'Thomas Müller',
       position: 'Geschäftsführer',
@@ -178,7 +178,31 @@ export default function OnboardingPage() {
       partner_liste: '',
       besondere_bedingungen: 'Bevorzugt Objekte mit Entwicklungspotenzial',
       weitere_projektarten: 'ESG-konforme Sanierungen, energetische Modernisierung',
-    });
+    };
+
+    setFormData(testData);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(testData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Fehler beim Speichern');
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -247,10 +271,11 @@ export default function OnboardingPage() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={fillTestData}
-              className="px-3 py-1.5 text-xs bg-white/10 text-white/80 rounded hover:bg-white/20 transition-colors"
+              onClick={fillTestDataAndSubmit}
+              disabled={loading}
+              className="px-3 py-1.5 text-xs bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors disabled:opacity-50"
             >
-              Testdaten einfügen
+              {loading ? 'Wird gesendet...' : 'Testdaten & Absenden'}
             </button>
             <span className="text-white/70 text-sm hidden sm:block">Mandanten-Onboarding</span>
           </div>
