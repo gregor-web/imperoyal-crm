@@ -3,9 +3,10 @@ import {
   Page,
   Text,
   View,
+  Image,
   StyleSheet,
 } from '@react-pdf/renderer';
-import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
+import type { Berechnungen } from '@/lib/types';
 
 // Styles
 const styles = StyleSheet.create({
@@ -186,7 +187,6 @@ interface AuswertungPDFProps {
     name: string;
   };
   berechnungen: Berechnungen;
-  erlaeuterungen?: Erlaeuterungen;
   empfehlung?: string;
   empfehlung_begruendung?: string;
   empfehlung_prioritaet?: string;
@@ -195,13 +195,13 @@ interface AuswertungPDFProps {
   empfehlung_risiken?: string[];
   empfehlung_fazit?: string;
   created_at: string;
+  logoUrl?: string;
 }
 
 export function AuswertungPDF({
   objekt,
   mandant,
   berechnungen,
-  erlaeuterungen,
   empfehlung,
   empfehlung_begruendung,
   empfehlung_prioritaet,
@@ -210,6 +210,7 @@ export function AuswertungPDF({
   empfehlung_risiken,
   empfehlung_fazit,
   created_at,
+  logoUrl,
 }: AuswertungPDFProps) {
   const fin = berechnungen?.finanzierung;
   const kosten = berechnungen?.kostenstruktur;
@@ -227,8 +228,14 @@ export function AuswertungPDF({
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.logo}>Imperoyal</Text>
-            <Text style={styles.logoSubtitle}>Immobilien</Text>
+            {logoUrl ? (
+              <Image src={logoUrl} style={{ width: 150, height: 45 }} />
+            ) : (
+              <>
+                <Text style={styles.logo}>Imperoyal</Text>
+                <Text style={styles.logoSubtitle}>Immobilien</Text>
+              </>
+            )}
           </View>
           <View style={{ textAlign: 'right' }}>
             <Text style={{ fontSize: 10, color: '#64748b' }}>Auswertung vom</Text>

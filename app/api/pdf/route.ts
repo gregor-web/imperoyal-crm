@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { createClient } from '@/lib/supabase/server';
 import { AuswertungPDF } from '@/components/pdf/auswertung-pdf';
-import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
+import type { Berechnungen } from '@/lib/types';
+import fs from 'fs';
+import path from 'path';
 
 export async function POST(request: Request) {
   try {
@@ -38,7 +40,16 @@ export async function POST(request: Request) {
     const objekt = auswertung.objekte as { strasse: string; plz: string; ort: string };
     const mandant = auswertung.mandanten as { name: string };
     const berechnungen = auswertung.berechnungen as Berechnungen;
-    const erlaeuterungen = auswertung.erlaeuterungen as Erlaeuterungen | undefined;
+
+    // Read logo file and convert to base64
+    let logoUrl: string | undefined;
+    try {
+      const logoPath = path.join(process.cwd(), 'public', 'logo_imperoyal.png');
+      const logoBuffer = fs.readFileSync(logoPath);
+      logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+    } catch (logoError) {
+      console.warn('Logo not found, using text fallback:', logoError);
+    }
 
     // Generate PDF buffer
     const pdfBuffer = await renderToBuffer(
@@ -46,7 +57,6 @@ export async function POST(request: Request) {
         objekt,
         mandant,
         berechnungen,
-        erlaeuterungen,
         empfehlung: auswertung.empfehlung,
         empfehlung_begruendung: auswertung.empfehlung_begruendung,
         empfehlung_prioritaet: auswertung.empfehlung_prioritaet,
@@ -55,14 +65,27 @@ export async function POST(request: Request) {
         empfehlung_risiken: auswertung.empfehlung_risiken as string[] | undefined,
         empfehlung_fazit: auswertung.empfehlung_fazit,
         created_at: auswertung.created_at,
+        logoUrl,
       })
     );
+
+    // Create a clean filename from address and date
+    const cleanAddress = objekt.strasse
+      .replace(/[äÄ]/g, 'ae')
+      .replace(/[öÖ]/g, 'oe')
+      .replace(/[üÜ]/g, 'ue')
+      .replace(/ß/g, 'ss')
+      .replace(/[^a-zA-Z0-9]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '');
+    const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
+    const filename = `Auswertung_${cleanAddress}_${dateStr}.pdf`;
 
     // Return PDF as response
     return new Response(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="Auswertung_${objekt.strasse.replace(/\s+/g, '_')}.pdf"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
       },
     });
   } catch (error) {
