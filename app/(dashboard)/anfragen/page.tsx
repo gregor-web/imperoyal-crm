@@ -121,9 +121,7 @@ export default async function AnfragenPage() {
                 );
               })
             ) : (
-              <TableEmpty colSpan={5}>
-                Keine offenen Anfragen vorhanden.
-              </TableEmpty>
+              <TableEmpty colSpan={5} message="Keine offenen Anfragen vorhanden." />
             )}
           </TableBody>
         </Table>
