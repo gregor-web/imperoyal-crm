@@ -2,11 +2,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Card, StatCard } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { EmpfehlungBadge, Badge } from '@/components/ui/badge';
 import { formatCurrency, formatPercent, formatDate } from '@/lib/formatters';
 import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
-import { ArrowLeft, Download, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle } from 'lucide-react';
+import { PdfExportButton } from '@/components/pdf-export-button';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -54,10 +54,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary">
-            <Download className="w-4 h-4 mr-2" />
-            PDF Export
-          </Button>
+          <PdfExportButton auswertungId={id} />
         </div>
       </div>
 
