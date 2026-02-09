@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { formatDate, formatCurrency, formatPercent, formatBoolean, formatArea } from '@/lib/formatters';
-import { ArrowLeft, Edit, FileBarChart, Building2, Banknote, Home, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Edit, Banknote, Home, TrendingUp } from 'lucide-react';
+import { AuswertenButton } from '@/components/auswerten-button';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -56,12 +57,7 @@ export default async function ObjektDetailPage({ params }: Props) {
         </div>
         <div className="flex gap-2">
           {isAdmin && (
-            <Link href={`/api/auswertung?objekt_id=${id}`}>
-              <Button>
-                <FileBarChart className="w-4 h-4 mr-2" />
-                Auswerten
-              </Button>
-            </Link>
+            <AuswertenButton objektId={id} />
           )}
           <Link href={`/objekte/${id}/edit`}>
             <Button variant="secondary">
