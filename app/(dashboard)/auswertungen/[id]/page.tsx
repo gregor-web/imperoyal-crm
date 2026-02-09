@@ -4,9 +4,9 @@ import { createClient } from '@/lib/supabase/server';
 import { Card, StatCard } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { EmpfehlungBadge, Badge } from '@/components/ui/badge';
-import { formatCurrency, formatPercent, formatDate, formatBoolean } from '@/lib/formatters';
+import { formatCurrency, formatPercent, formatDate } from '@/lib/formatters';
 import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
-import { ArrowLeft, Download, FileText, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Download, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -49,7 +49,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
               Auswertung: {objekt?.strasse as string}
             </h1>
             <p className="text-slate-600">
-              {objekt?.plz} {objekt?.ort} | {mandant?.name || 'Unbekannter Mandant'}
+              {objekt?.plz as string} {objekt?.ort as string} | {mandant?.name || 'Unbekannter Mandant'}
             </p>
           </div>
         </div>
