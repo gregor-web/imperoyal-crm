@@ -136,7 +136,7 @@ export default async function MandantDetailPage({ params }: Props) {
                 <TableHead>Typ</TableHead>
                 <TableHead>Kaufpreis</TableHead>
                 <TableHead>Erstellt</TableHead>
-                <TableHead></TableHead>
+                <TableHead>Aktionen</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
