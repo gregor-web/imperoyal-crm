@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/formatters';
-import { Plus, Eye, Trash2 } from 'lucide-react';
+import { Plus, Eye } from 'lucide-react';
 
 export default async function AnkaufsprofilePage() {
   const supabase = await createClient();
@@ -112,12 +112,7 @@ export default async function AnkaufsprofilePage() {
                 );
               })
             ) : (
-              <TableEmpty colSpan={isAdmin ? 6 : 5}>
-                Keine Ankaufsprofile vorhanden.
-                <Link href="/ankaufsprofile/neu" className="text-blue-600 hover:underline ml-1">
-                  Jetzt erstellen
-                </Link>
-              </TableEmpty>
+              <TableEmpty colSpan={isAdmin ? 6 : 5} message="Keine Ankaufsprofile vorhanden. Klicken Sie auf 'Neues Profil' um eines zu erstellen." />
             )}
           </TableBody>
         </Table>
