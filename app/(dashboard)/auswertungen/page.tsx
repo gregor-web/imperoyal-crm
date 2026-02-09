@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { EmpfehlungBadge, StatusBadge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { FileBarChart } from 'lucide-react';
 
 export default async function AuswertungenPage() {
   const supabase = await createClient();
@@ -14,7 +13,7 @@ export default async function AuswertungenPage() {
   const isAdmin = profile?.role === 'admin';
 
   // Fetch auswertungen with objekt data
-  const { data: auswertungen, error } = await supabase
+  const { data: auswertungen } = await supabase
     .from('auswertungen')
     .select(`
       *,
@@ -44,7 +43,7 @@ export default async function AuswertungenPage() {
               <TableHead>Empfehlung</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Erstellt</TableHead>
-              <TableHead className="w-24"></TableHead>
+              <TableHead className="w-24">Aktionen</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
