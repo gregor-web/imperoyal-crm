@@ -5,7 +5,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmp
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { Plus, Building2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default async function ObjektePage() {
   const supabase = await createClient();
@@ -15,7 +15,7 @@ export default async function ObjektePage() {
   const isAdmin = profile?.role === 'admin';
 
   // Fetch objekte (RLS handles filtering for mandanten)
-  const { data: objekte, error } = await supabase
+  const { data: objekte } = await supabase
     .from('objekte')
     .select(`
       *,
@@ -52,7 +52,7 @@ export default async function ObjektePage() {
               <TableHead>Kaufpreis</TableHead>
               <TableHead>Einheiten</TableHead>
               <TableHead>Erstellt</TableHead>
-              <TableHead className="w-24"></TableHead>
+              <TableHead className="w-24">Aktionen</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
