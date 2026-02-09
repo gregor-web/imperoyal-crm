@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       .from('auswertungen')
       .select(`
         *,
-        objekte (strasse, plz, ort),
+        objekte (id, strasse, plz, ort, baujahr, milieuschutz, weg_aufgeteilt, kaufpreis),
         mandanten (name)
       `)
       .eq('id', auswertung_id)
@@ -37,9 +37,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Auswertung nicht gefunden' }, { status: 404 });
     }
 
-    const objekt = auswertung.objekte as { strasse: string; plz: string; ort: string };
+    const objekt = auswertung.objekte as {
+      id: string;
+      strasse: string;
+      plz: string;
+      ort: string;
+      baujahr?: number | null;
+      milieuschutz?: boolean;
+      weg_aufgeteilt?: boolean;
+      kaufpreis?: number;
+    };
     const mandant = auswertung.mandanten as { name: string };
     const berechnungen = auswertung.berechnungen as Berechnungen;
+
+    // Fetch einheiten for this objekt
+    const { data: einheiten } = await supabase
+      .from('einheiten')
+      .select('position, nutzung, flaeche, kaltmiete, vergleichsmiete, mietvertragsart')
+      .eq('objekt_id', objekt.id)
+      .order('position');
 
     // Read logo file and convert to base64
     let logoUrl: string | undefined;
@@ -56,6 +72,7 @@ export async function POST(request: Request) {
       AuswertungPDF({
         objekt,
         mandant,
+        einheiten: einheiten || [],
         berechnungen,
         empfehlung: auswertung.empfehlung,
         empfehlung_begruendung: auswertung.empfehlung_begruendung,
