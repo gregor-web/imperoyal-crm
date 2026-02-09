@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/formatters';
-import { Plus, Users } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default async function MandantenPage() {
   const supabase = await createClient();
@@ -21,7 +21,7 @@ export default async function MandantenPage() {
   }
 
   // Fetch mandanten
-  const { data: mandanten, error } = await supabase
+  const { data: mandanten } = await supabase
     .from('mandanten')
     .select('*')
     .order('created_at', { ascending: false });
@@ -52,7 +52,7 @@ export default async function MandantenPage() {
               <TableHead>E-Mail</TableHead>
               <TableHead>Ort</TableHead>
               <TableHead>Erstellt</TableHead>
-              <TableHead className="w-20"></TableHead>
+              <TableHead className="w-20">Aktionen</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
