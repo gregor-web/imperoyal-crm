@@ -43,7 +43,7 @@ export function ErtragsPieChart({ wohnen, gewerbe, stellplatz }: ErtragsPieChart
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number) => formatCurrency(value)}
+          formatter={(value) => formatCurrency(Number(value) || 0)}
           contentStyle={{
             backgroundColor: 'rgba(255, 255, 255, 0.95)',
             border: '1px solid #e2e8f0',

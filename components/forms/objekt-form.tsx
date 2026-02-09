@@ -19,8 +19,9 @@ export function ObjektForm({ defaultValues, onSubmit, onCancel, isLoading, manda
     register,
     handleSubmit,
     formState: { errors },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<ObjektInput>({
-    resolver: zodResolver(objektSchema),
+    resolver: zodResolver(objektSchema) as any,
     defaultValues: {
       mandant_id: mandantId,
       zinssatz: 3.8,

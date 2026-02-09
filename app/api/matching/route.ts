@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { findePassendeKaeufer } from '@/lib/matching';
-import type { Objekt, Ankaufsprofil } from '@/lib/types';
+import type { Objekt, Ankaufsprofil, Mandant } from '@/lib/types';
 
 export async function POST(request: Request) {
   try {
@@ -38,12 +38,9 @@ export async function POST(request: Request) {
 
     let ankaufsprofileQuery = supabase
       .from('ankaufsprofile')
-      .select(`
-        *,
-        mandanten (id, name, ansprechpartner, email)
-      `);
+      .select('*');
 
-    // Non-admin users can only see their own profiles matched
+    // Non-admin users can only see other profiles matched
     if (profile?.role !== 'admin') {
       ankaufsprofileQuery = ankaufsprofileQuery.neq('mandant_id', objekt.mandant_id);
     }
@@ -63,36 +60,35 @@ export async function POST(request: Request) {
       });
     }
 
-    // Convert to the expected format
-    const formattedProfiles: (Ankaufsprofil & { mandanten: { id: string; name: string; ansprechpartner: string; email: string } })[] =
-      ankaufsprofile.map((p) => ({
-        id: p.id,
-        mandant_id: p.mandant_id,
-        name: p.name,
-        min_volumen: p.min_volumen,
-        max_volumen: p.max_volumen,
-        assetklassen: p.assetklassen || [],
-        regionen: p.regionen,
-        rendite_min: p.rendite_min,
-        sonstiges: p.sonstiges,
-        created_at: p.created_at,
-        updated_at: p.updated_at,
-        mandanten: p.mandanten as { id: string; name: string; ansprechpartner: string; email: string },
-      }));
+    // Fetch mandanten for the profiles
+    const mandantIds = [...new Set(ankaufsprofile.map(p => p.mandant_id))];
+    const { data: mandanten } = await supabase
+      .from('mandanten')
+      .select('*')
+      .in('id', mandantIds);
 
     // Run the matching algorithm
-    const matches = findePassendeKaeufer(objekt as Objekt, formattedProfiles);
+    const matches = findePassendeKaeufer(
+      objekt as Objekt,
+      ankaufsprofile as Ankaufsprofil[],
+      (mandanten || []) as Mandant[]
+    );
 
     return NextResponse.json({
       success: true,
       matches: matches.map((m) => ({
         ankaufsprofil: {
-          id: m.profil.id,
-          name: m.profil.name,
-          mandant: m.profil.mandanten,
+          id: m.ankaufsprofil.id,
+          name: m.ankaufsprofil.name,
+        },
+        mandant: {
+          id: m.mandant.id,
+          name: m.mandant.name,
+          ansprechpartner: m.mandant.ansprechpartner,
+          email: m.mandant.email,
         },
         score: m.score,
-        details: m.details,
+        matches: m.matches,
       })),
     });
   } catch (error) {

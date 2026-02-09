@@ -28,8 +28,9 @@ export function EinheitenForm({ objektId, defaultValues = [], onSubmit, isLoadin
     control,
     handleSubmit,
     formState: { errors },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<EinheitenFormData>({
-    resolver: zodResolver(einheitenFormSchema),
+    resolver: zodResolver(einheitenFormSchema) as any,
     defaultValues: {
       einheiten: defaultValues.length > 0
         ? defaultValues.map((e, i) => ({ ...e, position: e.position || i + 1 }))

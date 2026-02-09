@@ -36,7 +36,7 @@ export function CashflowBarChart({ mieteIst, mieteOpt, kapitaldienst, kosten }: 
           tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
         />
         <Tooltip
-          formatter={(value: number) => formatCurrency(Math.abs(value))}
+          formatter={(value) => formatCurrency(Math.abs(Number(value) || 0))}
           contentStyle={{
             backgroundColor: 'rgba(255, 255, 255, 0.95)',
             border: '1px solid #e2e8f0',

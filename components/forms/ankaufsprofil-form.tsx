@@ -28,8 +28,9 @@ export function AnkaufsprofilForm({ defaultValues, onSubmit, onCancel, isLoading
     watch,
     setValue,
     formState: { errors },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<AnkaufsprofilInput>({
-    resolver: zodResolver(ankaufsprofilSchema),
+    resolver: zodResolver(ankaufsprofilSchema) as any,
     defaultValues: {
       mandant_id: mandantId,
       assetklassen: [],

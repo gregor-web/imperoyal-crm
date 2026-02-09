@@ -18,8 +18,9 @@ export function MandantForm({ defaultValues, onSubmit, onCancel, isLoading }: Ma
     register,
     handleSubmit,
     formState: { errors },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<MandantInput>({
-    resolver: zodResolver(mandantSchema),
+    resolver: zodResolver(mandantSchema) as any,
     defaultValues: {
       land: 'Deutschland',
       ...defaultValues,

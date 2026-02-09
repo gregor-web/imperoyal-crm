@@ -29,7 +29,7 @@ export function RoiBarChart({ roiHeute, roiOptimiert, roiMitWeg }: RoiBarChartPr
           domain={[0, 'auto']}
         />
         <Tooltip
-          formatter={(value: number) => formatPercent(value)}
+          formatter={(value) => formatPercent(Number(value) || 0)}
           contentStyle={{
             backgroundColor: 'rgba(255, 255, 255, 0.95)',
             border: '1px solid #e2e8f0',
