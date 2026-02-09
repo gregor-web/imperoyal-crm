@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imperoyal Immobilien - Optimierungsprotokoll V11</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .print-page { page-break-after: always; page-break-inside: avoid; }
+      .print-page:last-child { page-break-after: auto; }
+      .print-header { background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 50%, #1e3a5f 100%) !important; -webkit-print-color-adjust: exact !important; }
+      .print-box { border: 1px solid #e5e7eb !important; page-break-inside: avoid; margin-bottom: 12px; }
+      .print-punkt { background: #1e3a8a !important; color: white !important; -webkit-print-color-adjust: exact !important; }
+      .glass-card { background: rgba(255,255,255,0.95) !important; }
+    }
+    * { box-sizing: border-box; }
+    .error-highlight { border-color: #ef4444 !important; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important; }
+    
+    /* Liquid Glass Design */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .glass-card-dark {
+      background: rgba(30, 58, 95, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .glass-input {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+    }
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.8);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    .glass-btn {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.9) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    .glass-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    .glass-btn-success {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(22, 163, 74, 0.9) 100%);
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    .glass-sidebar {
+      background: linear-gradient(180deg, rgba(30, 58, 95, 0.95) 0%, rgba(30, 64, 175, 0.95) 100%);
+      backdrop-filter: blur(20px);
+    }
+    body {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 50%, #1e3a5f 100%);
+      min-height: 100vh;
+    }
+    .pdf-glass {
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,249,255,0.95) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    const CONFIG = {
+      COMPANY_NAME: 'Imperoyal Immobilien',
+      ADMIN_PASSWORD: 'YOUR_ADMIN_PASSWORD',
+      MAKE_WEBHOOK: 'YOUR_MAKE_WEBHOOK_URL',
+      CLAUDE_API_KEY: 'YOUR_ANTHROPIC_API_KEY',
+      LOGO_URL: 'data:image/webp;base64,UklGRgSqAABXRUJQVlA4WAoAAAAgAAAAzwcAyQMASUNDUMgBAAAAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADZWUDggFqgAAFAqBJ0BKtAHygM+USiSRiOiqKSjM8ixEAoJaW76b3rj0FeSdDJwQI/YI22KTefbLHOvh8zhuoBmGPQKpH/8/lU/ef+l6k+ma6T6uVn9mPo4XrupMB4f+8+Wq9p6kv1t6OvVN/tzjN/K/289J/z3+o/zP5jf3j1j/Q/zn9N+Xf+L/bX7i/9vO/8J4J/zv7/fuP71+7fxr++Dy7/YfEX/I/55/l/zD/yfz4/4+Kn1nmKfAn3b/t/5D1DP2+UE/OH2W8jmgf/Wv+F6vX/B5w/sD2Gf59/c/+l/hv8qH7vIhvxFtSkVkH0RJVdO8h0wR5JPGk7xK9S0nepE3mk7yHTBHkSU0neQ6YI8iSmk7yHTBHkSU0neQ6YI8iSmlBGAmQbeQ63Ku+7yo3T3kZNiyqtvT3kORvTvIdMEeQ+unvIdMEeRJTSd5DpgjyJKaTvIdMEeRJTSd5DpgjyNRx1jGyrJrGVYpfbMh6+TY1D6YJgrKsHzgQEeRJTSd5DpgjyJKaTvIdMEeRJTSd5DpgjyJKaTvIdMEeO9esn4iSmk/hYtx5ElNNM8RJTSd5DpuKUI46THHWMe8h0wR5ElNJ3kOmCPIkppO8h0wR5ElNJ3kOmCPIkppLKq4/iAgWJdqo84Ynt+ozvR6se8h82nY0QE6z1jHvIdMEeRJTSd5DpgjyJKaTvIdMEeRJTSd5DpgjyJKaTvIdMEYgjf4MoMxY3t6a+eKTm/Myd5G7yvaodK5/5DpgjyJKaTvIdMEeRJTSd5DpgjyJKaTvIdMEeRJTSd2QVL8Dazhq0/1XHkMSYMvmLceb5XEALsJFXEDGvbiGgb7h1RY0OGJ8TdOqAICeJXE0neQ6YI8iSmk7yHTBHkSU0neQ6YI8iSmk7yHTBHkSX9rMryF/8qBf/+9Dh8P1p2D8FYP1z9UGZpbVIHhcX89fxrptklBPIk72Dfe8fmXbap47g9uKPjSl8+rYSist2mt7/VaM/irAc/BiZXpO/7gKtuh4I/x5LO7QZenvI3eVy1CWCz8neQ6YI8iSmk7yHTBHkSU0neQ6YI8iSmk7yHTBHkSTz/sg7QwgszYHq/7ZfZgYP+u+twr4oY2LO5nnY5PFzyDYzUXS9o3gb8BMLtrezY7lDM9xTKG1nYrQN0VAawhBx5MqeVOKDUZkV4mYu3Iq2syJYI4Kps8OQ8kDCPu7ZonYfCmIUD6LL1HqF5ItWRWALzpqHoRYz+p5Sg95LCwqfK4ogdMEeRJTSd5DpgjyJKaTvIdMEeRJTSd5DpgjyJKaTvJEEEIV6mx4qFgQM28Bv+J7kKdQUrIvGqnYUTlz32WnQMECoa7GEHyIHoCjqvMcQGyfoIC7eKKx3mY/t2vvrmCLdIqwY375XEwo0x/+XRbtLEFPOgIH2tdS2oZEWYMhELjdN9ybYYkJgu25NDKcFsq/AFBrQZPpkyikODplY95GTgrmvGk7yHTBHkSU0neQ6YI8iSmk7yHTBHkSU0neQ6YI8d+HHC2WmJH2fH+de1u4BcgJMwTr0kGdtOCTaIulD3Q6OOirMFT/x+kHM4NNlu0G2tg/BilRUBw5kC2StKELCM6lmwl1fisURLdbaUGCtuzZ4GkB3tLInrLvtD25kkBj+pgcqCxCirSgIkIcOzcBUdtFgC1souT7xYCCuZhGJ21LfMz3ooEA0yNfOIdkAppO8h0wR5ElNJ3kOmCPIkppO8h0wR5ElNJ3kOmCPIl6mtjUqbRsKUPHfxZY7sRsT2IRsxPgy8hlUUwyNLsOOpFqnILrUD7Ykmo67bC1kStItCGN2JbJtZ62OjxlMb4utECAUVVzgo5ve54lzU9NXsZVa7Gt2l9Rtdn2MSHYwxveMiFSCad9hut10qK+mMzHdCaFvSICn+Q6Rzkk1095DpgjyJKaTvIdMEeRJTSd5DpgjyJKaTvIdMEeRJTSdSQwJdHk8/CSlojJhAQMNsFweRZXoEiPpMb8+GwRPmQMihEhp4oDjhhE7QUHI5Ct/dScdx74MjjNo2U2Ly5kdko64ooYpszAfqAAD11SKPVTEQOC3Z6zK3c6rfj86jOVnxme55PWKX+JAtV0nnOCMU1QUsDzuk6gW6kmgKYWvTLFr3kOl6BgAZznFiaTvIdMEeRJTSd5DpgjyJKaTvIdMEeRJTSd5DpgjyJ4ZivGUDVZqu09py7ZzTb4KTr/YIjMOPE04oIFv0Nll178DBCjC6TnuqpttpqSOcmRx7L0NFVOKwPVHjuoZrQwwCfSiDHcOquohAKM7bpaX+cQX7VOyMKS9fLwtqVFyz1xDgTdt00ZXwzZjiMWRohoozTnCUoNKeD02VVt6bKq4mh1yJKaTvIdMEeRJTSd5DpgjyJKaTvIdMEeRJTSd5DcaiBAM1GQ5czkHLbTQi2PxnNHHEifeYQPMVdffBSeonB7JCLdY7MD8mpp4kxy1DF6n2EblGVzKGco5wVx/6uc8Zb6i344ENO/sC616f0AqXeKmxGs99Q47SEddRrKETx6s1upxPBRtHSwEtjWvtVWY1UkSK3IpGd/Jm6QIVRHdIGISiS20x7pMcdYx7yHTBHkSU0neQ6YI8iSmk7yHTBHkSU0neQ6YI7ovD/kDjxy3fGXAJPFiHO5PNBJY3saFGfrLn/E/5lOKDFgCzbO9kEw0YJ2N/5z1AFvfTnG3ziWmhlgcQsX6c1unyKQn5nH9CIUen0KYVQn5KxPrk6LGDpsqqN1Vimks2TcEBHkSU0neQ6YI8iSmk7yHTBHkSU0neQ6YI8iSmk7yHH7b2bSUZXHWCHKjdOCG+3j1Sfq4XsO3+fskrmg1RKExvYekvGDFq5QR5bwwVGeHXtncsIstI5GWlrtGFzd/v/IciZO7IKmk7yHTBHkSU0neQ6YI8iSmk7yHTBHkSU0neQ6YI8iSl9syISJgjB6+C6zCPBQWntxfqLmam40ldmfso0tolT7zXw+cppMFvb4B27gMpHf/RcqTviG3z99V2Eq1hh96pGTmk5IfXAxWVt6gbi/pp90FCquJpO8h0wR5ElNJ3kOmCPIkppO8h0wR5ElNJ3kOmBpIPEQ9emycoheyLCg7y/rJAEO/UW/iBWvtuWIhe8QPxNaK7KNuLZKWaHx2wd/3Ye2XFxGpfu/0AWsdmW4H6aVw9B+eVz3kOmCPIkppO8h0wR5ElNJ3kOmCPIkppO8h0wR5ElL6mNwVEj4XrF280+qbGE1ljXW1g744p3mXLr2YGGN88md/o6BRiE7D1zFHBJvWY6opkxJl5NHt9NGJsTYuzEcOvFHNaSwSCKQ9PVAEce8riaTvIdMEeRJTSd5DpgjyJKaTvIdMEeRJTSd5DphBbLcEBHnFyvI1KRgrTOIHjuU6TYS7eFPzJgWSdyiZrbTkJJFh5Tft5aN4oisGtfWHUHJIoOtX+4DHz62We3Byh3r095DpgjyJKaTvIdMEeRJTSd5DpgjyJKaTvIdMEeRJTaLocPe3p7yFLXqEj8bltO3OgE4ilJ9UfhnXNRRju+/4uFRM8W5EvaeEAxTPC71iDZhrp+7qGLCSl9/xElNpbyHTBHkSU0neQ6YI8iSmk7yHTBHkSU0neQ6YI8iSmk7yHImTqgB+guvUbfzySIuUAL739edyAzc1vWof0hNRvkQ9BwRIzrEZ1BFWBV9E6qcnDeXtemIHvFWiQJLDfiZLXeQZRNSDwd/IdMEeRJTSd5DpgjyJKaTvIdMEeRJTSd5DpgjyJKaTvIdMEeO9enuyP8aoAdzfCY9KeV9OKZ2mn0WGYxG+THw582l2ITdGy2QPgsTyDYJ1jCwrUvuKph33Vpjoa7fG1QL+1Q+mCPIkptMKvsgCAjyJKaTvIdMEeRJTSd5DpgjyJKaTvIdMEeRJTSdUAM5yJJ6hvpbQ1G2jPxsaJs8y4oWvgTJG8g3EwRxUnM1WpinmfwO+1DGX4/ntU4VNr2/rmzl9VZi+e91n4fFRMXC1lJwf37mmbStLKySJLiuGZchozrTUPm07Gh9MEeRJfw+mCPIkppO8h0wR5ElNJ3kOmCPIkppO8h0wR5ElQSB3r09SRmHFsKA1IP5hrpKS6Nx9Tykn7l5HKzzbhX74vJnkkWCoMl0/eu74gfu3EJCP9SqBAuXDCG49a9zpjs/MViT31UGYjFX89PkmgMjHCVDf7MF5vHcxY2mbrQfWKEKjxzb9t+8yiBAeR4HJ7F+N52+L8WGcA71cn9UHKGx1pCNSgZmfnkSVqQzhJLYnKi9aYpeJLhD2ZRDk+Hn6KrlFgcuWeb+Q4cfVmwV0L'
+    };
+
+    const formatCurrency = (val) => !val && val !== 0 ? '-' : new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(val);
+    const formatPercent = (val, digits = 2) => val ? `${parseFloat(val).toFixed(digits)}%` : '-';
+    const formatDate = (d) => d ? new Date(d).toLocaleDateString('de-DE') : '-';
+    const generatePassword = () => {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+      return Array.from({length: 10}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    };
+
+    // HTML Email Templates
+    const getWelcomeEmailHTML = (mandant, password) => `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f3f4f6;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:40px 20px;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);"><tr><td style="background:linear-gradient(135deg,#1e3a5f 0%,#1e40af 100%);padding:40px;text-align:center;"><h1 style="color:#fff;margin:0;font-size:28px;">🏛️ ${CONFIG.COMPANY_NAME}</h1><p style="color:#93c5fd;margin:10px 0 0 0;">Willkommen im Optimierungsprotokoll-System</p></td></tr><tr><td style="padding:40px;"><p style="color:#374151;font-size:16px;">Sehr geehrte/r <strong>${mandant.ansprechpartner || mandant.name}</strong>,</p><p style="color:#374151;">herzlich willkommen! Ihr Zugang wurde eingerichtet.</p><table width="100%" style="background:#f0f9ff;border-radius:12px;border:2px solid #0ea5e9;margin:20px 0;"><tr><td style="padding:25px;"><p style="color:#0369a1;font-weight:bold;margin:0 0 15px 0;">🔐 IHRE ZUGANGSDATEN</p><p style="margin:8px 0;"><strong>E-Mail:</strong> ${mandant.email}</p><p style="margin:8px 0;"><strong>Passwort:</strong> <code style="background:#1e3a8a;color:#fff;padding:8px 16px;border-radius:6px;">${password}</code></p></td></tr></table></td></tr><tr><td style="background:#f8fafc;padding:25px;text-align:center;border-top:1px solid #e2e8f0;"><p style="color:#64748b;font-size:12px;margin:0;">Mit freundlichen Grüßen<br><strong>${CONFIG.COMPANY_NAME}</strong></p></td></tr></table></td></tr></table></body></html>`;
+
+    const getPDFEmailHTML = (mandant, objekt, berechnungen, empfehlung) => `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f3f4f6;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:40px 20px;"><tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;"><tr><td style="background:linear-gradient(135deg,#1e3a5f 0%,#1e40af 100%);padding:40px;text-align:center;"><h1 style="color:#fff;margin:0;font-size:24px;">📊 Optimierungsprotokoll</h1><p style="color:#93c5fd;margin:10px 0 0 0;">${objekt.strasse}, ${objekt.plz} ${objekt.ort}</p></td></tr><tr><td style="padding:0;"><table width="100%" cellpadding="0" cellspacing="0"><tr><td width="33%" style="background:#f0fdf4;padding:20px;text-align:center;border-bottom:3px solid #22c55e;"><p style="color:#166534;font-size:12px;margin:0;">Rendite IST</p><p style="color:#166534;font-size:24px;font-weight:bold;margin:5px 0 0 0;">${formatPercent(berechnungen?.rendite)}</p></td><td width="33%" style="background:#eff6ff;padding:20px;text-align:center;border-bottom:3px solid #3b82f6;"><p style="color:#1e40af;font-size:12px;margin:0;">Cashflow IST</p><p style="color:#1e40af;font-size:24px;font-weight:bold;margin:5px 0 0 0;">${formatCurrency(berechnungen?.cashflow_ist)}</p></td><td width="33%" style="background:#fefce8;padding:20px;text-align:center;border-bottom:3px solid #eab308;"><p style="color:#854d0e;font-size:12px;margin:0;">Potenzial</p><p style="color:#854d0e;font-size:24px;font-weight:bold;margin:5px 0 0 0;">+${formatCurrency(berechnungen?.mietpotenzial)}</p></td></tr></table></td></tr><tr><td style="padding:30px;"><table width="100%" style="background:linear-gradient(135deg,#1e3a5f 0%,#1e40af 100%);border-radius:12px;"><tr><td style="padding:30px;text-align:center;"><p style="color:#93c5fd;font-size:14px;margin:0;">EMPFEHLUNG</p><p style="color:#fff;font-size:36px;font-weight:bold;margin:10px 0;">${empfehlung?.empfehlung || 'ANALYSE'}</p></td></tr></table><p style="color:#374151;font-size:15px;margin:25px 0;line-height:1.6;">${empfehlung?.begruendung || ''}</p><p style="color:#6b7280;font-size:13px;margin:20px 0 0 0;padding-top:20px;border-top:1px solid #e5e7eb;">📎 Das vollständige Optimierungsprotokoll finden Sie im Anhang.</p></td></tr><tr><td style="background:#f8fafc;padding:25px;text-align:center;border-top:1px solid #e2e8f0;"><p style="color:#64748b;font-size:12px;margin:0;">${CONFIG.COMPANY_NAME}</p></td></tr></table></td></tr></table></body></html>`;
+
+    // Icons
+    const Icons = {
+      Home: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
+      Users: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+      Building: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
+      Chart: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+      ShoppingCart: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+      Plus: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
+      Trash: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
+      ArrowLeft: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>,
+      Eye: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>,
+      Edit: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+      Download: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+      Mail: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
+      Logout: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
+      Sparkles: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>,
+      Copy: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
+      Target: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
+    };
+
+    // SVG Chart Components - Professionell/Institutionell
+    const CashflowBarChart = ({ istMiete, optMiete, kapitaldienst, kosten, cashflowIst, cashflowOpt }) => {
+      const maxValue = Math.max(istMiete, optMiete, kapitaldienst + kosten) * 1.1;
+      const scale = (val) => Math.abs(val) / maxValue * 140;
+      const formatK = (v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toFixed(0);
+      
+      return (
+        <svg viewBox="0 0 320 180" className="w-full h-auto">
+          {/* Grid Lines */}
+          <defs>
+            <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#e5e7eb" strokeWidth="0.5"/>
+            </pattern>
+          </defs>
+          <rect x="60" y="15" width="240" height="120" fill="url(#grid)" />
+          
+          {/* Y-Axis */}
+          <line x1="60" y1="15" x2="60" y2="135" stroke="#374151" strokeWidth="1"/>
+          <text x="55" y="20" textAnchor="end" className="text-[8px]" fill="#6b7280">{formatK(maxValue)} €</text>
+          <text x="55" y="75" textAnchor="end" className="text-[8px]" fill="#6b7280">{formatK(maxValue/2)} €</text>
+          <text x="55" y="135" textAnchor="end" className="text-[8px]" fill="#6b7280">0 €</text>
+          
+          {/* Bars - IST */}
+          <g transform="translate(80, 0)">
+            <rect x="0" y={135 - scale(istMiete)} width="25" height={scale(istMiete)} fill="#22c55e" rx="2"/>
+            <rect x="30" y={135 - scale(kapitaldienst)} width="25" height={scale(kapitaldienst)} fill="#ef4444" rx="2"/>
+            <rect x="60" y={135 - scale(kosten)} width="25" height={scale(kosten)} fill="#eab308" rx="2"/>
+            <text x="45" y="150" textAnchor="middle" className="text-[9px] font-medium" fill="#374151">IST</text>
+            <text x="45" y="162" textAnchor="middle" className="text-[8px]" fill={cashflowIst >= 0 ? '#16a34a' : '#dc2626'}>{formatK(cashflowIst)} €</text>
+          </g>
+          
+          {/* Bars - OPTIMIERT */}
+          <g transform="translate(190, 0)">
+            <rect x="0" y={135 - scale(optMiete)} width="25" height={scale(optMiete)} fill="#22c55e" rx="2"/>
+            <rect x="30" y={135 - scale(kapitaldienst)} width="25" height={scale(kapitaldienst)} fill="#ef4444" rx="2"/>
+            <rect x="60" y={135 - scale(kosten)} width="25" height={scale(kosten)} fill="#eab308" rx="2"/>
+            <text x="45" y="150" textAnchor="middle" className="text-[9px] font-medium" fill="#374151">OPTIMIERT</text>
+            <text x="45" y="162" textAnchor="middle" className="text-[8px] font-bold" fill="#16a34a">{formatK(cashflowOpt)} €</text>
+          </g>
+          
+          {/* Legend */}
+          <g transform="translate(65, 175)">
+            <rect x="0" y="-6" width="10" height="10" fill="#22c55e" rx="1"/>
+            <text x="14" y="2" className="text-[7px]" fill="#374151">Miete</text>
+            <rect x="50" y="-6" width="10" height="10" fill="#ef4444" rx="1"/>
+            <text x="64" y="2" className="text-[7px]" fill="#374151">Kapital</text>
+            <rect x="105" y="-6" width="10" height="10" fill="#eab308" rx="1"/>
+            <text x="119" y="2" className="text-[7px]" fill="#374151">Kosten</text>
+          </g>
+        </svg>
+      );
+    };
+
+    const WertentwicklungChart = ({ kaufpreis, preis3j, preis5j, preis7j, preis10j }) => {
+      const values = [
+        { year: 0, label: 'Heute', value: kaufpreis },
+        { year: 3, label: '+3J', value: preis3j },
+        { year: 5, label: '+5J', value: preis5j },
+        { year: 7, label: '+7J', value: preis7j },
+        { year: 10, label: '+10J', value: preis10j }
+      ];
+      const minVal = kaufpreis * 0.95;
+      const maxVal = preis10j * 1.05;
+      const range = maxVal - minVal;
+      const scaleY = (v) => 130 - ((v - minVal) / range * 100);
+      const scaleX = (year) => 50 + (year / 10 * 240);
+      const formatM = (v) => v >= 1000000 ? `${(v/1000000).toFixed(2)}M` : `${(v/1000).toFixed(0)}k`;
+      
+      // Create path
+      const pathD = values.map((p, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(p.year)} ${scaleY(p.value)}`).join(' ');
+      const areaD = pathD + ` L ${scaleX(10)} 130 L ${scaleX(0)} 130 Z`;
+      
+      return (
+        <svg viewBox="0 0 320 160" className="w-full h-auto">
+          {/* Grid */}
+          <defs>
+            <linearGradient id="areaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3"/>
+              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.05"/>
+            </linearGradient>
+          </defs>
+          
+          {/* Horizontal Grid Lines */}
+          {[0, 25, 50, 75, 100].map((y, i) => (
+            <g key={i}>
+              <line x1="50" y1={30 + y} x2="290" y2={30 + y} stroke="#e5e7eb" strokeWidth="0.5" strokeDasharray={i === 4 ? "0" : "3,3"}/>
+            </g>
+          ))}
+          
+          {/* Y-Axis Labels */}
+          <text x="45" y="33" textAnchor="end" className="text-[7px]" fill="#6b7280">{formatM(maxVal)}</text>
+          <text x="45" y="83" textAnchor="end" className="text-[7px]" fill="#6b7280">{formatM((maxVal+minVal)/2)}</text>
+          <text x="45" y="133" textAnchor="end" className="text-[7px]" fill="#6b7280">{formatM(minVal)}</text>
+          
+          {/* Area Fill */}
+          <path d={areaD} fill="url(#areaGrad)"/>
+          
+          {/* Line */}
+          <path d={pathD} fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          
+          {/* Data Points */}
+          {values.map((p, i) => (
+            <g key={i}>
+              <circle cx={scaleX(p.year)} cy={scaleY(p.value)} r="5" fill="#fff" stroke="#2563eb" strokeWidth="2"/>
+              <text x={scaleX(p.year)} y="145" textAnchor="middle" className="text-[8px]" fill="#374151">{p.label}</text>
+              <text x={scaleX(p.year)} y={scaleY(p.value) - 10} textAnchor="middle" className="text-[7px] font-medium" fill="#1e40af">{formatM(p.value)}</text>
+              {i > 0 && (
+                <text x={scaleX(p.year)} y={scaleY(p.value) - 20} textAnchor="middle" className="text-[6px]" fill="#16a34a">+{((p.value/kaufpreis - 1) * 100).toFixed(0)}%</text>
+              )}
+            </g>
+          ))}
+          
+          {/* Title */}
+          <text x="170" y="12" textAnchor="middle" className="text-[8px] font-medium" fill="#374151">Wertentwicklung (2,5% p.a.)</text>
+        </svg>
+      );
+    };
+
+    const OPTIONS = {
+      kontaktart: ['Telefon', 'E-Mail', 'Videokonferenz'],
+      assetklassen: ['MFH', 'Wohn- & Geschäftshaus', 'Büro', 'Retail', 'Logistik', 'Light Industrial', 'Betreiberimmobilien', 'Grundstücke', 'Development'],
+      gebaeudetyp: ['MFH', 'Wohn- & Geschäftshaus', 'Büro', 'Retail', 'Logistik', 'Spezialimmobilie'],
+      heizungsart: ['Gas', 'Öl', 'Wärmepumpe', 'Fernwärme', 'Elektro', 'Sonstige'],
+      mietvertragsart: ['Standard', 'Index', 'Staffel'],
+      nutzung: ['Wohnen', 'Gewerbe', 'Stellplatz'],
+      haltedauer: ['0-3 Jahre', '3-7 Jahre', '7+ Jahre'],
+      primaeresziel: ['Cashflow', 'Rendite', 'AfA/RND', 'Exit', 'Repositionierung', 'Portfolio-Umschichtung'],
+      risikoprofil: ['Konservativ', 'Core', 'Core+', 'Value-Add', 'Opportunistisch'],
+      jaNein: ['Ja', 'Nein'],
+      laender: ['Deutschland', 'Österreich', 'Schweiz'],
+    };
+
+    // API Functions
+    const sendWebhook = async (actionId, data) => {
+      try {
+        const response = await fetch(CONFIG.MAKE_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ actionId, ...data }) });
+        return response.ok;
+      } catch (error) { console.error('Webhook Fehler:', error); return false; }
+    };
+
+    const sendWelcomeEmail = async (mandant, password) => {
+      return sendWebhook(1, { type: 'welcome_email', to_email: mandant.email, to_name: mandant.ansprechpartner || mandant.name, firma: mandant.name, password, subject: `Willkommen bei ${CONFIG.COMPANY_NAME} - Ihre Zugangsdaten`, html_content: getWelcomeEmailHTML(mandant, password) });
+    };
+
+    const sendPDFEmail = async (mandant, objekt, berechnungen, empfehlung, pdfBase64) => {
+      // Sende ALLE Daten für PDF-Generierung in Make.com
+      return sendWebhook(2, {
+        type: 'pdf_email',
+        // PDF als Base64
+        pdf_base64: pdfBase64 || null,
+        // Empfänger
+        to_email: mandant.email,
+        to_name: mandant.ansprechpartner || mandant.name,
+        // Mandant komplett
+        mandant_id: mandant.id,
+        mandant_name: mandant.name,
+        mandant_ansprechpartner: mandant.ansprechpartner,
+        mandant_position: mandant.position,
+        mandant_email: mandant.email,
+        mandant_telefon: mandant.telefon,
+        mandant_strasse: mandant.strasse,
+        mandant_plz: mandant.plz,
+        mandant_ort: mandant.ort,
+        mandant_land: mandant.land,
+        // Objekt komplett
+        objekt_id: objekt.id,
+        objekt_strasse: objekt.strasse,
+        objekt_plz: objekt.plz,
+        objekt_ort: objekt.ort,
+        objekt_adresse: `${objekt.strasse}, ${objekt.plz} ${objekt.ort}`,
+        objekt_gebaeudetyp: objekt.gebaeudetyp,
+        objekt_baujahr: objekt.baujahr,
+        objekt_wohnflaeche: objekt.wohnflaeche,
+        objekt_gewerbeflaeche: objekt.gewerbeflaeche,
+        objekt_einheiten_anzahl: objekt.einheiten?.length || 0,
+        // Finanzen
+        kaufpreis: objekt.kaufpreis,
+        eigenkapital_prozent: objekt.eigenkapital_prozent,
+        zinssatz: objekt.zinssatz,
+        tilgung: objekt.tilgung,
+        // Berechnungen
+        rendite: berechnungen?.rendite,
+        rendite_formatiert: formatPercent(berechnungen?.rendite),
+        cashflow_ist: berechnungen?.cashflow_ist,
+        cashflow_ist_formatiert: formatCurrency(berechnungen?.cashflow_ist),
+        cashflow_opt: berechnungen?.cashflow_opt,
+        mietpotenzial: berechnungen?.mietpotenzial,
+        mietpotenzial_prozent: berechnungen?.mietpotenzial_prozent,
+        kosten_gesamt: berechnungen?.kosten_gesamt,
+        kostenquote: berechnungen?.kostenquote,
+        kapitaldienst: berechnungen?.kapitaldienst,
+        eigenkapital: berechnungen?.eigenkapital,
+        fremdkapital: berechnungen?.fremdkapital,
+        afa_jahr: berechnungen?.afa_jahr,
+        rnd: berechnungen?.rnd,
+        preis_3j: berechnungen?.preis_3j,
+        preis_7j: berechnungen?.preis_7j,
+        preis_10j: berechnungen?.preis_10j,
+        // Empfehlung
+        empfehlung: empfehlung?.empfehlung,
+        empfehlung_prioritaet: empfehlung?.prioritaet,
+        empfehlung_begruendung: empfehlung?.begruendung,
+        empfehlung_fazit: empfehlung?.fazit,
+        empfehlung_handlungsschritte: JSON.stringify(empfehlung?.handlungsschritte || []),
+        // Email
+        subject: `Optimierungsprotokoll: ${objekt.strasse}, ${objekt.plz} ${objekt.ort}`,
+        html_content: getPDFEmailHTML(mandant, objekt, berechnungen, empfehlung),
+        // Datum
+        datum: new Date().toISOString(),
+        datum_formatiert: formatDate(new Date())
+      });
+    };
+
+    // PDF als Base64 generieren - VERBESSERT
+    const generatePDFBase64 = async (elementId) => {
+      const element = document.getElementById(elementId);
+      if (!element) {
+        console.error('PDF Element nicht gefunden:', elementId);
+        return null;
+      }
+      
+      // Prüfe ob Libraries geladen sind
+      if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+        console.error('PDF Libraries nicht geladen');
+        return null;
+      }
+      
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pages = element.querySelectorAll('.print-page');
+        
+        if (pages.length === 0) {
+          console.error('Keine PDF-Seiten gefunden');
+          return null;
+        }
+        
+        console.log(`PDF-Generierung: ${pages.length} Seiten gefunden`);
+        
+        for (let i = 0; i < pages.length; i++) {
+          console.log(`Rendere Seite ${i + 1}...`);
+          const canvas = await html2canvas(pages[i], { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false, 
+            backgroundColor: '#ffffff',
+            allowTaint: true,
+            foreignObjectRendering: false
+          });
+          const imgData = canvas.toDataURL('image/jpeg', 0.85);
+          if (i > 0) pdf.addPage();
+          const imgWidth = 210;
+          const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, 297);
+          pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+        }
+        
+        const base64 = pdf.output('datauristring').split(',')[1];
+        console.log('PDF-Generierung erfolgreich, Größe:', Math.round(base64.length / 1024), 'KB');
+        return base64;
+      } catch (error) {
+        console.error('PDF-Generierung Fehler:', error);
+        return null;
+      }
+    };
+
+    const generiereEmpfehlung = async (objekt, berechnungen) => {
+      try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'x-api-key': CONFIG.CLAUDE_API_KEY, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514', max_tokens: 1500,
+            messages: [{ role: 'user', content: `Du bist ein erfahrener Immobilien-Analyst. Analysiere:\n\nOBJEKT: ${objekt.strasse}, ${objekt.plz} ${objekt.ort}\nKaufpreis: ${formatCurrency(objekt.kaufpreis)} | Rendite: ${berechnungen.rendite.toFixed(2)}%\nCashflow IST: ${formatCurrency(berechnungen.cashflow_ist)} p.a.\nMietpotenzial: +${berechnungen.mietpotenzial_prozent.toFixed(1)}%\nWEG: ${objekt.weg_aufgeteilt === 'Ja' ? 'aufgeteilt' : 'nicht aufgeteilt'}\nHaltedauer: ${objekt.haltedauer || '3-7 Jahre'}\nRisikoprofil: ${objekt.risikoprofil || 'Core'}\n\nAntworte NUR mit JSON:\n{"empfehlung": "HALTEN" | "OPTIMIEREN" | "RESTRUKTURIEREN" | "VERKAUFEN", "prioritaet": "niedrig" | "mittel" | "hoch", "begruendung": "3-4 Sätze", "handlungsschritte": [{"schritt": "...", "zeitrahmen": "Sofort/2 Wochen/4 Wochen", "prioritaet": "hoch/mittel/niedrig"}], "chancen": ["..."], "risiken": ["..."], "fazit": "..."}` }]
+          })
+        });
+        const data = await response.json();
+        const content = data.content?.[0]?.text || '';
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) return JSON.parse(jsonMatch[0]);
+      } catch (error) { console.error('Empfehlung-Fehler:', error); }
+      return null;
+    };
+
+    // Berechnungen
+    const berechneAlles = (objekt) => {
+      const einheiten = objekt.einheiten || [];
+      const kaufpreis = parseFloat(objekt.kaufpreis) || 0;
+      const ek_prozent = parseFloat(objekt.eigenkapital_prozent) || 30;
+      const zinssatz = parseFloat(objekt.zinssatz) || 3.8;
+      const tilgung = parseFloat(objekt.tilgung) || 2;
+      const eigenkapital = kaufpreis * (ek_prozent / 100);
+      const fremdkapital = kaufpreis - eigenkapital;
+      const kapitaldienst = fremdkapital * ((zinssatz + tilgung) / 100);
+      let miete_ist = 0, miete_soll = 0, flaeche_gesamt = 0;
+      
+      // §558 BGB Kappungsgrenze berechnen (20% in 3 Jahren, in Kappungsgebieten 15%)
+      const berechneNaechsteMieterhoehung = (einheit, istKappungsgebiet = false) => {
+        const kappungsgrenze = istKappungsgebiet ? 0.15 : 0.20;
+        const letzteMieterhoehung = einheit.letzteMieterhoehung ? new Date(einheit.letzteMieterhoehung) : null;
+        const heute = new Date();
+        const flaeche = parseFloat(einheit.flaeche) || 0;
+        const kaltmiete = parseFloat(einheit.kaltmiete) || 0;
+        const vergleichsmiete = parseFloat(einheit.vergleichsmiete) || 12;
+        const sollMiete = flaeche * vergleichsmiete;
+        const euroProQm = flaeche > 0 ? kaltmiete / flaeche : 0;
+        
+        // Wenn keine letzte Erhöhung bekannt, sofort möglich
+        if (!letzteMieterhoehung) {
+          const maxErhoehung = kaltmiete * kappungsgrenze;
+          const potenzielleErhoehung = Math.min(maxErhoehung, sollMiete - kaltmiete);
+          return { moeglich: 'Sofort', betrag: Math.max(0, potenzielleErhoehung), grund: 'Keine letzte Erhöhung bekannt' };
+        }
+        
+        // Monate seit letzter Erhöhung
+        const monateSeitErhoehung = (heute.getFullYear() - letzteMieterhoehung.getFullYear()) * 12 + (heute.getMonth() - letzteMieterhoehung.getMonth());
+        
+        if (monateSeitErhoehung >= 36) {
+          // Mehr als 3 Jahre her → volle Kappungsgrenze verfügbar
+          const maxErhoehung = kaltmiete * kappungsgrenze;
+          const potenzielleErhoehung = Math.min(maxErhoehung, sollMiete - kaltmiete);
+          return { moeglich: 'Sofort', betrag: Math.max(0, potenzielleErhoehung), grund: `Letzte Erhöhung vor ${Math.floor(monateSeitErhoehung/12)} Jahren` };
+        } else if (monateSeitErhoehung >= 15) {
+          // Mindestens 15 Monate (§558 Sperrfrist) → teilweise möglich
+          const restMonate = 36 - monateSeitErhoehung;
+          const maxErhoehung = kaltmiete * kappungsgrenze * (monateSeitErhoehung / 36);
+          const potenzielleErhoehung = Math.min(maxErhoehung, sollMiete - kaltmiete);
+          return { moeglich: 'Teilweise', betrag: Math.max(0, potenzielleErhoehung), grund: `Volle Kappung in ${restMonate} Monaten` };
+        } else {
+          // Weniger als 15 Monate → Sperrfrist
+          const naechstesMoeglich = new Date(letzteMieterhoehung);
+          naechstesMoeglich.setMonth(naechstesMoeglich.getMonth() + 15);
+          return { moeglich: formatDate(naechstesMoeglich), betrag: 0, grund: 'Sperrfrist §558 BGB (15 Monate)' };
+        }
+      };
+      
+      // Detaillierte Einheiten-Analyse für Tabelle
+      const istKappungsgebiet = objekt.milieuschutz === 'Ja'; // Vereinfacht: Milieuschutz = Kappungsgebiet
+      const einheitenAnalyse = einheiten.map((e, idx) => {
+        const flaeche = parseFloat(e.flaeche) || 0;
+        const kaltmiete = parseFloat(e.kaltmiete) || 0;
+        const vergleichsmiete = parseFloat(e.vergleichsmiete) || 12;
+        const sollMiete = e.mietvertragsart === 'Standard' ? Math.max(kaltmiete, flaeche * vergleichsmiete) : kaltmiete;
+        const potenzial = sollMiete - kaltmiete;
+        const potenzialProzent = kaltmiete > 0 ? ((sollMiete - kaltmiete) / kaltmiete) * 100 : (sollMiete > 0 ? 100 : 0);
+        const euroProQm = flaeche > 0 ? kaltmiete / flaeche : 0;
+        miete_ist += kaltmiete;
+        miete_soll += sollMiete;
+        flaeche_gesamt += flaeche;
+        
+        // §558 BGB: Nächste Mieterhöhung
+        const naechsteMieterhoehung = berechneNaechsteMieterhoehung(e, istKappungsgebiet);
+        
+        return { 
+          nr: idx + 1, nutzung: e.nutzung, flaeche, kaltmiete, euroProQm, vergleichsmiete, sollMiete, potenzial, potenzialProzent, 
+          mietvertragsart: e.mietvertragsart, hatPotenzial: potenzial > 0 && e.mietvertragsart === 'Standard',
+          letzteMieterhoehung: e.letzteMieterhoehung,
+          naechsteMieterhoehung // { moeglich, betrag, grund }
+        };
+      });
+      
+      const miete_ist_jahr = miete_ist * 12;
+      const miete_soll_jahr = miete_soll * 12;
+      const mietpotenzial = miete_soll_jahr - miete_ist_jahr;
+      const mietpotenzial_prozent = miete_ist_jahr > 0 ? (mietpotenzial / miete_ist_jahr) * 100 : 0;
+      const betriebskosten_nicht_umlage = parseFloat(objekt.betriebskosten_nicht_umlage) || 0;
+      const instandhaltung = parseFloat(objekt.instandhaltung) || (flaeche_gesamt * 12);
+      const verwaltung = parseFloat(objekt.verwaltung) || (einheiten.length * 300);
+      const ruecklagen = parseFloat(objekt.ruecklagen) || 0;
+      const kosten_gesamt = betriebskosten_nicht_umlage + instandhaltung + verwaltung + ruecklagen;
+      const kostenquote = miete_ist_jahr > 0 ? (kosten_gesamt / miete_ist_jahr) * 100 : 0;
+      const cashflow_ist = miete_ist_jahr - kapitaldienst - kosten_gesamt;
+      const cashflow_opt = miete_soll_jahr - kapitaldienst - kosten_gesamt;
+      const rendite = kaufpreis > 0 ? (miete_ist_jahr / kaufpreis) * 100 : 0;
+      const rendite_opt = kaufpreis > 0 ? (miete_soll_jahr / kaufpreis) * 100 : 0;
+      const capex_geplant = parseFloat(objekt.capex_geplant_betrag) || 0;
+      
+      // §559 BGB: Modernisierungsumlage MIT Kappungsgrenzen
+      // Wenn Kaltmiete < 7€/m² → max 2€/m² Erhöhung in 6 Jahren
+      // Wenn Kaltmiete >= 7€/m² → max 3€/m² Erhöhung in 6 Jahren
+      let umlage_559_gekappt = 0;
+      einheitenAnalyse.forEach(e => {
+        const maxEuroProQm = e.euroProQm < 7 ? 2 : 3;
+        const maxErhoehungProJahr = e.flaeche * maxEuroProQm / 6; // Auf 6 Jahre verteilt
+        umlage_559_gekappt += maxErhoehungProJahr * 12; // Jahresbetrag
+      });
+      const umlage_559_ungekappt = capex_geplant * 0.08;
+      const umlage_559 = Math.min(umlage_559_ungekappt, umlage_559_gekappt);
+      const umlage_559_hinweis = umlage_559 < umlage_559_ungekappt ? 'Gekappt nach §559 Abs. 3a BGB' : 'Volle 8% möglich';
+      
+      const weg_aufgeteilt = objekt.weg_aufgeteilt === 'Ja';
+      const wert_aufgeteilt = kaufpreis * 1.15;
+      const weg_gewinn = weg_aufgeteilt ? 0 : (wert_aufgeteilt - kaufpreis);
+      const weg_genehmigung = objekt.milieuschutz === 'Ja' || objekt.umwandlungsverbot === 'Ja';
+      const baujahr = parseInt(objekt.baujahr) || 1970;
+      const alter = new Date().getFullYear() - baujahr;
+      const rnd = Math.max(10, Math.min(80, 80 - alter));
+      const gebaeudewert = kaufpreis * 0.8;
+      const afa_jahr = gebaeudewert / rnd;
+      const afa_satz = 100 / rnd;
+      const steuerersparnis_42 = afa_jahr * 0.42;
+      const preis_3j = kaufpreis * Math.pow(1.025, 3);
+      const preis_5j = kaufpreis * Math.pow(1.025, 5);
+      const preis_7j = kaufpreis * Math.pow(1.025, 7);
+      const preis_10j = kaufpreis * Math.pow(1.025, 10);
+      const einheitenMitPotenzial = einheitenAnalyse.filter(e => e.hatPotenzial).length;
+      const gesamtPotenzialMonat = mietpotenzial / 12;
+      return { kaufpreis, eigenkapital, ek_prozent, fremdkapital, zinssatz, tilgung, kapitaldienst, rendite, rendite_opt, miete_ist_jahr, miete_soll_jahr, mietpotenzial, mietpotenzial_prozent, flaeche_gesamt, kosten_gesamt, kostenquote, betriebskosten_nicht_umlage, instandhaltung, verwaltung, ruecklagen, cashflow_ist, cashflow_opt, capex_geplant, umlage_559, umlage_559_hinweis, weg_aufgeteilt, wert_aufgeteilt, weg_gewinn, weg_genehmigung, baujahr, alter, rnd, gebaeudewert, afa_jahr, afa_satz, steuerersparnis_42, roi_heute: rendite, roi_optimiert: rendite_opt, preis_3j, preis_5j, preis_7j, preis_10j, einheitenAnalyse, einheitenMitPotenzial, gesamtPotenzialMonat, istKappungsgebiet };
+    };
+
+    const findePassendeKaeufer = (objekt, ankaufsprofile, mandanten) => {
+      const kaufpreis = parseFloat(objekt.kaufpreis) || 0;
+      const gebaeudetyp = objekt.gebaeudetyp || '';
+      const ort = objekt.ort || '';
+      return ankaufsprofile.filter(profil => {
+        const minVol = parseFloat(profil.min_volumen) || 0;
+        const maxVol = parseFloat(profil.max_volumen) || Infinity;
+        return kaufpreis >= minVol * 0.5 && kaufpreis <= maxVol * 1.5;
+      }).map(profil => {
+        let score = 0;
+        if (profil.assetklassen?.some(a => gebaeudetyp.includes(a) || a.includes(gebaeudetyp))) score += 30;
+        if (profil.regionen?.toLowerCase().includes(ort.toLowerCase())) score += 30;
+        const minVol = parseFloat(profil.min_volumen) || 0;
+        const maxVol = parseFloat(profil.max_volumen) || Infinity;
+        if (kaufpreis >= minVol && kaufpreis <= maxVol) score += 40;
+        const mandant = mandanten.find(m => m.id === profil.mandantId);
+        return { ...profil, matchScore: score, mandantName: mandant?.name, mandantEmail: mandant?.email };
+      }).filter(p => p.matchScore > 0).sort((a, b) => b.matchScore - a.matchScore);
+    };
+
+    // Main App
+    function ImperialApp() {
+      // Beispiel-Mandanten für Demo
+      const sampleMandanten = [
+        { id: 1, name: 'Müller Immobilien GmbH', ansprechpartner: 'Thomas Müller', position: 'Geschäftsführer', email: 'mueller@example.com', telefon: '+49 89 123456', strasse: 'Maximilianstraße 45', plz: '80538', ort: 'München', land: 'Deutschland', kontaktart: 'E-Mail', erstellt_am: '2024-01-15T10:00:00Z' },
+        { id: 2, name: 'Schmidt & Partner KG', ansprechpartner: 'Anna Schmidt', position: 'Partnerin', email: 'schmidt@example.com', telefon: '+49 30 987654', strasse: 'Unter den Linden 12', plz: '10117', ort: 'Berlin', land: 'Deutschland', kontaktart: 'Telefon', erstellt_am: '2024-02-20T14:00:00Z' },
+        { id: 3, name: 'Weber Family Office', ansprechpartner: 'Michael Weber', position: 'Managing Director', email: 'weber@example.com', telefon: '+49 40 555666', strasse: 'Jungfernstieg 22', plz: '20354', ort: 'Hamburg', land: 'Deutschland', kontaktart: 'Videokonferenz', erstellt_am: '2024-03-10T09:00:00Z' }
+      ];
+      
+      // Beispiel-Objekte für Demo (löschbar)
+      const sampleObjekte = [
+        { id: 1, mandantId: 1, strasse: 'Leopoldstraße 88', plz: '80802', ort: 'München', gebaeudetyp: 'MFH', baujahr: '1965', denkmalschutz: 'Nein', wohneinheiten: '8', wohnflaeche: '640', kaufpreis: '2800000', kaufdatum: '2022-06-15', darlehensstand: '1960000', zinssatz: '3.2', tilgung: '2', eigenkapital_prozent: '30', leerstandsquote: '5', betriebskosten_nicht_umlage: '8500', instandhaltung: '12000', verwaltung: '6400', ruecklagen: '4800', weg_aufgeteilt: 'Nein', weg_geplant: 'Ja', milieuschutz: 'Ja', umwandlungsverbot: 'Nein', mietpreisbindung: 'Nein', capex_geplant_betrag: '85000', haltedauer: '3-7 Jahre', primaeres_ziel: 'Exit', risikoprofil: 'Value-Add', einheiten: [
+          { id: 1, nutzung: 'Wohnen', flaeche: '85', kaltmiete: '850', vergleichsmiete: '14', mietvertragsart: 'Standard', letzteMieterhoehung: '2022-01-01' },
+          { id: 2, nutzung: 'Wohnen', flaeche: '72', kaltmiete: '680', vergleichsmiete: '14', mietvertragsart: 'Standard', letzteMieterhoehung: '2021-06-01' },
+          { id: 3, nutzung: 'Wohnen', flaeche: '95', kaltmiete: '1100', vergleichsmiete: '14', mietvertragsart: 'Index', letzteMieterhoehung: '2023-01-01' },
+          { id: 4, nutzung: 'Wohnen', flaeche: '68', kaltmiete: '600', vergleichsmiete: '14', mietvertragsart: 'Standard', letzteMieterhoehung: '2020-03-01' },
+          { id: 5, nutzung: 'Wohnen', flaeche: '78', kaltmiete: '720', vergleichsmiete: '14', mietvertragsart: 'Standard', letzteMieterhoehung: '2022-07-01' },
+          { id: 6, nutzung: 'Wohnen', flaeche: '82', kaltmiete: '780', vergleichsmiete: '14', mietvertragsart: 'Staffel', letzteMieterhoehung: '2023-04-01' },
+          { id: 7, nutzung: 'Wohnen', flaeche: '90', kaltmiete: '900', vergleichsmiete: '14', mietvertragsart: 'Standard', letzteMieterhoehung: '2021-09-01' },
+          { id: 8, nutzung: 'Wohnen', flaeche: '70', kaltmiete: '650', vergleichsmiete: '14', mietvertragsart: 'Standard', letzteMieterhoehung: '2022-11-01' }
+        ], erstellt_am: '2024-01-20T10:00:00Z' },
+        { id: 2, mandantId: 2, strasse: 'Prenzlauer Allee 156', plz: '10409', ort: 'Berlin', gebaeudetyp: 'Wohn- & Geschäftshaus', baujahr: '1905', denkmalschutz: 'Ja', kernsanierung_jahr: '1998', wohneinheiten: '12', gewerbeeinheiten: '2', wohnflaeche: '980', gewerbeflaeche: '220', kaufpreis: '4200000', kaufdatum: '2021-03-01', darlehensstand: '2940000', zinssatz: '2.8', tilgung: '1.5', eigenkapital_prozent: '30', leerstandsquote: '8', betriebskosten_nicht_umlage: '15000', instandhaltung: '18000', verwaltung: '9600', ruecklagen: '7200', weg_aufgeteilt: 'Ja', milieuschutz: 'Ja', umwandlungsverbot: 'Ja', mietpreisbindung: 'Nein', capex_geplant_betrag: '120000', haltedauer: '7+ Jahre', primaeres_ziel: 'Cashflow', risikoprofil: 'Core+', einheiten: [
+          { id: 1, nutzung: 'Gewerbe', flaeche: '120', kaltmiete: '1800', vergleichsmiete: '18', mietvertragsart: 'Index', letzteMieterhoehung: '2023-01-01' },
+          { id: 2, nutzung: 'Gewerbe', flaeche: '100', kaltmiete: '1400', vergleichsmiete: '18', mietvertragsart: 'Index', letzteMieterhoehung: '2022-06-01' },
+          { id: 3, nutzung: 'Wohnen', flaeche: '92', kaltmiete: '750', vergleichsmiete: '11', mietvertragsart: 'Standard', letzteMieterhoehung: '2021-01-01' },
+          { id: 4, nutzung: 'Wohnen', flaeche: '78', kaltmiete: '620', vergleichsmiete: '11', mietvertragsart: 'Standard', letzteMieterhoehung: '2020-08-01' },
+          { id: 5, nutzung: 'Wohnen', flaeche: '85', kaltmiete: '700', vergleichsmiete: '11', mietvertragsart: 'Standard', letzteMieterhoehung: '2022-03-01' },
+          { id: 6, nutzung: 'Wohnen', flaeche: '68', kaltmiete: '540', vergleichsmiete: '11', mietvertragsart: 'Standard', letzteMieterhoehung: '2019-11-01' }
+        ], erstellt_am: '2024-02-25T14:00:00Z' },
+        { id: 3, mandantId: 3, strasse: 'Eppendorfer Baum 45', plz: '20249', ort: 'Hamburg', gebaeudetyp: 'MFH', baujahr: '1978', denkmalschutz: 'Nein', wohneinheiten: '6', wohnflaeche: '520', kaufpreis: '1950000', kaufdatum: '2023-09-01', darlehensstand: '1365000', zinssatz: '4.1', tilgung: '2.5', eigenkapital_prozent: '30', leerstandsquote: '0', betriebskosten_nicht_umlage: '6200', instandhaltung: '9000', verwaltung: '4800', ruecklagen: '3600', weg_aufgeteilt: 'Nein', weg_geplant: 'Nein', milieuschutz: 'Nein', umwandlungsverbot: 'Nein', mietpreisbindung: 'Nein', capex_geplant_betrag: '45000', haltedauer: '7+ Jahre', primaeres_ziel: 'Cashflow', risikoprofil: 'Core', einheiten: [
+          { id: 1, nutzung: 'Wohnen', flaeche: '95', kaltmiete: '1050', vergleichsmiete: '13', mietvertragsart: 'Standard', letzteMieterhoehung: '2023-06-01' },
+          { id: 2, nutzung: 'Wohnen', flaeche: '88', kaltmiete: '970', vergleichsmiete: '13', mietvertragsart: 'Standard', letzteMieterhoehung: '2023-01-01' },
+          { id: 3, nutzung: 'Wohnen', flaeche: '82', kaltmiete: '900', vergleichsmiete: '13', mietvertragsart: 'Index', letzteMieterhoehung: '2022-09-01' },
+          { id: 4, nutzung: 'Wohnen', flaeche: '85', kaltmiete: '935', vergleichsmiete: '13', mietvertragsart: 'Standard', letzteMieterhoehung: '2022-04-01' },
+          { id: 5, nutzung: 'Wohnen', flaeche: '90', kaltmiete: '990', vergleichsmiete: '13', mietvertragsart: 'Staffel', letzteMieterhoehung: '2023-03-01' },
+          { id: 6, nutzung: 'Wohnen', flaeche: '80', kaltmiete: '880', vergleichsmiete: '13', mietvertragsart: 'Standard', letzteMieterhoehung: '2021-12-01' }
+        ], erstellt_am: '2024-03-15T09:00:00Z' },
+        { id: 4, mandantId: 1, strasse: 'Sendlinger Straße 32', plz: '80331', ort: 'München', gebaeudetyp: 'Wohn- & Geschäftshaus', baujahr: '1952', denkmalschutz: 'Nein', kernsanierung_jahr: '2010', wohneinheiten: '10', gewerbeeinheiten: '3', wohnflaeche: '750', gewerbeflaeche: '350', kaufpreis: '5500000', kaufdatum: '2020-11-01', darlehensstand: '3850000', zinssatz: '1.9', tilgung: '2', eigenkapital_prozent: '30', leerstandsquote: '3', betriebskosten_nicht_umlage: '22000', instandhaltung: '25000', verwaltung: '13200', ruecklagen: '9900', weg_aufgeteilt: 'Ja', milieuschutz: 'Nein', umwandlungsverbot: 'Nein', mietpreisbindung: 'Nein', capex_geplant_betrag: '180000', haltedauer: '0-3 Jahre', primaeres_ziel: 'Exit', risikoprofil: 'Value-Add', einheiten: [
+          { id: 1, nutzung: 'Gewerbe', flaeche: '150', kaltmiete: '3000', vergleichsmiete: '22', mietvertragsart: 'Index', letzteMieterhoehung: '2023-07-01' },
+          { id: 2, nutzung: 'Gewerbe', flaeche: '120', kaltmiete: '2400', vergleichsmiete: '22', mietvertragsart: 'Index', letzteMieterhoehung: '2022-12-01' },
+          { id: 3, nutzung: 'Gewerbe', flaeche: '80', kaltmiete: '1520', vergleichsmiete: '22', mietvertragsart: 'Staffel', letzteMieterhoehung: '2023-01-01' },
+          { id: 4, nutzung: 'Wohnen', flaeche: '95', kaltmiete: '1140', vergleichsmiete: '15', mietvertragsart: 'Standard', letzteMieterhoehung: '2022-05-01' },
+          { id: 5, nutzung: 'Wohnen', flaeche: '72', kaltmiete: '790', vergleichsmiete: '15', mietvertragsart: 'Standard', letzteMieterhoehung: '2021-08-01' },
+          { id: 6, nutzung: 'Wohnen', flaeche: '68', kaltmiete: '720', vergleichsmiete: '15', mietvertragsart: 'Standard', letzteMieterhoehung: '2020-02-01' }
+        ], erstellt_am: '2024-01-25T11:00:00Z' }
+      ];
+      
+      // Beispiel-Users für Mandanten-Login
+      const sampleUsers = [
+        { id: 1, email: 'admin@imperoyal.de', password: CONFIG.ADMIN_PASSWORD, role: 'admin', name: 'Admin' },
+        { id: 2, email: 'mueller@example.com', password: 'Demo2024!', role: 'mandant', mandantId: 1, name: 'Thomas Müller' },
+        { id: 3, email: 'schmidt@example.com', password: 'Demo2024!', role: 'mandant', mandantId: 2, name: 'Anna Schmidt' },
+        { id: 4, email: 'weber@example.com', password: 'Demo2024!', role: 'mandant', mandantId: 3, name: 'Michael Weber' }
+      ];
+
+      const [appState, setAppState] = useState({
+        users: sampleUsers,
+        mandanten: sampleMandanten, objekte: sampleObjekte, auswertungen: [], ankaufsprofile: [], anfragen: [],
+        nextId: { u: 5, m: 4, o: 5, a: 1, p: 1 }
+      });
+      const [currentUser, setCurrentUser] = useState(null);
+      const [page, setPage] = useState('login');
+      const [selectedItem, setSelectedItem] = useState(null);
+      const [editObjekt, setEditObjekt] = useState(null);
+      const [editMandant, setEditMandant] = useState(null);
+      const [filterMandant, setFilterMandant] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [loadingText, setLoadingText] = useState('');
+      const [toast, setToast] = useState(null);
+      const [showMatching, setShowMatching] = useState(false);
+      
+      const isAdmin = currentUser?.role === 'admin';
+      const currentMandantId = currentUser?.mandantId;
+      const showToast = (msg, type = 'success') => { setToast({ msg, type }); setTimeout(() => setToast(null), 4000); };
+      
+      const getFilteredObjekte = () => { let objs = isAdmin ? appState.objekte : appState.objekte.filter(o => o.mandantId === currentMandantId); if (filterMandant) objs = objs.filter(o => o.mandantId === parseInt(filterMandant)); return objs; };
+      const getFilteredAuswertungen = () => { let aus = isAdmin ? appState.auswertungen : appState.auswertungen.filter(a => a.objekt?.mandantId === currentMandantId); if (filterMandant) aus = aus.filter(a => a.objekt?.mandantId === parseInt(filterMandant)); return aus; };
+      const getFilteredAnkaufsprofile = () => { let prof = isAdmin ? appState.ankaufsprofile : appState.ankaufsprofile.filter(p => p.mandantId === currentMandantId); if (filterMandant) prof = prof.filter(p => p.mandantId === parseInt(filterMandant)); return prof; };
+
+      // UI Components
+      const Input = ({ label, type = 'text', placeholder, inputRef, defaultValue, value, onChange, className = '', required, suffix, disabled, error }) => (
+        <div className={className}>
+          {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}{required && ' *'}</label>}
+          <div className="flex">
+            <input ref={inputRef} type={type} defaultValue={defaultValue} value={value} onChange={onChange} placeholder={placeholder} disabled={disabled}
+              className={`flex-1 min-w-0 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${suffix ? 'rounded-r-none' : ''} ${disabled ? 'bg-gray-100' : ''} ${error ? 'error-highlight' : ''}`} />
+            {suffix && <span className="px-3 py-2 bg-gray-100 border border-l-0 rounded-r-lg text-gray-500 text-sm flex items-center whitespace-nowrap">{suffix}</span>}
+          </div>
+        </div>
+      );
+
+      const Select = ({ label, options, value, onChange, className = '', required, disabled, error }) => (
+        <div className={className}>
+          {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}{required && ' *'}</label>}
+          <select value={value} onChange={onChange} disabled={disabled} className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${disabled ? 'bg-gray-100' : ''} ${error ? 'error-highlight' : ''}`}>
+            <option value="">-- Wählen --</option>
+            {options.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+      );
+
+      const MultiSelect = ({ label, options, selected = [], onChange, className = '' }) => (
+        <div className={className}>
+          {label && <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>}
+          <div className="flex flex-wrap gap-2">
+            {options.map(o => (<button key={o} type="button" onClick={() => onChange(selected.includes(o) ? selected.filter(x => x !== o) : [...selected, o])} className={`px-3 py-1.5 rounded-full text-sm border transition ${selected.includes(o) ? 'bg-blue-900 text-white border-blue-900' : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'}`}>{o}</button>))}
+          </div>
+        </div>
+      );
+
+      const Section = ({ title, icon, children, cols = 2 }) => (
+        <div className="bg-white rounded-xl border shadow-sm mb-4 overflow-hidden">
+          <div className="bg-gray-50 px-5 py-3 border-b"><h3 className="font-semibold text-gray-800 flex items-center gap-2">{icon} {title}</h3></div>
+          <div className={`p-5 grid gap-x-6 gap-y-4 ${cols === 2 ? 'grid-cols-1 md:grid-cols-2' : cols === 3 ? 'grid-cols-1 md:grid-cols-3' : cols === 4 ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4' : ''}`}>{children}</div>
+        </div>
+      );
+
+      const DataRow = ({ label, value }) => (<div className="flex justify-between py-2 border-b border-gray-100 last:border-0"><span className="text-gray-600 text-sm">{label}</span><span className="font-medium text-gray-900">{value || '-'}</span></div>);
+
+      // Login
+      const LoginScreen = () => {
+        const emailRef = useRef(); const passwordRef = useRef(); const adminPasswordRef = useRef();
+        const [showAdminLogin, setShowAdminLogin] = useState(false);
+        const handleAdminLogin = () => {
+          if (adminPasswordRef.current?.value === CONFIG.ADMIN_PASSWORD) { setCurrentUser(appState.users[0]); setPage('dashboard'); showToast('Willkommen, Admin!'); }
+          else showToast('Falsches Admin-Passwort', 'error');
+        };
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4 relative overflow-hidden">
+            <div className="max-w-md w-full relative z-10">
+              <div className="text-center mb-8">
+                <div className="w-24 h-24 glass-card rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-2xl">
+                  <span className="text-5xl">🏛️</span>
+                </div>
+                <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">{CONFIG.COMPANY_NAME}</h1>
+                <p className="text-blue-200/80 text-lg">Optimierungsprotokoll-System</p>
+              </div>
+              <div className="glass-card rounded-3xl shadow-2xl p-8 border border-white/20">
+                {!showAdminLogin ? (
+                  <div className="space-y-5">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">E-Mail</label>
+                      <input ref={emailRef} type="email" placeholder="ihre@email.de" className="w-full px-4 py-3 glass-input rounded-xl text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Passwort</label>
+                      <input ref={passwordRef} type="password" placeholder="••••••••" className="w-full px-4 py-3 glass-input rounded-xl text-sm" />
+                    </div>
+                    <button onClick={() => { const user = appState.users.find(u => u.email === emailRef.current?.value && u.password === passwordRef.current?.value); if (user) { setCurrentUser(user); setPage('dashboard'); showToast('Willkommen!'); } else showToast('Login fehlgeschlagen', 'error'); }} className="w-full py-3.5 glass-btn text-white rounded-xl font-semibold text-sm tracking-wide">Einloggen</button>
+                    <button onClick={() => setShowAdminLogin(true)} className="w-full py-3 border-2 border-gray-200/50 rounded-xl hover:bg-white/50 font-medium text-gray-600 transition-all">Admin-Login</button>
+                  </div>
+                ) : (
+                  <div className="space-y-5">
+                    <div className="text-center mb-4"><h2 className="text-xl font-bold text-gray-800">🔐 Admin-Login</h2></div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Admin-Passwort</label>
+                      <input ref={adminPasswordRef} type="password" placeholder="••••••••" className="w-full px-4 py-3 glass-input rounded-xl text-sm" />
+                    </div>
+                    <button onClick={handleAdminLogin} className="w-full py-3.5 glass-btn text-white rounded-xl font-semibold">Als Admin einloggen</button>
+                    <button onClick={() => setShowAdminLogin(false)} className="w-full py-2 text-gray-500 hover:text-gray-700">← Zurück</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // Mandant Formular (Neu + Bearbeiten)
+      const MandantFormular = ({ existingMandant = null }) => {
+        const isEdit = !!existingMandant;
+        const [formData, setFormData] = useState({
+          name: existingMandant?.name || '',
+          ansprechpartner: existingMandant?.ansprechpartner || '',
+          position: existingMandant?.position || '',
+          email: existingMandant?.email || '',
+          telefon: existingMandant?.telefon || '',
+          strasse: existingMandant?.strasse || '',
+          plz: existingMandant?.plz || '',
+          ort: existingMandant?.ort || '',
+          land: existingMandant?.land || 'Deutschland',
+          kontaktart: existingMandant?.kontaktart || ''
+        });
+        const [sendEmail, setSendEmail] = useState(!isEdit);
+        const [saving, setSaving] = useState(false);
+        const [createdPassword, setCreatedPassword] = useState(null);
+        const [errors, setErrors] = useState({});
+
+        const handleChange = (field, value) => { setFormData(prev => ({ ...prev, [field]: value })); setErrors(prev => ({ ...prev, [field]: false })); };
+
+        const handleSave = async () => {
+          const newErrors = {};
+          if (!formData.name) newErrors.name = true;
+          if (!formData.email) newErrors.email = true;
+          if (Object.keys(newErrors).length > 0) { setErrors(newErrors); showToast('Bitte Pflichtfelder ausfüllen', 'error'); return; }
+
+          setSaving(true);
+          const password = isEdit ? null : generatePassword();
+
+          if (isEdit) {
+            setAppState(prev => ({ ...prev, mandanten: prev.mandanten.map(m => m.id === existingMandant.id ? { ...m, ...formData, aktualisiert_am: new Date().toISOString() } : m) }));
+            showToast('Mandant aktualisiert!');
+            setEditMandant(null); setPage('mandanten');
+          } else {
+            const newMandant = { id: appState.nextId.m, ...formData, erstellt_am: new Date().toISOString() };
+            const newUser = { id: appState.nextId.u, email: formData.email, password, role: 'mandant', name: formData.name, mandantId: newMandant.id };
+            let emailSent = false;
+            if (sendEmail) { setLoadingText('E-Mail wird gesendet...'); emailSent = await sendWelcomeEmail(newMandant, password); }
+            setAppState(prev => ({ ...prev, users: [...prev.users, newUser], mandanten: [...prev.mandanten, newMandant], nextId: { ...prev.nextId, u: prev.nextId.u + 1, m: prev.nextId.m + 1 } }));
+            if (emailSent) { showToast('Mandant angelegt & E-Mail gesendet!'); setPage('mandanten'); }
+            else { setCreatedPassword(password); showToast('Mandant angelegt!'); }
+          }
+          setSaving(false);
+        };
+
+        return (
+          <div className="max-w-2xl">
+            <button onClick={() => { setEditMandant(null); setPage('mandanten'); }} className="flex items-center gap-2 text-sm text-blue-600 mb-4 hover:underline"><Icons.ArrowLeft /> Zurück</button>
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">{isEdit ? 'Mandant bearbeiten' : 'Neuen Mandanten anlegen'}</h1>
+            <Section title="Mandanteninformationen" icon="👤" cols={2}>
+              <Input label="Personen-/Unternehmensname" value={formData.name} onChange={e => handleChange('name', e.target.value)} required error={errors.name} />
+              <Input label="Ansprechpartner" value={formData.ansprechpartner} onChange={e => handleChange('ansprechpartner', e.target.value)} />
+              <Input label="Position" value={formData.position} onChange={e => handleChange('position', e.target.value)} />
+              <Input label="E-Mail" type="email" value={formData.email} onChange={e => handleChange('email', e.target.value)} required error={errors.email} />
+              <Input label="Telefon" value={formData.telefon} onChange={e => handleChange('telefon', e.target.value)} />
+              <Input label="Straße / Hausnummer" value={formData.strasse} onChange={e => handleChange('strasse', e.target.value)} />
+              <Input label="Postleitzahl" value={formData.plz} onChange={e => handleChange('plz', e.target.value)} />
+              <Input label="Ort" value={formData.ort} onChange={e => handleChange('ort', e.target.value)} />
+              <Select label="Land" options={OPTIONS.laender} value={formData.land} onChange={e => handleChange('land', e.target.value)} />
+              <Select label="Bevorzugte Kontaktart" options={OPTIONS.kontaktart} value={formData.kontaktart} onChange={e => handleChange('kontaktart', e.target.value)} />
+            </Section>
+            {!isEdit && (
+              <div className="bg-white rounded-xl border shadow-sm p-5 mb-4">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" checked={sendEmail} onChange={e => setSendEmail(e.target.checked)} className="w-5 h-5 rounded" />
+                  <div><p className="font-medium">Login-Daten per E-Mail senden</p></div>
+                </label>
+                {createdPassword && (
+                  <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p className="font-semibold text-green-800 mb-2">✅ Mandant angelegt!</p>
+                    <p className="text-sm text-gray-600 mb-2">Login: {formData.email}</p>
+                    <div className="flex items-center gap-2 bg-white rounded-lg p-3 border">
+                      <code className="flex-1 font-mono text-lg">{createdPassword}</code>
+                      <button onClick={() => { navigator.clipboard.writeText(createdPassword); showToast('Kopiert!'); }} className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded text-sm"><Icons.Copy /> Kopieren</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            <div className="flex gap-3">
+              <button onClick={() => { setEditMandant(null); setPage('mandanten'); }} className="px-5 py-2.5 border rounded-lg hover:bg-gray-50">Abbrechen</button>
+              <button onClick={handleSave} disabled={saving || createdPassword} className="px-6 py-2.5 bg-blue-900 text-white rounded-lg disabled:opacity-50 font-medium">{saving ? 'Wird gespeichert...' : isEdit ? 'Änderungen speichern' : 'Mandant anlegen'}</button>
+            </div>
+          </div>
+        );
+      };
+
+      // Mandant Detail
+      const MandantDetail = () => {
+        const m = selectedItem;
+        if (!m) return null;
+        const objekteCount = appState.objekte.filter(o => o.mandantId === m.id).length;
+        return (
+          <div className="max-w-3xl">
+            <button onClick={() => setPage('mandanten')} className="flex items-center gap-2 text-sm text-blue-600 mb-4 hover:underline"><Icons.ArrowLeft /> Zurück</button>
+            <div className="flex justify-between items-start mb-6">
+              <div><h1 className="text-2xl font-bold text-gray-800">{m.name}</h1><p className="text-gray-500">{m.ansprechpartner}</p></div>
+              <button onClick={() => { setEditMandant(m); setPage('mandant-edit'); }} className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg"><Icons.Edit /> Bearbeiten</button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl border p-5">
+                <h3 className="font-semibold text-gray-800 mb-3">📋 Kontaktdaten</h3>
+                <DataRow label="E-Mail" value={m.email} />
+                <DataRow label="Telefon" value={m.telefon} />
+                <DataRow label="Bevorzugte Kontaktart" value={m.kontaktart} />
+              </div>
+              <div className="bg-white rounded-xl border p-5">
+                <h3 className="font-semibold text-gray-800 mb-3">📍 Adresse</h3>
+                <DataRow label="Straße" value={m.strasse} />
+                <DataRow label="PLZ" value={m.plz} />
+                <DataRow label="Ort" value={m.ort} />
+                <DataRow label="Land" value={m.land} />
+              </div>
+              <div className="bg-white rounded-xl border p-5">
+                <h3 className="font-semibold text-gray-800 mb-3">👤 Person</h3>
+                <DataRow label="Ansprechpartner" value={m.ansprechpartner} />
+                <DataRow label="Position" value={m.position} />
+              </div>
+              <div className="bg-white rounded-xl border p-5">
+                <h3 className="font-semibold text-gray-800 mb-3">📊 Statistik</h3>
+                <DataRow label="Objekte" value={objekteCount} />
+                <DataRow label="Erstellt am" value={formatDate(m.erstellt_am)} />
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // Ankaufsprofil Neu
+      const AnkaufsprofilNeu = () => {
+        const [mandantId, setMandantId] = useState(isAdmin ? '' : currentMandantId);
+        const [kaufinteresse, setKaufinteresse] = useState('Ja');
+        const [assetklassen, setAssetklassen] = useState([]);
+        const refs = { regionen: useRef(), min_volumen: useRef(), max_volumen: useRef() };
+        const handleSave = () => {
+          const mId = isAdmin ? mandantId : currentMandantId;
+          if (!mId) { showToast('Bitte Mandant auswählen', 'error'); return; }
+          const newProfil = { id: appState.nextId.p, mandantId: parseInt(mId), kaufinteresse, assetklassen, regionen: refs.regionen.current?.value, min_volumen: refs.min_volumen.current?.value, max_volumen: refs.max_volumen.current?.value, erstellt_am: new Date().toISOString() };
+          setAppState(prev => ({ ...prev, ankaufsprofile: [...prev.ankaufsprofile, newProfil], nextId: { ...prev.nextId, p: prev.nextId.p + 1 } }));
+          showToast('Ankaufsprofil erstellt!'); setPage('ankaufsprofile');
+        };
+        return (
+          <div className="max-w-3xl">
+            <button onClick={() => setPage('ankaufsprofile')} className="flex items-center gap-2 text-sm text-blue-600 mb-4 hover:underline"><Icons.ArrowLeft /> Zurück</button>
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">Neues Ankaufsprofil</h1>
+            {isAdmin && (<div className="bg-white rounded-xl border shadow-sm p-5 mb-4"><label className="block text-sm font-medium text-gray-700 mb-1">Mandant auswählen *</label><select value={mandantId} onChange={e => setMandantId(e.target.value)} className="w-full px-3 py-2 border rounded-lg"><option value="">-- Mandant wählen --</option>{appState.mandanten.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}</select></div>)}
+            <Section title="Allgemeine Parameter" icon="🎯" cols={2}>
+              <Select label="Kaufinteresse aktiv?" options={OPTIONS.jaNein} value={kaufinteresse} onChange={e => setKaufinteresse(e.target.value)} />
+              <div></div>
+              <MultiSelect label="Bevorzugte Assetklassen" options={OPTIONS.assetklassen} selected={assetklassen} onChange={setAssetklassen} className="col-span-2" />
+            </Section>
+            <Section title="Standort & Finanzen" icon="📍" cols={3}>
+              <div><label className="block text-sm font-medium text-gray-700 mb-1">Bevorzugte Regionen</label><textarea ref={refs.regionen} rows={2} className="w-full px-3 py-2 border rounded-lg" placeholder="z.B. München, Frankfurt..." /></div>
+              <Input label="Mindestvolumen" inputRef={refs.min_volumen} suffix="€" />
+              <Input label="Maximalvolumen" inputRef={refs.max_volumen} suffix="€" />
+            </Section>
+            <div className="flex gap-3">
+              <button onClick={() => setPage('ankaufsprofile')} className="px-5 py-2.5 border rounded-lg hover:bg-gray-50">Abbrechen</button>
+              <button onClick={handleSave} className="px-6 py-2.5 bg-purple-600 text-white rounded-lg font-medium">Speichern</button>
+            </div>
+          </div>
+        );
+      };
+
+      // Objekt Detail
+      const ObjektDetail = () => {
+        const obj = selectedItem;
+        if (!obj) return null;
+        const mandant = appState.mandanten.find(m => m.id === obj.mandantId);
+        return (
+          <div className="max-w-5xl">
+            <button onClick={() => setPage('objekte')} className="flex items-center gap-2 text-sm text-blue-600 mb-4 hover:underline"><Icons.ArrowLeft /> Zurück</button>
+            <div className="flex justify-between items-start mb-6">
+              <div><h1 className="text-2xl font-bold text-gray-800">{obj.strasse}</h1><p className="text-gray-500">{obj.plz} {obj.ort}</p>{mandant && <p className="text-sm text-blue-600">Mandant: {mandant.name}</p>}</div>
+              <div className="flex gap-2">
+                <button onClick={() => { setEditObjekt(obj); setPage('objekt-edit'); }} className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg"><Icons.Edit /> Bearbeiten</button>
+                <button onClick={() => handleAuswerten(obj)} disabled={loading} className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg disabled:opacity-50"><Icons.Sparkles /> Auswerten</button>
+              </div>
+            </div>
+            <div className="bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 rounded-xl p-6 text-white mb-6">
+              <div className="grid grid-cols-4 gap-4">
+                <div className="text-center"><p className="text-blue-300 text-sm">Kaufpreis</p><p className="text-2xl font-bold">{formatCurrency(obj.kaufpreis)}</p></div>
+                <div className="text-center"><p className="text-blue-300 text-sm">Gebäudetyp</p><p className="text-xl font-medium">{obj.gebaeudetyp || '-'}</p></div>
+                <div className="text-center"><p className="text-blue-300 text-sm">Baujahr</p><p className="text-xl font-medium">{obj.baujahr || '-'}</p></div>
+                <div className="text-center"><p className="text-blue-300 text-sm">Einheiten</p><p className="text-xl font-medium">{obj.einheiten?.length || 0}</p></div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl border p-5"><h3 className="font-semibold text-gray-800 mb-3">🏢 Gebäudedaten</h3><DataRow label="Wohnfläche" value={obj.wohnflaeche ? `${obj.wohnflaeche} m²` : '-'} /><DataRow label="Gewerbefläche" value={obj.gewerbeflaeche ? `${obj.gewerbeflaeche} m²` : '-'} /><DataRow label="Grundstück" value={obj.grundstueck ? `${obj.grundstueck} m²` : '-'} /><DataRow label="Geschosse" value={obj.geschosse} /><DataRow label="Aufzug" value={obj.aufzug} /><DataRow label="Heizungsart" value={obj.heizungsart} /><DataRow label="Denkmalschutz" value={obj.denkmalschutz} /><DataRow label="Kernsanierung" value={obj.kernsanierung_jahr} /></div>
+              <div className="bg-white rounded-xl border p-5"><h3 className="font-semibold text-gray-800 mb-3">📋 WEG-Status</h3><DataRow label="WEG aufgeteilt" value={obj.weg_aufgeteilt} /><DataRow label="Aufteilung geplant" value={obj.weg_geplant} /><DataRow label="Milieuschutz" value={obj.milieuschutz} /><DataRow label="§250 Verbot" value={obj.umwandlungsverbot} /></div>
+              <div className="bg-white rounded-xl border p-5"><h3 className="font-semibold text-gray-800 mb-3">💰 Finanzierung</h3><DataRow label="Kaufpreis" value={formatCurrency(obj.kaufpreis)} /><DataRow label="Kaufdatum" value={obj.kaufdatum ? formatDate(obj.kaufdatum) : '-'} /><DataRow label="Wert Grundstück" value={formatCurrency(obj.grundstueck_wert)} /><DataRow label="Wert Gebäude" value={formatCurrency(obj.gebaeude_wert)} /><DataRow label="Darlehensstand" value={formatCurrency(obj.darlehensstand)} /><DataRow label="Zinssatz" value={obj.zinssatz ? `${obj.zinssatz}%` : '-'} /><DataRow label="Tilgung" value={obj.tilgung ? `${obj.tilgung}%` : '-'} /><DataRow label="Eigenkapital" value={obj.eigenkapital_prozent ? `${obj.eigenkapital_prozent}%` : '-'} /></div>
+              <div className="bg-white rounded-xl border p-5"><h3 className="font-semibold text-gray-800 mb-3">📊 Kosten</h3><DataRow label="Nicht umlf. BK" value={formatCurrency(obj.betriebskosten_nicht_umlage)} /><DataRow label="Instandhaltung" value={formatCurrency(obj.instandhaltung)} /><DataRow label="Verwaltung" value={formatCurrency(obj.verwaltung)} /><DataRow label="Rücklagen" value={formatCurrency(obj.ruecklagen)} /></div>
+            </div>
+            {obj.einheiten?.length > 0 && (<div className="bg-white rounded-xl border p-5 mt-4"><h3 className="font-semibold text-gray-800 mb-3">🏠 Einheiten ({obj.einheiten.length})</h3><table className="w-full text-sm"><thead className="bg-gray-50"><tr><th className="text-left px-3 py-2">#</th><th className="text-left px-3 py-2">Nutzung</th><th className="text-right px-3 py-2">Fläche</th><th className="text-right px-3 py-2">Kaltmiete</th><th className="text-left px-3 py-2">Vertragsart</th><th className="text-right px-3 py-2">€/m²</th></tr></thead><tbody>{obj.einheiten.map((e, i) => (<tr key={i} className="border-t"><td className="px-3 py-2">{i+1}</td><td className="px-3 py-2">{e.nutzung}</td><td className="px-3 py-2 text-right">{e.flaeche} m²</td><td className="px-3 py-2 text-right">{formatCurrency(e.kaltmiete)}</td><td className="px-3 py-2">{e.mietvertragsart}</td><td className="px-3 py-2 text-right">{e.vergleichsmiete} €</td></tr>))}</tbody></table></div>)}
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="bg-white rounded-xl border p-5"><h3 className="font-semibold text-gray-800 mb-3">⚖️ Rechtliches</h3><DataRow label="Mietpreisbindung" value={obj.mietpreisbindung} /><DataRow label="Sozialbindung" value={obj.sozialbindung} /><DataRow label="Modernisierungsstopp" value={obj.modernisierungsstopp} /><DataRow label="Gewerbe Sonderklauseln" value={obj.gewerbe_sonderklauseln} /></div>
+              <div className="bg-white rounded-xl border p-5"><h3 className="font-semibold text-gray-800 mb-3">🎯 Strategie</h3><DataRow label="Haltedauer" value={obj.haltedauer} /><DataRow label="Primäres Ziel" value={obj.primaeres_ziel} /><DataRow label="Investitionsbereitschaft" value={formatCurrency(obj.investitionsbereitschaft)} /><DataRow label="Risikoprofil" value={obj.risikoprofil} /></div>
+            </div>
+          </div>
+        );
+      };
+
+      // Objekt Formular (Neu + Bearbeiten) - MIT uncontrolled Inputs für beste UX
+      const ObjektFormular = ({ existingObjekt = null }) => {
+        const isEdit = !!existingObjekt;
+        const [errors, setErrors] = useState({});
+        const [mandantId, setMandantId] = useState(existingObjekt?.mandantId?.toString() || (isAdmin ? '' : currentMandantId?.toString() || ''));
+        const [einheiten, setEinheiten] = useState(existingObjekt?.einheiten || [{ id: 1, nutzung: 'Wohnen', flaeche: '', kaltmiete: '', vergleichsmiete: '12', mietvertragsart: 'Standard' }]);
+        
+        // Refs für alle Formularfelder (uncontrolled - kein Re-Render beim Tippen)
+        const refs = {
+          strasse: useRef(), plz: useRef(), ort: useRef(), baujahr: useRef(),
+          gebaeudetyp: useRef(), denkmalschutz: useRef(), kernsanierung_jahr: useRef(),
+          wohneinheiten: useRef(), gewerbeeinheiten: useRef(), geschosse: useRef(),
+          aufzug: useRef(), wohnflaeche: useRef(), gewerbeflaeche: useRef(),
+          grundstueck: useRef(), heizungsart: useRef(),
+          weg_aufgeteilt: useRef(), weg_geplant: useRef(), milieuschutz: useRef(), umwandlungsverbot: useRef(),
+          kaufpreis: useRef(), kaufdatum: useRef(), grundstueck_wert: useRef(), gebaeude_wert: useRef(),
+          darlehensstand: useRef(), zinssatz: useRef(), tilgung: useRef(), eigenkapital_prozent: useRef(),
+          leerstandsquote: useRef(),
+          betriebskosten_nicht_umlage: useRef(), instandhaltung: useRef(), verwaltung: useRef(), ruecklagen: useRef(),
+          capex_vergangen: useRef(), capex_geplant: useRef(), capex_geplant_betrag: useRef(),
+          mietpreisbindung: useRef(), sozialbindung: useRef(), modernisierungsstopp: useRef(), gewerbe_sonderklauseln: useRef(),
+          haltedauer: useRef(), primaeres_ziel: useRef(), investitionsbereitschaft: useRef(), risikoprofil: useRef()
+        };
+        
+        // Scroll-Refs für Fehler-Navigation
+        const scrollRefs = { mandant: useRef(), strasse: useRef(), plz: useRef(), kaufpreis: useRef() };
+
+        const handleSave = () => {
+          // Werte aus Refs holen (DOM-Werte bleiben erhalten!)
+          const getValue = (ref) => ref.current?.value || '';
+          
+          const formData = {
+            strasse: getValue(refs.strasse), plz: getValue(refs.plz), ort: getValue(refs.ort),
+            gebaeudetyp: getValue(refs.gebaeudetyp), baujahr: getValue(refs.baujahr),
+            denkmalschutz: getValue(refs.denkmalschutz), kernsanierung_jahr: getValue(refs.kernsanierung_jahr),
+            wohneinheiten: getValue(refs.wohneinheiten), gewerbeeinheiten: getValue(refs.gewerbeeinheiten),
+            geschosse: getValue(refs.geschosse), aufzug: getValue(refs.aufzug),
+            wohnflaeche: getValue(refs.wohnflaeche), gewerbeflaeche: getValue(refs.gewerbeflaeche),
+            grundstueck: getValue(refs.grundstueck), heizungsart: getValue(refs.heizungsart),
+            weg_aufgeteilt: getValue(refs.weg_aufgeteilt), weg_geplant: getValue(refs.weg_geplant),
+            milieuschutz: getValue(refs.milieuschutz), umwandlungsverbot: getValue(refs.umwandlungsverbot),
+            kaufpreis: getValue(refs.kaufpreis), kaufdatum: getValue(refs.kaufdatum),
+            grundstueck_wert: getValue(refs.grundstueck_wert), gebaeude_wert: getValue(refs.gebaeude_wert),
+            darlehensstand: getValue(refs.darlehensstand), zinssatz: getValue(refs.zinssatz),
+            tilgung: getValue(refs.tilgung), eigenkapital_prozent: getValue(refs.eigenkapital_prozent),
+            leerstandsquote: getValue(refs.leerstandsquote),
+            betriebskosten_nicht_umlage: getValue(refs.betriebskosten_nicht_umlage),
+            instandhaltung: getValue(refs.instandhaltung), verwaltung: getValue(refs.verwaltung),
+            ruecklagen: getValue(refs.ruecklagen), capex_vergangen: getValue(refs.capex_vergangen),
+            capex_geplant: getValue(refs.capex_geplant), capex_geplant_betrag: getValue(refs.capex_geplant_betrag),
+            mietpreisbindung: getValue(refs.mietpreisbindung), sozialbindung: getValue(refs.sozialbindung),
+            modernisierungsstopp: getValue(refs.modernisierungsstopp), gewerbe_sonderklauseln: getValue(refs.gewerbe_sonderklauseln),
+            haltedauer: getValue(refs.haltedauer), primaeres_ziel: getValue(refs.primaeres_ziel),
+            investitionsbereitschaft: getValue(refs.investitionsbereitschaft), risikoprofil: getValue(refs.risikoprofil)
+          };
+          
+          // Validierung
+          const newErrors = {};
+          const mId = isAdmin ? mandantId : currentMandantId;
+          
+          if (!mId) {
+            newErrors.mandantId = true;
+            scrollRefs.mandant.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          if (!formData.strasse) {
+            newErrors.strasse = true;
+            if (!newErrors.mandantId) scrollRefs.strasse.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          if (!formData.plz) {
+            newErrors.plz = true;
+            if (!newErrors.mandantId && !newErrors.strasse) scrollRefs.plz.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          if (!formData.kaufpreis) {
+            newErrors.kaufpreis = true;
+            if (!newErrors.mandantId && !newErrors.strasse && !newErrors.plz) scrollRefs.kaufpreis.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          
+          // Bei Fehlern: Markieren und NICHT navigieren - Input-Werte bleiben im DOM!
+          if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            const errorCount = Object.keys(newErrors).length;
+            showToast(`Bitte ${errorCount} Pflichtfeld${errorCount > 1 ? 'er' : ''} ausfüllen`, 'error');
+            return;
+          }
+
+          // Speichern
+          const objektData = {
+            id: existingObjekt?.id || appState.nextId.o,
+            mandantId: parseInt(mId),
+            ...formData,
+            einheiten,
+            erstellt_am: existingObjekt?.erstellt_am || new Date().toISOString(),
+            aktualisiert_am: new Date().toISOString()
+          };
+
+          if (isEdit) {
+            setAppState(prev => ({ ...prev, objekte: prev.objekte.map(o => o.id === existingObjekt.id ? objektData : o) }));
+            showToast('Objekt aktualisiert!');
+          } else {
+            setAppState(prev => ({ ...prev, objekte: [...prev.objekte, objektData], nextId: { ...prev.nextId, o: prev.nextId.o + 1 } }));
+            showToast('Objekt erstellt!');
+          }
+          
+          setEditObjekt(null);
+          setPage('objekte');
+        };
+        
+        // Uncontrolled Input mit defaultValue
+        const UCInput = ({ label, inputRef, defaultValue, type = 'text', placeholder, required, suffix, error }) => (
+          <div>
+            {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}{required && ' *'}</label>}
+            <div className="flex">
+              <input ref={inputRef} type={type} defaultValue={defaultValue || ''} placeholder={placeholder} className={`flex-1 px-3 py-2 border rounded-lg text-sm ${suffix ? 'rounded-r-none' : ''} ${error ? 'border-red-500 ring-2 ring-red-200' : ''}`} />
+              {suffix && <span className="px-3 py-2 bg-gray-100 border border-l-0 rounded-r-lg text-sm text-gray-500">{suffix}</span>}
+            </div>
+          </div>
+        );
+        
+        // Uncontrolled Select mit defaultValue
+        const UCSelect = ({ label, inputRef, options, defaultValue }) => (
+          <div>
+            {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
+            <select ref={inputRef} defaultValue={defaultValue || ''} className="w-full px-3 py-2 border rounded-lg text-sm">
+              <option value="">-- Wählen --</option>
+              {options.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        );
+
+        return (
+          <div className="max-w-5xl">
+            <button onClick={() => { setEditObjekt(null); setPage('objekte'); }} className="flex items-center gap-2 text-sm text-blue-600 mb-4 hover:underline"><Icons.ArrowLeft /> Zurück</button>
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">{isEdit ? 'Objekt bearbeiten' : 'Neues Objekt erfassen'}</h1>
+            
+            {Object.keys(errors).length > 0 && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 flex items-center gap-2">
+                <span className="text-xl">⚠️</span>
+                <span>Bitte fülle alle rot markierten Pflichtfelder aus.</span>
+              </div>
+            )}
+            
+            {isAdmin && (
+              <div ref={scrollRefs.mandant} className={`bg-white rounded-xl border shadow-sm p-5 mb-4 ${errors.mandantId ? 'border-red-500 ring-2 ring-red-200' : ''}`}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mandant auswählen *</label>
+                <select value={mandantId} onChange={e => { setMandantId(e.target.value); if (errors.mandantId) setErrors(prev => ({ ...prev, mandantId: false })); }} className={`w-full px-3 py-2 border rounded-lg ${errors.mandantId ? 'border-red-500 ring-2 ring-red-200' : ''}`}>
+                  <option value="">-- Mandant wählen --</option>
+                  {appState.mandanten.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                </select>
+                {errors.mandantId && <p className="text-red-500 text-sm mt-2">❌ Bitte Mandant auswählen</p>}
+              </div>
+            )}
+
+            <Section title="1. Objekt- & Gebäudestammdaten" icon="🏢" cols={3}>
+              <div ref={scrollRefs.strasse}><UCInput label="Straße / Hausnummer" inputRef={refs.strasse} defaultValue={existingObjekt?.strasse} required error={errors.strasse} /></div>
+              <div ref={scrollRefs.plz}><UCInput label="Postleitzahl" inputRef={refs.plz} defaultValue={existingObjekt?.plz} required error={errors.plz} /></div>
+              <UCInput label="Ort" inputRef={refs.ort} defaultValue={existingObjekt?.ort} required />
+              <UCSelect label="Gebäudetyp" inputRef={refs.gebaeudetyp} options={OPTIONS.gebaeudetyp} defaultValue={existingObjekt?.gebaeudetyp} />
+              <UCInput label="Baujahr" inputRef={refs.baujahr} type="number" placeholder="z.B. 1970" defaultValue={existingObjekt?.baujahr} />
+              <UCSelect label="Denkmalschutz" inputRef={refs.denkmalschutz} options={OPTIONS.jaNein} defaultValue={existingObjekt?.denkmalschutz || 'Nein'} />
+              <UCInput label="Jahr Kernsanierung" inputRef={refs.kernsanierung_jahr} type="number" placeholder="falls vorhanden" defaultValue={existingObjekt?.kernsanierung_jahr} />
+              <UCInput label="Anz. Wohneinheiten" inputRef={refs.wohneinheiten} type="number" defaultValue={existingObjekt?.wohneinheiten} />
+              <UCInput label="Anz. Gewerbeeinheiten" inputRef={refs.gewerbeeinheiten} type="number" defaultValue={existingObjekt?.gewerbeeinheiten} />
+              <UCInput label="Geschosse" inputRef={refs.geschosse} type="number" defaultValue={existingObjekt?.geschosse} />
+              <UCSelect label="Aufzug" inputRef={refs.aufzug} options={OPTIONS.jaNein} defaultValue={existingObjekt?.aufzug || 'Nein'} />
+              <UCInput label="Wohnfläche" inputRef={refs.wohnflaeche} suffix="m²" defaultValue={existingObjekt?.wohnflaeche} />
+              <UCInput label="Gewerbefläche" inputRef={refs.gewerbeflaeche} suffix="m²" defaultValue={existingObjekt?.gewerbeflaeche} />
+              <UCInput label="Grundstück" inputRef={refs.grundstueck} suffix="m²" defaultValue={existingObjekt?.grundstueck} />
+              <UCSelect label="Heizungsart" inputRef={refs.heizungsart} options={OPTIONS.heizungsart} defaultValue={existingObjekt?.heizungsart} />
+            </Section>
+
+            <Section title="2. WEG-Status" icon="📋" cols={4}>
+              <UCSelect label="WEG aufgeteilt?" inputRef={refs.weg_aufgeteilt} options={OPTIONS.jaNein} defaultValue={existingObjekt?.weg_aufgeteilt || 'Nein'} />
+              <UCSelect label="Aufteilung geplant?" inputRef={refs.weg_geplant} options={OPTIONS.jaNein} defaultValue={existingObjekt?.weg_geplant || 'Nein'} />
+              <UCSelect label="Milieuschutz?" inputRef={refs.milieuschutz} options={OPTIONS.jaNein} defaultValue={existingObjekt?.milieuschutz || 'Nein'} />
+              <UCSelect label="§250 Verbot?" inputRef={refs.umwandlungsverbot} options={OPTIONS.jaNein} defaultValue={existingObjekt?.umwandlungsverbot || 'Nein'} />
+            </Section>
+
+            <Section title="3. Erwerbs- & Kapitaldaten" icon="💰" cols={4}>
+              <div ref={scrollRefs.kaufpreis}><UCInput label="Kaufpreis" inputRef={refs.kaufpreis} suffix="€" required defaultValue={existingObjekt?.kaufpreis} error={errors.kaufpreis} /></div>
+              <UCInput label="Kaufdatum" inputRef={refs.kaufdatum} type="date" defaultValue={existingObjekt?.kaufdatum} />
+              <UCInput label="Wert Grundstück" inputRef={refs.grundstueck_wert} suffix="€" defaultValue={existingObjekt?.grundstueck_wert} />
+              <UCInput label="Wert Gebäude" inputRef={refs.gebaeude_wert} suffix="€" defaultValue={existingObjekt?.gebaeude_wert} />
+              <UCInput label="Darlehensstand" inputRef={refs.darlehensstand} suffix="€" defaultValue={existingObjekt?.darlehensstand} />
+              <UCInput label="Zinssatz" inputRef={refs.zinssatz} suffix="%" defaultValue={existingObjekt?.zinssatz || '3.8'} />
+              <UCInput label="Tilgung" inputRef={refs.tilgung} suffix="%" defaultValue={existingObjekt?.tilgung || '2'} />
+              <UCInput label="Eigenkapital" inputRef={refs.eigenkapital_prozent} suffix="%" defaultValue={existingObjekt?.eigenkapital_prozent || '30'} />
+            </Section>
+
+            <Section title="4. Mietstruktur" icon="🏠" cols={2}>
+              <UCInput label="Leerstandsquote" inputRef={refs.leerstandsquote} suffix="%" defaultValue={existingObjekt?.leerstandsquote} />
+              <div></div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Pro Einheit</label>
+                <div className="space-y-2 mb-3">
+                  {einheiten.map((e, idx) => (
+                    <div key={e.id} className="flex flex-wrap gap-2 items-center p-3 bg-gray-50 rounded-lg border">
+                      <span className="text-gray-400 w-8 text-sm">#{idx + 1}</span>
+                      <select value={e.nutzung} onChange={ev => { const u = [...einheiten]; u[idx].nutzung = ev.target.value; setEinheiten(u); }} className="px-2 py-1.5 border rounded text-sm">{OPTIONS.nutzung.map(o => <option key={o}>{o}</option>)}</select>
+                      <input type="number" value={e.flaeche} onChange={ev => { const u = [...einheiten]; u[idx].flaeche = ev.target.value; setEinheiten(u); }} placeholder="m²" className="w-20 px-2 py-1.5 border rounded text-sm" />
+                      <input type="number" value={e.kaltmiete} onChange={ev => { const u = [...einheiten]; u[idx].kaltmiete = ev.target.value; setEinheiten(u); }} placeholder="€ Miete" className="w-24 px-2 py-1.5 border rounded text-sm" />
+                      <select value={e.mietvertragsart} onChange={ev => { const u = [...einheiten]; u[idx].mietvertragsart = ev.target.value; setEinheiten(u); }} className="px-2 py-1.5 border rounded text-sm">{OPTIONS.mietvertragsart.map(o => <option key={o}>{o}</option>)}</select>
+                      <input type="number" value={e.vergleichsmiete} onChange={ev => { const u = [...einheiten]; u[idx].vergleichsmiete = ev.target.value; setEinheiten(u); }} placeholder="€/m²" className="w-20 px-2 py-1.5 border rounded text-sm" />
+                      <input type="date" value={e.letzteMieterhoehung || ''} onChange={ev => { const u = [...einheiten]; u[idx].letzteMieterhoehung = ev.target.value; setEinheiten(u); }} title="Letzte Mieterhöhung" className="px-2 py-1.5 border rounded text-sm" />
+                      {einheiten.length > 1 && <button onClick={() => setEinheiten(einheiten.filter((_, i) => i !== idx))} className="p-1.5 text-red-500 hover:bg-red-50 rounded"><Icons.Trash /></button>}
+                    </div>
+                  ))}
+                </div>
+                <button onClick={() => setEinheiten([...einheiten, { id: Date.now(), nutzung: 'Wohnen', flaeche: '', kaltmiete: '', vergleichsmiete: '12', mietvertragsart: 'Standard', letzteMieterhoehung: '' }])} className="text-sm text-blue-600 font-medium hover:underline">+ Einheit hinzufügen</button>
+              </div>
+            </Section>
+
+            <Section title="5. Betriebskosten" icon="📊" cols={4}>
+              <UCInput label="Nicht umlf. BK p.a." inputRef={refs.betriebskosten_nicht_umlage} suffix="€" defaultValue={existingObjekt?.betriebskosten_nicht_umlage} />
+              <UCInput label="Instandhaltung p.a." inputRef={refs.instandhaltung} suffix="€" defaultValue={existingObjekt?.instandhaltung} />
+              <UCInput label="Verwaltung p.a." inputRef={refs.verwaltung} suffix="€" defaultValue={existingObjekt?.verwaltung} />
+              <UCInput label="Rücklagen p.a." inputRef={refs.ruecklagen} suffix="€" defaultValue={existingObjekt?.ruecklagen} />
+            </Section>
+
+            <Section title="6. CAPEX" icon="🔧" cols={3}>
+              <div><label className="block text-sm font-medium text-gray-700 mb-1">CAPEX letzte 5 Jahre</label><textarea ref={refs.capex_vergangen} defaultValue={existingObjekt?.capex_vergangen || ''} rows={2} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="z.B. 2022: Heizung 25.000€" /></div>
+              <div><label className="block text-sm font-medium text-gray-700 mb-1">Geplante Investitionen (Text)</label><textarea ref={refs.capex_geplant} defaultValue={existingObjekt?.capex_geplant || ''} rows={2} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="z.B. 2025: Fenster 30.000€" /></div>
+              <UCInput label="Geplante CAPEX Betrag" inputRef={refs.capex_geplant_betrag} suffix="€" placeholder="Gesamtbetrag" defaultValue={existingObjekt?.capex_geplant_betrag} />
+            </Section>
+
+            <Section title="7. Rechtliches" icon="⚖️" cols={4}>
+              <UCSelect label="Mietpreisbindung?" inputRef={refs.mietpreisbindung} options={OPTIONS.jaNein} defaultValue={existingObjekt?.mietpreisbindung || 'Nein'} />
+              <UCSelect label="Sozialbindung?" inputRef={refs.sozialbindung} options={OPTIONS.jaNein} defaultValue={existingObjekt?.sozialbindung || 'Nein'} />
+              <UCSelect label="Mod.-Stopp?" inputRef={refs.modernisierungsstopp} options={OPTIONS.jaNein} defaultValue={existingObjekt?.modernisierungsstopp || 'Nein'} />
+              <UCSelect label="Gewerbe Sonderklauseln?" inputRef={refs.gewerbe_sonderklauseln} options={OPTIONS.jaNein} defaultValue={existingObjekt?.gewerbe_sonderklauseln || 'Nein'} />
+            </Section>
+
+            <Section title="8. Strategische Ziele" icon="🎯" cols={4}>
+              <UCSelect label="Haltedauer" inputRef={refs.haltedauer} options={OPTIONS.haltedauer} defaultValue={existingObjekt?.haltedauer} />
+              <UCSelect label="Primäres Ziel" inputRef={refs.primaeres_ziel} options={OPTIONS.primaeresziel} defaultValue={existingObjekt?.primaeres_ziel} />
+              <UCInput label="Investitionsbereitschaft" inputRef={refs.investitionsbereitschaft} suffix="€" defaultValue={existingObjekt?.investitionsbereitschaft} />
+              <UCSelect label="Risikoprofil" inputRef={refs.risikoprofil} options={OPTIONS.risikoprofil} defaultValue={existingObjekt?.risikoprofil} />
+            </Section>
+
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => { setEditObjekt(null); setPage('objekte'); }} className="px-5 py-2.5 border rounded-lg hover:bg-gray-50">Abbrechen</button>
+              <button onClick={handleSave} className="px-6 py-2.5 bg-green-600 text-white rounded-lg font-medium">{isEdit ? 'Änderungen speichern' : 'Objekt speichern'}</button>
+            </div>
+          </div>
+        );
+      };
+
+      // Auswertung Detail
+      const AuswertungDetail = () => {
+        if (!selectedItem) return null;
+        const { objekt, berechnungen: b, empfehlung } = selectedItem;
+        const mandant = appState.mandanten.find(m => m.id === objekt?.mandantId);
+        const matchingKaeufer = showMatching ? findePassendeKaeufer(objekt, appState.ankaufsprofile, appState.mandanten) : [];
+        const [sendingEmail, setSendingEmail] = useState(false);
+
+        const handleSendPDFEmail = async () => {
+          if (!mandant?.email) { showToast('Keine E-Mail-Adresse vorhanden', 'error'); return; }
+          setSendingEmail(true);
+          setLoading(true);
+          setLoadingText('PDF wird generiert...');
+          
+          // PDF als Base64 generieren
+          const pdfBase64 = await generatePDFBase64('pdf-content');
+          
+          setLoadingText('E-Mail wird gesendet...');
+          const success = await sendPDFEmail(mandant, objekt, b, empfehlung, pdfBase64);
+          
+          setLoading(false);
+          setSendingEmail(false);
+          
+          if (success) {
+            if (pdfBase64) {
+              showToast('PDF wurde generiert und per E-Mail gesendet!');
+            } else {
+              showToast('E-Mail gesendet (PDF-Daten ohne Datei)');
+            }
+          } else {
+            showToast('E-Mail konnte nicht gesendet werden', 'error');
+          }
+        };
+
+        const DataRowPDF = ({ label, value, color }) => (<div className="flex justify-between py-1.5 border-b border-gray-100 last:border-0"><span className="text-gray-600">{label}</span><span className={`font-semibold ${color || 'text-gray-900'}`}>{value}</span></div>);
+        const PunktBox = ({ nr, title, children }) => (<div className="print-box bg-white rounded-xl border shadow-sm overflow-hidden"><div className="print-punkt bg-blue-900 text-white px-4 py-2 flex items-center gap-2"><span className="w-6 h-6 bg-white text-blue-900 rounded-full flex items-center justify-center text-xs font-bold">{nr}</span><span className="font-medium text-sm">{title}</span></div><div className="p-4 text-sm">{children}</div></div>);
+
+        return (
+          <div className="max-w-5xl">
+            <div className="flex justify-between items-start mb-6 no-print">
+              <div>
+                <button onClick={() => { setPage('auswertungen'); setShowMatching(false); }} className="flex items-center gap-2 text-sm text-blue-600 mb-2 hover:underline"><Icons.ArrowLeft /> Zurück</button>
+                <h1 className="text-2xl font-bold text-gray-800">📊 Optimierungsprotokoll</h1>
+                <p className="text-gray-500">{objekt?.strasse}, {objekt?.plz} {objekt?.ort}</p>
+                {mandant && <p className="text-sm text-blue-600">Mandant: {mandant.name}</p>}
+              </div>
+              <div className="flex gap-2">
+                {empfehlung?.empfehlung === 'VERKAUFEN' && (<button onClick={() => setShowMatching(!showMatching)} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg"><Icons.Target /> Käufer</button>)}
+                <button onClick={handleSendPDFEmail} disabled={sendingEmail} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg disabled:opacity-50"><Icons.Mail /> {sendingEmail ? 'Sende...' : 'Per E-Mail'}</button>
+                <button onClick={async () => {
+                  setLoading(true);
+                  setLoadingText('PDF wird erstellt...');
+                  const pdfBase64 = await generatePDFBase64('pdf-content');
+                  if (pdfBase64) {
+                    const filename = `Imperoyal_${objekt?.strasse?.replace(/[^a-zA-Z0-9]/g, '_')}_${objekt?.ort?.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+                    const link = document.createElement('a');
+                    link.href = 'data:application/pdf;base64,' + pdfBase64;
+                    link.download = filename;
+                    link.click();
+                    showToast('PDF heruntergeladen!');
+                  } else {
+                    window.print();
+                  }
+                  setLoading(false);
+                }} className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg"><Icons.Download /> PDF</button>
+              </div>
+            </div>
+
+            {showMatching && matchingKaeufer.length > 0 && (<div className="bg-green-50 border border-green-200 rounded-xl p-5 mb-6 no-print"><h3 className="font-semibold text-green-800 mb-3">🎯 Passende Käufer ({matchingKaeufer.length})</h3><div className="space-y-2">{matchingKaeufer.slice(0, 5).map(p => (<div key={p.id} className="bg-white rounded-lg p-4 border flex justify-between items-center"><div><p className="font-medium">{p.mandantName}</p><p className="text-sm text-gray-500">{p.assetklassen?.slice(0, 2).join(', ')}</p></div><div className="flex items-center gap-3"><span className={`px-3 py-1 rounded-full text-sm font-medium ${p.matchScore >= 60 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{p.matchScore}%</span>{p.mandantEmail && <a href={`mailto:${p.mandantEmail}`} className="text-blue-600 text-sm">Kontakt</a>}</div></div>))}</div></div>)}
+
+            {/* PDF Content - wird für Base64 generiert */}
+            <div id="pdf-content">
+            {/* Page 1 - PDF Header FIXED */}
+            <div className="print-page">
+              <div className="print-header bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 rounded-xl p-5 text-white mb-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div><p className="text-blue-200 text-sm">{formatDate(selectedItem.datum)}</p><h1 className="text-lg font-bold mt-1">{CONFIG.COMPANY_NAME} - Optimierungsprotokoll</h1></div>
+                  <div className="text-right"><p className="text-blue-200 text-xs">Objekt</p><p className="font-semibold text-sm">{objekt?.strasse}</p><p className="text-xs text-blue-200">{objekt?.plz} {objekt?.ort}</p></div>
+                </div>
+                <div className="grid grid-cols-5 gap-2 text-center">
+                  <div className="bg-white/10 rounded-lg py-2 px-1"><p className="text-blue-300 text-xs">Kaufpreis</p><p className="text-sm font-bold">{formatCurrency(b?.kaufpreis)}</p></div>
+                  <div className="bg-white/10 rounded-lg py-2 px-1"><p className="text-blue-300 text-xs">Rendite</p><p className={`text-sm font-bold ${b?.rendite >= 5 ? 'text-green-400' : 'text-yellow-400'}`}>{formatPercent(b?.rendite)}</p></div>
+                  <div className="bg-white/10 rounded-lg py-2 px-1"><p className="text-blue-300 text-xs">Cashflow</p><p className={`text-sm font-bold ${b?.cashflow_ist >= 0 ? 'text-green-400' : 'text-red-400'}`}>{formatCurrency(b?.cashflow_ist)}</p></div>
+                  <div className="bg-white/10 rounded-lg py-2 px-1"><p className="text-blue-300 text-xs">Potenzial</p><p className="text-sm font-bold text-green-400">+{formatCurrency(b?.mietpotenzial)}</p></div>
+                  <div className="bg-white/20 rounded-lg py-2 px-1"><p className="text-blue-200 text-[10px]">Empfehlung</p><p className="text-[11px] font-bold leading-tight">{empfehlung?.empfehlung}</p></div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <PunktBox nr="1" title="Finanzierungsprofil"><DataRowPDF label="Eigenkapital" value={formatCurrency(b?.eigenkapital)} color="text-green-600" /><DataRowPDF label="Fremdkapital" value={formatCurrency(b?.fremdkapital)} /><DataRowPDF label="Zinssatz / Tilgung" value={`${b?.zinssatz}% / ${b?.tilgung}%`} /><DataRowPDF label="Kapitaldienst p.a." value={formatCurrency(b?.kapitaldienst)} color="text-red-600" /><div className="mt-2 pt-2 border-t"><DataRowPDF label="Anfangsrendite" value={formatPercent(b?.rendite)} color={b?.rendite >= 5 ? 'text-green-600' : 'text-orange-500'} /></div></PunktBox>
+                <PunktBox nr="2" title="Ertragsprofil"><DataRowPDF label="IST-Miete p.a." value={formatCurrency(b?.miete_ist_jahr)} /><DataRowPDF label="SOLL-Miete p.a." value={formatCurrency(b?.miete_soll_jahr)} /><div className="mt-2 pt-2 border-t"><DataRowPDF label="Mietpotenzial" value={`+${formatCurrency(b?.mietpotenzial)}`} color="text-green-600" /><p className="text-xs text-gray-400 text-right">+{b?.mietpotenzial_prozent?.toFixed(1)}% Steigerung</p></div></PunktBox>
+                <PunktBox nr="3" title="Cashflow-Analyse"><DataRowPDF label="Mieteinnahmen" value={formatCurrency(b?.miete_ist_jahr)} /><DataRowPDF label="./. Kapitaldienst" value={`-${formatCurrency(b?.kapitaldienst)}`} color="text-red-500" /><DataRowPDF label="./. Kosten" value={`-${formatCurrency(b?.kosten_gesamt)}`} color="text-red-500" /><div className="mt-2 pt-2 border-t"><DataRowPDF label="Cashflow IST" value={formatCurrency(b?.cashflow_ist)} color={b?.cashflow_ist >= 0 ? 'text-green-600' : 'text-red-600'} /><DataRowPDF label="Cashflow optimiert" value={formatCurrency(b?.cashflow_opt)} color="text-green-600" /></div></PunktBox>
+                <PunktBox nr="4" title="Kostenstruktur"><DataRowPDF label="Instandhaltung" value={formatCurrency(b?.instandhaltung)} /><DataRowPDF label="Verwaltung" value={formatCurrency(b?.verwaltung)} /><DataRowPDF label="Nicht umlf. BK" value={formatCurrency(b?.betriebskosten_nicht_umlage)} /><DataRowPDF label="Rücklagen" value={formatCurrency(b?.ruecklagen)} /><div className="mt-2 pt-2 border-t"><DataRowPDF label="Gesamt" value={formatCurrency(b?.kosten_gesamt)} /></div><div className={`text-center py-1 mt-2 rounded text-xs ${b?.kostenquote <= 25 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>Kostenquote: {b?.kostenquote?.toFixed(1)}%</div></PunktBox>
+              </div>
+            </div>
+
+            {/* Page 2 - Mieterhöhungs-Analyse */}
+            <div className="print-page mt-6">
+              <div className="print-box bg-white rounded-xl border shadow-sm overflow-hidden mb-4">
+                <div className="print-punkt bg-blue-900 text-white px-4 py-2 flex items-center gap-2">
+                  <span className="w-6 h-6 bg-white text-blue-900 rounded-full flex items-center justify-center text-xs font-bold">5</span>
+                  <span className="font-medium text-sm">Mieterhöhungspotenzial nach Einheiten (§558 BGB)</span>
+                  <span className="ml-auto bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">{b?.einheitenMitPotenzial || 0} von {b?.einheitenAnalyse?.length || 0} mit Potenzial</span>
+                </div>
+                <div className="p-3">
+                  <table className="w-full text-xs">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="text-left px-2 py-1.5">#</th>
+                        <th className="text-left px-2 py-1.5">Nutzung</th>
+                        <th className="text-right px-2 py-1.5">Fläche</th>
+                        <th className="text-right px-2 py-1.5">IST-Miete</th>
+                        <th className="text-right px-2 py-1.5">€/m²</th>
+                        <th className="text-right px-2 py-1.5">Markt</th>
+                        <th className="text-right px-2 py-1.5">SOLL-Miete</th>
+                        <th className="text-right px-2 py-1.5 text-green-700">Potenzial</th>
+                        <th className="text-center px-2 py-1.5 bg-blue-50 text-blue-700">Nächste Erhöhung</th>
+                        <th className="text-right px-2 py-1.5 bg-blue-50 text-blue-700">§558 Betrag</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {b?.einheitenAnalyse?.map((e, i) => (
+                        <tr key={i} className={`border-t ${e.hatPotenzial ? 'bg-green-50' : ''}`}>
+                          <td className="px-2 py-1.5 font-medium">{e.nr}</td>
+                          <td className="px-2 py-1.5">{e.nutzung}</td>
+                          <td className="px-2 py-1.5 text-right">{e.flaeche} m²</td>
+                          <td className="px-2 py-1.5 text-right">{formatCurrency(e.kaltmiete)}</td>
+                          <td className="px-2 py-1.5 text-right text-gray-500">{e.euroProQm?.toFixed(2)} €</td>
+                          <td className="px-2 py-1.5 text-right text-blue-600 font-medium">{e.vergleichsmiete} €</td>
+                          <td className="px-2 py-1.5 text-right font-medium">{formatCurrency(e.sollMiete)}</td>
+                          <td className="px-2 py-1.5 text-right text-green-600 font-bold">{e.potenzial > 0 ? '+' + formatCurrency(e.potenzial) : '-'}</td>
+                          <td className="px-2 py-1.5 text-center bg-blue-50/50">
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${e.naechsteMieterhoehung?.moeglich === 'Sofort' ? 'bg-green-200 text-green-800' : e.naechsteMieterhoehung?.moeglich === 'Teilweise' ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-200 text-gray-600'}`}>
+                              {e.naechsteMieterhoehung?.moeglich || '-'}
+                            </span>
+                          </td>
+                          <td className="px-2 py-1.5 text-right bg-blue-50/50 font-medium text-blue-700">
+                            {e.naechsteMieterhoehung?.betrag > 0 ? '+' + formatCurrency(e.naechsteMieterhoehung.betrag) : '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="bg-blue-50 font-semibold">
+                      <tr>
+                        <td colSpan={3} className="px-2 py-1.5">GESAMT</td>
+                        <td className="px-2 py-1.5 text-right">{formatCurrency(b?.miete_ist_jahr / 12)}</td>
+                        <td colSpan={2}></td>
+                        <td className="px-2 py-1.5 text-right">{formatCurrency(b?.miete_soll_jahr / 12)}</td>
+                        <td className="px-2 py-1.5 text-right text-green-600">+{formatCurrency(b?.gesamtPotenzialMonat)}</td>
+                        <td colSpan={2} className="px-2 py-1.5 text-center bg-blue-100"><span className="bg-green-600 text-white px-2 py-0.5 rounded text-[10px]">+{b?.mietpotenzial_prozent?.toFixed(1)}%</span></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                  <div className="mt-3 p-2 bg-gray-50 rounded-lg text-[10px] text-gray-600">
+                    <p className="font-medium text-gray-700 mb-1">📋 Hinweis §558 BGB (Kappungsgrenze):</p>
+                    <p>Die Miete darf innerhalb von 3 Jahren um max. {b?.istKappungsgebiet ? '15%' : '20%'} erhöht werden{b?.istKappungsgebiet ? ' (Kappungsgebiet)' : ''}. "Sofort" = Erhöhung jetzt möglich. Nach der letzten Mieterhöhung gilt eine Sperrfrist von 15 Monaten.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Cashflow-Vergleich als SVG Chart */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="print-box bg-white rounded-xl border shadow-sm overflow-hidden">
+                  <div className="print-punkt bg-blue-900 text-white px-4 py-2 flex items-center gap-2">
+                    <span className="w-6 h-6 bg-white text-blue-900 rounded-full flex items-center justify-center text-xs font-bold">6</span>
+                    <span className="font-medium text-sm">Cashflow IST vs. Optimiert</span>
+                  </div>
+                  <div className="p-3">
+                    <CashflowBarChart 
+                      istMiete={b?.miete_ist_jahr || 0}
+                      optMiete={b?.miete_soll_jahr || 0}
+                      kapitaldienst={b?.kapitaldienst || 0}
+                      kosten={b?.kosten_gesamt || 0}
+                      cashflowIst={b?.cashflow_ist || 0}
+                      cashflowOpt={b?.cashflow_opt || 0}
+                    />
+                    <div className="mt-2 text-center py-2 rounded-lg text-sm font-medium bg-green-100 text-green-700">Optimierung: +{formatCurrency((b?.cashflow_opt || 0) - (b?.cashflow_ist || 0))} p.a.</div>
+                  </div>
+                </div>
+
+                <div className="print-box bg-white rounded-xl border shadow-sm overflow-hidden">
+                  <div className="print-punkt bg-blue-900 text-white px-4 py-2 flex items-center gap-2">
+                    <span className="w-6 h-6 bg-white text-blue-900 rounded-full flex items-center justify-center text-xs font-bold">7</span>
+                    <span className="font-medium text-sm">Wertentwicklung (2,5% p.a.)</span>
+                  </div>
+                  <div className="p-3">
+                    <WertentwicklungChart
+                      kaufpreis={b?.kaufpreis || 0}
+                      preis3j={b?.preis_3j || 0}
+                      preis5j={b?.preis_5j || 0}
+                      preis7j={b?.preis_7j || 0}
+                      preis10j={b?.preis_10j || 0}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Page 3 */}
+            <div className="print-page mt-6">
+              <div className="grid grid-cols-2 gap-4">
+                <PunktBox nr="8" title="CAPEX & §559 BGB">
+                  <DataRowPDF label="CAPEX geplant" value={formatCurrency(b?.capex_geplant)} />
+                  {b?.capex_geplant > 0 && (
+                    <div className="bg-blue-50 p-3 rounded-lg mt-3">
+                      <p className="text-xs text-blue-600 font-medium">§559 Modernisierungsumlage</p>
+                      <p className="text-lg font-bold text-blue-900">{formatCurrency(b?.umlage_559)} p.a.</p>
+                      <p className={`text-[10px] mt-1 ${b?.umlage_559_hinweis?.includes('Gekappt') ? 'text-orange-600' : 'text-green-600'}`}>
+                        {b?.umlage_559_hinweis || '8% der Modernisierungskosten'}
+                      </p>
+                    </div>
+                  )}
+                  <div className="mt-3 p-2 bg-gray-50 rounded text-[10px] text-gray-500">
+                    <p className="font-medium text-gray-600">📋 Kappungsgrenzen §559 Abs. 3a BGB:</p>
+                    <p>• Kaltmiete &lt; 7€/m²: max. 2€/m² in 6 Jahren</p>
+                    <p>• Kaltmiete ≥ 7€/m²: max. 3€/m² in 6 Jahren</p>
+                  </div>
+                </PunktBox>
+                <PunktBox nr="9" title="WEG-Potenzial">{b?.weg_aufgeteilt ? <p className="text-gray-400 text-center py-4">Bereits aufgeteilt</p> : (<><DataRowPDF label="Wert heute" value={formatCurrency(b?.kaufpreis)} /><DataRowPDF label="Wert aufgeteilt" value={formatCurrency(b?.wert_aufgeteilt)} /><div className="mt-2 pt-2 border-t"><DataRowPDF label="Potenzial" value={`+${formatCurrency(b?.weg_gewinn)}`} color="text-green-600" /></div><div className={`text-center py-1 mt-2 rounded text-xs ${b?.weg_genehmigung ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>{b?.weg_genehmigung ? '⚠️ Genehmigung nötig' : '✅ Aufteilung möglich'}</div></>)}</PunktBox>
+                <PunktBox nr="10" title="RND & AfA"><DataRowPDF label="Baujahr" value={b?.baujahr} /><DataRowPDF label="Alter" value={`${b?.alter} Jahre`} /><DataRowPDF label="Restnutzungsdauer" value={`${b?.rnd} Jahre`} /><div className="mt-2 pt-2 border-t"><DataRowPDF label="AfA-Satz" value={`${b?.afa_satz?.toFixed(2)}%`} /><DataRowPDF label="AfA p.a." value={formatCurrency(b?.afa_jahr)} color="text-blue-600" /></div><p className="text-xs text-gray-400 mt-2">Steuerersparnis (42%): {formatCurrency(b?.steuerersparnis_42)}</p></PunktBox>
+                <PunktBox nr="11" title="ROI-Szenarien"><DataRowPDF label="ROI heute" value={formatPercent(b?.roi_heute)} /><DataRowPDF label="ROI optimiert" value={formatPercent(b?.roi_optimiert)} color="text-green-600" />{!b?.weg_aufgeteilt && <DataRowPDF label="+ WEG-Aufteilung" value="+15%" color="text-purple-600" />}</PunktBox>
+              </div>
+              <div className="mt-4"><PunktBox nr="12" title="Exit-Szenarien"><div className="grid grid-cols-4 gap-4 text-center"><div><p className="text-gray-500 text-xs">Wert heute</p><p className="font-bold text-lg">{formatCurrency(b?.kaufpreis)}</p></div><div><p className="text-gray-500 text-xs">in 3 Jahren</p><p className="font-bold text-lg text-blue-600">{formatCurrency(b?.preis_3j)}</p></div><div><p className="text-gray-500 text-xs">in 7 Jahren</p><p className="font-bold text-lg text-blue-600">{formatCurrency(b?.preis_7j)}</p></div><div><p className="text-gray-500 text-xs">in 10 Jahren</p><p className="font-bold text-lg text-blue-600">{formatCurrency(b?.preis_10j)}</p></div></div><p className="text-xs text-gray-400 mt-2 text-center">Annahme: 2,5% p.a. Wertsteigerung</p></PunktBox></div>
+            </div>
+
+            {/* Page 4 */}
+            <div className="print-page mt-6">
+              <div className="print-header bg-gradient-to-br from-slate-800 via-blue-900 to-slate-800 rounded-xl overflow-hidden text-white">
+                <div className="px-6 py-4 border-b border-white/20 flex items-center gap-3"><span className="w-8 h-8 bg-white text-blue-900 rounded-full flex items-center justify-center font-bold">13</span><h2 className="text-lg font-semibold">Handlungsempfehlung</h2><span className="ml-auto text-sm text-blue-200">Priorität: {empfehlung?.prioritaet}</span></div>
+                <div className="p-8">
+                  <p className="text-4xl font-bold text-center mb-6">{empfehlung?.empfehlung}</p>
+                  <div className="bg-white/10 rounded-xl p-6 mb-6"><p className="text-lg text-blue-50 leading-relaxed">{empfehlung?.begruendung}</p></div>
+                  {empfehlung?.handlungsschritte?.length > 0 && (<div className="mb-6"><h3 className="font-semibold text-blue-200 mb-3">📋 Handlungsschritte</h3><div className="space-y-2">{empfehlung.handlungsschritte.map((s, i) => (<div key={i} className="flex items-center gap-3 bg-white/5 rounded-lg p-3"><span className="w-6 h-6 bg-white text-blue-900 rounded-full flex items-center justify-center text-xs font-bold">{i + 1}</span><span className="flex-1">{s.schritt}</span><span className="text-blue-200 text-sm">{s.zeitrahmen}</span></div>))}</div></div>)}
+                  {empfehlung?.fazit && <div className="bg-white/5 rounded-lg p-4 mb-6"><p className="text-blue-100"><strong>💡 Fazit:</strong> {empfehlung.fazit}</p></div>}
+                  <div className="bg-black/20 rounded-lg p-4 text-xs text-blue-300"><p>⚠️ Diese Analyse stellt keine Rechts-, Steuer- oder Anlageberatung dar.</p></div>
+                </div>
+              </div>
+            </div>
+            </div>{/* Ende pdf-content */}
+          </div>
+        );
+      };
+
+      // Auswertung erstellen
+      const handleAuswerten = async (obj) => {
+        // Für Mandanten: Nur Anfrage erstellen
+        if (!isAdmin) {
+          const newAnfrage = { id: Date.now(), objektId: obj.id, objekt: obj, mandantId: obj.mandantId, datum: new Date().toISOString(), status: 'angefragt' };
+          setAppState(prev => ({ ...prev, anfragen: [...(prev.anfragen || []), newAnfrage] }));
+          showToast('✅ Auswertung angefragt! Sie werden benachrichtigt sobald die Analyse fertig ist.');
+          return;
+        }
+        // Für Admin: Direkt auswerten
+        setLoading(true);
+        try {
+          setLoadingText('Daten werden analysiert...');
+          const berechnungen = berechneAlles(obj);
+          setLoadingText('Empfehlung wird erstellt...');
+          const empfehlung = await generiereEmpfehlung(obj, berechnungen) || { empfehlung: berechnungen.cashflow_ist < -5000 ? 'VERKAUFEN' : berechnungen.mietpotenzial_prozent > 20 ? 'OPTIMIEREN' : 'HALTEN', prioritaet: 'mittel', begruendung: `Die Immobilie zeigt mit ${berechnungen.rendite.toFixed(2)}% eine ${berechnungen.rendite >= 5 ? 'solide' : 'ausbaufähige'} Rendite.`, handlungsschritte: [{ schritt: 'Detailanalyse durchführen', zeitrahmen: '2 Wochen', prioritaet: 'hoch' }], fazit: 'Weitere Prüfung empfohlen.' };
+          const newAuswertung = { id: appState.nextId.a, objektId: obj.id, datum: new Date().toISOString(), objekt: obj, berechnungen, empfehlung };
+          setAppState(prev => ({ ...prev, auswertungen: [...prev.auswertungen, newAuswertung], nextId: { ...prev.nextId, a: prev.nextId.a + 1 }, anfragen: (prev.anfragen || []).filter(a => a.objektId !== obj.id) }));
+          setSelectedItem(newAuswertung);
+          setPage('auswertung-detail');
+          showToast('Auswertung erstellt!');
+        } catch (error) { showToast('Fehler', 'error'); }
+        setLoading(false);
+      };
+
+      // Listen
+      const FilterBar = () => isAdmin && appState.mandanten.length > 0 && (<div className="flex items-center gap-4 mb-6"><span className="text-sm text-gray-500">Filter:</span><select value={filterMandant} onChange={e => setFilterMandant(e.target.value)} className="px-3 py-1.5 border rounded-lg text-sm"><option value="">Alle Mandanten</option>{appState.mandanten.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}</select></div>);
+
+      const NavItem = ({ icon, label, pageName, badge }) => (<button onClick={() => setPage(pageName)} className={`flex items-center gap-3 w-full px-4 py-3 text-left rounded-xl transition ${page.startsWith(pageName.split('-')[0]) ? 'bg-white/20 text-white shadow-lg' : 'text-blue-100 hover:bg-white/10'}`}>{icon}<span className="flex-1">{label}</span>{badge > 0 && <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full">{badge}</span>}</button>);
+
+      const Dashboard = () => {
+        const myObjekte = isAdmin ? appState.objekte : appState.objekte.filter(o => o.mandantId === currentMandantId);
+        const gesamtvolumen = myObjekte.reduce((s, o) => s + (parseFloat(o.kaufpreis) || 0), 0);
+        return (
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">Dashboard</h1>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {isAdmin && <div className="bg-white rounded-xl p-5 shadow-sm border"><p className="text-sm text-gray-500">Mandanten</p><p className="text-3xl font-bold text-blue-900">{appState.mandanten.length}</p></div>}
+              <div className="bg-white rounded-xl p-5 shadow-sm border"><p className="text-sm text-gray-500">Objekte</p><p className="text-3xl font-bold text-blue-900">{myObjekte.length}</p></div>
+              <div className="bg-white rounded-xl p-5 shadow-sm border"><p className="text-sm text-gray-500">Auswertungen</p><p className="text-3xl font-bold text-blue-900">{getFilteredAuswertungen().length}</p></div>
+              <div className="bg-white rounded-xl p-5 shadow-sm border"><p className="text-sm text-gray-500">Ankaufsprofile</p><p className="text-3xl font-bold text-blue-900">{getFilteredAnkaufsprofile().length}</p></div>
+            </div>
+            <div className="bg-gradient-to-br from-blue-900 to-blue-700 rounded-xl p-6 text-white mb-6"><p className="text-blue-200">Gesamtvolumen</p><p className="text-3xl font-bold">{formatCurrency(gesamtvolumen)}</p></div>
+            <div className="flex flex-wrap gap-3">
+              {isAdmin && <button onClick={() => setPage('mandant-neu')} className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg"><Icons.Users /> Mandant</button>}
+              <button onClick={() => setPage('objekt-neu')} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg"><Icons.Building /> Objekt</button>
+              <button onClick={() => setPage('ankaufsprofil-neu')} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg"><Icons.ShoppingCart /> Ankaufsprofil</button>
+            </div>
+          </div>
+        );
+      };
+
+      // Mandanten Liste - PLZ Bug gefixt
+      const MandantenListe = () => (
+        <div>
+          <div className="flex justify-between items-center mb-6"><h1 className="text-2xl font-bold text-gray-800">Mandanten</h1><button onClick={() => setPage('mandant-neu')} className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg"><Icons.Plus /> Neu</button></div>
+          {appState.mandanten.length === 0 ? (<div className="bg-white rounded-xl p-12 text-center border"><p className="text-gray-500 mb-4">Noch keine Mandanten</p><button onClick={() => setPage('mandant-neu')} className="px-4 py-2 bg-blue-900 text-white rounded-lg">Ersten anlegen</button></div>) : (
+            <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+              <table className="w-full"><thead className="bg-gray-50 border-b"><tr><th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Name</th><th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Kontakt</th><th className="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Objekte</th><th className="text-center px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Aktionen</th></tr></thead>
+              <tbody className="divide-y">{appState.mandanten.map(m => (
+                <tr key={m.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 cursor-pointer" onClick={() => { setSelectedItem(m); setPage('mandant-detail'); }}><p className="font-medium hover:text-blue-600">{m.name}</p><p className="text-sm text-gray-500">{m.ansprechpartner}</p></td>
+                  <td className="px-6 py-4"><p className="text-sm">{m.email}</p><p className="text-sm text-gray-400">{m.plz} {m.ort}</p></td>
+                  <td className="px-6 py-4 text-center"><span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{appState.objekte.filter(o => o.mandantId === m.id).length}</span></td>
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button onClick={() => { setSelectedItem(m); setPage('mandant-detail'); }} className="p-2 text-gray-400 hover:text-blue-600" title="Details"><Icons.Eye /></button>
+                      <button onClick={() => { setEditMandant(m); setPage('mandant-edit'); }} className="p-2 text-gray-400 hover:text-yellow-600" title="Bearbeiten"><Icons.Edit /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}</tbody></table>
+            </div>
+          )}
+        </div>
+      );
+
+      const ObjekteListe = () => {
+        const filteredObjekte = getFilteredObjekte();
+        return (
+          <div>
+            <div className="flex justify-between items-center mb-4"><h1 className="text-2xl font-bold text-gray-800">{isAdmin ? 'Objekte' : 'Meine Objekte'}</h1><button onClick={() => setPage('objekt-neu')} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg"><Icons.Plus /> Neu</button></div>
+            <FilterBar />
+            {filteredObjekte.length === 0 ? (<div className="bg-white rounded-xl p-12 text-center border"><p className="text-gray-500 mb-4">Noch keine Objekte</p><button onClick={() => setPage('objekt-neu')} className="px-4 py-2 bg-green-600 text-white rounded-lg">Erstes anlegen</button></div>) : (
+              <div className="space-y-3">{filteredObjekte.map(o => {
+                const mandant = appState.mandanten.find(m => m.id === o.mandantId);
+                const auswertung = appState.auswertungen.filter(a => a.objektId === o.id).pop();
+                return (
+                  <div key={o.id} className="bg-white rounded-xl p-5 shadow-sm border hover:shadow-md">
+                    <div className="flex justify-between items-center">
+                      <div className="cursor-pointer" onClick={() => { setSelectedItem(o); setPage('objekt-detail'); }}>
+                        <div className="flex items-center gap-3 mb-1"><h3 className="font-semibold hover:text-blue-600">{o.strasse}</h3>{auswertung && <span className={`px-2 py-0.5 rounded text-xs font-medium ${auswertung.empfehlung?.empfehlung === 'VERKAUFEN' ? 'bg-red-100 text-red-700' : auswertung.empfehlung?.empfehlung === 'OPTIMIEREN' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>{auswertung.empfehlung?.empfehlung}</span>}</div>
+                        <p className="text-sm text-gray-500">{o.plz} {o.ort} • {o.einheiten?.length || 0} Einh. {isAdmin && mandant ? `• ${mandant.name}` : ''}</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <p className="font-bold text-blue-900">{formatCurrency(o.kaufpreis)}</p>
+                        <button onClick={() => { setSelectedItem(o); setPage('objekt-detail'); }} className="p-2 text-gray-400 hover:text-blue-600" title="Details"><Icons.Eye /></button>
+                        <button onClick={() => { setEditObjekt(o); setPage('objekt-edit'); }} className="p-2 text-gray-400 hover:text-yellow-600" title="Bearbeiten"><Icons.Edit /></button>
+                        <button onClick={() => handleAuswerten(o)} disabled={loading} className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg disabled:opacity-50"><Icons.Sparkles /> {isAdmin ? 'Auswerten' : 'Anfragen'}</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}</div>
+            )}
+          </div>
+        );
+      };
+
+      const AuswertungenListe = () => {
+        const filteredAuswertungen = getFilteredAuswertungen();
+        return (
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">{isAdmin ? 'Auswertungen' : 'Meine Auswertungen'}</h1>
+            <FilterBar />
+            {filteredAuswertungen.length === 0 ? (<div className="bg-white rounded-xl p-12 text-center border"><p className="text-gray-500">Noch keine Auswertungen</p></div>) : (
+              <div className="space-y-3">{filteredAuswertungen.map(a => {
+                const mandant = appState.mandanten.find(m => m.id === a.objekt?.mandantId);
+                return (
+                  <div key={a.id} className="bg-white rounded-xl p-5 shadow-sm border cursor-pointer hover:shadow-md" onClick={() => { setSelectedItem(a); setPage('auswertung-detail'); }}>
+                    <div className="flex justify-between items-center">
+                      <div><div className="flex items-center gap-3 mb-1"><h3 className="font-semibold">{a.objekt?.strasse}</h3><span className={`px-3 py-1 rounded-full text-xs font-medium ${a.empfehlung?.empfehlung === 'VERKAUFEN' ? 'bg-red-100 text-red-700' : a.empfehlung?.empfehlung === 'OPTIMIEREN' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>{a.empfehlung?.empfehlung}</span></div><p className="text-sm text-gray-500">{a.objekt?.plz} {a.objekt?.ort} • {formatDate(a.datum)} {isAdmin && mandant ? `• ${mandant.name}` : ''}</p></div>
+                      <div className="flex items-center gap-6"><div className="text-center"><p className="text-xs text-gray-500">Rendite</p><p className="font-bold text-blue-900">{formatPercent(a.berechnungen?.rendite)}</p></div><div className="text-center"><p className="text-xs text-gray-500">Cashflow</p><p className={`font-bold ${a.berechnungen?.cashflow_ist >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatCurrency(a.berechnungen?.cashflow_ist)}</p></div></div>
+                    </div>
+                  </div>
+                );
+              })}</div>
+            )}
+          </div>
+        );
+      };
+
+      const AnkaufsprofileListe = () => {
+        const filteredProfile = getFilteredAnkaufsprofile();
+        return (
+          <div>
+            <div className="flex justify-between items-center mb-4"><h1 className="text-2xl font-bold text-gray-800">{isAdmin ? 'Ankaufsprofile' : 'Meine Ankaufsprofile'}</h1><button onClick={() => setPage('ankaufsprofil-neu')} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg"><Icons.Plus /> Neu</button></div>
+            <FilterBar />
+            {filteredProfile.length === 0 ? (<div className="bg-white rounded-xl p-12 text-center border"><p className="text-gray-500 mb-4">Noch keine Profile</p><button onClick={() => setPage('ankaufsprofil-neu')} className="px-4 py-2 bg-purple-600 text-white rounded-lg">Erstes anlegen</button></div>) : (
+              <div className="space-y-3">{filteredProfile.map(p => {
+                const mandant = appState.mandanten.find(m => m.id === p.mandantId);
+                return (<div key={p.id} className="bg-white rounded-xl p-5 shadow-sm border"><div className="flex justify-between items-center"><div><h3 className="font-semibold">{isAdmin ? mandant?.name : 'Mein Ankaufsprofil'}</h3><div className="flex flex-wrap gap-1 mt-1">{p.assetklassen?.slice(0, 4).map(a => <span key={a} className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs">{a}</span>)}</div><p className="text-sm text-gray-500 mt-1">{p.min_volumen && `${formatCurrency(p.min_volumen)} - `}{p.max_volumen && formatCurrency(p.max_volumen)}</p></div><span className={`px-3 py-1 rounded-full text-sm ${p.kaufinteresse === 'Ja' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{p.kaufinteresse === 'Ja' ? '✓ Aktiv' : 'Inaktiv'}</span></div></div>);
+              })}</div>
+            )}
+          </div>
+        );
+      };
+
+      // Anfragen Liste (Admin only)
+      const AnfragenListe = () => {
+        const anfragen = appState.anfragen || [];
+        return (
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">📋 Auswertungs-Anfragen</h1>
+            {anfragen.length === 0 ? (
+              <div className="bg-white rounded-xl p-12 text-center border">
+                <p className="text-gray-500">Keine offenen Anfragen</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {anfragen.map(a => {
+                  const mandant = appState.mandanten.find(m => m.id === a.mandantId);
+                  return (
+                    <div key={a.id} className="bg-white rounded-xl p-5 shadow-sm border">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h3 className="font-semibold">{a.objekt?.strasse}</h3>
+                          <p className="text-sm text-gray-500">{a.objekt?.plz} {a.objekt?.ort} • {mandant?.name}</p>
+                          <p className="text-xs text-gray-400 mt-1">Angefragt: {formatDate(a.datum)}</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm">⏳ Offen</span>
+                          <button 
+                            onClick={() => handleAuswerten(a.objekt)} 
+                            disabled={loading}
+                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg disabled:opacity-50"
+                          >
+                            <Icons.Sparkles /> Auswerten & Freigeben
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      };
+
+      const Sidebar = () => (
+        <aside className="w-64 glass-sidebar min-h-screen p-4 flex flex-col no-print border-r border-white/10">
+          <div className="mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-2xl shadow-lg">🏛️</div>
+              <div>
+                <h1 className="text-white text-lg font-bold tracking-tight">{CONFIG.COMPANY_NAME}</h1>
+                <p className="text-blue-300/80 text-xs">{isAdmin ? 'Admin-Bereich' : currentUser?.name}</p>
+              </div>
+            </div>
+          </div>
+          <nav className="space-y-1.5 flex-1">
+            <NavItem icon={<Icons.Home />} label="Dashboard" pageName="dashboard" />
+            {isAdmin && <NavItem icon={<Icons.Users />} label="Mandanten" pageName="mandanten" badge={appState.mandanten.length} />}
+            {isAdmin && <NavItem icon={<Icons.Mail />} label="Anfragen" pageName="anfragen" badge={(appState.anfragen || []).length} />}
+            <NavItem icon={<Icons.Building />} label={isAdmin ? 'Objekte' : 'Meine Objekte'} pageName="objekte" badge={getFilteredObjekte().length} />
+            <NavItem icon={<Icons.Chart />} label="Auswertungen" pageName="auswertungen" badge={getFilteredAuswertungen().length} />
+            <NavItem icon={<Icons.ShoppingCart />} label="Ankaufsprofile" pageName="ankaufsprofile" badge={getFilteredAnkaufsprofile().length} />
+          </nav>
+          <div className="pt-4 border-t border-white/10 space-y-2">
+            <button onClick={() => setPage('objekt-neu')} className="flex items-center gap-2 w-full px-4 py-2.5 glass-btn-success text-white rounded-xl font-medium"><Icons.Plus /> Neues Objekt</button>
+            <button onClick={() => { setCurrentUser(null); setPage('login'); }} className="flex items-center gap-2 w-full px-4 py-2.5 text-blue-200/80 hover:bg-white/10 rounded-xl transition-all"><Icons.Logout /> Abmelden</button>
+          </div>
+        </aside>
+      );
+
+      if (!currentUser) return <LoginScreen />;
+
+      return (
+        <div className="min-h-screen flex" style={{background: 'linear-gradient(135deg, #e0e7ff 0%, #f0f9ff 50%, #e0f2fe 100%)'}}>
+          {toast && <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-xl shadow-lg text-white backdrop-blur-sm ${toast.type === 'error' ? 'bg-red-500/90' : 'bg-green-500/90'}`}>{toast.type === 'error' ? '❌' : '✅'} {toast.msg}</div>}
+          {loading && (<div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center"><div className="glass-card rounded-2xl p-8 text-center shadow-2xl"><div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div><p className="font-semibold text-gray-700">{loadingText || 'Wird erstellt...'}</p></div></div>)}
+          <Sidebar />
+          <main className="flex-1 p-6 overflow-auto">
+            {page === 'dashboard' && <Dashboard />}
+            {page === 'mandanten' && <MandantenListe />}
+            {page === 'mandant-neu' && <MandantFormular />}
+            {page === 'mandant-edit' && <MandantFormular existingMandant={editMandant} />}
+            {page === 'mandant-detail' && <MandantDetail />}
+            {page === 'anfragen' && <AnfragenListe />}
+            {page === 'objekte' && <ObjekteListe />}
+            {page === 'objekt-neu' && <ObjektFormular />}
+            {page === 'objekt-edit' && <ObjektFormular existingObjekt={editObjekt} />}
+            {page === 'objekt-detail' && <ObjektDetail />}
+            {page === 'auswertungen' && <AuswertungenListe />}
+            {page === 'auswertung-detail' && <AuswertungDetail />}
+            {page === 'ankaufsprofile' && <AnkaufsprofileListe />}
+            {page === 'ankaufsprofil-neu' && <AnkaufsprofilNeu />}
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<ImperialApp />);
+  </script>
+</body>
+</html>
