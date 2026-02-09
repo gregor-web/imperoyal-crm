@@ -151,7 +151,21 @@ export async function POST(request: Request) {
       }
     }
 
-    // 4. Optionally send notification via Make.com webhook
+    // 4. Create Anfrage so admin sees there's a new object to analyze
+    const { error: anfrageError } = await supabase
+      .from('anfragen')
+      .insert({
+        objekt_id: objekt.id,
+        mandant_id: mandant.id,
+        status: 'offen',
+      });
+
+    if (anfrageError) {
+      console.error('Anfrage creation error:', anfrageError);
+      // Don't fail completely
+    }
+
+    // 5. Optionally send notification via Make.com webhook
     const webhookUrl = process.env.MAKE_WEBHOOK_URL;
     if (webhookUrl) {
       try {
@@ -179,7 +193,8 @@ export async function POST(request: Request) {
       success: true,
       mandant_id: mandant.id,
       objekt_id: objekt.id,
-      message: 'Onboarding erfolgreich abgeschlossen',
+      anfrage_erstellt: !anfrageError,
+      message: 'Onboarding erfolgreich abgeschlossen. Anfrage zur Auswertung wurde erstellt.',
     });
   } catch (error) {
     console.error('Onboarding error:', error);
