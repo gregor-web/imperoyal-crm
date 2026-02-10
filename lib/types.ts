@@ -231,6 +231,14 @@ export interface AnfrageMitDetails extends Anfrage {
 // BERECHNUNGEN (Calculation Results)
 // =====================================================
 
+export interface Zinsaenderungsszenario {
+  zinsbindung_endet: string; // ISO date string
+  restschuld_bei_ende: number;
+  erwarteter_zins: number; // neuer Zinssatz nach Ablauf
+  kapitaldienst_neu: number;
+  kapitaldienst_differenz: number; // Mehrbelastung p.a.
+}
+
 export interface Finanzierung {
   kaufpreis: number;
   eigenkapital: number;
@@ -239,6 +247,7 @@ export interface Finanzierung {
   tilgung: number;
   kapitaldienst: number;
   kapitaldienst_monat: number;
+  zinsaenderung?: Zinsaenderungsszenario;
 }
 
 export interface MietanalyseEinheit {
@@ -274,6 +283,8 @@ export interface Modernisierungsumlage559 {
   umlage_8_prozent: number;
   umlage_nach_kappung: number;
   differenz: number;
+  anzahl_einheiten_berechtigt: number; // Einheiten ohne Indexmietvertrag
+  anzahl_einheiten_gesamt: number;
 }
 
 export interface Kostenstruktur {
@@ -306,6 +317,7 @@ export interface WegPotenzial {
   weg_gewinn: number;
   bereits_aufgeteilt: boolean;
   genehmigung_erforderlich: boolean;
+  hinweistext: string; // "Genehmigungspflichtig, kann versagt werden" oder "WEG-Aufteilung grundsätzlich möglich"
 }
 
 export interface AfaRnd {

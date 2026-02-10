@@ -8,6 +8,7 @@ import type {
   Einheit,
   Berechnungen,
   Finanzierung,
+  Zinsaenderungsszenario,
   Mietanalyse,
   MietanalyseEinheit,
   Mieterhoehung558,
@@ -142,6 +143,33 @@ export function berechneAlles(
   const kapitaldienst = fremdkapital * ((zinssatz + tilgung) / 100);
   const kapitaldienst_monat = kapitaldienst / 12;
 
+  // Zinsänderungsszenario: Was passiert wenn die Zinsbindung endet?
+  // Annahme: 10 Jahre Zinsbindung ab Kaufdatum
+  const kaufdatum = objekt.kaufdatum ? new Date(objekt.kaufdatum) : new Date();
+  const zinsbindungEndet = new Date(kaufdatum);
+  zinsbindungEndet.setFullYear(zinsbindungEndet.getFullYear() + 10);
+
+  // Berechne Restschuld nach Zinsbindung (vereinfachte Annuität)
+  const jahresBisEnde = Math.max(0, Math.ceil(
+    (zinsbindungEndet.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 365)
+  ));
+  // Vereinfachte Restschuldberechnung: Tilgung reduziert Schuld linear
+  const getilgtProJahr = fremdkapital * (tilgung / 100);
+  const restschuld = Math.max(0, fremdkapital - (getilgtProJahr * jahresBisEnde));
+
+  // Erwarteter neuer Zinssatz (Marktdaten oder Fallback 5%)
+  const erwarteterZins = marktdaten?.aktuelle_bauzinsen?.wert ?? 5.0;
+  const kapitaldienstNeu = restschuld * ((erwarteterZins + tilgung) / 100);
+  const kapitaldienstDifferenz = kapitaldienstNeu - (restschuld * ((zinssatz + tilgung) / 100));
+
+  const zinsaenderung: Zinsaenderungsszenario = {
+    zinsbindung_endet: zinsbindungEndet.toISOString().split('T')[0],
+    restschuld_bei_ende: restschuld,
+    erwarteter_zins: erwarteterZins,
+    kapitaldienst_neu: kapitaldienstNeu,
+    kapitaldienst_differenz: kapitaldienstDifferenz,
+  };
+
   const finanzierung: Finanzierung = {
     kaufpreis,
     eigenkapital,
@@ -150,6 +178,7 @@ export function berechneAlles(
     tilgung,
     kapitaldienst,
     kapitaldienst_monat,
+    zinsaenderung,
   };
 
   // =====================================================
@@ -242,14 +271,21 @@ export function berechneAlles(
   const capex_betrag = safeNumber(objekt.capex_geplant_betrag);
 
   // §559-Umlage NUR berechnen wenn CAPEX > 0
+  // WICHTIG: §559 gilt NICHT für Indexmietverträge (§559 Abs. 4 BGB)!
   let umlage_8_prozent = 0;
   let umlage_nach_kappung = 0;
 
-  if (capex_betrag > 0) {
+  // Einheiten die für §559 in Frage kommen (KEINE Indexmiete!)
+  const einheitenFuer559 = einheiten.filter((e) => e.mietvertragsart !== 'Index');
+  const einheitenAnalyseFuer559 = einheitenAnalyse.filter((_, index) =>
+    einheiten[index]?.mietvertragsart !== 'Index'
+  );
+
+  if (capex_betrag > 0 && einheitenFuer559.length > 0) {
     umlage_8_prozent = capex_betrag * 0.08;
 
     // Kappungsgrenzen nach §559 Abs. 3a BGB
-    einheitenAnalyse.forEach((e) => {
+    einheitenAnalyseFuer559.forEach((e) => {
       const euroProQm = e.flaeche > 0 ? e.kaltmiete_ist / e.flaeche : 0;
       const maxEuroProQm = euroProQm < 7 ? 2 : 3;
       const maxErhoehungProJahr = (e.flaeche * maxEuroProQm) / 6;
@@ -264,6 +300,8 @@ export function berechneAlles(
     umlage_8_prozent,
     umlage_nach_kappung,
     differenz: umlage_8_prozent - umlage_effektiv,
+    anzahl_einheiten_berechtigt: einheitenFuer559.length,
+    anzahl_einheiten_gesamt: einheiten.length,
   };
 
   // =====================================================
@@ -367,12 +405,23 @@ export function berechneAlles(
   const genehmigung_erforderlich =
     objekt.milieuschutz === true || objekt.umwandlungsverbot === true;
 
+  // Hinweistext basierend auf Milieuschutz-Status
+  let hinweistext: string;
+  if (bereits_aufgeteilt) {
+    hinweistext = 'Objekt ist bereits in WEG aufgeteilt';
+  } else if (genehmigung_erforderlich) {
+    hinweistext = 'Genehmigungspflichtig, kann versagt werden';
+  } else {
+    hinweistext = 'WEG-Aufteilung grundsätzlich möglich';
+  }
+
   const weg_potenzial: WegPotenzial = {
     wert_heute: verkehrswert_heute,
     wert_aufgeteilt,
     weg_gewinn,
     bereits_aufgeteilt,
     genehmigung_erforderlich,
+    hinweistext,
   };
 
   // =====================================================
