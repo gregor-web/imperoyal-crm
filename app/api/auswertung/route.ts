@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { berechneAlles } from '@/lib/berechnungen';
 import { ERLAEUTERUNGEN } from '@/lib/erlaeuterungen';
-import type { Objekt, Einheit, ClaudeEmpfehlung } from '@/lib/types';
+import { fetchMarktDaten } from '@/lib/marktdaten';
+import type { Objekt, Einheit, ClaudeEmpfehlung, MarktDaten } from '@/lib/types';
 import { formatCurrency, formatPercent } from '@/lib/formatters';
 
 export async function POST(request: NextRequest) {
@@ -36,9 +37,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Objekt nicht gefunden' }, { status: 404 });
     }
 
-    // Run calculations
+    // Fetch market data from Perplexity FIRST (needed for calculations)
+    let marktdaten: MarktDaten | null = null;
+    try {
+      marktdaten = await fetchMarktDaten(
+        objekt.strasse,
+        objekt.plz,
+        objekt.ort,
+        objekt.gebaeudetyp,
+        objekt.wohnflaeche,
+        objekt.baujahr
+      );
+      console.log('Marktdaten abgerufen:', marktdaten.standort);
+    } catch (marktError) {
+      console.error('Marktdaten konnten nicht abgerufen werden:', marktError);
+    }
+
+    // Run calculations with market data
     const einheiten = (objekt.einheiten || []) as Einheit[];
-    const berechnungen = berechneAlles(objekt as Objekt, einheiten);
+    const berechnungen = berechneAlles(objekt as Objekt, einheiten, marktdaten);
 
     // Call Claude API for recommendation
     let empfehlung: ClaudeEmpfehlung | null = null;
@@ -74,7 +91,16 @@ Kostenquote: ${formatPercent(berechnungen.kostenstruktur.kostenquote)} (${berech
 Haltedauer: ${objekt.haltedauer || 'nicht definiert'}
 Risikoprofil: ${objekt.risikoprofil || 'nicht definiert'}
 Primäres Ziel: ${objekt.primaeres_ziel || 'nicht definiert'}
-
+${marktdaten ? `
+AKTUELLE MARKTDATEN (via Perplexity):
+- Vergleichsmiete Wohnen: ${marktdaten.vergleichsmiete_wohnen.wert} €/m² (${marktdaten.vergleichsmiete_wohnen.quelle})
+- Vergleichsmiete Gewerbe: ${marktdaten.vergleichsmiete_gewerbe.wert} €/m² (${marktdaten.vergleichsmiete_gewerbe.quelle})
+- Kappungsgrenze: ${marktdaten.kappungsgrenze.vorhanden ? `${marktdaten.kappungsgrenze.prozent}% (angespannter Markt)` : '20% (normaler Markt)'}
+- Milieuschutzgebiet: ${marktdaten.milieuschutzgebiet.vorhanden ? `Ja${marktdaten.milieuschutzgebiet.gebiet_name ? ` (${marktdaten.milieuschutzgebiet.gebiet_name})` : ''}` : 'Nein'}
+- Kaufpreisfaktor Region: ${marktdaten.kaufpreisfaktor_region.wert}x (${marktdaten.kaufpreisfaktor_region.quelle})
+- Aktuelle Bauzinsen: ${marktdaten.aktuelle_bauzinsen.wert}% (${marktdaten.aktuelle_bauzinsen.zinsbindung})
+- Preisprognose: ${marktdaten.preisprognose.kurz_0_3_jahre}% p.a. (0-3J), ${marktdaten.preisprognose.mittel_3_7_jahre}% p.a. (3-7J), ${marktdaten.preisprognose.lang_7_plus_jahre}% p.a. (7+J)
+` : ''}
 Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
 {
   "empfehlung": "HALTEN" | "OPTIMIEREN" | "RESTRUKTURIEREN" | "VERKAUFEN",
@@ -102,13 +128,19 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
       }
     }
 
+    // Merge marktdaten into berechnungen for storage
+    const berechnungenMitMarktdaten = {
+      ...berechnungen,
+      marktdaten: marktdaten || null,
+    };
+
     // Save auswertung to database
     const { data: auswertung, error: insertError } = await supabase
       .from('auswertungen')
       .insert({
         objekt_id,
         mandant_id: objekt.mandant_id,
-        berechnungen,
+        berechnungen: berechnungenMitMarktdaten,
         empfehlung: empfehlung?.empfehlung || null,
         empfehlung_prioritaet: empfehlung?.prioritaet || null,
         empfehlung_begruendung: empfehlung?.begruendung || null,

@@ -335,6 +335,7 @@ export interface Berechnungen {
   weg_potenzial: WegPotenzial;
   afa_rnd: AfaRnd;
   wertentwicklung: Wertentwicklung;
+  marktdaten?: MarktDaten | null;
 }
 
 // =====================================================
@@ -467,4 +468,42 @@ export interface AnkaufsprofilFormData {
   regionen: string;
   rendite_min: number | null;
   sonstiges: string;
+}
+
+// =====================================================
+// MARKTDATEN (Perplexity API Response)
+// =====================================================
+
+export interface MarktDaten {
+  vergleichsmiete_wohnen: {
+    wert: number;
+    quelle: string;
+  };
+  vergleichsmiete_gewerbe: {
+    wert: number;
+    quelle: string;
+  };
+  kappungsgrenze: {
+    vorhanden: boolean;
+    prozent: 15 | 20;
+  };
+  milieuschutzgebiet: {
+    vorhanden: boolean;
+    gebiet_name: string | null;
+  };
+  kaufpreisfaktor_region: {
+    wert: number;
+    quelle: string;
+  };
+  aktuelle_bauzinsen: {
+    wert: number;
+    zinsbindung: string;
+  };
+  preisprognose: {
+    kurz_0_3_jahre: number; // % p.a.
+    mittel_3_7_jahre: number;
+    lang_7_plus_jahre: number;
+  };
+  abfrage_datum: string;
+  standort: string;
 }

@@ -38,10 +38,10 @@ body {
 }
 
 .glass-input {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid #cbd5e1;
+  border: 2px solid #94a3b8;
 }
 
 .glass-input:focus {
@@ -61,7 +61,7 @@ input[type="tel"],
 textarea,
 select {
   background-color: white;
-  border: 1px solid #cbd5e1;
+  border: 2px solid #94a3b8;
   border-radius: 0.5rem;
   padding: 0.625rem 0.875rem;
   font-size: 0.875rem;

@@ -29,11 +29,11 @@ export default async function DashboardLayout({
   const userName = profile?.name || profile?.email || user.email;
 
   return (
-    <div className="min-h-screen dashboard-bg">
+    <div className="h-screen overflow-hidden dashboard-bg">
       <Sidebar userRole={userRole} userName={userName ?? undefined} />
-      <div className="ml-64 flex flex-col min-h-screen">
+      <div className="ml-64 h-screen flex flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 p-8 overflow-auto">
+        <main className="flex-1 p-8 overflow-y-auto">
           {children}
         </main>
       </div>

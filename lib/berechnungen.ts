@@ -18,6 +18,7 @@ import type {
   WegPotenzial,
   AfaRnd,
   Wertentwicklung,
+  MarktDaten,
 } from './types';
 import { addMonths, monthsBetween, formatDate } from './formatters';
 
@@ -49,12 +50,15 @@ interface Mieterhoehung558Result {
  *
  * Kappungsgrenze: 20% in 3 Jahren (15% in Kappungsgebieten)
  * Sperrfrist: 15 Monate nach letzter Erhöhung
+ *
+ * @param einheit - Die Einheit für die die Mieterhöhung berechnet wird
+ * @param kappungsProzent - Kappungsgrenze in Prozent (15 oder 20), default 20
  */
 export function berechneNaechsteMieterhoehung(
   einheit: Einheit,
-  istKappungsgebiet: boolean = false
+  kappungsProzent: 15 | 20 = 20
 ): Mieterhoehung558Result {
-  const kappungsgrenze = istKappungsgebiet ? 0.15 : 0.20;
+  const kappungsgrenze = kappungsProzent / 100;
   const letzteMieterhoehung = einheit.letzte_mieterhoehung
     ? new Date(einheit.letzte_mieterhoehung)
     : null;
@@ -114,8 +118,16 @@ export function berechneNaechsteMieterhoehung(
 /**
  * Führt alle Berechnungen für ein Objekt durch.
  * Dies ist das Herzstück der App.
+ *
+ * @param objekt - Das Objekt mit allen Stammdaten
+ * @param einheiten - Array aller Einheiten des Objekts
+ * @param marktdaten - Optional: Marktdaten von Perplexity für dynamische Werte
  */
-export function berechneAlles(objekt: Objekt, einheiten: Einheit[]): Berechnungen {
+export function berechneAlles(
+  objekt: Objekt,
+  einheiten: Einheit[],
+  marktdaten?: MarktDaten | null
+): Berechnungen {
   // =====================================================
   // 1. FINANZIERUNG
   // =====================================================
@@ -144,7 +156,12 @@ export function berechneAlles(objekt: Objekt, einheiten: Einheit[]): Berechnunge
   // 2. MIETANALYSE
   // =====================================================
 
-  const istKappungsgebiet = objekt.milieuschutz === true;
+  // Kappungsgrenze: Nutze Perplexity-Daten falls vorhanden, sonst Fallback auf milieuschutz
+  const kappungsProzent: 15 | 20 = marktdaten?.kappungsgrenze?.vorhanden
+    ? marktdaten.kappungsgrenze.prozent
+    : objekt.milieuschutz === true
+      ? 15
+      : 20;
   let miete_ist_monat = 0;
   let miete_soll_monat = 0;
   let flaeche_gesamt = 0;
@@ -184,7 +201,7 @@ export function berechneAlles(objekt: Objekt, einheiten: Einheit[]): Berechnunge
   const mieterhoehungen_558: Mieterhoehung558[] = einheiten
     .filter((e) => e.mietvertragsart === 'Standard')
     .map((e) => {
-      const result = berechneNaechsteMieterhoehung(e, istKappungsgebiet);
+      const result = berechneNaechsteMieterhoehung(e, kappungsProzent);
       return {
         position: e.position,
         moeglich: result.moeglich,
@@ -338,17 +355,29 @@ export function berechneAlles(objekt: Objekt, einheiten: Einheit[]): Berechnunge
   };
 
   // =====================================================
-  // 9. WERTENTWICKLUNG (2,5% p.a.)
+  // 9. WERTENTWICKLUNG (dynamisch via Perplexity oder 2,5% p.a. Fallback)
   // =====================================================
 
-  const steigerung = 1.025;
+  // Nutze Perplexity-Prognosen falls vorhanden, sonst Fallback 2.5%
+  const prognose_kurz = marktdaten?.preisprognose?.kurz_0_3_jahre ?? 2.5;
+  const prognose_mittel = marktdaten?.preisprognose?.mittel_3_7_jahre ?? 2.5;
+  const prognose_lang = marktdaten?.preisprognose?.lang_7_plus_jahre ?? 2.5;
+
+  // Berechne Werte mit unterschiedlichen Steigerungsraten pro Zeitraum
+  const wert_jahr_3 = kaufpreis * Math.pow(1 + prognose_kurz / 100, 3);
+  const wert_jahr_5 =
+    wert_jahr_3 * Math.pow(1 + prognose_mittel / 100, 2); // 3-5 Jahre mit mittlerer Prognose
+  const wert_jahr_7 =
+    wert_jahr_3 * Math.pow(1 + prognose_mittel / 100, 4); // 3-7 Jahre mit mittlerer Prognose
+  const wert_jahr_10 =
+    wert_jahr_7 * Math.pow(1 + prognose_lang / 100, 3); // 7-10 Jahre mit langer Prognose
 
   const wertentwicklung: Wertentwicklung = {
     heute: kaufpreis,
-    jahr_3: kaufpreis * Math.pow(steigerung, 3),
-    jahr_5: kaufpreis * Math.pow(steigerung, 5),
-    jahr_7: kaufpreis * Math.pow(steigerung, 7),
-    jahr_10: kaufpreis * Math.pow(steigerung, 10),
+    jahr_3: wert_jahr_3,
+    jahr_5: wert_jahr_5,
+    jahr_7: wert_jahr_7,
+    jahr_10: wert_jahr_10,
   };
 
   // =====================================================
