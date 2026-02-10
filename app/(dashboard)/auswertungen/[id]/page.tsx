@@ -7,6 +7,7 @@ import { formatCurrency, formatPercent, formatDate } from '@/lib/formatters';
 import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
 import { ArrowLeft, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle } from 'lucide-react';
 import { PdfExportButton } from '@/components/pdf-export-button';
+import { DebugPdfButton } from '@/components/debug-pdf-button';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -15,6 +16,15 @@ interface Props {
 export default async function AuswertungDetailPage({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
+
+  // Check if user is admin
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user?.id || '')
+    .single();
+  const isAdmin = profile?.role === 'admin';
 
   // Fetch auswertung with objekt and mandant
   const { data: auswertung, error } = await supabase
@@ -54,6 +64,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
+          {isAdmin && <DebugPdfButton auswertungId={id} />}
           <PdfExportButton auswertungId={id} />
         </div>
       </div>
