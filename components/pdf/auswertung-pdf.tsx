@@ -321,8 +321,8 @@ const styles = StyleSheet.create({
   // Sections
   sectionRow: {
     flexDirection: 'row',
-    gap: 10,
-    marginBottom: 10,
+    gap: 8,
+    marginBottom: 8,
   },
   sectionBox: {
     flex: 1,
@@ -726,9 +726,6 @@ export function AuswertungPDF({
       {/* ==================== PAGE 1 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Header */}
-        <Text style={{ fontSize: 10, color: colors.textMuted, textAlign: 'center', marginBottom: 8 }}>
-          {new Date(created_at).toLocaleDateString('de-DE')}
-        </Text>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -740,6 +737,9 @@ export function AuswertungPDF({
             </View>
           </View>
           <View style={styles.objektInfo}>
+            <Text style={{ fontSize: 9, color: colors.textMuted, marginBottom: 2 }}>
+              {new Date(created_at).toLocaleDateString('de-DE')}
+            </Text>
             <Text style={styles.objektLabel}>Objekt</Text>
             <Text style={styles.objektAddress}>{objekt.strasse}</Text>
             <Text style={styles.objektAddress}>{objekt.plz} {objekt.ort}</Text>
@@ -1127,7 +1127,7 @@ export function AuswertungPDF({
       {/* ==================== PAGE 2 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Section 5: Mieterhöhungspotenzial Table */}
-        <View style={[styles.sectionBox, { marginBottom: 10 }]}>
+        <View style={[styles.sectionBox, { marginBottom: 6 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>5</Text>
             <Text style={styles.sectionTitle}>Mieterhöhungspotenzial (§558 gilt nur für Wohnraum)</Text>
@@ -1192,19 +1192,19 @@ export function AuswertungPDF({
                   `+${((miet.potenzial_monat / miet.miete_ist_monat) * 100).toFixed(1)}%` : ''}
               </Text>
             </View>
-            {/* Info Box */}
-            <View style={styles.infoBox}>
-              <Text style={styles.infoBoxTitle}>Hinweis §558 BGB (Kappungsgrenze):</Text>
-              <Text style={styles.infoBoxText}>
+            {/* Info Box - kompakter */}
+            <View style={[styles.infoBox, { marginTop: 4, padding: 4 }]}>
+              <Text style={[styles.infoBoxTitle, { fontSize: 7 }]}>Hinweis §558 BGB (Kappungsgrenze):</Text>
+              <Text style={[styles.infoBoxText, { fontSize: 6 }]}>
                 • §558 BGB gilt nur für Wohnraum. Die Miete darf innerhalb von 3 Jahren um max. {objekt.milieuschutz ? '15%' : '20%'} erhöht werden.
               </Text>
-              <Text style={styles.infoBoxText}>
+              <Text style={[styles.infoBoxText, { fontSize: 6 }]}>
                 • "Sofort" = Erhöhung jetzt möglich. Sperrfrist: 15 Monate nach letzter Erhöhung.
               </Text>
-              <Text style={styles.infoBoxText}>
+              <Text style={[styles.infoBoxText, { fontSize: 6 }]}>
                 • Gewerbe/Stellplatz: Freie Mietvertragsregelungen, keine gesetzliche Kappung.
               </Text>
-              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 3 }}>
+              <Text style={{ fontSize: 5, color: colors.textLight, fontStyle: 'italic', marginTop: 2 }}>
                 Quelle: §558 BGB, Kappungsgrenzen-VO {objekt.ort || 'Region'}
               </Text>
             </View>
@@ -1489,7 +1489,7 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 12: Exit-Szenarien */}
-        <View style={[styles.sectionBox, { marginBottom: 8 }]}>
+        <View style={[styles.sectionBox, { marginBottom: 10 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
@@ -1517,6 +1517,65 @@ export function AuswertungPDF({
               Annahme: {marktdaten?.preisprognose ? 'Dynamische Prognose lt. Marktdaten' : '2,5% p.a. Wertsteigerung'} | Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Bundesbank Immobilienpreisindex'}
             </Text>
           </View>
+        </View>
+
+        {/* Investment-Übersicht Dashboard - auf Seite 3 verschoben um Whitespace zu füllen */}
+        <View style={{
+          backgroundColor: colors.bgLight,
+          borderRadius: 6,
+          padding: 10,
+          marginBottom: 10,
+          borderWidth: 1,
+          borderColor: colors.border,
+        }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 10 }}>
+            Investment-Übersicht
+          </Text>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            {/* Spalte 1: Kapitalstruktur */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kapitalstruktur</Text>
+              <View style={{ height: 40, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
+                <View style={{ flex: (fin?.eigenkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.success }} />
+                <View style={{ flex: (fin?.fremdkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.danger }} />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }}>
+                <Text style={{ fontSize: 6, color: colors.success }}>EK {formatPercent((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
+                <Text style={{ fontSize: 6, color: colors.danger }}>FK {formatPercent((fin?.fremdkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
+              </View>
+            </View>
+            {/* Spalte 2: Cashflow-Verwendung */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Mietverteilung</Text>
+              <View style={{ height: 40, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
+                <View style={{ flex: (fin?.kapitaldienst || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#ef4444' }} />
+                <View style={{ flex: (kosten?.kosten_gesamt || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#f59e0b' }} />
+                <View style={{ flex: Math.max(0, (cashflow?.cashflow_ist_jahr || 0)) / (miet?.miete_ist_jahr || 1), backgroundColor: '#22c55e' }} />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }}>
+                <Text style={{ fontSize: 6, color: '#ef4444' }}>Kapitaldienst</Text>
+                <Text style={{ fontSize: 6, color: '#f59e0b' }}>Kosten</Text>
+                <Text style={{ fontSize: 6, color: '#22c55e' }}>Cashflow</Text>
+              </View>
+            </View>
+            {/* Spalte 3: Key Metrics */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kennzahlen</Text>
+              {[
+                { label: 'Rendite', value: formatPercent(rendite?.rendite_ist), color: colors.text },
+                { label: 'Kostenquote', value: formatPercent(kosten?.kostenquote), color: kosten?.bewertung === 'gesund' ? colors.success : colors.warning },
+                { label: 'Faktor', value: `${((fin?.kaufpreis || 0) / (miet?.miete_ist_jahr || 1)).toFixed(1)}x`, color: colors.text },
+              ].map((item, i) => (
+                <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>{item.label}</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: item.color }}>{item.value}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+          <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'right', marginTop: 6 }}>
+            Quelle: Aggregierte Berechnung aus Mandantenangaben und Marktdaten
+          </Text>
         </View>
 
         {/* Footer */}
@@ -1613,65 +1672,6 @@ export function AuswertungPDF({
               </View>
             )}
           </View>
-        </View>
-
-        {/* Investment-Übersicht Dashboard - auf Seite 4 verschoben */}
-        <View style={{
-          backgroundColor: colors.bgLight,
-          borderRadius: 6,
-          padding: 10,
-          marginBottom: 10,
-          borderWidth: 1,
-          borderColor: colors.border,
-        }}>
-          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 10 }}>
-            Investment-Übersicht
-          </Text>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            {/* Spalte 1: Kapitalstruktur */}
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kapitalstruktur</Text>
-              <View style={{ height: 40, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
-                <View style={{ flex: (fin?.eigenkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.success }} />
-                <View style={{ flex: (fin?.fremdkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.danger }} />
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }}>
-                <Text style={{ fontSize: 6, color: colors.success }}>EK {formatPercent((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
-                <Text style={{ fontSize: 6, color: colors.danger }}>FK {formatPercent((fin?.fremdkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
-              </View>
-            </View>
-            {/* Spalte 2: Cashflow-Verwendung */}
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Mietverteilung</Text>
-              <View style={{ height: 40, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
-                <View style={{ flex: (fin?.kapitaldienst || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#ef4444' }} />
-                <View style={{ flex: (kosten?.kosten_gesamt || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#f59e0b' }} />
-                <View style={{ flex: Math.max(0, (cashflow?.cashflow_ist_jahr || 0)) / (miet?.miete_ist_jahr || 1), backgroundColor: '#22c55e' }} />
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }}>
-                <Text style={{ fontSize: 6, color: '#ef4444' }}>Kapitaldienst</Text>
-                <Text style={{ fontSize: 6, color: '#f59e0b' }}>Kosten</Text>
-                <Text style={{ fontSize: 6, color: '#22c55e' }}>Cashflow</Text>
-              </View>
-            </View>
-            {/* Spalte 3: Key Metrics */}
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kennzahlen</Text>
-              {[
-                { label: 'Rendite', value: formatPercent(rendite?.rendite_ist), color: colors.text },
-                { label: 'Kostenquote', value: formatPercent(kosten?.kostenquote), color: kosten?.bewertung === 'gesund' ? colors.success : colors.warning },
-                { label: 'Faktor', value: `${((fin?.kaufpreis || 0) / (miet?.miete_ist_jahr || 1)).toFixed(1)}x`, color: colors.text },
-              ].map((item, i) => (
-                <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <Text style={{ fontSize: 7, color: colors.textMuted }}>{item.label}</Text>
-                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: item.color }}>{item.value}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-          <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'right', marginTop: 6 }}>
-            Quelle: Aggregierte Berechnung aus Mandantenangaben und Marktdaten
-          </Text>
         </View>
 
         {/* Disclaimer */}
