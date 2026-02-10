@@ -5,6 +5,111 @@ import { mandantSchema } from '@/lib/validators';
 
 const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
 
+function generateWelcomeEmailHtml(name: string, email: string, password: string, loginUrl: string): string {
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Georgia', 'Times New Roman', serif; background-color: #0a0f1a;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 20px; background-color: #0a0f1a;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px;">
+
+          <tr>
+            <td style="padding: 40px 40px 30px; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.3);">
+              <img src="https://imperoyal-app.vercel.app/logo_imperoyal.png" alt="Imperoyal Immobilien" style="height: 60px; width: auto;" />
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 50px 40px; text-align: center; background: linear-gradient(180deg, #0d1421 0%, #1a2744 100%);">
+              <h1 style="margin: 0 0 10px; color: #d4af37; font-size: 32px; font-weight: 400; letter-spacing: 2px;">
+                Willkommen
+              </h1>
+              <p style="margin: 0; color: #c9b896; font-size: 18px; font-style: italic;">
+                bei Imperoyal Immobilien
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 40px; background-color: #0d1421;">
+              <p style="margin: 0 0 25px; color: #e8e0d0; font-size: 16px; line-height: 1.8;">
+                Sehr geehrte(r) <span style="color: #d4af37;">${name}</span>,
+              </p>
+
+              <p style="margin: 0 0 30px; color: #a89f8f; font-size: 15px; line-height: 1.8;">
+                Ihr exklusiver Zugang zum Imperoyal Immobilien Portal wurde erfolgreich eingerichtet.
+                Mit unserem System erhalten Sie professionelle Analysen und Optimierungsprotokolle
+                für Ihr Immobilienportfolio.
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0; background: linear-gradient(135deg, #1a2744 0%, #0d1421 100%); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 8px;">
+                <tr>
+                  <td style="padding: 30px;">
+                    <p style="margin: 0 0 20px; color: #d4af37; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600;">
+                      Ihre Zugangsdaten
+                    </p>
+
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding: 12px 0; color: #8a8275; font-size: 14px; width: 100px;">E-Mail:</td>
+                        <td style="padding: 12px 0; color: #e8e0d0; font-size: 15px; font-weight: 500;">${email}</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" style="padding: 8px 0;">
+                          <div style="border-top: 1px solid rgba(212, 175, 55, 0.2);"></div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 12px 0; color: #8a8275; font-size: 14px;">Passwort:</td>
+                        <td style="padding: 12px 0;">
+                          <code style="background: rgba(212, 175, 55, 0.15); padding: 8px 16px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 18px; color: #d4af37; font-weight: 700; letter-spacing: 1px;">${password}</code>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 0 0 35px; color: #c9a050; font-size: 13px; font-style: italic;">
+                Bitte ändern Sie Ihr Passwort nach dem ersten Login.
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #0a0f1a; text-decoration: none; padding: 16px 40px; border-radius: 4px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+                      Zum Portal
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 30px 40px; text-align: center; border-top: 1px solid rgba(212, 175, 55, 0.3);">
+              <p style="margin: 0 0 10px; color: #5a5549; font-size: 12px;">
+                © 2025 Imperoyal Immobilien. Alle Rechte vorbehalten.
+              </p>
+              <p style="margin: 0; color: #4a453f; font-size: 11px;">
+                Für Family Offices, UHNWIs & Institutionelle Vermögensverwalter
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -70,15 +175,18 @@ export async function POST(request: NextRequest) {
     // Send welcome email with credentials via Make.com webhook
     let emailSent = false;
     try {
+      const recipientName = validatedData.ansprechpartner || validatedData.name;
+      const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/login`;
+      const htmlContent = generateWelcomeEmailHtml(recipientName, validatedData.email, password, loginUrl);
+
       const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'welcome',
-          email: validatedData.email,
-          name: validatedData.ansprechpartner || validatedData.name,
-          password,
-          loginUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/login`,
+          to: validatedData.email,
+          subject: 'Willkommen bei Imperoyal Immobilien - Ihre Zugangsdaten',
+          html: htmlContent,
         }),
       });
       emailSent = webhookResponse.ok;
