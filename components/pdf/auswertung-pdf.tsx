@@ -183,16 +183,24 @@ const DonutSegment = ({
 
 // Trend-Pfeil
 const TrendArrow = ({
-  direction,
-  color,
+  value,
+  showValue = true,
 }: {
-  direction: 'up' | 'down' | 'stable';
-  color?: string;
+  value: number;
+  showValue?: boolean;
 }) => {
-  const arrowColor = color || (direction === 'up' ? '#22c55e' : direction === 'down' ? '#ef4444' : '#94a3b8');
+  const direction = value > 0.5 ? 'up' : value < -0.5 ? 'down' : 'stable';
+  const arrowColor = direction === 'up' ? '#22c55e' : direction === 'down' ? '#ef4444' : '#94a3b8';
   const symbol = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '●';
   return (
-    <Text style={{ fontSize: 10, color: arrowColor }}>{symbol}</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+      <Text style={{ fontSize: 8, color: arrowColor }}>{symbol}</Text>
+      {showValue && (
+        <Text style={{ fontSize: 7, fontWeight: 'bold', color: arrowColor }}>
+          {value > 0 ? '+' : ''}{value.toFixed(1)}%
+        </Text>
+      )}
+    </View>
   );
 };
 
@@ -711,6 +719,95 @@ export function AuswertungPDF({
           </View>
         </View>
 
+        {/* Marktdaten Section (from Perplexity) */}
+        {berechnungen?.marktdaten && (
+          <View style={{
+            backgroundColor: '#faf5ff',
+            borderRadius: 6,
+            padding: 10,
+            marginBottom: 15,
+            borderWidth: 1,
+            borderColor: '#e9d5ff',
+          }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+              <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#7c3aed' }}>
+                📡 Aktuelle Marktdaten
+              </Text>
+              <Text style={{ fontSize: 7, color: '#a78bfa', marginLeft: 'auto' }}>
+                via Perplexity AI • {berechnungen.marktdaten.standort}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {/* Spalte 1: Mieten & Faktoren */}
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: '#64748b' }}>Vergleichsmiete Wohnen</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1e293b' }}>
+                    {berechnungen.marktdaten.vergleichsmiete_wohnen.wert} €/m²
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: '#64748b' }}>Vergleichsmiete Gewerbe</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1e293b' }}>
+                    {berechnungen.marktdaten.vergleichsmiete_gewerbe.wert} €/m²
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: '#64748b' }}>Kaufpreisfaktor Region</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1e293b' }}>
+                    {berechnungen.marktdaten.kaufpreisfaktor_region.wert}x
+                  </Text>
+                </View>
+              </View>
+              {/* Spalte 2: Rechtliches */}
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: '#64748b' }}>Kappungsgrenze</Text>
+                  <Text style={{
+                    fontSize: 7,
+                    fontWeight: 'bold',
+                    color: berechnungen.marktdaten.kappungsgrenze.vorhanden ? '#dc2626' : '#16a34a'
+                  }}>
+                    {berechnungen.marktdaten.kappungsgrenze.prozent}% {berechnungen.marktdaten.kappungsgrenze.vorhanden ? '(angespannt)' : ''}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: '#64748b' }}>Milieuschutz</Text>
+                  <Text style={{
+                    fontSize: 7,
+                    fontWeight: 'bold',
+                    color: berechnungen.marktdaten.milieuschutzgebiet.vorhanden ? '#dc2626' : '#16a34a'
+                  }}>
+                    {berechnungen.marktdaten.milieuschutzgebiet.vorhanden ? 'Ja' : 'Nein'}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: '#64748b' }}>Akt. Bauzinsen</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1e293b' }}>
+                    {berechnungen.marktdaten.aktuelle_bauzinsen.wert}% ({berechnungen.marktdaten.aktuelle_bauzinsen.zinsbindung})
+                  </Text>
+                </View>
+              </View>
+              {/* Spalte 3: Prognose */}
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 6, color: '#7c3aed', fontWeight: 'bold', marginBottom: 2 }}>Preisprognose p.a.</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                  <Text style={{ fontSize: 7, color: '#64748b' }}>0-3 Jahre</Text>
+                  <TrendArrow value={berechnungen.marktdaten.preisprognose.kurz_0_3_jahre} />
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                  <Text style={{ fontSize: 7, color: '#64748b' }}>3-7 Jahre</Text>
+                  <TrendArrow value={berechnungen.marktdaten.preisprognose.mittel_3_7_jahre} />
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={{ fontSize: 7, color: '#64748b' }}>7+ Jahre</Text>
+                  <TrendArrow value={berechnungen.marktdaten.preisprognose.lang_7_plus_jahre} />
+                </View>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* Sections 1-4 */}
         <View style={styles.sectionRow}>
           {/* Section 1: Finanzierungsprofil */}
@@ -964,7 +1061,7 @@ export function AuswertungPDF({
               <Text style={styles.sectionNumber}>6</Text>
               <Text style={styles.sectionTitle}>Cashflow IST vs. Optimiert</Text>
               <View style={{ marginLeft: 'auto' }}>
-                <TrendArrow direction={(cashflow?.cashflow_opt_jahr || 0) > (cashflow?.cashflow_ist_jahr || 0) ? 'up' : 'stable'} />
+                <TrendArrow value={((cashflow?.cashflow_opt_jahr || 0) - (cashflow?.cashflow_ist_jahr || 0)) / Math.abs(cashflow?.cashflow_ist_jahr || 1) * 100} showValue={false} />
               </View>
             </View>
             <View style={styles.sectionContent}>
@@ -1020,7 +1117,7 @@ export function AuswertungPDF({
               <Text style={styles.sectionNumber}>7</Text>
               <Text style={styles.sectionTitle}>Wertentwicklung</Text>
               <View style={{ marginLeft: 'auto' }}>
-                <TrendArrow direction="up" color={colors.success} />
+                <TrendArrow value={2.5} showValue={false} />
               </View>
             </View>
             <View style={styles.sectionContent}>
