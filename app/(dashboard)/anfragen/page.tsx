@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { Eye, FileText, CheckCircle, Clock } from 'lucide-react';
+import { Eye, FileText, CheckCircle, Clock, Heart, Phone, Mail } from 'lucide-react';
 
 export default async function AnfragenPage() {
   const supabase = await createClient();
@@ -35,8 +36,26 @@ export default async function AnfragenPage() {
     console.error('Error fetching anfragen:', error);
   }
 
+  // Fetch interessen (buyer interests) using admin client to bypass RLS
+  const adminSupabase = createAdminClient();
+  const { data: interessen, error: interessenError } = await adminSupabase
+    .from('interessen')
+    .select(`
+      *,
+      objekt:objekte(id, strasse, plz, ort, kaufpreis, gebaeudetyp),
+      kaeufer:mandanten!kaeufer_mandant_id(id, name, email, ansprechpartner, telefon),
+      ankaufsprofil:ankaufsprofile(id, name)
+    `)
+    .order('created_at', { ascending: false });
+
+  if (interessenError) {
+    console.error('Error fetching interessen:', interessenError);
+  }
+
   const offeneAnfragen = anfragen?.filter((a) => a.status === 'offen') || [];
   const bearbeiteteAnfragen = anfragen?.filter((a) => a.status === 'bearbeitet') || [];
+  const neueInteressen = interessen?.filter((i) => i.status === 'neu') || [];
+  const bearbeiteteInteressen = interessen?.filter((i) => i.status !== 'neu') || [];
 
   return (
     <div className="space-y-6">
@@ -49,7 +68,7 @@ export default async function AnfragenPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
@@ -63,12 +82,23 @@ export default async function AnfragenPage() {
         </Card>
         <Card>
           <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+              <Heart className="w-6 h-6 text-pink-600" />
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Neue Kaufinteressen</p>
+              <p className="text-2xl font-bold text-slate-800">{neueInteressen.length}</p>
+            </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-green-600" />
             </div>
             <div>
               <p className="text-sm text-slate-500">Bearbeitet</p>
-              <p className="text-2xl font-bold text-slate-800">{bearbeiteteAnfragen.length}</p>
+              <p className="text-2xl font-bold text-slate-800">{bearbeiteteAnfragen.length + bearbeiteteInteressen.length}</p>
             </div>
           </div>
         </Card>
@@ -126,6 +156,83 @@ export default async function AnfragenPage() {
           </TableBody>
         </Table>
       </Card>
+
+      {/* Neue Kaufinteressen */}
+      {neueInteressen.length > 0 && (
+        <Card title="Neue Kaufinteressen" className="border-l-4 border-l-pink-500">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Käufer</TableHead>
+                <TableHead>Objekt</TableHead>
+                <TableHead>Kaufpreis</TableHead>
+                <TableHead>Kontakt</TableHead>
+                <TableHead>Eingegangen</TableHead>
+                <TableHead className="text-right">Aktionen</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {neueInteressen.map((interesse) => {
+                const objekt = interesse.objekt as { id: string; strasse: string; plz: string; ort: string; kaufpreis: number } | null;
+                const kaeufer = interesse.kaeufer as { id: string; name: string; email: string; ansprechpartner: string; telefon: string } | null;
+                const ankaufsprofil = interesse.ankaufsprofil as { id: string; name: string } | null;
+
+                return (
+                  <TableRow key={interesse.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{kaeufer?.ansprechpartner || kaeufer?.name}</p>
+                        <p className="text-sm text-slate-500">{kaeufer?.name}</p>
+                        {ankaufsprofil && (
+                          <p className="text-xs text-pink-600">Profil: {ankaufsprofil.name}</p>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{objekt?.strasse}</p>
+                        <p className="text-sm text-slate-500">{objekt?.plz} {objekt?.ort}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>{formatCurrency(objekt?.kaufpreis)}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        {kaeufer?.email && (
+                          <a href={`mailto:${kaeufer.email}`} className="flex items-center gap-1 text-sm text-blue-600 hover:underline">
+                            <Mail className="w-3 h-3" />
+                            {kaeufer.email}
+                          </a>
+                        )}
+                        {kaeufer?.telefon && (
+                          <a href={`tel:${kaeufer.telefon}`} className="flex items-center gap-1 text-sm text-slate-600">
+                            <Phone className="w-3 h-3" />
+                            {kaeufer.telefon}
+                          </a>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>{formatDate(interesse.created_at)}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        <Link href={`/objekte/${objekt?.id}`}>
+                          <Button variant="secondary" className="p-2">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                        <Link href={`/mandanten/${kaeufer?.id}`}>
+                          <Button variant="secondary" className="p-2">
+                            <Heart className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
 
       {/* Bearbeitete Anfragen */}
       {bearbeiteteAnfragen.length > 0 && (

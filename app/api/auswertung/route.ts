@@ -10,6 +10,130 @@ import { formatCurrency, formatPercent } from '@/lib/formatters';
 
 const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
 
+function generateBuyerMatchEmailHtml(
+  buyerName: string,
+  objektAdresse: string,
+  objektTyp: string,
+  kaufpreis: string,
+  rendite: string,
+  wohnflaeche: string,
+  matchDetails: string[],
+  kontaktUrl: string
+): string {
+  const matchBadges = matchDetails
+    .map(detail => `<span style="display: inline-block; background: rgba(212, 175, 55, 0.2); color: #d4af37; padding: 4px 12px; border-radius: 4px; font-size: 13px; margin-right: 8px; margin-bottom: 8px;">${detail}</span>`)
+    .join('');
+
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Georgia', 'Times New Roman', serif; background-color: #0a0f1a;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 20px; background-color: #0a0f1a;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px;">
+
+          <tr>
+            <td style="padding: 40px; text-align: center; background: linear-gradient(180deg, #0d1421 0%, #1a2744 100%);">
+              <h1 style="margin: 0 0 10px; color: #d4af37; font-size: 28px; font-weight: 400; letter-spacing: 2px;">
+                Neues Investment-Objekt
+              </h1>
+              <p style="margin: 0; color: #c9b896; font-size: 16px; font-style: italic;">
+                passend zu Ihrem Ankaufsprofil
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 35px 40px; background-color: #0d1421;">
+              <p style="margin: 0 0 25px; color: #e8e0d0; font-size: 16px; line-height: 1.8;">
+                Sehr geehrte(r) <span style="color: #d4af37;">${buyerName}</span>,
+              </p>
+
+              <p style="margin: 0 0 25px; color: #a89f8f; font-size: 15px; line-height: 1.8;">
+                Wir haben ein neues Objekt in unserem Portfolio, das zu Ihren Suchkriterien passt:
+              </p>
+
+              <!-- Objekt-Details Box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin: 25px 0; background: linear-gradient(135deg, #1a2744 0%, #0d1421 100%); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 8px;">
+                <tr>
+                  <td style="padding: 25px;">
+                    <p style="margin: 0 0 15px; color: #d4af37; font-size: 13px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600;">
+                      Objekt-Details
+                    </p>
+
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding: 10px 0; color: #8a8275; font-size: 14px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Adresse:</td>
+                        <td style="padding: 10px 0; color: #e8e0d0; font-size: 15px; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${objektAdresse}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px 0; color: #8a8275; font-size: 14px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Objekttyp:</td>
+                        <td style="padding: 10px 0; color: #e8e0d0; font-size: 15px; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${objektTyp}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px 0; color: #8a8275; font-size: 14px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Kaufpreis:</td>
+                        <td style="padding: 10px 0; color: #d4af37; font-size: 18px; font-weight: 700; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${kaufpreis}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px 0; color: #8a8275; font-size: 14px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Rendite IST:</td>
+                        <td style="padding: 10px 0; color: #22c55e; font-size: 16px; font-weight: 600; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${rendite}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px 0; color: #8a8275; font-size: 14px;">Wohnfläche:</td>
+                        <td style="padding: 10px 0; color: #e8e0d0; font-size: 15px; font-weight: 500; text-align: right;">${wohnflaeche}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Match-Kriterien -->
+              <p style="margin: 0 0 10px; color: #d4af37; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">
+                Passend zu Ihrem Profil:
+              </p>
+              <div style="margin-bottom: 25px;">
+                ${matchBadges}
+              </div>
+
+              <p style="margin: 0 0 30px; color: #a89f8f; font-size: 14px; line-height: 1.7;">
+                Bei Interesse kontaktieren Sie uns gerne für weitere Informationen und ein ausführliches Exposé.
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${kontaktUrl}" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #0a0f1a; text-decoration: none; padding: 14px 35px; border-radius: 4px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+                      Interesse bekunden
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 25px 40px; text-align: center; border-top: 1px solid rgba(212, 175, 55, 0.3);">
+              <p style="margin: 0 0 8px; color: #5a5549; font-size: 12px;">
+                © 2025 Imperoyal Immobilien. Alle Rechte vorbehalten.
+              </p>
+              <p style="margin: 0; color: #4a453f; font-size: 11px;">
+                Für Family Offices, UHNWIs & Institutionelle Vermögensverwalter
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -206,29 +330,40 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
 
           // Send emails to matching buyers via Make.com webhook
           let emailsSent = 0;
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app';
+
           for (const match of matches) {
             if (match.score >= 40 && match.mandant?.email) { // Minimum score threshold
               try {
+                // Build match details for display
+                const matchDetails: string[] = [];
+                if (match.matches.volumen) matchDetails.push('Budget passt');
+                if (match.matches.assetklasse) matchDetails.push('Assetklasse passt');
+                if (match.matches.region) matchDetails.push('Region passt');
+
+                // Generate interesse URL with mandant and ankaufsprofil IDs
+                const interesseUrl = `${appUrl}/interesse?objekt=${objekt_id}&m=${match.mandant.id}&ap=${match.ankaufsprofil.id}`;
+
+                // Generate complete HTML email
+                const htmlContent = generateBuyerMatchEmailHtml(
+                  match.mandant.ansprechpartner || match.mandant.name,
+                  `${objekt.strasse}, ${objekt.plz} ${objekt.ort}`,
+                  objekt.gebaeudetyp || 'Immobilie',
+                  formatCurrency(objekt.kaufpreis),
+                  formatPercent(berechnungen.rendite.rendite_ist),
+                  objekt.wohnflaeche ? `${objekt.wohnflaeche} m²` : 'k.A.',
+                  matchDetails,
+                  interesseUrl
+                );
+
                 const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                     type: 'buyer_match',
                     to: match.mandant.email,
-                    subject: 'Neues Objekt passt zu Ihrem Ankaufsprofil - Imperoyal Immobilien',
-                    buyer_name: match.mandant.ansprechpartner || match.mandant.name,
-                    objekt_adresse: `${objekt.strasse}, ${objekt.plz} ${objekt.ort}`,
-                    objekt_typ: objekt.gebaeudetyp || 'Immobilie',
-                    kaufpreis: formatCurrency(objekt.kaufpreis),
-                    rendite: formatPercent(berechnungen.rendite.rendite_ist),
-                    wohnflaeche: objekt.wohnflaeche ? `${objekt.wohnflaeche} m²` : 'k.A.',
-                    match_score: match.score,
-                    match_details: [
-                      match.matches.volumen ? '✓ Budget passt' : '',
-                      match.matches.assetklasse ? '✓ Assetklasse passt' : '',
-                      match.matches.region ? '✓ Region passt' : '',
-                    ].filter(Boolean).join(', '),
-                    ankaufsprofil_name: match.ankaufsprofil.name || 'Ihr Ankaufsprofil',
+                    subject: 'Neues Investment-Objekt passend zu Ihrem Ankaufsprofil',
+                    html: htmlContent,
                   }),
                 });
 
