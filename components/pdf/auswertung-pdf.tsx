@@ -731,7 +731,7 @@ export function AuswertungPDF({
           }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
               <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#7c3aed' }}>
-                📡 Aktuelle Marktdaten
+                Aktuelle Marktdaten
               </Text>
               <Text style={{ fontSize: 7, color: '#a78bfa', marginLeft: 'auto' }}>
                 via Perplexity AI • {berechnungen.marktdaten.standort}
