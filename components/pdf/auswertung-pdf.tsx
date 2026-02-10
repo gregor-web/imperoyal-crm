@@ -232,6 +232,7 @@ const colors = {
 const styles = StyleSheet.create({
   page: {
     padding: 25,
+    paddingBottom: 45, // Reserve space for footer
     fontFamily: 'Helvetica',
     fontSize: 9,
     color: colors.text,
@@ -558,14 +559,17 @@ const styles = StyleSheet.create({
     color: colors.warning,
     textAlign: 'center',
   },
-  // Footer - flows after content
+  // Footer - fixed at bottom of each page (uses 'fixed' for multi-page support)
   footer: {
+    position: 'absolute',
+    bottom: 15,
+    left: 25,
+    right: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: colors.border,
     paddingTop: 6,
-    marginTop: 15,
   },
   footerText: {
     fontSize: 7,
@@ -1098,8 +1102,8 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Footer */}
-        <View style={styles.footer}>
+        {/* Footer - fixed prop ensures it appears on every page if content overflows */}
+        <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
           <Text style={styles.footerText}>Seite 1 von 4</Text>
         </View>
@@ -1303,7 +1307,7 @@ export function AuswertungPDF({
         </View>
 
         {/* Footer */}
-        <View style={styles.footer}>
+        <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
           <Text style={styles.footerText}>Seite 2 von 4</Text>
         </View>
@@ -1560,7 +1564,7 @@ export function AuswertungPDF({
         </View>
 
         {/* Footer */}
-        <View style={styles.footer}>
+        <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
           <Text style={styles.footerText}>Seite 3 von 4</Text>
         </View>
@@ -1663,7 +1667,7 @@ export function AuswertungPDF({
         </View>
 
         {/* Footer */}
-        <View style={styles.footer}>
+        <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
           <Text style={styles.footerText}>Seite 4 von 4</Text>
         </View>
