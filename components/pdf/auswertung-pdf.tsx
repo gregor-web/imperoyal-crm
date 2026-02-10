@@ -621,6 +621,7 @@ interface AuswertungPDFProps {
   };
   mandant: {
     name: string;
+    ansprechpartner?: string | null;
   };
   einheiten?: Array<{
     position: number;
@@ -736,7 +737,9 @@ export function AuswertungPDF({
           borderLeftColor: colors.primary,
         }}>
           <Text style={{ fontSize: 10, color: colors.text, lineHeight: 1.6 }}>
-            Sehr geehrte Damen und Herren der {mandant.name},
+            {mandant.ansprechpartner
+              ? `Sehr geehrte(r) Herr/Frau ${mandant.ansprechpartner.split(' ').pop()},`
+              : `Sehr geehrte Damen und Herren der ${mandant.name},`}
           </Text>
           <Text style={{ fontSize: 9, color: colors.textMuted, lineHeight: 1.6, marginTop: 6 }}>
             vielen Dank für Ihr Vertrauen in Imperoyal Immobilien. Im Folgenden erhalten Sie eine umfassende Analyse
@@ -1470,35 +1473,32 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 12: Exit-Szenarien */}
-        <View style={[styles.sectionBox, { marginBottom: 15 }]}>
+        <View style={[styles.sectionBox, { marginBottom: 12 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
           </View>
           <View style={styles.sectionContent}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 5 }}>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 8, color: colors.textMuted }}>Wert heute</Text>
-                <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary }}>{formatCurrency(wert?.heute)}</Text>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Wert heute</Text>
+                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary }}>{formatCurrency(wert?.heute)}</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 8, color: colors.textMuted }}>in 3 Jahren</Text>
-                <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primaryLight }}>{formatCurrency(wert?.jahr_3)}</Text>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>in 3 Jahren</Text>
+                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primaryLight }}>{formatCurrency(wert?.jahr_3)}</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 8, color: colors.textMuted }}>in 7 Jahren</Text>
-                <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primaryLight }}>{formatCurrency(wert?.jahr_7)}</Text>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>in 7 Jahren</Text>
+                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primaryLight }}>{formatCurrency(wert?.jahr_7)}</Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 8, color: colors.textMuted }}>in 10 Jahren</Text>
-                <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primaryLight }}>{formatCurrency(wert?.jahr_10)}</Text>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>in 10 Jahren</Text>
+                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primaryLight }}>{formatCurrency(wert?.jahr_10)}</Text>
               </View>
             </View>
-            <Text style={{ fontSize: 7, color: colors.textMuted, textAlign: 'center', marginTop: 8 }}>
-              Annahme: {marktdaten?.preisprognose ? 'Dynamische Prognose lt. Marktdaten' : '2,5% p.a. Wertsteigerung'}
-            </Text>
-            <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 3 }}>
-              Quelle: {marktdaten?.preisprognose ? `Perplexity Marktprognose (${new Date(marktdaten.abfrage_datum).toLocaleDateString('de-DE')})` : 'Bundesbank Immobilienpreisindex (langfr. Ø)'}
+            <Text style={{ fontSize: 6, color: colors.textMuted, textAlign: 'center', marginTop: 5 }}>
+              Annahme: {marktdaten?.preisprognose ? 'Dynamische Prognose lt. Marktdaten' : '2,5% p.a. Wertsteigerung'} | Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Bundesbank Immobilienpreisindex'}
             </Text>
           </View>
         </View>
@@ -1507,36 +1507,36 @@ export function AuswertungPDF({
         <View style={{
           backgroundColor: colors.bgLight,
           borderRadius: 6,
-          padding: 12,
-          marginBottom: 15,
+          padding: 10,
+          marginBottom: 12,
           borderWidth: 1,
           borderColor: colors.border,
         }}>
-          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 10 }}>
+          <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 8 }}>
             Investment-Übersicht
           </Text>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
             {/* Spalte 1: Kapitalstruktur */}
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kapitalstruktur</Text>
-              <View style={{ height: 40, flexDirection: 'row', borderRadius: 3, overflow: 'hidden' }}>
+              <Text style={{ fontSize: 6, color: colors.textMuted, fontWeight: 'bold', marginBottom: 3 }}>Kapitalstruktur</Text>
+              <View style={{ height: 30, flexDirection: 'row', borderRadius: 3, overflow: 'hidden' }}>
                 <View style={{ flex: (fin?.eigenkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.success }} />
                 <View style={{ flex: (fin?.fremdkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.danger }} />
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }}>
-                <Text style={{ fontSize: 6, color: colors.success }}>EK {formatPercent((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
-                <Text style={{ fontSize: 6, color: colors.danger }}>FK {formatPercent((fin?.fremdkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                <Text style={{ fontSize: 5, color: colors.success }}>EK {formatPercent((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
+                <Text style={{ fontSize: 5, color: colors.danger }}>FK {formatPercent((fin?.fremdkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
               </View>
             </View>
             {/* Spalte 2: Cashflow-Verwendung */}
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Mietverteilung</Text>
-              <View style={{ height: 40, flexDirection: 'row', borderRadius: 3, overflow: 'hidden' }}>
+              <Text style={{ fontSize: 6, color: colors.textMuted, fontWeight: 'bold', marginBottom: 3 }}>Mietverteilung</Text>
+              <View style={{ height: 30, flexDirection: 'row', borderRadius: 3, overflow: 'hidden' }}>
                 <View style={{ flex: (fin?.kapitaldienst || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#ef4444' }} />
                 <View style={{ flex: (kosten?.kosten_gesamt || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#f59e0b' }} />
                 <View style={{ flex: Math.max(0, (cashflow?.cashflow_ist_jahr || 0)) / (miet?.miete_ist_jahr || 1), backgroundColor: '#22c55e' }} />
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
                 <Text style={{ fontSize: 5, color: '#ef4444' }}>Kapitaldienst</Text>
                 <Text style={{ fontSize: 5, color: '#f59e0b' }}>Kosten</Text>
                 <Text style={{ fontSize: 5, color: '#22c55e' }}>Cashflow</Text>
@@ -1544,20 +1544,20 @@ export function AuswertungPDF({
             </View>
             {/* Spalte 3: Key Metrics */}
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kennzahlen</Text>
+              <Text style={{ fontSize: 6, color: colors.textMuted, fontWeight: 'bold', marginBottom: 3 }}>Kennzahlen</Text>
               {[
                 { label: 'Rendite', value: formatPercent(rendite?.rendite_ist), color: colors.text },
                 { label: 'Kostenquote', value: formatPercent(kosten?.kostenquote), color: kosten?.bewertung === 'gesund' ? colors.success : colors.warning },
                 { label: 'Faktor', value: `${((fin?.kaufpreis || 0) / (miet?.miete_ist_jahr || 1)).toFixed(1)}x`, color: colors.text },
               ].map((item, i) => (
-                <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <Text style={{ fontSize: 7, color: colors.textMuted }}>{item.label}</Text>
-                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: item.color }}>{item.value}</Text>
+                <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 1 }}>
+                  <Text style={{ fontSize: 6, color: colors.textMuted }}>{item.label}</Text>
+                  <Text style={{ fontSize: 6, fontWeight: 'bold', color: item.color }}>{item.value}</Text>
                 </View>
               ))}
             </View>
           </View>
-          <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'right', marginTop: 6 }}>
+          <Text style={{ fontSize: 5, color: colors.textLight, fontStyle: 'italic', textAlign: 'right', marginTop: 4 }}>
             Quelle: Aggregierte Berechnung aus Mandantenangaben und Marktdaten
           </Text>
         </View>
@@ -1571,8 +1571,8 @@ export function AuswertungPDF({
 
       {/* ==================== PAGE 4 ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Section 13: Handlungsempfehlung */}
-        <View style={[styles.sectionBox, { marginBottom: 15 }]}>
+        {/* Section 13: Handlungsempfehlung - Combined header and content */}
+        <View style={[styles.sectionBox, { flex: 1, marginBottom: 15 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>13</Text>
             <Text style={styles.sectionTitle}>Handlungsempfehlung</Text>
@@ -1582,51 +1582,84 @@ export function AuswertungPDF({
               </Text>
             )}
           </View>
-        </View>
-
-        <View style={styles.empfehlungContainer}>
-          {/* Empfehlung Type */}
-          <Text style={styles.empfehlungType}>{empfehlung || '-'}</Text>
-
-          {/* Begründung */}
-          {empfehlung_begruendung && (
-            <Text style={styles.empfehlungText}>{empfehlung_begruendung}</Text>
-          )}
-
-          {/* Handlungsschritte */}
-          {empfehlung_handlungsschritte && empfehlung_handlungsschritte.length > 0 && (
-            <View style={styles.handlungsschritte}>
-              <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.textMuted, marginBottom: 8 }}>
-                Handlungsschritte
-              </Text>
-              {empfehlung_handlungsschritte.map((schritt, index) => {
-                // Support both old (string) and new (object with zeitrahmen) format
-                const isObject = typeof schritt === 'object' && schritt !== null;
-                const schrittText = isObject ? schritt.schritt : schritt;
-                const zeitrahmen = isObject ? schritt.zeitrahmen :
-                  (index === 0 ? 'Sofort' : index === 1 ? '2 Wochen' : index === 2 ? '4 Wochen' : '8 Wochen');
-                return (
-                  <View key={index} style={styles.handlungsschrittItem}>
-                    <Text style={styles.handlungsschrittNumber}>{index + 1}</Text>
-                    <Text style={styles.handlungsschrittText}>{schrittText}</Text>
-                    <Text style={styles.handlungsschrittTime}>{zeitrahmen}</Text>
-                  </View>
-                );
-              })}
+          <View style={[styles.sectionContent, { flex: 1 }]}>
+            {/* Empfehlung Badge */}
+            <View style={{
+              backgroundColor: colors.bgBlue,
+              borderRadius: 6,
+              padding: 15,
+              marginBottom: 15,
+              alignItems: 'center',
+            }}>
+              <Text style={{ fontSize: 10, color: colors.textMuted, marginBottom: 5 }}>Unsere Empfehlung</Text>
+              <Text style={{ fontSize: 22, fontWeight: 'bold', color: colors.primary }}>{empfehlung || '-'}</Text>
             </View>
-          )}
 
-          {/* Fazit */}
-          {empfehlung_fazit && (
-            <View style={styles.fazitBox}>
-              <Text style={styles.fazitLabel}>Fazit:</Text>
-              <Text style={styles.fazitText}>{empfehlung_fazit}</Text>
-            </View>
-          )}
+            {/* Begründung */}
+            {empfehlung_begruendung && (
+              <View style={{ marginBottom: 15 }}>
+                <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 5 }}>Begründung</Text>
+                <Text style={{ fontSize: 9, color: colors.text, lineHeight: 1.5 }}>{empfehlung_begruendung}</Text>
+              </View>
+            )}
+
+            {/* Handlungsschritte */}
+            {empfehlung_handlungsschritte && empfehlung_handlungsschritte.length > 0 && (
+              <View style={{ marginBottom: 15 }}>
+                <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 8 }}>
+                  Empfohlene Handlungsschritte
+                </Text>
+                {empfehlung_handlungsschritte.map((schritt, index) => {
+                  const isObject = typeof schritt === 'object' && schritt !== null;
+                  const schrittText = isObject ? schritt.schritt : schritt;
+                  const zeitrahmen = isObject ? schritt.zeitrahmen :
+                    (index === 0 ? 'Sofort' : index === 1 ? '2 Wochen' : index === 2 ? '4 Wochen' : '8 Wochen');
+                  return (
+                    <View key={index} style={{
+                      flexDirection: 'row',
+                      alignItems: 'flex-start',
+                      marginBottom: 6,
+                      backgroundColor: colors.bgLight,
+                      padding: 8,
+                      borderRadius: 4,
+                    }}>
+                      <View style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor: colors.primaryLight,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: 8,
+                      }}>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', color: 'white' }}>{index + 1}</Text>
+                      </View>
+                      <Text style={{ flex: 1, fontSize: 8, color: colors.text }}>{schrittText}</Text>
+                      <Text style={{ fontSize: 7, color: colors.success, fontWeight: 'bold' }}>{zeitrahmen}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            )}
+
+            {/* Fazit */}
+            {empfehlung_fazit && (
+              <View style={{
+                backgroundColor: colors.bgLight,
+                padding: 12,
+                borderRadius: 4,
+                borderLeftWidth: 3,
+                borderLeftColor: colors.primaryLight,
+              }}>
+                <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 4 }}>Fazit</Text>
+                <Text style={{ fontSize: 9, color: colors.text, lineHeight: 1.5 }}>{empfehlung_fazit}</Text>
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Disclaimer */}
-        <View style={styles.disclaimer}>
+        <View style={[styles.disclaimer, { marginTop: 'auto' }]}>
           <Text style={styles.disclaimerText}>
             Diese Analyse stellt keine Rechts-, Steuer- oder Anlageberatung dar.
           </Text>

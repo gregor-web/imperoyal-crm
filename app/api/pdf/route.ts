@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       .select(`
         *,
         objekte (id, strasse, plz, ort, baujahr, milieuschutz, weg_aufgeteilt, kaufpreis),
-        mandanten (name)
+        mandanten (name, ansprechpartner)
       `)
       .eq('id', auswertung_id)
       .single();
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       weg_aufgeteilt?: boolean;
       kaufpreis?: number;
     };
-    const mandant = auswertung.mandanten as { name: string };
+    const mandant = auswertung.mandanten as { name: string; ansprechpartner?: string | null };
     const berechnungen = auswertung.berechnungen as Berechnungen;
 
     // Fetch einheiten for this objekt
