@@ -176,6 +176,15 @@ export async function POST(request: Request) {
     console.log('[PDF-OPTIMIZER] Erfolgreich:', isOptimal);
     console.log('[PDF-OPTIMIZER] Log:', optimizationLog);
 
+    // Safety check - ensure we have a valid PDF buffer
+    if (!pdfBuffer || pdfBuffer.length === 0) {
+      console.error('[PDF-OPTIMIZER] CRITICAL: PDF buffer is empty!');
+      return NextResponse.json(
+        { error: 'PDF konnte nicht generiert werden' },
+        { status: 500 }
+      );
+    }
+
     // Create a clean filename from address and date
     const cleanAddress = objekt.strasse
       .replace(/[äÄ]/g, 'ae')
@@ -188,19 +197,24 @@ export async function POST(request: Request) {
     const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
     const filename = `Auswertung_${cleanAddress}_${dateStr}_optimized.pdf`;
 
+    console.log('[PDF-OPTIMIZER] Sende Response mit', pdfBuffer.length, 'bytes');
+
     // Return PDF as response with optimization info in headers
-    return new Response(new Uint8Array(pdfBuffer!), {
+    return new Response(new Uint8Array(pdfBuffer), {
+      status: 200,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Length': pdfBuffer.length.toString(),
         'X-Optimization-Attempts': attempts.toString(),
         'X-Optimization-Success': isOptimal.toString(),
       },
     });
   } catch (error) {
-    console.error('PDF optimization error:', error);
+    console.error('[PDF-OPTIMIZER] CRITICAL ERROR:', error);
+    console.error('[PDF-OPTIMIZER] Stack:', error instanceof Error ? error.stack : 'no stack');
     return NextResponse.json(
-      { error: 'Fehler bei der PDF-Optimierung' },
+      { error: error instanceof Error ? error.message : 'Fehler bei der PDF-Optimierung' },
       { status: 500 }
     );
   }

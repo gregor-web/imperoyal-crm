@@ -16,9 +16,13 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
   const handleExport = async () => {
     setLoading(true);
     setError(null);
-    setStatus('Generiere PDF...');
+    setStatus('Starte Optimierung...');
+    console.log('[OptimizedPDF] Starting export for:', auswertungId);
 
     try {
+      setStatus('Generiere PDF & analysiere mit KI...');
+      console.log('[OptimizedPDF] Sending request...');
+
       const response = await fetch('/api/pdf/optimized', {
         method: 'POST',
         headers: {
@@ -27,21 +31,33 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
         body: JSON.stringify({ auswertung_id: auswertungId }),
       });
 
+      console.log('[OptimizedPDF] Response status:', response.status);
+      console.log('[OptimizedPDF] Response headers:', Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Fehler beim PDF-Export');
+        let errorMessage = 'Fehler beim PDF-Export';
+        try {
+          const data = await response.json();
+          errorMessage = data.error || errorMessage;
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       // Get optimization info from headers
       const attempts = response.headers.get('X-Optimization-Attempts');
-      const success = response.headers.get('X-Optimization-Success');
+      console.log('[OptimizedPDF] Optimization attempts:', attempts);
 
-      if (attempts) {
-        setStatus(`Optimiert in ${attempts} Versuchen`);
-      }
+      setStatus('Lade PDF herunter...');
 
       // Get the PDF blob
       const blob = await response.blob();
+      console.log('[OptimizedPDF] Blob size:', blob.size, 'bytes');
+
+      if (blob.size === 0) {
+        throw new Error('PDF ist leer');
+      }
 
       // Create download link
       const url = window.URL.createObjectURL(blob);
@@ -53,8 +69,12 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      setTimeout(() => setStatus(''), 3000);
+      setStatus(attempts ? `Fertig! Optimiert in ${attempts} Versuchen` : 'Fertig!');
+      console.log('[OptimizedPDF] Download triggered successfully');
+
+      setTimeout(() => setStatus(''), 5000);
     } catch (err) {
+      console.error('[OptimizedPDF] Error:', err);
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
     } finally {
       setLoading(false);

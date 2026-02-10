@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "app/api/pdf/optimized/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/auswertung/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}
