@@ -101,12 +101,19 @@ AKTUELLE MARKTDATEN (via Perplexity):
 - Aktuelle Bauzinsen: ${marktdaten.aktuelle_bauzinsen.wert}% (${marktdaten.aktuelle_bauzinsen.zinsbindung})
 - Preisprognose: ${marktdaten.preisprognose.kurz_0_3_jahre}% p.a. (0-3J), ${marktdaten.preisprognose.mittel_3_7_jahre}% p.a. (3-7J), ${marktdaten.preisprognose.lang_7_plus_jahre}% p.a. (7+J)
 ` : ''}
+WICHTIG: Bei negativem Cashflow IMMER einen Handlungsschritt zur Finanzierungsoptimierung (Refinanzierung, Tilgungsstruktur) ergänzen.
+
 Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
 {
   "empfehlung": "HALTEN" | "OPTIMIEREN" | "RESTRUKTURIEREN" | "VERKAUFEN",
   "prioritaet": "niedrig" | "mittel" | "hoch",
   "begruendung": "3-4 Sätze zur Begründung",
-  "handlungsschritte": ["Schritt 1", "Schritt 2", "Schritt 3"],
+  "handlungsschritte": [
+    { "schritt": "Handlungsschritt 1", "zeitrahmen": "Sofort" },
+    { "schritt": "Handlungsschritt 2", "zeitrahmen": "2 Wochen" },
+    { "schritt": "Handlungsschritt 3", "zeitrahmen": "4 Wochen" },
+    { "schritt": "Handlungsschritt 4", "zeitrahmen": "8 Wochen" }
+  ],
   "chancen": ["Chance 1", "Chance 2"],
   "risiken": ["Risiko 1", "Risiko 2"],
   "fazit": "Ein zusammenfassendes Fazit"

@@ -361,12 +361,17 @@ export interface Erlaeuterungen {
 // CLAUDE API RESPONSE
 // =====================================================
 
+export interface Handlungsschritt {
+  schritt: string;
+  zeitrahmen: string;
+}
+
 export interface ClaudeEmpfehlung {
   empfehlung: Empfehlung;
   prioritaet: string;
   begruendung: string;
   fazit: string;
-  handlungsschritte: string[];
+  handlungsschritte: Handlungsschritt[] | string[]; // Support both formats
   chancen: string[];
   risiken: string[];
 }

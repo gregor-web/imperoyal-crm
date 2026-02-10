@@ -17,12 +17,6 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px;">
 
           <tr>
-            <td style="padding: 40px 40px 30px; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.3);">
-              <img src="https://imperoyal-app.vercel.app/logo_imperoyal.png" alt="Imperoyal Immobilien" style="height: 60px; width: auto;" />
-            </td>
-          </tr>
-
-          <tr>
             <td style="padding: 50px 40px; text-align: center; background: linear-gradient(180deg, #0d1421 0%, #1a2744 100%);">
               <h1 style="margin: 0 0 10px; color: #d4af37; font-size: 32px; font-weight: 400; letter-spacing: 2px;">
                 Willkommen
@@ -173,6 +167,16 @@ export async function POST(request: Request) {
     if (existingMandant) {
       return NextResponse.json(
         { error: 'Ein Mandant mit dieser E-Mail existiert bereits' },
+        { status: 409 }
+      );
+    }
+
+    // Also check if auth user already exists
+    const { data: existingUsers } = await supabase.auth.admin.listUsers();
+    const existingAuthUser = existingUsers?.users?.find(u => u.email === data.email);
+    if (existingAuthUser) {
+      return NextResponse.json(
+        { error: 'Ein Benutzer mit dieser E-Mail existiert bereits im System' },
         { status: 409 }
       );
     }

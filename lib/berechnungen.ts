@@ -169,11 +169,20 @@ export function berechneAlles(
   const einheitenAnalyse: MietanalyseEinheit[] = einheiten.map((e) => {
     const flaeche = safeNumber(e.flaeche);
     const kaltmiete = safeNumber(e.kaltmiete);
-    const vergleichsmiete = safeNumber(e.vergleichsmiete, 12);
+
+    // Marktmiete: Differenzierte Default-Werte nach Nutzungsart
+    // Wohnen: 12-14 €/m², Gewerbe: 18-25 €/m², Stellplatz: 80-100 € pauschal
+    const defaultVergleichsmiete =
+      e.nutzung === 'Gewerbe' ? 20 :
+      e.nutzung === 'Stellplatz' ? 0 : // Stellplatz wird pauschal bewertet
+      12;
+    const vergleichsmiete = safeNumber(e.vergleichsmiete, defaultVergleichsmiete);
 
     // SOLL-Miete: Bei Standard-Verträgen max(kaltmiete, flaeche × vergleichsmiete)
     // Bei Index/Staffel: kaltmiete bleibt
+    // Bei Stellplatz: keine flächenbasierte Berechnung, kaltmiete bleibt
     const sollMiete =
+      e.nutzung === 'Stellplatz' ? kaltmiete :
       e.mietvertragsart === 'Standard'
         ? Math.max(kaltmiete, flaeche * vergleichsmiete)
         : kaltmiete;
@@ -197,9 +206,9 @@ export function berechneAlles(
     };
   });
 
-  // §558 BGB Mieterhöhungen
+  // §558 BGB Mieterhöhungen - NUR für Wohnraum (§558 gilt nicht für Gewerbe!)
   const mieterhoehungen_558: Mieterhoehung558[] = einheiten
-    .filter((e) => e.mietvertragsart === 'Standard')
+    .filter((e) => e.mietvertragsart === 'Standard' && e.nutzung === 'Wohnen')
     .map((e) => {
       const result = berechneNaechsteMieterhoehung(e, kappungsProzent);
       return {
@@ -231,16 +240,22 @@ export function berechneAlles(
   // =====================================================
 
   const capex_betrag = safeNumber(objekt.capex_geplant_betrag);
-  const umlage_8_prozent = capex_betrag * 0.08;
 
-  // Kappungsgrenzen nach §559 Abs. 3a BGB
+  // §559-Umlage NUR berechnen wenn CAPEX > 0
+  let umlage_8_prozent = 0;
   let umlage_nach_kappung = 0;
-  einheitenAnalyse.forEach((e) => {
-    const euroProQm = e.flaeche > 0 ? e.kaltmiete_ist / e.flaeche : 0;
-    const maxEuroProQm = euroProQm < 7 ? 2 : 3;
-    const maxErhoehungProJahr = (e.flaeche * maxEuroProQm) / 6;
-    umlage_nach_kappung += maxErhoehungProJahr * 12;
-  });
+
+  if (capex_betrag > 0) {
+    umlage_8_prozent = capex_betrag * 0.08;
+
+    // Kappungsgrenzen nach §559 Abs. 3a BGB
+    einheitenAnalyse.forEach((e) => {
+      const euroProQm = e.flaeche > 0 ? e.kaltmiete_ist / e.flaeche : 0;
+      const maxEuroProQm = euroProQm < 7 ? 2 : 3;
+      const maxErhoehungProJahr = (e.flaeche * maxEuroProQm) / 6;
+      umlage_nach_kappung += maxErhoehungProJahr * 12;
+    });
+  }
 
   const umlage_effektiv = Math.min(umlage_8_prozent, umlage_nach_kappung);
 
@@ -255,10 +270,25 @@ export function berechneAlles(
   // 4. KOSTENSTRUKTUR
   // =====================================================
 
-  const betriebskosten_nicht_umlage = safeNumber(objekt.betriebskosten_nicht_umlage);
-  const instandhaltung = safeNumber(objekt.instandhaltung) || flaeche_gesamt * 12;
+  // Realistische Fallback-Werte basierend auf Objektgröße und Alter
+  const baujahr_temp = safeNumber(objekt.baujahr, 1970);
+  const alter_temp = new Date().getFullYear() - baujahr_temp;
+
+  // Nicht umlagefähige BK: ca. 5% der Jahresmiete als Fallback
+  const betriebskosten_nicht_umlage = safeNumber(objekt.betriebskosten_nicht_umlage) ||
+    Math.round(miete_ist_jahr * 0.05);
+
+  // Instandhaltung: 12-18 €/m² je nach Alter (ältere Gebäude = höhere Kosten)
+  const instandhaltungProQm = alter_temp > 40 ? 18 : alter_temp > 20 ? 15 : 12;
+  const instandhaltung = safeNumber(objekt.instandhaltung) ||
+    Math.round(flaeche_gesamt * instandhaltungProQm);
+
   const verwaltung = safeNumber(objekt.verwaltung) || einheiten.length * 300;
-  const ruecklagen = safeNumber(objekt.ruecklagen);
+
+  // Rücklagen: 3-5 €/m² p.a. je nach Alter (ältere Gebäude = höhere Rücklagen)
+  const ruecklagenProQm = alter_temp > 40 ? 5 : alter_temp > 20 ? 4 : 3;
+  const ruecklagen = safeNumber(objekt.ruecklagen) ||
+    Math.round(flaeche_gesamt * ruecklagenProQm);
 
   const kosten_gesamt =
     betriebskosten_nicht_umlage + instandhaltung + verwaltung + ruecklagen;

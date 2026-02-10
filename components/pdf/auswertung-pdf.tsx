@@ -8,6 +8,194 @@ import {
 } from '@react-pdf/renderer';
 import type { Berechnungen } from '@/lib/types';
 
+// =====================================================
+// GRAFISCHE KOMPONENTEN
+// =====================================================
+
+// Fortschrittsbalken
+const ProgressBar = ({
+  value,
+  max = 100,
+  color = '#3b82f6',
+  bgColor = '#e2e8f0',
+  height = 8,
+  showLabel = true,
+}: {
+  value: number;
+  max?: number;
+  color?: string;
+  bgColor?: string;
+  height?: number;
+  showLabel?: boolean;
+}) => {
+  const percentage = Math.min(100, Math.max(0, (value / max) * 100));
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <View style={{
+        flex: 1,
+        height,
+        backgroundColor: bgColor,
+        borderRadius: height / 2,
+        overflow: 'hidden',
+      }}>
+        <View style={{
+          width: `${percentage}%`,
+          height: '100%',
+          backgroundColor: color,
+          borderRadius: height / 2,
+        }} />
+      </View>
+      {showLabel && (
+        <Text style={{ fontSize: 8, color: '#64748b', width: 30, textAlign: 'right' }}>
+          {percentage.toFixed(0)}%
+        </Text>
+      )}
+    </View>
+  );
+};
+
+// Vergleichsbalken (IST vs SOLL)
+const ComparisonBar = ({
+  ist,
+  soll,
+  label,
+  colorIst = '#94a3b8',
+  colorSoll = '#22c55e',
+}: {
+  ist: number;
+  soll: number;
+  label: string;
+  colorIst?: string;
+  colorSoll?: string;
+}) => {
+  const max = Math.max(ist, soll);
+  const istWidth = max > 0 ? (ist / max) * 100 : 0;
+  const sollWidth = max > 0 ? (soll / max) * 100 : 0;
+  return (
+    <View style={{ marginBottom: 8 }}>
+      <Text style={{ fontSize: 7, color: '#64748b', marginBottom: 3 }}>{label}</Text>
+      <View style={{ gap: 2 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <Text style={{ fontSize: 6, color: '#94a3b8', width: 20 }}>IST</Text>
+          <View style={{ flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3 }}>
+            <View style={{ width: `${istWidth}%`, height: '100%', backgroundColor: colorIst, borderRadius: 3 }} />
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <Text style={{ fontSize: 6, color: '#22c55e', width: 20 }}>SOLL</Text>
+          <View style={{ flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3 }}>
+            <View style={{ width: `${sollWidth}%`, height: '100%', backgroundColor: colorSoll, borderRadius: 3 }} />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+// Ampel-Indikator (Rot/Gelb/Grün)
+const TrafficLight = ({
+  status
+}: {
+  status: 'green' | 'yellow' | 'red'
+}) => {
+  const getColor = () => {
+    switch(status) {
+      case 'green': return '#22c55e';
+      case 'yellow': return '#eab308';
+      case 'red': return '#ef4444';
+    }
+  };
+  return (
+    <View style={{
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      backgroundColor: getColor(),
+      borderWidth: 2,
+      borderColor: 'white',
+    }} />
+  );
+};
+
+// Mini-Sparkline (vereinfachte Version mit Balken)
+const MiniChart = ({
+  data,
+  color = '#3b82f6',
+  height = 30,
+}: {
+  data: number[];
+  color?: string;
+  height?: number;
+}) => {
+  const max = Math.max(...data);
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 2, height }}>
+      {data.map((value, index) => (
+        <View
+          key={index}
+          style={{
+            flex: 1,
+            height: max > 0 ? (value / max) * height : 0,
+            backgroundColor: color,
+            borderRadius: 2,
+            opacity: 0.3 + (index / data.length) * 0.7,
+          }}
+        />
+      ))}
+    </View>
+  );
+};
+
+// Donut-Segment (vereinfachte Version)
+const DonutSegment = ({
+  percentage,
+  color,
+  size = 50,
+}: {
+  percentage: number;
+  color: string;
+  size?: number;
+}) => {
+  // Vereinfachte visuelle Darstellung mit konzentrischen Kreisen
+  const innerSize = size * 0.6;
+  return (
+    <View style={{
+      width: size,
+      height: size,
+      borderRadius: size / 2,
+      backgroundColor: color,
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <View style={{
+        width: innerSize,
+        height: innerSize,
+        borderRadius: innerSize / 2,
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <Text style={{ fontSize: 8, fontWeight: 'bold', color }}>{percentage.toFixed(0)}%</Text>
+      </View>
+    </View>
+  );
+};
+
+// Trend-Pfeil
+const TrendArrow = ({
+  direction,
+  color,
+}: {
+  direction: 'up' | 'down' | 'stable';
+  color?: string;
+}) => {
+  const arrowColor = color || (direction === 'up' ? '#22c55e' : direction === 'down' ? '#ef4444' : '#94a3b8');
+  const symbol = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '●';
+  return (
+    <Text style={{ fontSize: 10, color: arrowColor }}>{symbol}</Text>
+  );
+};
+
 // Color constants
 const colors = {
   primary: '#1e3a5f',
@@ -438,7 +626,7 @@ interface AuswertungPDFProps {
   empfehlung?: string;
   empfehlung_begruendung?: string;
   empfehlung_prioritaet?: string;
-  empfehlung_handlungsschritte?: string[];
+  empfehlung_handlungsschritte?: Array<{ schritt: string; zeitrahmen: string }> | string[];
   empfehlung_chancen?: string[];
   empfehlung_risiken?: string[];
   empfehlung_fazit?: string;
@@ -623,35 +811,59 @@ export function AuswertungPDF({
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>4</Text>
               <Text style={styles.sectionTitle}>Kostenstruktur</Text>
+              <View style={{ marginLeft: 'auto' }}>
+                <TrafficLight status={kosten?.bewertung === 'gesund' ? 'green' : kosten?.bewertung === 'durchschnittlich' ? 'yellow' : 'red'} />
+              </View>
             </View>
             <View style={styles.sectionContent}>
-              <View style={styles.row}>
-                <Text style={styles.label}>Instandhaltung</Text>
-                <Text style={styles.value}>{formatCurrency(kosten?.instandhaltung)}</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.label}>Verwaltung</Text>
-                <Text style={styles.value}>{formatCurrency(kosten?.verwaltung)}</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.label}>Nicht umlf. BK</Text>
-                <Text style={styles.value}>{formatCurrency(kosten?.betriebskosten_nicht_umlage)}</Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.label}>Rücklagen</Text>
-                <Text style={styles.value}>{formatCurrency(kosten?.ruecklagen)}</Text>
+              {/* Visuelle Kostenbalken */}
+              <View style={{ marginBottom: 8 }}>
+                {[
+                  { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: '#3b82f6' },
+                  { label: 'Verwaltung', value: kosten?.verwaltung || 0, color: '#8b5cf6' },
+                  { label: 'Nicht umlf. BK', value: kosten?.betriebskosten_nicht_umlage || 0, color: '#f59e0b' },
+                  { label: 'Rücklagen', value: kosten?.ruecklagen || 0, color: '#10b981' },
+                ].map((item, i) => (
+                  <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                    <Text style={{ fontSize: 7, color: colors.textMuted, width: 55 }}>{item.label}</Text>
+                    <View style={{ flex: 1, marginHorizontal: 4 }}>
+                      <ProgressBar
+                        value={item.value}
+                        max={kosten?.kosten_gesamt || 1}
+                        color={item.color}
+                        height={6}
+                        showLabel={false}
+                      />
+                    </View>
+                    <Text style={{ fontSize: 7, fontWeight: 'bold', width: 40, textAlign: 'right' }}>{formatCurrencyShort(item.value)}</Text>
+                  </View>
+                ))}
               </View>
               <View style={[styles.row, styles.rowTotal]}>
                 <Text style={[styles.label, { fontWeight: 'bold' }]}>Gesamt</Text>
                 <Text style={[styles.value, { fontWeight: 'bold' }]}>{formatCurrency(kosten?.kosten_gesamt)}</Text>
               </View>
-              <View style={[styles.kostenquoteBadge, {
-                backgroundColor: kosten?.bewertung === 'gesund' ? colors.successBg :
-                  kosten?.bewertung === 'durchschnittlich' ? colors.warningBg : colors.dangerBg,
-                color: kosten?.bewertung === 'gesund' ? colors.success :
-                  kosten?.bewertung === 'durchschnittlich' ? colors.warning : colors.danger,
-              }]}>
-                <Text>Kostenquote: {formatPercent(kosten?.kostenquote)}</Text>
+              {/* Kostenquote mit Fortschrittsbalken */}
+              <View style={{ marginTop: 8 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 8, color: colors.textMuted }}>Kostenquote</Text>
+                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: kosten?.bewertung === 'gesund' ? colors.success : kosten?.bewertung === 'durchschnittlich' ? colors.warning : colors.danger }}>
+                    {formatPercent(kosten?.kostenquote)}
+                  </Text>
+                </View>
+                <ProgressBar
+                  value={kosten?.kostenquote || 0}
+                  max={50}
+                  color={kosten?.bewertung === 'gesund' ? colors.success : kosten?.bewertung === 'durchschnittlich' ? colors.warning : colors.danger}
+                  height={8}
+                  showLabel={false}
+                />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+                  <Text style={{ fontSize: 6, color: colors.textLight }}>0%</Text>
+                  <Text style={{ fontSize: 6, color: colors.success }}>25%</Text>
+                  <Text style={{ fontSize: 6, color: colors.warning }}>35%</Text>
+                  <Text style={{ fontSize: 6, color: colors.danger }}>50%</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -670,7 +882,7 @@ export function AuswertungPDF({
         <View style={[styles.sectionBox, { marginBottom: 15 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>5</Text>
-            <Text style={styles.sectionTitle}>Mieterhöhungspotenzial nach Einheiten (§558 BGB)</Text>
+            <Text style={styles.sectionTitle}>Mieterhöhungspotenzial (§558 gilt nur für Wohnraum)</Text>
             <Text style={styles.sectionBadge}>{einheitenMitPotenzial} von {einheitenGesamt} mit Potenzial</Text>
           </View>
           <View style={styles.sectionContent}>
@@ -691,6 +903,8 @@ export function AuswertungPDF({
             {miet?.einheiten?.map((einheit, index) => {
               const mieterhoehung = miet.mieterhoehungen_558?.find(m => m.position === einheit.position);
               const euroPerSqm = einheit.flaeche > 0 ? einheit.kaltmiete_ist / einheit.flaeche : 0;
+              const isGewerbe = einheit.nutzung === 'Gewerbe' || einheit.nutzung === 'Stellplatz';
+              const marktMiete = einheit.nutzung === 'Gewerbe' ? 20 : einheit.nutzung === 'Stellplatz' ? '-' : 14;
               return (
                 <View key={index} style={[styles.tableRow, index % 2 === 1 ? styles.tableRowAlt : {}]}>
                   <Text style={[styles.tableCell, { width: 20 }]}>{einheit.position}</Text>
@@ -698,16 +912,16 @@ export function AuswertungPDF({
                   <Text style={[styles.tableCell, { width: 40 }]}>{einheit.flaeche} m²</Text>
                   <Text style={[styles.tableCell, { width: 50 }]}>{formatCurrency(einheit.kaltmiete_ist)}</Text>
                   <Text style={[styles.tableCell, { width: 35 }]}>{euroPerSqm.toFixed(2)} €</Text>
-                  <Text style={[styles.tableCell, { width: 35 }]}>14 €</Text>
+                  <Text style={[styles.tableCell, { width: 35 }]}>{marktMiete} €</Text>
                   <Text style={[styles.tableCell, { width: 50 }]}>{formatCurrency(einheit.kaltmiete_soll)}</Text>
                   <Text style={[styles.tableCell, { width: 50, color: einheit.potenzial > 0 ? colors.success : colors.textMuted }]}>
                     {einheit.potenzial > 0 ? `+${formatCurrency(einheit.potenzial)}` : '-'}
                   </Text>
-                  <Text style={[styles.tableCell, { width: 50, color: mieterhoehung?.moeglich === 'Sofort' ? colors.success : colors.warning }]}>
-                    {mieterhoehung?.moeglich || '-'}
+                  <Text style={[styles.tableCell, { width: 50, color: isGewerbe ? colors.textMuted : mieterhoehung?.moeglich === 'Sofort' ? colors.success : colors.warning }]}>
+                    {isGewerbe ? 'n/a' : mieterhoehung?.moeglich || '-'}
                   </Text>
-                  <Text style={[styles.tableCell, { width: 45, color: colors.success }]}>
-                    {mieterhoehung?.betrag ? `+${formatCurrency(mieterhoehung.betrag)}` : '-'}
+                  <Text style={[styles.tableCell, { width: 45, color: isGewerbe ? colors.textMuted : colors.success }]}>
+                    {isGewerbe ? 'frei' : mieterhoehung?.betrag ? `+${formatCurrency(mieterhoehung.betrag)}` : '-'}
                   </Text>
                 </View>
               );
@@ -734,8 +948,9 @@ export function AuswertungPDF({
             <View style={styles.infoBox}>
               <Text style={styles.infoBoxTitle}>Hinweis §558 BGB (Kappungsgrenze):</Text>
               <Text style={styles.infoBoxText}>
-                Die Miete darf innerhalb von 3 Jahren um max. 15% erhöht werden (Kappungsgebiet).
-                "Sofort" = Erhöhung jetzt möglich. Nach der letzten Mieterhöhung gilt eine Sperrfrist von 15 Monaten.
+                §558 BGB gilt nur für Wohnraum. Die Miete darf innerhalb von 3 Jahren um max. 15% erhöht werden (Kappungsgebiet).
+                "Sofort" = Erhöhung jetzt möglich. Sperrfrist: 15 Monate nach letzter Erhöhung.
+                Gewerbe/Stellplatz: Freie Mietvertragsregelungen, keine gesetzliche Kappung.
               </Text>
             </View>
           </View>
@@ -748,25 +963,52 @@ export function AuswertungPDF({
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>6</Text>
               <Text style={styles.sectionTitle}>Cashflow IST vs. Optimiert</Text>
+              <View style={{ marginLeft: 'auto' }}>
+                <TrendArrow direction={(cashflow?.cashflow_opt_jahr || 0) > (cashflow?.cashflow_ist_jahr || 0) ? 'up' : 'stable'} />
+              </View>
             </View>
             <View style={styles.sectionContent}>
+              {/* Visueller Vergleich mit Balken */}
+              <View style={{ marginBottom: 10 }}>
+                <ComparisonBar
+                  ist={miet?.miete_ist_jahr || 0}
+                  soll={miet?.miete_soll_jahr || 0}
+                  label="Mieteinnahmen p.a."
+                  colorIst="#94a3b8"
+                  colorSoll="#22c55e"
+                />
+              </View>
+              {/* Cashflow-Werte */}
               <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10 }}>
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 8, color: colors.textMuted }}>IST</Text>
-                  <Text style={[styles.value, { fontSize: 14, color: (cashflow?.cashflow_ist_jahr || 0) >= 0 ? colors.success : colors.danger }]}>
-                    {formatCurrency(cashflow?.cashflow_ist_jahr)}
+                  <DonutSegment
+                    percentage={Math.abs(cashflow?.cashflow_ist_jahr || 0) / (miet?.miete_ist_jahr || 1) * 100}
+                    color={(cashflow?.cashflow_ist_jahr || 0) >= 0 ? colors.success : colors.danger}
+                    size={45}
+                  />
+                  <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 3 }}>IST</Text>
+                  <Text style={{ fontSize: 9, fontWeight: 'bold', color: (cashflow?.cashflow_ist_jahr || 0) >= 0 ? colors.success : colors.danger }}>
+                    {formatCurrencyShort(cashflow?.cashflow_ist_jahr)}
                   </Text>
                 </View>
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 16, color: colors.success }}>→</Text>
+                </View>
                 <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 8, color: colors.textMuted }}>OPTIMIERT</Text>
-                  <Text style={[styles.value, { fontSize: 14, color: (cashflow?.cashflow_opt_jahr || 0) >= 0 ? colors.success : colors.danger }]}>
-                    {formatCurrency(cashflow?.cashflow_opt_jahr)}
+                  <DonutSegment
+                    percentage={Math.abs(cashflow?.cashflow_opt_jahr || 0) / (miet?.miete_soll_jahr || 1) * 100}
+                    color={(cashflow?.cashflow_opt_jahr || 0) >= 0 ? colors.success : colors.danger}
+                    size={45}
+                  />
+                  <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 3 }}>OPTIMIERT</Text>
+                  <Text style={{ fontSize: 9, fontWeight: 'bold', color: (cashflow?.cashflow_opt_jahr || 0) >= 0 ? colors.success : colors.danger }}>
+                    {formatCurrencyShort(cashflow?.cashflow_opt_jahr)}
                   </Text>
                 </View>
               </View>
               <View style={[styles.infoBox, { backgroundColor: colors.successBg }]}>
                 <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.success, textAlign: 'center' }}>
-                  Optimierung: +{formatCurrency(miet?.potenzial_jahr)} p.a.
+                  Δ +{formatCurrency(miet?.potenzial_jahr)} p.a.
                 </Text>
               </View>
             </View>
@@ -776,34 +1018,43 @@ export function AuswertungPDF({
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>7</Text>
-              <Text style={styles.sectionTitle}>Wertentwicklung (2,5% p.a.)</Text>
+              <Text style={styles.sectionTitle}>Wertentwicklung</Text>
+              <View style={{ marginLeft: 'auto' }}>
+                <TrendArrow direction="up" color={colors.success} />
+              </View>
             </View>
             <View style={styles.sectionContent}>
+              {/* Mini-Chart für Wertentwicklung */}
+              <View style={{ marginBottom: 8 }}>
+                <MiniChart
+                  data={[
+                    wert?.heute || 0,
+                    wert?.jahr_3 || 0,
+                    wert?.jahr_5 || 0,
+                    wert?.jahr_7 || 0,
+                    wert?.jahr_10 || 0,
+                  ]}
+                  color={colors.primaryLight}
+                  height={25}
+                />
+              </View>
+              {/* Werte unter dem Chart */}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Heute</Text>
-                  <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{formatCurrencyShort(wert?.heute)}</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 7, color: colors.textMuted }}>+3J</Text>
-                  <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{formatCurrencyShort(wert?.jahr_3)}</Text>
-                  <Text style={{ fontSize: 7, color: colors.success }}>+8%</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 7, color: colors.textMuted }}>+5J</Text>
-                  <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{formatCurrencyShort(wert?.jahr_5)}</Text>
-                  <Text style={{ fontSize: 7, color: colors.success }}>+13%</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 7, color: colors.textMuted }}>+7J</Text>
-                  <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{formatCurrencyShort(wert?.jahr_7)}</Text>
-                  <Text style={{ fontSize: 7, color: colors.success }}>+19%</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 7, color: colors.textMuted }}>+10J</Text>
-                  <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{formatCurrencyShort(wert?.jahr_10)}</Text>
-                  <Text style={{ fontSize: 7, color: colors.success }}>+28%</Text>
-                </View>
+                {[
+                  { label: 'Heute', value: wert?.heute, pct: null },
+                  { label: '+3J', value: wert?.jahr_3, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+5J', value: wert?.jahr_5, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+7J', value: wert?.jahr_7, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+10J', value: wert?.jahr_10, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
+                ].map((item, i) => (
+                  <View key={i} style={{ alignItems: 'center' }}>
+                    <Text style={{ fontSize: 6, color: colors.textMuted }}>{item.label}</Text>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>{formatCurrencyShort(item.value)}</Text>
+                    {item.pct !== null && (
+                      <Text style={{ fontSize: 6, color: colors.success }}>+{item.pct.toFixed(0)}%</Text>
+                    )}
+                  </View>
+                ))}
               </View>
             </View>
           </View>
@@ -1003,15 +1254,20 @@ export function AuswertungPDF({
               <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.textMuted, marginBottom: 8 }}>
                 Handlungsschritte
               </Text>
-              {empfehlung_handlungsschritte.map((schritt, index) => (
-                <View key={index} style={styles.handlungsschrittItem}>
-                  <Text style={styles.handlungsschrittNumber}>{index + 1}</Text>
-                  <Text style={styles.handlungsschrittText}>{schritt}</Text>
-                  <Text style={styles.handlungsschrittTime}>
-                    {index === 0 ? '2 Wochen' : index === 1 ? '4 Wochen' : index === 2 ? '4 Wochen' : 'Sofort'}
-                  </Text>
-                </View>
-              ))}
+              {empfehlung_handlungsschritte.map((schritt, index) => {
+                // Support both old (string) and new (object with zeitrahmen) format
+                const isObject = typeof schritt === 'object' && schritt !== null;
+                const schrittText = isObject ? schritt.schritt : schritt;
+                const zeitrahmen = isObject ? schritt.zeitrahmen :
+                  (index === 0 ? 'Sofort' : index === 1 ? '2 Wochen' : index === 2 ? '4 Wochen' : '8 Wochen');
+                return (
+                  <View key={index} style={styles.handlungsschrittItem}>
+                    <Text style={styles.handlungsschrittNumber}>{index + 1}</Text>
+                    <Text style={styles.handlungsschrittText}>{schrittText}</Text>
+                    <Text style={styles.handlungsschrittTime}>{zeitrahmen}</Text>
+                  </View>
+                );
+              })}
             </View>
           )}
 
