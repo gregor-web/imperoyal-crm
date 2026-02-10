@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
           email: validatedData.email,
           name: validatedData.ansprechpartner || validatedData.name,
           password,
-          loginUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal.vercel.app'}/login`,
+          loginUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/login`,
         }),
       });
       emailSent = webhookResponse.ok;
