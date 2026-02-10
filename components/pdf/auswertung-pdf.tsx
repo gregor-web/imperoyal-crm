@@ -231,7 +231,7 @@ const colors = {
 // Styles
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    padding: 25,
     fontFamily: 'Helvetica',
     fontSize: 9,
     color: colors.text,
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   headerLeft: {},
   headerRight: {
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.bgLight,
     borderRadius: 6,
-    marginBottom: 20,
+    marginBottom: 10,
     overflow: 'hidden',
   },
   metricItem: {
@@ -320,8 +320,8 @@ const styles = StyleSheet.create({
   // Sections
   sectionRow: {
     flexDirection: 'row',
-    gap: 15,
-    marginBottom: 15,
+    gap: 10,
+    marginBottom: 10,
   },
   sectionBox: {
     flex: 1,
@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
     fontSize: 7,
   },
   sectionContent: {
-    padding: 10,
+    padding: 8,
   },
   row: {
     flexDirection: 'row',
@@ -452,9 +452,9 @@ const styles = StyleSheet.create({
   // Info boxes
   infoBox: {
     backgroundColor: colors.bgLight,
-    padding: 8,
+    padding: 6,
     borderRadius: 4,
-    marginTop: 8,
+    marginTop: 6,
   },
   infoBoxTitle: {
     fontSize: 8,
@@ -561,14 +561,14 @@ const styles = StyleSheet.create({
   // Footer
   footer: {
     position: 'absolute',
-    bottom: 20,
-    left: 30,
-    right: 30,
+    bottom: 15,
+    left: 25,
+    right: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    paddingTop: 8,
+    paddingTop: 6,
   },
   footerText: {
     fontSize: 7,
@@ -731,8 +731,8 @@ export function AuswertungPDF({
         <View style={{
           backgroundColor: '#f8fafc',
           borderRadius: 6,
-          padding: 12,
-          marginBottom: 15,
+          padding: 10,
+          marginBottom: 10,
           borderLeftWidth: 3,
           borderLeftColor: colors.primary,
         }}>
@@ -785,7 +785,7 @@ export function AuswertungPDF({
           backgroundColor: colors.bgPurple,
           borderRadius: 4,
           padding: 8,
-          marginBottom: 15,
+          marginBottom: 10,
           alignItems: 'center',
         }}>
           <View style={{ flex: 1 }}>
@@ -808,8 +808,8 @@ export function AuswertungPDF({
           <View style={{
             backgroundColor: '#faf5ff',
             borderRadius: 6,
-            padding: 10,
-            marginBottom: 15,
+            padding: 8,
+            marginBottom: 10,
             borderWidth: 1,
             borderColor: '#e9d5ff',
           }}>
@@ -1111,7 +1111,7 @@ export function AuswertungPDF({
       {/* ==================== PAGE 2 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Section 5: Mieterhöhungspotenzial Table */}
-        <View style={[styles.sectionBox, { marginBottom: 15 }]}>
+        <View style={[styles.sectionBox, { marginBottom: 10 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>5</Text>
             <Text style={styles.sectionTitle}>Mieterhöhungspotenzial (§558 gilt nur für Wohnraum)</Text>
@@ -1473,7 +1473,7 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 12: Exit-Szenarien */}
-        <View style={[styles.sectionBox, { marginBottom: 12 }]}>
+        <View style={[styles.sectionBox, { marginBottom: 8 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
@@ -1507,8 +1507,8 @@ export function AuswertungPDF({
         <View style={{
           backgroundColor: colors.bgLight,
           borderRadius: 6,
-          padding: 10,
-          marginBottom: 12,
+          padding: 8,
+          marginBottom: 8,
           borderWidth: 1,
           borderColor: colors.border,
         }}>
@@ -1571,8 +1571,8 @@ export function AuswertungPDF({
 
       {/* ==================== PAGE 4 ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Section 13: Handlungsempfehlung - Combined header and content */}
-        <View style={[styles.sectionBox, { flex: 1, marginBottom: 15 }]}>
+        {/* Section 13: Handlungsempfehlung */}
+        <View style={[styles.sectionBox, { marginBottom: 10 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>13</Text>
             <Text style={styles.sectionTitle}>Handlungsempfehlung</Text>
@@ -1582,31 +1582,31 @@ export function AuswertungPDF({
               </Text>
             )}
           </View>
-          <View style={[styles.sectionContent, { flex: 1 }]}>
+          <View style={styles.sectionContent}>
             {/* Empfehlung Badge */}
             <View style={{
               backgroundColor: colors.bgBlue,
               borderRadius: 6,
-              padding: 15,
-              marginBottom: 15,
+              padding: 12,
+              marginBottom: 10,
               alignItems: 'center',
             }}>
-              <Text style={{ fontSize: 10, color: colors.textMuted, marginBottom: 5 }}>Unsere Empfehlung</Text>
-              <Text style={{ fontSize: 22, fontWeight: 'bold', color: colors.primary }}>{empfehlung || '-'}</Text>
+              <Text style={{ fontSize: 9, color: colors.textMuted, marginBottom: 3 }}>Unsere Empfehlung</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors.primary }}>{empfehlung || '-'}</Text>
             </View>
 
             {/* Begründung */}
             {empfehlung_begruendung && (
-              <View style={{ marginBottom: 15 }}>
-                <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 5 }}>Begründung</Text>
-                <Text style={{ fontSize: 9, color: colors.text, lineHeight: 1.5 }}>{empfehlung_begruendung}</Text>
+              <View style={{ marginBottom: 10 }}>
+                <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 4 }}>Begründung</Text>
+                <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.5 }}>{empfehlung_begruendung}</Text>
               </View>
             )}
 
             {/* Handlungsschritte */}
             {empfehlung_handlungsschritte && empfehlung_handlungsschritte.length > 0 && (
-              <View style={{ marginBottom: 15 }}>
-                <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 8 }}>
+              <View style={{ marginBottom: 10 }}>
+                <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 6 }}>
                   Empfohlene Handlungsschritte
                 </Text>
                 {empfehlung_handlungsschritte.map((schritt, index) => {
@@ -1618,24 +1618,24 @@ export function AuswertungPDF({
                     <View key={index} style={{
                       flexDirection: 'row',
                       alignItems: 'flex-start',
-                      marginBottom: 6,
+                      marginBottom: 4,
                       backgroundColor: colors.bgLight,
-                      padding: 8,
+                      padding: 6,
                       borderRadius: 4,
                     }}>
                       <View style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: 10,
+                        width: 18,
+                        height: 18,
+                        borderRadius: 9,
                         backgroundColor: colors.primaryLight,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        marginRight: 8,
+                        marginRight: 6,
                       }}>
-                        <Text style={{ fontSize: 9, fontWeight: 'bold', color: 'white' }}>{index + 1}</Text>
+                        <Text style={{ fontSize: 8, fontWeight: 'bold', color: 'white' }}>{index + 1}</Text>
                       </View>
-                      <Text style={{ flex: 1, fontSize: 8, color: colors.text }}>{schrittText}</Text>
-                      <Text style={{ fontSize: 7, color: colors.success, fontWeight: 'bold' }}>{zeitrahmen}</Text>
+                      <Text style={{ flex: 1, fontSize: 7, color: colors.text }}>{schrittText}</Text>
+                      <Text style={{ fontSize: 6, color: colors.success, fontWeight: 'bold' }}>{zeitrahmen}</Text>
                     </View>
                   );
                 })}
@@ -1646,20 +1646,20 @@ export function AuswertungPDF({
             {empfehlung_fazit && (
               <View style={{
                 backgroundColor: colors.bgLight,
-                padding: 12,
+                padding: 10,
                 borderRadius: 4,
                 borderLeftWidth: 3,
                 borderLeftColor: colors.primaryLight,
               }}>
-                <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 4 }}>Fazit</Text>
-                <Text style={{ fontSize: 9, color: colors.text, lineHeight: 1.5 }}>{empfehlung_fazit}</Text>
+                <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.primary, marginBottom: 3 }}>Fazit</Text>
+                <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.5 }}>{empfehlung_fazit}</Text>
               </View>
             )}
           </View>
         </View>
 
         {/* Disclaimer */}
-        <View style={[styles.disclaimer, { marginTop: 'auto' }]}>
+        <View style={styles.disclaimer}>
           <Text style={styles.disclaimerText}>
             Diese Analyse stellt keine Rechts-, Steuer- oder Anlageberatung dar.
           </Text>
