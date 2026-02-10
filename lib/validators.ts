@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+// Helper to coerce string 'true'/'false' from Select inputs to boolean
+const booleanFromString = z
+  .union([z.boolean(), z.string()])
+  .transform((val): boolean => {
+    if (typeof val === 'boolean') return val;
+    return val === 'true';
+  })
+  .pipe(z.boolean())
+  .default(false);
+
 // =====================================================
 // MANDANT
 // =====================================================
@@ -30,20 +40,20 @@ export const objektSchema = z.object({
   ort: z.string().min(1, 'Ort ist erforderlich'),
   gebaeudetyp: z.string().optional(),
   baujahr: z.coerce.number().int().min(1800).max(2030).optional().nullable(),
-  denkmalschutz: z.boolean().default(false),
+  denkmalschutz: booleanFromString,
   kernsanierung_jahr: z.coerce.number().int().optional().nullable(),
   wohneinheiten: z.coerce.number().int().min(0).default(0),
   gewerbeeinheiten: z.coerce.number().int().min(0).default(0),
   geschosse: z.coerce.number().int().optional().nullable(),
-  aufzug: z.boolean().default(false),
+  aufzug: booleanFromString,
   wohnflaeche: z.coerce.number().min(0).optional().nullable(),
   gewerbeflaeche: z.coerce.number().min(0).optional().nullable(),
   grundstueck: z.coerce.number().min(0).optional().nullable(),
   heizungsart: z.string().optional(),
-  weg_aufgeteilt: z.boolean().default(false),
-  weg_geplant: z.boolean().default(false),
-  milieuschutz: z.boolean().default(false),
-  umwandlungsverbot: z.boolean().default(false),
+  weg_aufgeteilt: booleanFromString,
+  weg_geplant: booleanFromString,
+  milieuschutz: booleanFromString,
+  umwandlungsverbot: booleanFromString,
   kaufpreis: z.coerce.number().min(1, 'Kaufpreis ist erforderlich'),
   kaufdatum: z.string().optional().nullable(),
   grundstueck_wert: z.coerce.number().optional().nullable(),
@@ -60,10 +70,10 @@ export const objektSchema = z.object({
   capex_vergangen: z.string().optional(),
   capex_geplant: z.string().optional(),
   capex_geplant_betrag: z.coerce.number().optional().nullable(),
-  mietpreisbindung: z.boolean().default(false),
-  sozialbindung: z.boolean().default(false),
-  modernisierungsstopp: z.boolean().default(false),
-  gewerbe_sonderklauseln: z.boolean().default(false),
+  mietpreisbindung: booleanFromString,
+  sozialbindung: booleanFromString,
+  modernisierungsstopp: booleanFromString,
+  gewerbe_sonderklauseln: booleanFromString,
   haltedauer: z.string().optional(),
   primaeres_ziel: z.string().optional(),
   investitionsbereitschaft: z.string().optional(),
