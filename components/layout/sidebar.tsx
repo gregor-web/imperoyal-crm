@@ -78,7 +78,7 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
   );
 
   return (
-    <aside className="glass-sidebar w-64 min-h-screen flex flex-col text-white">
+    <aside className="glass-sidebar w-64 h-screen flex flex-col text-white fixed top-0 left-0 z-40">
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
         <Link href="/dashboard" className="flex items-center justify-center">
