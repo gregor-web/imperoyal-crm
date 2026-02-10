@@ -312,11 +312,12 @@ const styles = StyleSheet.create({
   empfehlungBadge: {
     backgroundColor: colors.primary,
     color: 'white',
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     paddingVertical: 4,
     borderRadius: 3,
-    fontSize: 8,
+    fontSize: 7,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   // Sections
   sectionRow: {
