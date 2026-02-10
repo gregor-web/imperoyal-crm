@@ -3,9 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/formatters';
-import { Plus } from 'lucide-react';
+import { MandantenActions } from './mandanten-actions';
 
 export default async function MandantenPage() {
   const supabase = await createClient();
@@ -34,12 +33,7 @@ export default async function MandantenPage() {
           <h1 className="text-2xl font-bold text-slate-800">Mandanten</h1>
           <p className="text-slate-600 mt-1">Verwalten Sie Ihre Mandanten</p>
         </div>
-        <Link href="/mandanten/neu">
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Neuer Mandant
-          </Button>
-        </Link>
+        <MandantenActions />
       </div>
 
       {/* Table */}

@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient, generatePassword } from '@/lib/supabase/admin';
 import { mandantSchema } from '@/lib/validators';
 
+const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -65,10 +67,33 @@ export async function POST(request: NextRequest) {
       console.error('Profile update error:', profileError);
     }
 
+    // Send welcome email with credentials via Make.com webhook
+    let emailSent = false;
+    try {
+      const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'welcome',
+          email: validatedData.email,
+          name: validatedData.ansprechpartner || validatedData.name,
+          password,
+          loginUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal.vercel.app'}/login`,
+        }),
+      });
+      emailSent = webhookResponse.ok;
+    } catch (emailError) {
+      console.error('Welcome email webhook error:', emailError);
+      // Don't fail the whole request if email fails
+    }
+
     return NextResponse.json({
       mandant,
-      password, // Return password so it can be shown once
-      message: 'Mandant erfolgreich erstellt',
+      password, // Return password so it can be shown once (as backup)
+      emailSent,
+      message: emailSent
+        ? 'Mandant erstellt und Zugangsdaten per E-Mail versendet'
+        : 'Mandant erstellt (E-Mail-Versand fehlgeschlagen)',
     });
   } catch (error) {
     console.error('Mandant creation error:', error);
