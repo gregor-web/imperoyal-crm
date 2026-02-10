@@ -8,6 +8,7 @@ import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
 import { ArrowLeft, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle } from 'lucide-react';
 import { PdfExportButton } from '@/components/pdf-export-button';
 import { DebugPdfButton } from '@/components/debug-pdf-button';
+import { OptimizedPdfButton } from '@/components/optimized-pdf-button';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -65,6 +66,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
         </div>
         <div className="flex gap-2">
           {isAdmin && <DebugPdfButton auswertungId={id} />}
+          {isAdmin && <OptimizedPdfButton auswertungId={id} />}
           <PdfExportButton auswertungId={id} />
         </div>
       </div>

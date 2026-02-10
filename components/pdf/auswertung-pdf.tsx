@@ -610,6 +610,14 @@ const formatPercent = (val: number | null | undefined, digits = 2): string =>
 const formatEuroPerSqm = (val: number | null | undefined): string =>
   val != null ? `${val.toFixed(2)} €` : '-';
 
+// Style multipliers for AI-driven optimization
+export interface StyleMultipliers {
+  spacingMultiplier: number;
+  fontSizeMultiplier: number;
+  paddingMultiplier: number;
+  chartHeightMultiplier: number;
+}
+
 interface AuswertungPDFProps {
   objekt: {
     strasse: string;
@@ -642,6 +650,8 @@ interface AuswertungPDFProps {
   empfehlung_fazit?: string;
   created_at: string;
   logoUrl?: string;
+  // Optional AI-driven style adjustments
+  styleMultipliers?: StyleMultipliers;
 }
 
 export function AuswertungPDF({
@@ -656,7 +666,15 @@ export function AuswertungPDF({
   empfehlung_fazit,
   created_at,
   logoUrl,
+  styleMultipliers,
 }: AuswertungPDFProps) {
+  // Apply style multipliers (defaults to 1 if not provided)
+  const sm = styleMultipliers || {
+    spacingMultiplier: 1,
+    fontSizeMultiplier: 1,
+    paddingMultiplier: 1,
+    chartHeightMultiplier: 1,
+  };
   const fin = berechnungen?.finanzierung;
   const kosten = berechnungen?.kostenstruktur;
   const cashflow = berechnungen?.cashflow;
@@ -708,12 +726,12 @@ export function AuswertungPDF({
       {/* ==================== PAGE 1 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Header */}
+        <Text style={{ fontSize: 10, color: colors.textMuted, textAlign: 'center', marginBottom: 8 }}>
+          {new Date(created_at).toLocaleDateString('de-DE')}
+        </Text>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.date}>
-              {new Date(created_at).toLocaleDateString('de-DE')}
-            </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {logoUrl ? (
                 <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
               ) : (
@@ -732,21 +750,18 @@ export function AuswertungPDF({
         <View style={{
           backgroundColor: '#f8fafc',
           borderRadius: 6,
-          padding: 10,
-          marginBottom: 10,
+          padding: 10 * sm.paddingMultiplier,
+          marginBottom: 10 * sm.spacingMultiplier,
           borderLeftWidth: 3,
           borderLeftColor: colors.primary,
         }}>
-          <Text style={{ fontSize: 10, color: colors.text, lineHeight: 1.6 }}>
+          <Text style={{ fontSize: 10 * sm.fontSizeMultiplier, color: colors.text, lineHeight: 1.6 }}>
             {mandant.ansprechpartner
               ? `Sehr geehrte(r) Herr/Frau ${mandant.ansprechpartner.split(' ').pop()},`
               : `Sehr geehrte Damen und Herren der ${mandant.name},`}
           </Text>
-          <Text style={{ fontSize: 9, color: colors.textMuted, lineHeight: 1.6, marginTop: 6 }}>
-            vielen Dank für Ihr Vertrauen in Imperoyal Immobilien. Im Folgenden erhalten Sie eine umfassende Analyse
-            Ihres Objekts {objekt.strasse} in {objekt.plz} {objekt.ort}. Diese Auswertung gibt Ihnen einen
-            detaillierten Überblick über die aktuelle Ertragssituation, Optimierungspotenziale und strategische
-            Handlungsempfehlungen. Bei Fragen stehen wir Ihnen jederzeit zur Verfügung.
+          <Text style={{ fontSize: 9 * sm.fontSizeMultiplier, color: colors.textMuted, lineHeight: 1.6, marginTop: 6 * sm.spacingMultiplier }}>
+            im Folgenden erhalten Sie die Analyse Ihres Objekts. Bei Fragen stehen wir Ihnen gerne zur Verfügung.
           </Text>
         </View>
 
@@ -785,8 +800,8 @@ export function AuswertungPDF({
           flexDirection: 'row',
           backgroundColor: colors.bgPurple,
           borderRadius: 4,
-          padding: 8,
-          marginBottom: 10,
+          padding: 8 * sm.paddingMultiplier,
+          marginBottom: 10 * sm.spacingMultiplier,
           alignItems: 'center',
         }}>
           <View style={{ flex: 1 }}>
