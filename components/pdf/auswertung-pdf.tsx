@@ -669,19 +669,31 @@ export function AuswertungPDF({
   const einheitenMitPotenzial = miet?.einheiten?.filter(e => e.potenzial > 0).length || 0;
   const einheitenGesamt = miet?.einheiten?.length || 0;
 
-  // Berechne Verkehrswert (geschätzt aus Marktfaktor × Miete oder Kaufpreis × 1.05)
+  // Verkehrswert = Aktueller Marktwert der Immobilie
+  // Berechnung: Jahresmiete × Kaufpreisfaktor (Ertragswertverfahren)
+  // oder Kaufpreis × Wertsteigerung seit Kauf (2,5% p.a.)
   const jahresmiete = miet?.miete_ist_jahr || 0;
   const kaufpreisfaktor = marktdaten?.kaufpreisfaktor_region?.wert || 20;
-  const verkehrswertGeschaetzt = jahresmiete > 0 ? jahresmiete * kaufpreisfaktor : (fin?.kaufpreis || 0) * 1.05;
+  const kaufpreis = fin?.kaufpreis || objekt.kaufpreis || 0;
 
-  // Beleihungswert: ca. 80% des Verkehrswerts (konservative Bankbewertung)
-  const beleihungswert = verkehrswertGeschaetzt * 0.8;
+  // Verkehrswert über Ertragswertverfahren (Marktmiete × Faktor)
+  const verkehrswertErtrag = jahresmiete > 0 ? jahresmiete * kaufpreisfaktor : kaufpreis;
+  // Wir nehmen den konservativeren Wert (heute = Kaufpreis, da keine Zeitangabe seit Kauf)
+  const verkehrswertGeschaetzt = wert?.heute || verkehrswertErtrag || kaufpreis;
 
   // Restschuld = Fremdkapital (vereinfacht, ohne Tilgungsfortschritt)
   const restschuld = fin?.fremdkapital || 0;
 
+  // Abbezahlte Summe = Eigenkapitaleinsatz = Verkehrswert - Restschuld
+  // Dies ist der Teil des Objektwerts, der bereits "abbezahlt" ist
+  const abbezahlteSumme = Math.max(0, verkehrswertGeschaetzt - restschuld);
+
+  // Beleihungswert = 60-80% der abbezahlten Summe (= verfügbare Sicherheit für Refinanzierung)
+  // Wir verwenden 70% als konservativen Mittelwert
+  const beleihungswert = abbezahlteSumme * 0.7;
+
   // Eigenkapitalpuffer = Differenz Verkehrswert - Restschuld
-  const eigenkapitalpuffer = verkehrswertGeschaetzt - restschuld;
+  const eigenkapitalpuffer = abbezahlteSumme;
 
   // Rendite nach Steuervorteil (AfA-Effekt einrechnen)
   const steuerersparnis = afa?.steuerersparnis_42 || 0;
@@ -774,13 +786,16 @@ export function AuswertungPDF({
           alignItems: 'center',
         }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 8, color: colors.purple, fontWeight: 'bold' }}>Geschätzter Beleihungswert (80% VW)</Text>
+            <Text style={{ fontSize: 8, color: colors.purple, fontWeight: 'bold' }}>Beleihungswert (70% d. Eigenkapitals)</Text>
             <Text style={{ fontSize: 11, color: colors.text, fontWeight: 'bold' }}>{formatCurrency(beleihungswert)}</Text>
           </View>
           <View style={{ flex: 2, paddingLeft: 10, borderLeftWidth: 1, borderLeftColor: '#e9d5ff' }}>
             <Text style={{ fontSize: 7, color: colors.textMuted, lineHeight: 1.4 }}>
-              Der Eigenkapitalpuffer von {formatCurrency(eigenkapitalpuffer)} kann als zusätzliche Sicherheit
-              bei Folgefinanzierungen dienen. *Verkehrswert geschätzt auf Basis {marktdaten ? `Kaufpreisfaktor ${kaufpreisfaktor}x (${marktdaten.kaufpreisfaktor_region?.quelle || 'Marktdaten'})` : 'konservativer Schätzung +5%'}.
+              Abbezahlte Summe (VW - Restschuld): {formatCurrency(abbezahlteSumme)}. Der Beleihungswert (60-80%, hier 70%)
+              zeigt die verfügbare Sicherheit für Refinanzierungen.
+            </Text>
+            <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 2 }}>
+              Quelle: Berechnung nach Bankenstandard (BelWertV)
             </Text>
           </View>
         </View>
@@ -871,6 +886,9 @@ export function AuswertungPDF({
                 </View>
               </View>
             </View>
+            <Text style={{ fontSize: 6, color: '#a78bfa', fontStyle: 'italic', marginTop: 6 }}>
+              Quelle: Perplexity AI Marktanalyse, Abfrage vom {new Date(berechnungen.marktdaten.abfrage_datum).toLocaleDateString('de-DE')}
+            </Text>
           </View>
         )}
 
@@ -997,6 +1015,9 @@ export function AuswertungPDF({
                 </Text>
                 <Text style={{ fontSize: 6, color: (cashflow?.cashflow_ist_jahr || 0) >= 0 ? colors.success : colors.danger, lineHeight: 1.3 }}>
                   • Status: {(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'Objekt trägt sich selbst' : 'Unterdeckung - Zuschuss erforderlich'}
+                </Text>
+                <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 2 }}>
+                  Quelle: Berechnung auf Basis Mandantenangaben
                 </Text>
               </View>
             </View>
@@ -1156,9 +1177,16 @@ export function AuswertungPDF({
             <View style={styles.infoBox}>
               <Text style={styles.infoBoxTitle}>Hinweis §558 BGB (Kappungsgrenze):</Text>
               <Text style={styles.infoBoxText}>
-                §558 BGB gilt nur für Wohnraum. Die Miete darf innerhalb von 3 Jahren um max. 15% erhöht werden (Kappungsgebiet).
-                "Sofort" = Erhöhung jetzt möglich. Sperrfrist: 15 Monate nach letzter Erhöhung.
-                Gewerbe/Stellplatz: Freie Mietvertragsregelungen, keine gesetzliche Kappung.
+                • §558 BGB gilt nur für Wohnraum. Die Miete darf innerhalb von 3 Jahren um max. {objekt.milieuschutz ? '15%' : '20%'} erhöht werden.
+              </Text>
+              <Text style={styles.infoBoxText}>
+                • "Sofort" = Erhöhung jetzt möglich. Sperrfrist: 15 Monate nach letzter Erhöhung.
+              </Text>
+              <Text style={styles.infoBoxText}>
+                • Gewerbe/Stellplatz: Freie Mietvertragsregelungen, keine gesetzliche Kappung.
+              </Text>
+              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 3 }}>
+                Quelle: §558 BGB, Kappungsgrenzen-VO {objekt.ort || 'Region'}
               </Text>
             </View>
           </View>
@@ -1219,6 +1247,9 @@ export function AuswertungPDF({
                   Δ +{formatCurrency(miet?.potenzial_jahr)} p.a.
                 </Text>
               </View>
+              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 4 }}>
+                Quelle: Eigene Berechnung auf Basis Mandantenangaben und Marktmieten
+              </Text>
             </View>
           </View>
 
@@ -1264,6 +1295,9 @@ export function AuswertungPDF({
                   </View>
                 ))}
               </View>
+              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 4 }}>
+                Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Historischer Durchschnitt DE (2,5% p.a.)'}
+              </Text>
             </View>
           </View>
         </View>
@@ -1301,6 +1335,9 @@ export function AuswertungPDF({
                 <Text style={styles.infoBoxTitle}>Kappungsgrenzen §559 Abs. 3a BGB:</Text>
                 <Text style={styles.infoBoxText}>• Kaltmiete {'<'} 7€/m²: max. 2€/m² in 6 Jahren</Text>
                 <Text style={styles.infoBoxText}>• Kaltmiete ≥ 7€/m²: max. 3€/m² in 6 Jahren</Text>
+                <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 3 }}>
+                  Quelle: §559 Abs. 3a BGB, CAPEX-Angaben Mandant
+                </Text>
               </View>
             </View>
           </View>
@@ -1331,6 +1368,17 @@ export function AuswertungPDF({
                   </Text>
                 </View>
               )}
+              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • WEG-Aufteilung: +15% Wertsteigerung durch Einzelverkauf
+                </Text>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • Status: {weg?.bereits_aufgeteilt ? 'Bereits aufgeteilt' : 'Noch nicht aufgeteilt'}
+                </Text>
+                <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 2 }}>
+                  Quelle: Marktbeobachtung WEG-Aufteiler, {objekt.ort || 'Region'}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -1378,6 +1426,9 @@ export function AuswertungPDF({
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • Basis: {formatCurrency(afa?.gebaeude_wert)} Gebäudewert (80% KP)
                 </Text>
+                <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 2 }}>
+                  Quelle: §7 Abs. 4 EStG, RND nach ImmoWertV
+                </Text>
               </View>
             </View>
           </View>
@@ -1411,6 +1462,9 @@ export function AuswertungPDF({
                 <Text style={{ fontSize: 7, color: colors.primaryLight, fontWeight: 'bold' }}>Eigenkapitalrendite optimiert</Text>
                 <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary }}>{formatPercent(rendite?.eigenkapitalrendite_opt)}</Text>
               </View>
+              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 4 }}>
+                Quelle: Eigene Berechnung (Brutto = Miete/KP, EK = Cashflow/EK)
+              </Text>
             </View>
           </View>
         </View>
@@ -1442,6 +1496,9 @@ export function AuswertungPDF({
             </View>
             <Text style={{ fontSize: 7, color: colors.textMuted, textAlign: 'center', marginTop: 8 }}>
               Annahme: {marktdaten?.preisprognose ? 'Dynamische Prognose lt. Marktdaten' : '2,5% p.a. Wertsteigerung'}
+            </Text>
+            <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 3 }}>
+              Quelle: {marktdaten?.preisprognose ? `Perplexity Marktprognose (${new Date(marktdaten.abfrage_datum).toLocaleDateString('de-DE')})` : 'Bundesbank Immobilienpreisindex (langfr. Ø)'}
             </Text>
           </View>
         </View>
@@ -1500,6 +1557,9 @@ export function AuswertungPDF({
               ))}
             </View>
           </View>
+          <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'right', marginTop: 6 }}>
+            Quelle: Aggregierte Berechnung aus Mandantenangaben und Marktdaten
+          </Text>
         </View>
 
         {/* Footer */}

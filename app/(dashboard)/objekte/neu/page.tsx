@@ -1,16 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
-import { ObjektForm } from '@/components/forms/objekt-form';
+import { ObjektWizard } from '@/components/forms/objekt-wizard';
 import type { ObjektInput } from '@/lib/validators';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NeuObjektPage() {
+function NeuObjektContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedMandant = searchParams.get('mandant');
@@ -21,6 +21,7 @@ export default function NeuObjektPage() {
   const [selectedMandant, setSelectedMandant] = useState(preselectedMandant || '');
   const [isAdmin, setIsAdmin] = useState(false);
   const [userMandantId, setUserMandantId] = useState<string | null>(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +48,8 @@ export default function NeuObjektPage() {
         // Use user's mandant_id
         setSelectedMandant(profile.mandant_id);
       }
+
+      setDataLoaded(true);
     };
 
     fetchData();
@@ -82,15 +85,23 @@ export default function NeuObjektPage() {
     }
   };
 
+  if (!dataLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-2xl mx-auto">
       <div className="flex items-center gap-4 mb-6">
         <Link href="/objekte" className="p-2 hover:bg-slate-100 rounded-lg">
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Neues Objekt</h1>
-          <p className="text-slate-600 mt-1">Erstellen Sie ein neues Immobilienobjekt</p>
+          <p className="text-slate-600 mt-1">Schritt für Schritt zum neuen Objekt</p>
         </div>
       </div>
 
@@ -101,26 +112,44 @@ export default function NeuObjektPage() {
       )}
 
       {/* Mandant Selection for Admin */}
-      {isAdmin && (
+      {isAdmin && !selectedMandant && (
         <Card className="mb-6">
           <Select
             label="Mandant auswählen *"
             value={selectedMandant}
             onChange={(e) => setSelectedMandant(e.target.value)}
             options={mandanten.map((m) => ({ value: m.id, label: m.name }))}
-            placeholder="Mandant auswählen..."
+            placeholder="Zuerst Mandant auswählen..."
           />
+          <p className="text-sm text-slate-500 mt-2">
+            Wählen Sie den Mandanten, für den dieses Objekt erstellt werden soll.
+          </p>
         </Card>
       )}
 
-      <Card>
-        <ObjektForm
-          mandantId={isAdmin ? selectedMandant : (userMandantId || undefined)}
-          onSubmit={handleSubmit}
-          onCancel={() => router.push('/objekte')}
-          isLoading={isLoading}
-        />
-      </Card>
+      {/* Show wizard only when mandant is selected (or not admin) */}
+      {(selectedMandant || !isAdmin) && (
+        <Card>
+          <ObjektWizard
+            mandantId={isAdmin ? selectedMandant : (userMandantId || undefined)}
+            onSubmit={handleSubmit}
+            onCancel={() => router.push('/objekte')}
+            isLoading={isLoading}
+          />
+        </Card>
+      )}
     </div>
+  );
+}
+
+export default function NeuObjektPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    }>
+      <NeuObjektContent />
+    </Suspense>
   );
 }

@@ -346,17 +346,29 @@ export function berechneAlles(
   };
 
   // =====================================================
-  // 7. WEG-POTENZIAL
+  // 7. VERKEHRSWERT (aktueller Marktwert)
+  // =====================================================
+
+  // Verkehrswert über Ertragswertverfahren: Jahresmiete × Kaufpreisfaktor
+  const kaufpreisfaktor = marktdaten?.kaufpreisfaktor_region?.wert || 20;
+  const verkehrswertErtrag = miete_ist_jahr > 0 ? miete_ist_jahr * kaufpreisfaktor : kaufpreis;
+
+  // Wir nehmen den höheren Wert: Ertragswert oder Kaufpreis
+  // (Bei guten Lagen ist der Ertragswert oft höher als historischer Kaufpreis)
+  const verkehrswert_heute = Math.max(kaufpreis, verkehrswertErtrag);
+
+  // =====================================================
+  // 8. WEG-POTENZIAL
   // =====================================================
 
   const bereits_aufgeteilt = objekt.weg_aufgeteilt === true;
-  const wert_aufgeteilt = kaufpreis * 1.15;
-  const weg_gewinn = bereits_aufgeteilt ? 0 : wert_aufgeteilt - kaufpreis;
+  const wert_aufgeteilt = verkehrswert_heute * 1.15;
+  const weg_gewinn = bereits_aufgeteilt ? 0 : wert_aufgeteilt - verkehrswert_heute;
   const genehmigung_erforderlich =
     objekt.milieuschutz === true || objekt.umwandlungsverbot === true;
 
   const weg_potenzial: WegPotenzial = {
-    wert_heute: kaufpreis,
+    wert_heute: verkehrswert_heute,
     wert_aufgeteilt,
     weg_gewinn,
     bereits_aufgeteilt,
@@ -364,7 +376,7 @@ export function berechneAlles(
   };
 
   // =====================================================
-  // 8. AfA / RND
+  // 9. AfA / RND
   // =====================================================
 
   const baujahr = safeNumber(objekt.baujahr, 1970);
@@ -385,7 +397,7 @@ export function berechneAlles(
   };
 
   // =====================================================
-  // 9. WERTENTWICKLUNG (dynamisch via Perplexity oder 2,5% p.a. Fallback)
+  // 10. WERTENTWICKLUNG (dynamisch via Perplexity oder 2,5% p.a. Fallback)
   // =====================================================
 
   // Nutze Perplexity-Prognosen falls vorhanden, sonst Fallback 2.5%
@@ -394,7 +406,8 @@ export function berechneAlles(
   const prognose_lang = marktdaten?.preisprognose?.lang_7_plus_jahre ?? 2.5;
 
   // Berechne Werte mit unterschiedlichen Steigerungsraten pro Zeitraum
-  const wert_jahr_3 = kaufpreis * Math.pow(1 + prognose_kurz / 100, 3);
+  // (verkehrswert_heute wurde bereits in Sektion 7 berechnet)
+  const wert_jahr_3 = verkehrswert_heute * Math.pow(1 + prognose_kurz / 100, 3);
   const wert_jahr_5 =
     wert_jahr_3 * Math.pow(1 + prognose_mittel / 100, 2); // 3-5 Jahre mit mittlerer Prognose
   const wert_jahr_7 =
@@ -403,7 +416,7 @@ export function berechneAlles(
     wert_jahr_7 * Math.pow(1 + prognose_lang / 100, 3); // 7-10 Jahre mit langer Prognose
 
   const wertentwicklung: Wertentwicklung = {
-    heute: kaufpreis,
+    heute: verkehrswert_heute,
     jahr_3: wert_jahr_3,
     jahr_5: wert_jahr_5,
     jahr_7: wert_jahr_7,
