@@ -664,9 +664,30 @@ export function AuswertungPDF({
   const afa = berechnungen?.afa_rnd;
   const wert = berechnungen?.wertentwicklung;
   const mod559 = berechnungen?.modernisierung_559;
+  const marktdaten = berechnungen?.marktdaten;
 
   const einheitenMitPotenzial = miet?.einheiten?.filter(e => e.potenzial > 0).length || 0;
   const einheitenGesamt = miet?.einheiten?.length || 0;
+
+  // Berechne Verkehrswert (geschätzt aus Marktfaktor × Miete oder Kaufpreis × 1.05)
+  const jahresmiete = miet?.miete_ist_jahr || 0;
+  const kaufpreisfaktor = marktdaten?.kaufpreisfaktor_region?.wert || 20;
+  const verkehrswertGeschaetzt = jahresmiete > 0 ? jahresmiete * kaufpreisfaktor : (fin?.kaufpreis || 0) * 1.05;
+
+  // Beleihungswert: ca. 80% des Verkehrswerts (konservative Bankbewertung)
+  const beleihungswert = verkehrswertGeschaetzt * 0.8;
+
+  // Restschuld = Fremdkapital (vereinfacht, ohne Tilgungsfortschritt)
+  const restschuld = fin?.fremdkapital || 0;
+
+  // Eigenkapitalpuffer = Differenz Verkehrswert - Restschuld
+  const eigenkapitalpuffer = verkehrswertGeschaetzt - restschuld;
+
+  // Rendite nach Steuervorteil (AfA-Effekt einrechnen)
+  const steuerersparnis = afa?.steuerersparnis_42 || 0;
+  const rendite_nach_steuer = fin?.kaufpreis && fin.kaufpreis > 0
+    ? ((miet?.miete_ist_jahr || 0) + steuerersparnis) / fin.kaufpreis * 100
+    : 0;
 
   return (
     <Document>
@@ -680,7 +701,7 @@ export function AuswertungPDF({
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3 }}>
               {logoUrl ? (
-                <Image src={logoUrl} style={{ width: 120, height: 36 }} />
+                <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
               ) : (
                 <Text style={styles.mainTitle}>Imperoyal Immobilien - Optimierungsprotokoll</Text>
               )}
@@ -693,29 +714,74 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Key Metrics Bar */}
+        {/* Persönliche Begrüßung */}
+        <View style={{
+          backgroundColor: '#f8fafc',
+          borderRadius: 6,
+          padding: 12,
+          marginBottom: 15,
+          borderLeftWidth: 3,
+          borderLeftColor: colors.primary,
+        }}>
+          <Text style={{ fontSize: 10, color: colors.text, lineHeight: 1.6 }}>
+            Sehr geehrte Damen und Herren der {mandant.name},
+          </Text>
+          <Text style={{ fontSize: 9, color: colors.textMuted, lineHeight: 1.6, marginTop: 6 }}>
+            vielen Dank für Ihr Vertrauen in Imperoyal Immobilien. Im Folgenden erhalten Sie eine umfassende Analyse
+            Ihres Objekts {objekt.strasse} in {objekt.plz} {objekt.ort}. Diese Auswertung gibt Ihnen einen
+            detaillierten Überblick über die aktuelle Ertragssituation, Optimierungspotenziale und strategische
+            Handlungsempfehlungen. Bei Fragen stehen wir Ihnen jederzeit zur Verfügung.
+          </Text>
+        </View>
+
+        {/* Key Metrics Bar - Erweitert mit Verkehrswert & AfA */}
         <View style={styles.metricsBar}>
           <View style={styles.metricItem}>
-            <Text style={styles.metricLabel}>Kaufpreis</Text>
-            <Text style={styles.metricValue}>{formatCurrency(fin?.kaufpreis)}</Text>
+            <Text style={styles.metricLabel}>Verkehrswert*</Text>
+            <Text style={styles.metricValue}>{formatCurrency(verkehrswertGeschaetzt)}</Text>
+            <Text style={{ fontSize: 6, color: colors.textLight }}>({formatCurrency(fin?.kaufpreis)} Kaufpreis)</Text>
+          </View>
+          <View style={styles.metricItem}>
+            <Text style={styles.metricLabel}>EK-Puffer</Text>
+            <Text style={eigenkapitalpuffer >= 0 ? styles.metricValueGreen : styles.metricValueRed}>
+              {formatCurrency(eigenkapitalpuffer)}
+            </Text>
+            <Text style={{ fontSize: 6, color: colors.textLight }}>Verkehrswert - Restschuld</Text>
           </View>
           <View style={styles.metricItem}>
             <Text style={styles.metricLabel}>Rendite</Text>
             <Text style={styles.metricValue}>{formatPercent(rendite?.rendite_ist)}</Text>
+            <Text style={{ fontSize: 6, color: colors.success }}>+{formatPercent(rendite_nach_steuer - (rendite?.rendite_ist || 0), 1)} n. AfA</Text>
           </View>
           <View style={styles.metricItem}>
-            <Text style={styles.metricLabel}>Cashflow</Text>
-            <Text style={(cashflow?.cashflow_ist_jahr || 0) >= 0 ? styles.metricValueGreen : styles.metricValueRed}>
-              {formatCurrency(cashflow?.cashflow_ist_jahr)}
-            </Text>
-          </View>
-          <View style={styles.metricItem}>
-            <Text style={styles.metricLabel}>Potenzial</Text>
-            <Text style={styles.metricValueGreen}>+{formatCurrency(miet?.potenzial_jahr)}</Text>
+            <Text style={styles.metricLabel}>AfA-Ersparnis</Text>
+            <Text style={styles.metricValueGreen}>{formatCurrency(steuerersparnis)}/J.</Text>
+            <Text style={{ fontSize: 6, color: colors.textLight }}>bei 42% Grenzsteuersatz</Text>
           </View>
           <View style={[styles.metricItem, styles.metricItemLast]}>
             <Text style={styles.metricLabel}>Empfehlung</Text>
             <Text style={styles.empfehlungBadge}>{empfehlung || '-'}</Text>
+          </View>
+        </View>
+
+        {/* Beleihungswert-Info */}
+        <View style={{
+          flexDirection: 'row',
+          backgroundColor: colors.bgPurple,
+          borderRadius: 4,
+          padding: 8,
+          marginBottom: 15,
+          alignItems: 'center',
+        }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 8, color: colors.purple, fontWeight: 'bold' }}>Geschätzter Beleihungswert (80% VW)</Text>
+            <Text style={{ fontSize: 11, color: colors.text, fontWeight: 'bold' }}>{formatCurrency(beleihungswert)}</Text>
+          </View>
+          <View style={{ flex: 2, paddingLeft: 10, borderLeftWidth: 1, borderLeftColor: '#e9d5ff' }}>
+            <Text style={{ fontSize: 7, color: colors.textMuted, lineHeight: 1.4 }}>
+              Der Eigenkapitalpuffer von {formatCurrency(eigenkapitalpuffer)} kann als zusätzliche Sicherheit
+              bei Folgefinanzierungen dienen. *Verkehrswert geschätzt auf Basis {marktdaten ? `Kaufpreisfaktor ${kaufpreisfaktor}x (${marktdaten.kaufpreisfaktor_region?.quelle || 'Marktdaten'})` : 'konservativer Schätzung +5%'}.
+            </Text>
           </View>
         </View>
 
@@ -837,6 +903,18 @@ export function AuswertungPDF({
                 <Text style={[styles.label, { fontWeight: 'bold' }]}>Anfangsrendite</Text>
                 <Text style={styles.value}>{formatPercent(rendite?.rendite_ist)}</Text>
               </View>
+              {/* Erklärung */}
+              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • EK-Quote: {((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100).toFixed(0)}% {(fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) >= 0.3 ? '(konservativ)' : '(gehebelt)'}
+                </Text>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • Zinsniveau: {(fin?.zinssatz || 0) <= 3.5 ? 'günstig' : (fin?.zinssatz || 0) <= 4.5 ? 'marktüblich' : 'erhöht'}
+                </Text>
+                <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 2 }}>
+                  Quelle: Angaben Mandant
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -861,9 +939,21 @@ export function AuswertungPDF({
               </View>
               {miet?.miete_ist_jahr && miet.potenzial_jahr ? (
                 <Text style={{ fontSize: 8, color: colors.textMuted, textAlign: 'right', marginTop: 3 }}>
-                  +{((miet.potenzial_jahr / miet.miete_ist_jahr) * 100).toFixed(1)}% Steigerung
+                  +{((miet.potenzial_jahr / miet.miete_ist_jahr) * 100).toFixed(1)}% Steigerung möglich
                 </Text>
               ) : null}
+              {/* Erklärung */}
+              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • IST: Tatsächliche Mieteinnahmen lt. Mandant
+                </Text>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • SOLL: Marktmiete bei Neuvermietung
+                </Text>
+                <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 2 }}>
+                  Quelle: {marktdaten?.vergleichsmiete_wohnen?.quelle || `Mietspiegel ${objekt.ort || 'Region'}`}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -898,6 +988,15 @@ export function AuswertungPDF({
                 <Text style={[styles.label, { fontWeight: 'bold' }]}>Cashflow optimiert</Text>
                 <Text style={(cashflow?.cashflow_opt_jahr || 0) >= 0 ? styles.valueGreen : styles.valueRed}>
                   {formatCurrency(cashflow?.cashflow_opt_jahr)}
+                </Text>
+              </View>
+              {/* Erklärung */}
+              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • Cashflow = Miete - Kapitaldienst - Kosten
+                </Text>
+                <Text style={{ fontSize: 6, color: (cashflow?.cashflow_ist_jahr || 0) >= 0 ? colors.success : colors.danger, lineHeight: 1.3 }}>
+                  • Status: {(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'Objekt trägt sich selbst' : 'Unterdeckung - Zuschuss erforderlich'}
                 </Text>
               </View>
             </View>
@@ -961,6 +1060,18 @@ export function AuswertungPDF({
                   <Text style={{ fontSize: 6, color: colors.warning }}>35%</Text>
                   <Text style={{ fontSize: 6, color: colors.danger }}>50%</Text>
                 </View>
+              </View>
+              {/* Erklärung */}
+              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • Kostenquote = Kosten / Mieteinnahmen
+                </Text>
+                <Text style={{ fontSize: 6, color: kosten?.bewertung === 'gesund' ? colors.success : kosten?.bewertung === 'durchschnittlich' ? colors.warning : colors.danger, lineHeight: 1.3 }}>
+                  • Bewertung: {kosten?.bewertung === 'gesund' ? 'Gesund (<25%)' : kosten?.bewertung === 'durchschnittlich' ? 'Durchschnittlich (25-35%)' : 'Erhöht (>35%) - Optimierungspotenzial'}
+                </Text>
+                <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 2 }}>
+                  Quelle: Angaben Mandant / Branchenbenchmark
+                </Text>
               </View>
             </View>
           </View>
@@ -1226,58 +1337,79 @@ export function AuswertungPDF({
 
         {/* Section 10 & 11 */}
         <View style={styles.sectionRow}>
-          {/* Section 10: RND & AfA */}
+          {/* Section 10: RND & AfA - Erweitert */}
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>10</Text>
-              <Text style={styles.sectionTitle}>RND & AfA</Text>
+              <Text style={styles.sectionTitle}>AfA & Steuervorteile</Text>
             </View>
             <View style={styles.sectionContent}>
-              <View style={styles.row}>
-                <Text style={styles.label}>Baujahr</Text>
-                <Text style={styles.value}>{afa?.baujahr || '-'}</Text>
+              {/* AfA Highlight Box */}
+              <View style={{ backgroundColor: colors.successBg, borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                <Text style={{ fontSize: 7, color: colors.success, fontWeight: 'bold', marginBottom: 3 }}>Jährlicher Steuervorteil</Text>
+                <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.success }}>{formatCurrency(afa?.steuerersparnis_42)}</Text>
+                <Text style={{ fontSize: 6, color: colors.textMuted }}>bei 42% Grenzsteuersatz</Text>
+              </View>
+              {/* RND Visualisierung */}
+              <View style={{ marginBottom: 6 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Restnutzungsdauer</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold' }}>{afa?.rnd} von 80 Jahren</Text>
+                </View>
+                <ProgressBar value={afa?.rnd || 0} max={80} color={colors.primaryLight} height={6} showLabel={false} />
               </View>
               <View style={styles.row}>
-                <Text style={styles.label}>Alter</Text>
-                <Text style={styles.value}>{afa?.alter} Jahre</Text>
+                <Text style={styles.label}>Baujahr / Alter</Text>
+                <Text style={styles.value}>{afa?.baujahr} / {afa?.alter}J.</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.label}>Restnutzungsdauer</Text>
-                <Text style={styles.value}>{afa?.rnd} Jahre</Text>
-              </View>
-              <View style={[styles.row, styles.rowTotal]}>
                 <Text style={styles.label}>AfA-Satz</Text>
                 <Text style={styles.value}>{afa?.rnd ? (100 / afa.rnd).toFixed(2) : '-'}%</Text>
               </View>
-              <View style={styles.row}>
-                <Text style={styles.label}>AfA p.a.</Text>
+              <View style={[styles.row, styles.rowLast]}>
+                <Text style={styles.label}>AfA-Betrag p.a.</Text>
                 <Text style={[styles.value, { color: colors.primary }]}>{formatCurrency(afa?.afa_jahr)}</Text>
               </View>
-              <View style={[styles.row, styles.rowLast]}>
-                <Text style={styles.label}>Steuerersparnis (42%)</Text>
-                <Text style={styles.valueGreen}>{formatCurrency(afa?.steuerersparnis_42)}</Text>
+              {/* Erklärung */}
+              <View style={[styles.infoBox, { marginTop: 6, padding: 4 }]}>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • AfA = Absetzung für Abnutzung (§7 EStG)
+                </Text>
+                <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
+                  • Basis: {formatCurrency(afa?.gebaeude_wert)} Gebäudewert (80% KP)
+                </Text>
               </View>
             </View>
           </View>
 
-          {/* Section 11: ROI-Szenarien */}
+          {/* Section 11: ROI-Szenarien - Erweitert */}
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>11</Text>
-              <Text style={styles.sectionTitle}>ROI-Szenarien</Text>
+              <Text style={styles.sectionTitle}>Rendite-Szenarien</Text>
             </View>
             <View style={styles.sectionContent}>
-              <View style={styles.row}>
-                <Text style={styles.label}>ROI heute</Text>
-                <Text style={styles.value}>{formatPercent(rendite?.rendite_ist)}</Text>
+              {/* Visuelle ROI-Balken */}
+              <View style={{ marginBottom: 10 }}>
+                {[
+                  { label: 'Brutto-Rendite IST', value: rendite?.rendite_ist || 0, color: '#94a3b8' },
+                  { label: 'Brutto-Rendite OPT', value: rendite?.rendite_opt || 0, color: colors.success },
+                  { label: 'Nach AfA (eff.)', value: rendite_nach_steuer, color: colors.purple },
+                  { label: 'EK-Rendite IST', value: rendite?.eigenkapitalrendite_ist || 0, color: colors.primaryLight },
+                ].map((item, i) => (
+                  <View key={i} style={{ marginBottom: 5 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                      <Text style={{ fontSize: 7, color: colors.textMuted }}>{item.label}</Text>
+                      <Text style={{ fontSize: 7, fontWeight: 'bold', color: item.color }}>{formatPercent(item.value)}</Text>
+                    </View>
+                    <ProgressBar value={item.value} max={15} color={item.color} height={5} showLabel={false} />
+                  </View>
+                ))}
               </View>
-              <View style={styles.row}>
-                <Text style={styles.label}>ROI optimiert</Text>
-                <Text style={styles.valueGreen}>{formatPercent(rendite?.rendite_opt)}</Text>
-              </View>
-              <View style={[styles.row, styles.rowLast]}>
-                <Text style={styles.label}>+ WEG-Aufteilung</Text>
-                <Text style={styles.valueGreen}>+15%</Text>
+              {/* EK-Rendite Highlight */}
+              <View style={{ backgroundColor: colors.bgBlue, borderRadius: 4, padding: 6, marginTop: 4 }}>
+                <Text style={{ fontSize: 7, color: colors.primaryLight, fontWeight: 'bold' }}>Eigenkapitalrendite optimiert</Text>
+                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary }}>{formatPercent(rendite?.eigenkapitalrendite_opt)}</Text>
               </View>
             </View>
           </View>
@@ -1309,8 +1441,64 @@ export function AuswertungPDF({
               </View>
             </View>
             <Text style={{ fontSize: 7, color: colors.textMuted, textAlign: 'center', marginTop: 8 }}>
-              Annahme: 2,5% p.a. Wertsteigerung
+              Annahme: {marktdaten?.preisprognose ? 'Dynamische Prognose lt. Marktdaten' : '2,5% p.a. Wertsteigerung'}
             </Text>
+          </View>
+        </View>
+
+        {/* NEU: Investment-Übersicht Dashboard */}
+        <View style={{
+          backgroundColor: colors.bgLight,
+          borderRadius: 6,
+          padding: 12,
+          marginBottom: 15,
+          borderWidth: 1,
+          borderColor: colors.border,
+        }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 10 }}>
+            Investment-Übersicht
+          </Text>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            {/* Spalte 1: Kapitalstruktur */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kapitalstruktur</Text>
+              <View style={{ height: 40, flexDirection: 'row', borderRadius: 3, overflow: 'hidden' }}>
+                <View style={{ flex: (fin?.eigenkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.success }} />
+                <View style={{ flex: (fin?.fremdkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.danger }} />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }}>
+                <Text style={{ fontSize: 6, color: colors.success }}>EK {formatPercent((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
+                <Text style={{ fontSize: 6, color: colors.danger }}>FK {formatPercent((fin?.fremdkapital || 0) / (fin?.kaufpreis || 1) * 100, 0)}</Text>
+              </View>
+            </View>
+            {/* Spalte 2: Cashflow-Verwendung */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Mietverteilung</Text>
+              <View style={{ height: 40, flexDirection: 'row', borderRadius: 3, overflow: 'hidden' }}>
+                <View style={{ flex: (fin?.kapitaldienst || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#ef4444' }} />
+                <View style={{ flex: (kosten?.kosten_gesamt || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#f59e0b' }} />
+                <View style={{ flex: Math.max(0, (cashflow?.cashflow_ist_jahr || 0)) / (miet?.miete_ist_jahr || 1), backgroundColor: '#22c55e' }} />
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }}>
+                <Text style={{ fontSize: 5, color: '#ef4444' }}>Kapitaldienst</Text>
+                <Text style={{ fontSize: 5, color: '#f59e0b' }}>Kosten</Text>
+                <Text style={{ fontSize: 5, color: '#22c55e' }}>Cashflow</Text>
+              </View>
+            </View>
+            {/* Spalte 3: Key Metrics */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kennzahlen</Text>
+              {[
+                { label: 'Rendite', value: formatPercent(rendite?.rendite_ist), color: colors.text },
+                { label: 'Kostenquote', value: formatPercent(kosten?.kostenquote), color: kosten?.bewertung === 'gesund' ? colors.success : colors.warning },
+                { label: 'Faktor', value: `${((fin?.kaufpreis || 0) / (miet?.miete_ist_jahr || 1)).toFixed(1)}x`, color: colors.text },
+              ].map((item, i) => (
+                <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>{item.label}</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: item.color }}>{item.value}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         </View>
 
