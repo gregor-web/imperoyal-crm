@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { berechneAlles } from '@/lib/berechnungen';
 import { ERLAEUTERUNGEN } from '@/lib/erlaeuterungen';
 import { fetchMarktDaten } from '@/lib/marktdaten';
-import type { Objekt, Einheit, ClaudeEmpfehlung, MarktDaten } from '@/lib/types';
+import { findePassendeKaeufer } from '@/lib/matching';
+import type { Objekt, Einheit, ClaudeEmpfehlung, MarktDaten, Ankaufsprofil, Mandant } from '@/lib/types';
 import { formatCurrency, formatPercent } from '@/lib/formatters';
+
+const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
 
 export async function POST(request: NextRequest) {
   try {
@@ -165,9 +169,96 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
       throw insertError;
     }
 
+    // =====================================================
+    // AUTOMATISCHES KÄUFER-MATCHING BEI VERKAUFSEMPFEHLUNG
+    // =====================================================
+    let matchingResults: { count: number; emailsSent: number } | null = null;
+
+    if (empfehlung?.empfehlung === 'VERKAUFEN') {
+      try {
+        console.log('Verkaufsempfehlung erkannt - starte automatisches Käufer-Matching...');
+
+        // Use admin client to bypass RLS for matching
+        const adminSupabase = createAdminClient();
+
+        // Fetch all active ankaufsprofile (excluding the object owner)
+        const { data: ankaufsprofile } = await adminSupabase
+          .from('ankaufsprofile')
+          .select('*')
+          .neq('mandant_id', objekt.mandant_id);
+
+        if (ankaufsprofile && ankaufsprofile.length > 0) {
+          // Fetch mandanten for the profiles
+          const mandantIds = [...new Set(ankaufsprofile.map(p => p.mandant_id))];
+          const { data: mandanten } = await adminSupabase
+            .from('mandanten')
+            .select('*')
+            .in('id', mandantIds);
+
+          // Run matching algorithm
+          const matches = findePassendeKaeufer(
+            objekt as Objekt,
+            ankaufsprofile as Ankaufsprofil[],
+            (mandanten || []) as Mandant[]
+          );
+
+          console.log(`${matches.length} passende Käufer gefunden`);
+
+          // Send emails to matching buyers via Make.com webhook
+          let emailsSent = 0;
+          for (const match of matches) {
+            if (match.score >= 40 && match.mandant?.email) { // Minimum score threshold
+              try {
+                const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    type: 'buyer_match',
+                    to: match.mandant.email,
+                    subject: 'Neues Objekt passt zu Ihrem Ankaufsprofil - Imperoyal Immobilien',
+                    buyer_name: match.mandant.ansprechpartner || match.mandant.name,
+                    objekt_adresse: `${objekt.strasse}, ${objekt.plz} ${objekt.ort}`,
+                    objekt_typ: objekt.gebaeudetyp || 'Immobilie',
+                    kaufpreis: formatCurrency(objekt.kaufpreis),
+                    rendite: formatPercent(berechnungen.rendite.rendite_ist),
+                    wohnflaeche: objekt.wohnflaeche ? `${objekt.wohnflaeche} m²` : 'k.A.',
+                    match_score: match.score,
+                    match_details: [
+                      match.matches.volumen ? '✓ Budget passt' : '',
+                      match.matches.assetklasse ? '✓ Assetklasse passt' : '',
+                      match.matches.region ? '✓ Region passt' : '',
+                    ].filter(Boolean).join(', '),
+                    ankaufsprofil_name: match.ankaufsprofil.name || 'Ihr Ankaufsprofil',
+                  }),
+                });
+
+                if (webhookResponse.ok) {
+                  emailsSent++;
+                  console.log(`E-Mail gesendet an: ${match.mandant.email} (Score: ${match.score})`);
+                }
+              } catch (emailError) {
+                console.error(`Fehler beim E-Mail-Versand an ${match.mandant.email}:`, emailError);
+              }
+            }
+          }
+
+          matchingResults = {
+            count: matches.length,
+            emailsSent,
+          };
+
+          console.log(`Matching abgeschlossen: ${matches.length} Matches, ${emailsSent} E-Mails gesendet`);
+        }
+      } catch (matchingError) {
+        console.error('Fehler beim automatischen Matching:', matchingError);
+        // Don't fail the whole request if matching fails
+      }
+    }
+
     return NextResponse.json({
       auswertung_id: auswertung.id,
       message: 'Auswertung erfolgreich erstellt',
+      matching: matchingResults,
     });
   } catch (error) {
     console.error('Auswertung error:', error);
