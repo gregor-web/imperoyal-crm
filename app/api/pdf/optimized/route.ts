@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       reduceMarginBottom: false,
       reduceChartHeights: false,
     };
-    let pdfBuffer: Buffer;
+    let pdfBuffer: Buffer = Buffer.alloc(0);
     let isOptimal = false;
     const optimizationLog: string[] = [];
 
