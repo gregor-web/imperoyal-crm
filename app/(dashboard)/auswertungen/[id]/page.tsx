@@ -281,14 +281,25 @@ export default async function AuswertungDetailPage({ params }: Props) {
           {auswertung.empfehlung_handlungsschritte && (
             <Card title="Handlungsschritte">
               <ul className="space-y-2">
-                {(auswertung.empfehlung_handlungsschritte as string[]).map((schritt, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">
-                      {i + 1}
-                    </span>
-                    <span className="text-slate-700">{schritt}</span>
-                  </li>
-                ))}
+                {(auswertung.empfehlung_handlungsschritte as Array<string | { schritt: string; zeitrahmen: string }>).map((schritt, i) => {
+                  // Support both old (string) and new (object with zeitrahmen) format
+                  const isObject = typeof schritt === 'object' && schritt !== null;
+                  const schrittText = isObject ? schritt.schritt : schritt;
+                  const zeitrahmen = isObject ? schritt.zeitrahmen : null;
+                  return (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">
+                        {i + 1}
+                      </span>
+                      <div className="flex-1">
+                        <span className="text-slate-700">{schrittText}</span>
+                        {zeitrahmen && (
+                          <span className="ml-2 text-xs text-green-600 font-medium">({zeitrahmen})</span>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </Card>
           )}
