@@ -558,14 +558,14 @@ const styles = StyleSheet.create({
     color: colors.warning,
     textAlign: 'center',
   },
-  // Footer - no absolute positioning to fix layout flow
+  // Footer - flows after content
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: colors.border,
     paddingTop: 6,
-    marginTop: 'auto',
+    marginTop: 15,
   },
   footerText: {
     fontSize: 7,
@@ -702,8 +702,7 @@ export function AuswertungPDF({
   return (
     <Document>
       {/* ==================== PAGE 1 ==================== */}
-      <Page size="A4" style={[styles.page, { display: 'flex', flexDirection: 'column' }]}>
-        <View style={{ flex: 1 }}>
+      <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -1099,7 +1098,6 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        </View>
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
@@ -1108,8 +1106,7 @@ export function AuswertungPDF({
       </Page>
 
       {/* ==================== PAGE 2 ==================== */}
-      <Page size="A4" style={[styles.page, { display: 'flex', flexDirection: 'column' }]}>
-        <View style={{ flex: 1 }}>
+      <Page size="A4" style={styles.page}>
         {/* Section 5: Mieterhöhungspotenzial Table */}
         <View style={[styles.sectionBox, { marginBottom: 10 }]}>
           <View style={styles.sectionHeader}>
@@ -1305,7 +1302,6 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        </View>
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
@@ -1314,8 +1310,7 @@ export function AuswertungPDF({
       </Page>
 
       {/* ==================== PAGE 3 ==================== */}
-      <Page size="A4" style={[styles.page, { display: 'flex', flexDirection: 'column' }]}>
-        <View style={{ flex: 1 }}>
+      <Page size="A4" style={styles.page}>
         {/* Section 8 & 9 */}
         <View style={styles.sectionRow}>
           {/* Section 8: CAPEX & §559 BGB */}
@@ -1564,7 +1559,6 @@ export function AuswertungPDF({
           </Text>
         </View>
 
-        </View>
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
@@ -1573,8 +1567,7 @@ export function AuswertungPDF({
       </Page>
 
       {/* ==================== PAGE 4 ==================== */}
-      <Page size="A4" style={[styles.page, { display: 'flex', flexDirection: 'column' }]}>
-        <View style={{ flex: 1 }}>
+      <Page size="A4" style={styles.page}>
         {/* Section 13: Handlungsempfehlung */}
         <View style={[styles.sectionBox, { marginBottom: 10 }]}>
           <View style={styles.sectionHeader}>
@@ -1668,7 +1661,7 @@ export function AuswertungPDF({
             Diese Analyse stellt keine Rechts-, Steuer- oder Anlageberatung dar.
           </Text>
         </View>
-        </View>
+
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
