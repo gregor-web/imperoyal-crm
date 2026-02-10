@@ -128,11 +128,11 @@ Antworte NUR mit diesem JSON (keine Erklärungen, kein Markdown):
     return {
       vergleichsmiete_wohnen: {
         wert: Number(parsed.vergleichsmiete_wohnen?.wert) || 12,
-        quelle: String(parsed.vergleichsmiete_wohnen?.quelle || 'Perplexity'),
+        quelle: String(parsed.vergleichsmiete_wohnen?.quelle || 'Marktrecherche'),
       },
       vergleichsmiete_gewerbe: {
         wert: Number(parsed.vergleichsmiete_gewerbe?.wert) || 15,
-        quelle: String(parsed.vergleichsmiete_gewerbe?.quelle || 'Perplexity'),
+        quelle: String(parsed.vergleichsmiete_gewerbe?.quelle || 'Marktrecherche'),
       },
       kappungsgrenze: {
         vorhanden: Boolean(parsed.kappungsgrenze?.vorhanden),
@@ -144,7 +144,7 @@ Antworte NUR mit diesem JSON (keine Erklärungen, kein Markdown):
       },
       kaufpreisfaktor_region: {
         wert: Number(parsed.kaufpreisfaktor_region?.wert) || 20,
-        quelle: String(parsed.kaufpreisfaktor_region?.quelle || 'Perplexity'),
+        quelle: String(parsed.kaufpreisfaktor_region?.quelle || 'Marktrecherche'),
       },
       aktuelle_bauzinsen: {
         wert: Number(parsed.aktuelle_bauzinsen?.wert) || 3.5,
@@ -182,11 +182,11 @@ function getDefaultMarktDaten(plz: string, ort: string): MarktDaten {
   return {
     vergleichsmiete_wohnen: {
       wert: isMuenchen ? 18 : isAStadt ? 14 : 10,
-      quelle: 'Schätzung (Perplexity nicht verfügbar)',
+      quelle: 'Regionale Schätzung',
     },
     vergleichsmiete_gewerbe: {
       wert: isMuenchen ? 25 : isAStadt ? 18 : 12,
-      quelle: 'Schätzung (Perplexity nicht verfügbar)',
+      quelle: 'Regionale Schätzung',
     },
     kappungsgrenze: {
       vorhanden: isAStadt,
@@ -198,7 +198,7 @@ function getDefaultMarktDaten(plz: string, ort: string): MarktDaten {
     },
     kaufpreisfaktor_region: {
       wert: isMuenchen ? 30 : isAStadt ? 25 : 18,
-      quelle: 'Schätzung (Perplexity nicht verfügbar)',
+      quelle: 'Regionale Schätzung',
     },
     aktuelle_bauzinsen: {
       wert: 3.5,

@@ -719,7 +719,7 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Marktdaten Section (from Perplexity) */}
+        {/* Marktdaten Section */}
         {berechnungen?.marktdaten && (
           <View style={{
             backgroundColor: '#faf5ff',
@@ -734,7 +734,7 @@ export function AuswertungPDF({
                 Aktuelle Marktdaten
               </Text>
               <Text style={{ fontSize: 7, color: '#a78bfa', marginLeft: 'auto' }}>
-                via Perplexity AI • {berechnungen.marktdaten.standort}
+                Standort: {berechnungen.marktdaten.standort}
               </Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 8 }}>

@@ -220,7 +220,7 @@ Haltedauer: ${objekt.haltedauer || 'nicht definiert'}
 Risikoprofil: ${objekt.risikoprofil || 'nicht definiert'}
 Primäres Ziel: ${objekt.primaeres_ziel || 'nicht definiert'}
 ${marktdaten ? `
-AKTUELLE MARKTDATEN (via Perplexity):
+AKTUELLE MARKTDATEN:
 - Vergleichsmiete Wohnen: ${marktdaten.vergleichsmiete_wohnen.wert} €/m² (${marktdaten.vergleichsmiete_wohnen.quelle})
 - Vergleichsmiete Gewerbe: ${marktdaten.vergleichsmiete_gewerbe.wert} €/m² (${marktdaten.vergleichsmiete_gewerbe.quelle})
 - Kappungsgrenze: ${marktdaten.kappungsgrenze.vorhanden ? `${marktdaten.kappungsgrenze.prozent}% (angespannter Markt)` : '20% (normaler Markt)'}
