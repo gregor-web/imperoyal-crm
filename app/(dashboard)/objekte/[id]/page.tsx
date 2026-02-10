@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { formatDate, formatCurrency, formatPercent, formatBoolean, formatArea } from '@/lib/formatters';
-import { ArrowLeft, Edit, Banknote, Home, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Edit, Banknote, Home, TrendingUp, Clock } from 'lucide-react';
 import { AuswertenButton } from '@/components/auswerten-button';
+import { AnfrageButton } from '@/components/anfrage-button';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -32,9 +33,17 @@ export default async function ObjektDetailPage({ params }: Props) {
     notFound();
   }
 
-  // Check if user is admin
-  const { data: profile } = await supabase.from('profiles').select('role').single();
+  // Check if user is admin and get mandant_id
+  const { data: profile } = await supabase.from('profiles').select('role, mandant_id').single();
   const isAdmin = profile?.role === 'admin';
+
+  // Check if there's an open anfrage for this object
+  const { data: offeneAnfrage } = await supabase
+    .from('anfragen')
+    .select('id, status')
+    .eq('objekt_id', id)
+    .eq('status', 'offen')
+    .single();
 
   // Calculate some basic stats
   const einheiten = objekt.einheiten || [];
@@ -55,9 +64,19 @@ export default async function ObjektDetailPage({ params }: Props) {
             <p className="text-slate-600">{objekt.plz} {objekt.ort}</p>
           </div>
         </div>
-        <div className="flex gap-2">
-          {isAdmin && (
+        <div className="flex gap-2 items-center">
+          {isAdmin ? (
             <AuswertenButton objektId={id} />
+          ) : offeneAnfrage ? (
+            <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm font-medium">Anfrage ausstehend</span>
+            </div>
+          ) : (
+            <AnfrageButton
+              objektId={id}
+              mandantId={(objekt.mandanten as { id: string })?.id || ''}
+            />
           )}
           <Link href={`/objekte/${id}/edit`}>
             <Button variant="secondary">
