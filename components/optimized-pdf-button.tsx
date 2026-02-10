@@ -23,13 +23,20 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
       setStatus('Generiere PDF & analysiere mit KI...');
       console.log('[OptimizedPDF] Sending request...');
 
+      // Use AbortController for timeout handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min timeout
+
       const response = await fetch('/api/pdf/optimized', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ auswertung_id: auswertungId }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       console.log('[OptimizedPDF] Response status:', response.status);
       console.log('[OptimizedPDF] Response headers:', Object.fromEntries(response.headers.entries()));
@@ -59,15 +66,27 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
         throw new Error('PDF ist leer');
       }
 
-      // Create download link
+      // Create download link - use different approach for better browser compatibility
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `auswertung-${auswertungId}-optimized.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      console.log('[OptimizedPDF] Created blob URL:', url);
+
+      // Try using link click first
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.download = `auswertung-${auswertungId}-optimized.pdf`;
+      link.setAttribute('target', '_blank');
+      document.body.appendChild(link);
+
+      console.log('[OptimizedPDF] Triggering download...');
+      link.click();
+
+      // Cleanup after a delay
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        console.log('[OptimizedPDF] Cleanup done');
+      }, 1000);
 
       setStatus(attempts ? `Fertig! Optimiert in ${attempts} Versuchen` : 'Fertig!');
       console.log('[OptimizedPDF] Download triggered successfully');
