@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
   },
-  // Key Metrics Bar - Liquid Glass Style
+  // Key Metrics Bar
   metricsBar: {
     flexDirection: 'row',
     backgroundColor: colors.glassInner,
@@ -236,18 +236,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
-    borderLeftColor: colors.glassHighlight,
-    borderBottomColor: colors.glassShadow,
-    borderRightColor: colors.glassShadow,
+    borderColor: colors.border,
   },
   metricItem: {
     flex: 1,
     padding: 10,
     alignItems: 'center',
     borderRightWidth: 1,
-    borderRightColor: colors.glassBorder,
+    borderRightColor: colors.border,
   },
   metricItemLast: {
     borderRightWidth: 0,
@@ -293,11 +289,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.glassWhite,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
-    borderLeftColor: colors.glassHighlight,
-    borderBottomColor: colors.glassShadow,
-    borderRightColor: colors.glassShadow,
+    borderColor: colors.border,
     overflow: 'hidden',
   },
   sectionHeader: {
@@ -307,7 +299,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
+    borderBottomColor: colors.border,
   },
   sectionNumber: {
     width: 18,
@@ -387,7 +379,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 4,
     borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
+    borderBottomColor: colors.border,
   },
   tableHeaderCell: {
     fontSize: 7,
@@ -423,18 +415,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     fontWeight: 'bold',
     borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
+    borderTopColor: colors.border,
   },
-  // Info boxes - Liquid Glass Style
+  // Info boxes
   infoBox: {
     backgroundColor: colors.glassInner,
     padding: 8,
     borderRadius: 6,
     marginTop: 6,
     borderWidth: 1,
-    borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
-    borderLeftColor: colors.glassHighlight,
+    borderColor: colors.border,
   },
   infoBoxTitle: {
     fontSize: 8,
@@ -447,18 +437,14 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     lineHeight: 1.4,
   },
-  // Empfehlung page - Liquid Glass Style
+  // Empfehlung page
   empfehlungContainer: {
     backgroundColor: colors.glassInner,
     borderRadius: 12,
     padding: 20,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
-    borderLeftColor: colors.glassHighlight,
-    borderBottomColor: colors.glassShadow,
-    borderRightColor: colors.glassShadow,
+    borderColor: colors.border,
   },
   empfehlungHeader: {
     flexDirection: 'row',
@@ -481,8 +467,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
+    borderColor: colors.border,
   },
   handlungsschritte: {
     marginTop: 15,
@@ -495,8 +480,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
+    borderColor: colors.border,
   },
   handlungsschrittNumber: {
     width: 22,
@@ -526,10 +510,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 15,
     borderWidth: 1,
-    borderColor: colors.glassBorder,
+    borderColor: colors.border,
     borderLeftWidth: 4,
     borderLeftColor: colors.primaryLight,
-    borderTopColor: colors.glassHighlight,
   },
   fazitLabel: {
     fontSize: 9,
@@ -548,15 +531,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginTop: 15,
     borderWidth: 1,
-    borderColor: '#f0e6c8',
-    borderTopColor: '#fdfaed',
+    borderColor: '#e0d4a8',
   },
   disclaimerText: {
     fontSize: 7,
     color: colors.warning,
     textAlign: 'center',
   },
-  // Footer - fixed at bottom of each page (uses 'fixed' for multi-page support) - Liquid Glass
+  // Footer - fixed at bottom of each page
   footer: {
     position: 'absolute',
     bottom: 15,
@@ -566,7 +548,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
+    borderTopColor: colors.border,
     paddingTop: 8,
   },
   footerText: {
@@ -1306,7 +1288,7 @@ export function AuswertungPDF({
                 <TrendArrow value={2.5} showValue={false} />
               </View>
             </View>
-            <View style={[styles.sectionContent, { alignItems: 'center' }]}>
+            <View style={[styles.sectionContent, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
               {/* Wertentwicklung als Balken - zentriert */}
               <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 100, gap: 6 }}>
                 {[
@@ -1539,7 +1521,7 @@ export function AuswertungPDF({
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
           </View>
-          <View style={[styles.sectionContent, { alignItems: 'center' }]}>
+          <View style={[styles.sectionContent, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
             {/* SVG Linien-Chart - zentriert */}
             {(() => {
               const svgWidth = 420;
