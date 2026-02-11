@@ -1534,16 +1534,16 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 12: Exit-Szenarien - SVG Linien-Chart */}
-        <View style={[styles.sectionBox, { marginBottom: 6 }]}>
+        <View style={[styles.sectionBox, { marginBottom: 4 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
           </View>
-          <View style={styles.sectionContent}>
-            {/* SVG Linien-Chart - höher für bessere Optik */}
+          <View style={[styles.sectionContent, { paddingBottom: 4 }]}>
+            {/* SVG Linien-Chart - kompakter */}
             {(() => {
               const svgWidth = 500;
-              const svgHeight = 110;
+              const svgHeight = 90;
               const padding = { top: 10, right: 10, bottom: 10, left: 10 };
               const chartWidth = svgWidth - padding.left - padding.right;
               const chartHeight = svgHeight - padding.top - padding.bottom;
@@ -1576,7 +1576,7 @@ export function AuswertungPDF({
               const areaPath = `${linePath} L ${points[points.length - 1].x} ${svgHeight - padding.bottom} L ${points[0].x} ${svgHeight - padding.bottom} Z`;
 
               return (
-                <View style={{ marginBottom: 8 }}>
+                <View style={{ marginBottom: 4 }}>
                   {/* SVG Chart */}
                   <Svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
                     {/* Filled area under line */}
@@ -1618,7 +1618,7 @@ export function AuswertungPDF({
                   </View>
 
                   {/* Summary row */}
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 6, marginTop: 8 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 5, marginTop: 4 }}>
                     <View style={{ alignItems: 'center' }}>
                       <Text style={{ fontSize: 6, color: colors.textMuted }}>Wertzuwachs 10J</Text>
                       <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
@@ -1641,16 +1641,16 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Investment-Übersicht Dashboard - auf Seite 3 verschoben um Whitespace zu füllen */}
+        {/* Investment-Übersicht Dashboard */}
         <View style={{
           backgroundColor: colors.bgLight,
           borderRadius: 6,
-          padding: 10,
-          marginBottom: 10,
+          padding: 8,
+          marginBottom: 6,
           borderWidth: 1,
           borderColor: colors.border,
         }}>
-          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 10 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 6 }}>
             Investment-Übersicht
           </Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
