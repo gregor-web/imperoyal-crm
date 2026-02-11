@@ -5,7 +5,28 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmp
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { Plus } from 'lucide-react';
+import { Plus, Building2, User } from 'lucide-react';
+
+interface Objekt {
+  id: string;
+  strasse: string;
+  plz: string;
+  ort: string;
+  gebaeudetyp: string | null;
+  kaufpreis: number;
+  wohneinheiten: number | null;
+  gewerbeeinheiten: number | null;
+  created_at: string;
+  mandant_id: string;
+  mandanten: { id: string; name: string } | null;
+}
+
+interface GroupedObjekte {
+  [mandantId: string]: {
+    mandantName: string;
+    objekte: Objekt[];
+  };
+}
 
 export default async function ObjektePage() {
   const supabase = await createClient();
@@ -19,9 +40,30 @@ export default async function ObjektePage() {
     .from('objekte')
     .select(`
       *,
-      mandanten (name)
+      mandanten (id, name)
     `)
     .order('created_at', { ascending: false });
+
+  // Group objekte by mandant for admin view
+  const groupedObjekte: GroupedObjekte = {};
+  if (objekte) {
+    objekte.forEach((objekt) => {
+      const mandantId = objekt.mandant_id;
+      const mandantName = (objekt.mandanten as { id: string; name: string })?.name || 'Unbekannt';
+
+      if (!groupedObjekte[mandantId]) {
+        groupedObjekte[mandantId] = {
+          mandantName,
+          objekte: [],
+        };
+      }
+      groupedObjekte[mandantId].objekte.push(objekt as Objekt);
+    });
+  }
+
+  const mandantIds = Object.keys(groupedObjekte);
+  const totalObjekte = objekte?.length || 0;
+  const totalMandanten = mandantIds.length;
 
   return (
     <div className="space-y-6">
@@ -30,7 +72,9 @@ export default async function ObjektePage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Objekte</h1>
           <p className="text-slate-600 mt-1">
-            {isAdmin ? 'Alle Immobilien im System' : 'Ihre Immobilien'}
+            {isAdmin
+              ? `${totalObjekte} Objekte von ${totalMandanten} Mandanten`
+              : 'Ihre Immobilien'}
           </p>
         </div>
         <Link href="/objekte/neu">
@@ -41,57 +85,142 @@ export default async function ObjektePage() {
         </Link>
       </div>
 
-      {/* Table */}
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Adresse</TableHead>
-              {isAdmin && <TableHead>Mandant</TableHead>}
-              <TableHead>Typ</TableHead>
-              <TableHead>Kaufpreis</TableHead>
-              <TableHead>Einheiten</TableHead>
-              <TableHead>Erstellt</TableHead>
-              <TableHead className="w-24">Aktionen</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {objekte && objekte.length > 0 ? (
-              objekte.map((objekt) => (
-                <TableRow key={objekt.id}>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">{objekt.strasse}</p>
-                      <p className="text-sm text-slate-500">{objekt.plz} {objekt.ort}</p>
+      {/* Grouped View for Admin */}
+      {isAdmin ? (
+        <div className="space-y-6">
+          {mandantIds.length > 0 ? (
+            mandantIds.map((mandantId) => {
+              const group = groupedObjekte[mandantId];
+              return (
+                <Card key={mandantId} className="overflow-hidden">
+                  {/* Mandant Header */}
+                  <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-white/10 p-2 rounded-lg">
+                          <User className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <Link
+                            href={`/mandanten/${mandantId}`}
+                            className="text-lg font-semibold text-white hover:text-blue-200 transition-colors"
+                          >
+                            {group.mandantName}
+                          </Link>
+                          <p className="text-slate-300 text-sm">
+                            {group.objekte.length} {group.objekte.length === 1 ? 'Objekt' : 'Objekte'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-5 h-5 text-slate-400" />
+                        <span className="text-white font-medium">
+                          {formatCurrency(group.objekte.reduce((sum, o) => sum + (o.kaufpreis || 0), 0))}
+                        </span>
+                        <span className="text-slate-400 text-sm">Gesamtwert</span>
+                      </div>
                     </div>
-                  </TableCell>
-                  {isAdmin && (
-                    <TableCell>{(objekt.mandanten as { name: string })?.name || '-'}</TableCell>
-                  )}
-                  <TableCell>
-                    {objekt.gebaeudetyp && <Badge>{objekt.gebaeudetyp}</Badge>}
-                  </TableCell>
-                  <TableCell>{formatCurrency(objekt.kaufpreis)}</TableCell>
-                  <TableCell>
-                    {(objekt.wohneinheiten || 0) + (objekt.gewerbeeinheiten || 0)} Einheiten
-                  </TableCell>
-                  <TableCell>{formatDate(objekt.created_at)}</TableCell>
-                  <TableCell>
-                    <Link
-                      href={`/objekte/${objekt.id}`}
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                    >
-                      Details
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableEmpty message="Keine Objekte vorhanden" colSpan={isAdmin ? 7 : 6} />
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+                  </div>
+
+                  {/* Objekte Table */}
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Adresse</TableHead>
+                        <TableHead>Typ</TableHead>
+                        <TableHead>Kaufpreis</TableHead>
+                        <TableHead>Einheiten</TableHead>
+                        <TableHead>Erstellt</TableHead>
+                        <TableHead className="w-24">Aktionen</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {group.objekte.map((objekt) => (
+                        <TableRow key={objekt.id}>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{objekt.strasse}</p>
+                              <p className="text-sm text-slate-500">{objekt.plz} {objekt.ort}</p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {objekt.gebaeudetyp && <Badge>{objekt.gebaeudetyp}</Badge>}
+                          </TableCell>
+                          <TableCell>{formatCurrency(objekt.kaufpreis)}</TableCell>
+                          <TableCell>
+                            {(objekt.wohneinheiten || 0) + (objekt.gewerbeeinheiten || 0)} Einheiten
+                          </TableCell>
+                          <TableCell>{formatDate(objekt.created_at)}</TableCell>
+                          <TableCell>
+                            <Link
+                              href={`/objekte/${objekt.id}`}
+                              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                            >
+                              Details
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Card>
+              );
+            })
+          ) : (
+            <Card className="p-8 text-center text-slate-500">
+              Keine Objekte vorhanden
+            </Card>
+          )}
+        </div>
+      ) : (
+        /* Simple Table for Mandant View */
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Adresse</TableHead>
+                <TableHead>Typ</TableHead>
+                <TableHead>Kaufpreis</TableHead>
+                <TableHead>Einheiten</TableHead>
+                <TableHead>Erstellt</TableHead>
+                <TableHead className="w-24">Aktionen</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {objekte && objekte.length > 0 ? (
+                objekte.map((objekt) => (
+                  <TableRow key={objekt.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{objekt.strasse}</p>
+                        <p className="text-sm text-slate-500">{objekt.plz} {objekt.ort}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {objekt.gebaeudetyp && <Badge>{objekt.gebaeudetyp}</Badge>}
+                    </TableCell>
+                    <TableCell>{formatCurrency(objekt.kaufpreis)}</TableCell>
+                    <TableCell>
+                      {(objekt.wohneinheiten || 0) + (objekt.gewerbeeinheiten || 0)} Einheiten
+                    </TableCell>
+                    <TableCell>{formatDate(objekt.created_at)}</TableCell>
+                    <TableCell>
+                      <Link
+                        href={`/objekte/${objekt.id}`}
+                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      >
+                        Details
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableEmpty message="Keine Objekte vorhanden" colSpan={6} />
+              )}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
     </div>
   );
 }
