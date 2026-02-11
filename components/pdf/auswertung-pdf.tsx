@@ -1083,15 +1083,15 @@ export function AuswertungPDF({
         {/* Footer - fixed prop ensures it appears on every page if content overflows */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 1 von 5</Text>
         </View>
       </Page>
 
       {/* ==================== PAGE 2 ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Mini Header with Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 6 }}>
+        {/* Mini Header with Logo centered */}
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 6 }}>
           {logoUrl && (
             <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
           )}
@@ -1389,15 +1389,15 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 2 von 5</Text>
         </View>
       </Page>
 
       {/* ==================== PAGE 3 ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Mini Header with Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 6 }}>
+        {/* Mini Header with Logo centered */}
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 6 }}>
           {logoUrl && (
             <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
           )}
@@ -1658,15 +1658,15 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 3 von 5</Text>
         </View>
       </Page>
 
       {/* ==================== PAGE 4 ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Mini Header with Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 6 }}>
+        {/* Mini Header with Logo centered */}
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 6 }}>
           {logoUrl && (
             <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
           )}
@@ -1816,21 +1816,21 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 4 von 5</Text>
         </View>
       </Page>
 
       {/* ==================== PAGE 5: Ergänzende Erläuterungen ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Header mit Logo links */}
+        {/* Header mit Logo zentriert */}
         <View style={{ marginBottom: 12, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 6 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 6 }}>
             {logoUrl && (
               <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
             )}
           </View>
-          <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary }}>
+          <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary, textAlign: 'center' }}>
             Ergänzende Erläuterungen
           </Text>
         </View>
@@ -1910,7 +1910,7 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 5 von 5</Text>
         </View>
       </Page>
