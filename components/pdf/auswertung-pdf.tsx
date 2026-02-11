@@ -1306,9 +1306,9 @@ export function AuswertungPDF({
                 <TrendArrow value={2.5} showValue={false} />
               </View>
             </View>
-            <View style={[styles.sectionContent, { alignItems: 'center', justifyContent: 'center' }]}>
+            <View style={[styles.sectionContent, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
               {/* Wertentwicklung als Balken - zentriert mit fester Breite */}
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 100 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 80 }}>
                 {[
                   { label: 'Heute', value: wert?.heute || 0, pct: null },
                   { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
