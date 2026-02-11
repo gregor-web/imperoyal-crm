@@ -1306,9 +1306,9 @@ export function AuswertungPDF({
                 <TrendArrow value={2.5} showValue={false} />
               </View>
             </View>
-            <View style={styles.sectionContent}>
-              {/* Wertentwicklung als Balken - höher für bessere Optik */}
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 110, gap: 4 }}>
+            <View style={[styles.sectionContent, { alignItems: 'center' }]}>
+              {/* Wertentwicklung als Balken - zentriert */}
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 100, gap: 6 }}>
                 {[
                   { label: 'Heute', value: wert?.heute || 0, pct: null },
                   { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
@@ -1319,9 +1319,9 @@ export function AuswertungPDF({
                   const maxVal = wert?.jahr_10 || wert?.heute || 1;
                   const heightPct = Math.max(50, (item.value / maxVal) * 100);
                   return (
-                    <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                    <View key={i} style={{ width: 32, alignItems: 'center' }}>
                       <View style={{
-                        width: '100%',
+                        width: 26,
                         height: `${heightPct}%`,
                         backgroundColor: colors.primaryLight,
                         borderRadius: 3,
@@ -1333,7 +1333,7 @@ export function AuswertungPDF({
                 })}
               </View>
               {/* Labels unter den Balken */}
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, gap: 4 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4, gap: 6 }}>
                 {[
                   { label: 'Heute', value: wert?.heute || 0, pct: null },
                   { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
@@ -1341,7 +1341,7 @@ export function AuswertungPDF({
                   { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
                   { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
                 ].map((item, i) => (
-                  <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                  <View key={i} style={{ width: 32, alignItems: 'center' }}>
                     <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary }}>
                       {formatCurrencyShort(item.value)}
                     </Text>
@@ -1539,11 +1539,11 @@ export function AuswertungPDF({
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
           </View>
-          <View style={styles.sectionContent}>
-            {/* SVG Linien-Chart - höher für bessere Optik */}
+          <View style={[styles.sectionContent, { alignItems: 'center' }]}>
+            {/* SVG Linien-Chart - zentriert */}
             {(() => {
-              const svgWidth = 500;
-              const svgHeight = 110;
+              const svgWidth = 420;
+              const svgHeight = 90;
               const padding = { top: 10, right: 10, bottom: 10, left: 10 };
               const chartWidth = svgWidth - padding.left - padding.right;
               const chartHeight = svgHeight - padding.top - padding.bottom;
