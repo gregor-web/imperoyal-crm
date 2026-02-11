@@ -594,6 +594,7 @@ interface AuswertungPDFProps {
   };
   mandant: {
     name: string;
+    anrede?: 'Herr' | 'Frau' | null;
     ansprechpartner?: string | null;
   };
   einheiten?: Array<{
@@ -724,9 +725,11 @@ export function AuswertungPDF({
           borderLeftColor: colors.primary,
         }}>
           <Text style={{ fontSize: 10 * sm.fontSizeMultiplier, color: colors.text, lineHeight: 1.6 }}>
-            {mandant.ansprechpartner
-              ? `Sehr geehrte(r) Herr/Frau ${mandant.ansprechpartner.split(' ').pop()},`
-              : `Sehr geehrte Damen und Herren der ${mandant.name},`}
+            {mandant.ansprechpartner && mandant.anrede
+              ? `Sehr geehrte${mandant.anrede === 'Frau' ? '' : 'r'} ${mandant.anrede} ${mandant.ansprechpartner.split(' ').pop()},`
+              : mandant.ansprechpartner
+                ? `Sehr geehrte Damen und Herren,`
+                : `Sehr geehrte Damen und Herren der ${mandant.name},`}
           </Text>
           <Text style={{ fontSize: 9 * sm.fontSizeMultiplier, color: colors.textMuted, lineHeight: 1.6, marginTop: 6 * sm.spacingMultiplier }}>
             im Folgenden erhalten Sie die Analyse Ihres Objekts. Bei Fragen stehen wir Ihnen gerne zur Verfügung.
@@ -738,8 +741,8 @@ export function AuswertungPDF({
           <View style={styles.metricItem}>
             <Text style={styles.metricLabel}>Verkehrswert*</Text>
             <Text style={styles.metricValue}>{formatCurrency(verkehrswertGeschaetzt)}</Text>
-            <Text style={{ fontSize: 7, color: colors.primaryLight, fontWeight: 'bold' }}>
-              {gesamtflaeche > 0 ? `${formatCurrency(verkehrswertProQm)}/m²` : '-'}
+            <Text style={{ fontSize: 8, color: colors.primary, fontWeight: 'bold', marginTop: 2 }}>
+              {gesamtflaeche > 0 ? `(${formatCurrency(verkehrswertProQm)}/m²)` : '-'}
             </Text>
           </View>
           <View style={styles.metricItem}>

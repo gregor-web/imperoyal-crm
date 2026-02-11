@@ -67,6 +67,7 @@ export interface Profile {
 export interface Mandant {
   id: string;
   name: string;
+  anrede: 'Herr' | 'Frau' | null;
   ansprechpartner: string | null;
   position: string | null;
   email: string;

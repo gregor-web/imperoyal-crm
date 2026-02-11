@@ -16,6 +16,7 @@ const booleanFromString = z
 
 export const mandantSchema = z.object({
   name: z.string().min(1, 'Name ist erforderlich'),
+  anrede: z.enum(['Herr', 'Frau']).optional().nullable(),
   ansprechpartner: z.string().optional(),
   position: z.string().optional(),
   email: z.string().email('Ungültige E-Mail-Adresse'),

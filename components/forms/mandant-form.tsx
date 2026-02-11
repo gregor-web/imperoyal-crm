@@ -45,7 +45,14 @@ export function MandantForm({ defaultValues, onSubmit, onCancel, isLoading }: Ma
       </div>
 
       {/* Ansprechpartner */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Select
+          label="Anrede"
+          options={['Herr', 'Frau']}
+          {...register('anrede')}
+          error={errors.anrede?.message}
+          placeholder="Auswählen..."
+        />
         <Input
           label="Ansprechpartner"
           {...register('ansprechpartner')}
