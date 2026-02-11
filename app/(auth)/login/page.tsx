@@ -105,8 +105,8 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Admin Quick Login (Development) */}
-        <div className="mt-4">
+        {/* Quick Login Buttons (Development) */}
+        <div className="mt-4 space-y-2">
           <button
             type="button"
             onClick={async () => {
@@ -129,6 +129,49 @@ export default function LoginPage() {
             className="w-full bg-slate-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50 transition-all"
           >
             {loading ? 'Anmelden...' : 'Admin Login (Demo)'}
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              setLoading(true);
+              setError(null);
+              const supabase = createClient();
+
+              // Try to log in first
+              let { error } = await supabase.auth.signInWithPassword({
+                email: 'kunde@test.de',
+                password: 'kunde123',
+              });
+
+              // If login fails, create test data first
+              if (error) {
+                try {
+                  await fetch('/api/seed', { method: 'POST' });
+                  // Try login again after seed
+                  const result = await supabase.auth.signInWithPassword({
+                    email: 'kunde@test.de',
+                    password: 'kunde123',
+                  });
+                  error = result.error;
+                } catch {
+                  setError('Test-Daten konnten nicht erstellt werden.');
+                  setLoading(false);
+                  return;
+                }
+              }
+
+              if (error) {
+                setError('Kunden-Login fehlgeschlagen.');
+                setLoading(false);
+                return;
+              }
+              router.push('/dashboard');
+              router.refresh();
+            }}
+            disabled={loading}
+            className="w-full bg-green-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 transition-all"
+          >
+            {loading ? 'Anmelden...' : 'Kunden Login (Demo)'}
           </button>
         </div>
 
