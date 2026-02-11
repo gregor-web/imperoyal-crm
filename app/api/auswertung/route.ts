@@ -373,8 +373,8 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
 
       console.log('[AUSWERTUNG] PDF generiert, Größe:', pdfBuffer.length, 'bytes');
 
-      // Create filename for storage
-      const cleanName = (mandant?.name || 'Unbekannt')
+      // Create filename for storage - format: Imperoyal_Auswertung_Strasse_Ort_Datum.pdf
+      const cleanText = (text: string) => text
         .replace(/[äÄ]/g, 'ae')
         .replace(/[öÖ]/g, 'oe')
         .replace(/[üÜ]/g, 'ue')
@@ -382,9 +382,10 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
         .replace(/[^a-zA-Z0-9]/g, '_')
         .replace(/_+/g, '_')
         .replace(/^_|_$/g, '');
+      const cleanStrasse = cleanText(objekt.strasse);
+      const cleanOrt = cleanText(objekt.ort);
       const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
-      // Flat structure without subfolders
-      const storagePath = `${dateStr}_${auswertung.id.slice(0, 8)}_${cleanName}.pdf`;
+      const storagePath = `Imperoyal_Auswertung_${cleanStrasse}_${cleanOrt}_${dateStr}.pdf`;
 
       // Upload to Supabase Storage
       const { error: uploadError } = await adminSupabase.storage

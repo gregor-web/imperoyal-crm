@@ -192,9 +192,17 @@ export async function POST(request: Request) {
       viewUrl,
     });
 
-    // Create attachment filename
+    // Create attachment filename - format: Imperoyal_Auswertung_Strasse_Ort_Datum.pdf
+    const cleanText = (text: string) => text
+      .replace(/[äÄ]/g, 'ae')
+      .replace(/[öÖ]/g, 'oe')
+      .replace(/[üÜ]/g, 'ue')
+      .replace(/ß/g, 'ss')
+      .replace(/[^a-zA-Z0-9]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '');
     const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
-    const attachmentFilename = `Auswertung_${objekt.strasse.replace(/[^a-zA-Z0-9]/g, '_')}_${dateStr}.pdf`;
+    const attachmentFilename = `Imperoyal_Auswertung_${cleanText(objekt.strasse)}_${cleanText(objekt.ort)}_${dateStr}.pdf`;
 
     // Send to Make.com webhook - PDF URL instead of base64
     const webhookPayload = {
