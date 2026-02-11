@@ -1306,53 +1306,51 @@ export function AuswertungPDF({
                 <TrendArrow value={2.5} showValue={false} />
               </View>
             </View>
-            <View style={[styles.sectionContent, { alignItems: 'center' }]}>
-              {/* Wertentwicklung als Balken - zentriert */}
-              <View style={{ width: '90%' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 100, gap: 8 }}>
-                  {[
-                    { label: 'Heute', value: wert?.heute || 0, pct: null },
-                    { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
-                    { label: '+5J', value: wert?.jahr_5 || 0, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
-                    { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
-                    { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
-                  ].map((item, i) => {
-                    const maxVal = wert?.jahr_10 || wert?.heute || 1;
-                    const heightPct = Math.max(50, (item.value / maxVal) * 100);
-                    return (
-                      <View key={i} style={{ flex: 1, alignItems: 'center', maxWidth: 60 }}>
-                        <View style={{
-                          width: '100%',
-                          height: `${heightPct}%`,
-                          backgroundColor: colors.primaryLight,
-                          borderRadius: 4,
-                          minHeight: 30,
-                          opacity: 0.4 + (i / 5) * 0.6,
-                        }} />
-                      </View>
-                    );
-                  })}
-                </View>
-                {/* Labels unter den Balken */}
-                <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 6, gap: 8 }}>
-                  {[
-                    { label: 'Heute', value: wert?.heute || 0, pct: null },
-                    { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
-                    { label: '+5J', value: wert?.jahr_5 || 0, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
-                    { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
-                    { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
-                  ].map((item, i) => (
-                    <View key={i} style={{ flex: 1, alignItems: 'center', maxWidth: 60 }}>
-                      <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary }}>
-                        {formatCurrencyShort(item.value)}
-                      </Text>
-                      {item.pct !== null && (
-                        <Text style={{ fontSize: 6, color: colors.success, fontWeight: 'bold' }}>+{item.pct.toFixed(0)}%</Text>
-                      )}
-                      <Text style={{ fontSize: 6, color: colors.textMuted }}>{item.label}</Text>
+            <View style={[styles.sectionContent, { alignItems: 'center', justifyContent: 'center' }]}>
+              {/* Wertentwicklung als Balken - zentriert mit fester Breite */}
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 100 }}>
+                {[
+                  { label: 'Heute', value: wert?.heute || 0, pct: null },
+                  { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+5J', value: wert?.jahr_5 || 0, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
+                ].map((item, i) => {
+                  const maxVal = wert?.jahr_10 || wert?.heute || 1;
+                  const heightPct = Math.max(50, (item.value / maxVal) * 100);
+                  return (
+                    <View key={i} style={{ width: 36, alignItems: 'center', marginHorizontal: 4 }}>
+                      <View style={{
+                        width: 28,
+                        height: `${heightPct}%`,
+                        backgroundColor: colors.primaryLight,
+                        borderRadius: 4,
+                        minHeight: 30,
+                        opacity: 0.4 + (i / 5) * 0.6,
+                      }} />
                     </View>
-                  ))}
-                </View>
+                  );
+                })}
+              </View>
+              {/* Labels unter den Balken */}
+              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 6 }}>
+                {[
+                  { label: 'Heute', value: wert?.heute || 0, pct: null },
+                  { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+5J', value: wert?.jahr_5 || 0, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
+                ].map((item, i) => (
+                  <View key={i} style={{ width: 36, alignItems: 'center', marginHorizontal: 4 }}>
+                    <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary }}>
+                      {formatCurrencyShort(item.value)}
+                    </Text>
+                    {item.pct !== null && (
+                      <Text style={{ fontSize: 6, color: colors.success, fontWeight: 'bold' }}>+{item.pct.toFixed(0)}%</Text>
+                    )}
+                    <Text style={{ fontSize: 6, color: colors.textMuted }}>{item.label}</Text>
+                  </View>
+                ))}
               </View>
               <Text style={{ fontSize: 5, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 4 }}>
                 Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Hist. Durchschnitt (2,5% p.a.)'}
