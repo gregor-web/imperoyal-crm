@@ -7,30 +7,35 @@ import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
 import { Eye, FileBarChart, Clock, CheckCircle, Send, Plus, Download } from 'lucide-react';
 
+// Status config for display - in_bearbeitung maps to fertig for backwards compatibility
 const STATUS_CONFIG = {
   offen: {
     label: 'Eingereicht',
     variant: 'warning' as const,
     icon: Clock,
     description: 'Ihre Anfrage wurde eingereicht.',
+    showInLegend: true,
   },
   in_bearbeitung: {
     label: 'Abgeschlossen',
     variant: 'success' as const,
     icon: CheckCircle,
     description: 'Die Auswertung ist fertig.',
+    showInLegend: false, // Hide from legend, maps to fertig
   },
   fertig: {
     label: 'Abgeschlossen',
     variant: 'success' as const,
     icon: CheckCircle,
     description: 'Die Auswertung ist fertig.',
+    showInLegend: true,
   },
   versendet: {
     label: 'Zugestellt',
     variant: 'default' as const,
     icon: Send,
     description: 'Per E-Mail zugesendet.',
+    showInLegend: true,
   },
 };
 
@@ -105,18 +110,20 @@ export default async function MeineAnfragenPage() {
       {/* Status Legend */}
       <Card>
         <div className="flex flex-wrap gap-4">
-          {Object.entries(STATUS_CONFIG).map(([key, config]) => {
-            const Icon = config.icon;
-            return (
-              <div key={key} className="flex items-center gap-2 text-sm">
-                <Badge variant={config.variant} className="gap-1">
-                  <Icon className="w-3 h-3" />
-                  {config.label}
-                </Badge>
-                <span className="text-slate-500 hidden sm:inline">- {config.description}</span>
-              </div>
-            );
-          })}
+          {Object.entries(STATUS_CONFIG)
+            .filter(([, config]) => config.showInLegend)
+            .map(([key, config]) => {
+              const Icon = config.icon;
+              return (
+                <div key={key} className="flex items-center gap-2 text-sm">
+                  <Badge variant={config.variant} className="gap-1">
+                    <Icon className="w-3 h-3" />
+                    {config.label}
+                  </Badge>
+                  <span className="text-slate-500 hidden sm:inline">- {config.description}</span>
+                </div>
+              );
+            })}
         </div>
       </Card>
 
