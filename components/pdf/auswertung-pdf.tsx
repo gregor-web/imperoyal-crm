@@ -146,40 +146,6 @@ const MiniChart = ({
   );
 };
 
-// Donut-Segment (vereinfachte Version)
-const DonutSegment = ({
-  percentage,
-  color,
-  size = 50,
-}: {
-  percentage: number;
-  color: string;
-  size?: number;
-}) => {
-  // Vereinfachte visuelle Darstellung mit konzentrischen Kreisen
-  const innerSize = size * 0.6;
-  return (
-    <View style={{
-      width: size,
-      height: size,
-      borderRadius: size / 2,
-      backgroundColor: color,
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
-      <View style={{
-        width: innerSize,
-        height: innerSize,
-        borderRadius: innerSize / 2,
-        backgroundColor: 'white',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <Text style={{ fontSize: 8, fontWeight: 'bold', color }}>{percentage.toFixed(0)}%</Text>
-      </View>
-    </View>
-  );
-};
 
 // Trend-Pfeil
 const TrendArrow = ({
@@ -608,9 +574,6 @@ const formatCurrencyShort = (val: number | null | undefined): string => {
 const formatPercent = (val: number | null | undefined, digits = 2): string =>
   val != null ? `${val.toFixed(digits)}%` : '-';
 
-const formatEuroPerSqm = (val: number | null | undefined): string =>
-  val != null ? `${val.toFixed(2)} €` : '-';
-
 // Style multipliers for AI-driven optimization
 export interface StyleMultipliers {
   spacingMultiplier: number;
@@ -722,6 +685,10 @@ export function AuswertungPDF({
     ? ((miet?.miete_ist_jahr || 0) + steuerersparnis) / fin.kaufpreis * 100
     : 0;
 
+  // Gesamtfläche berechnen
+  const gesamtflaeche = einheiten?.reduce((sum, e) => sum + (e.flaeche || 0), 0) || 0;
+  const verkehrswertProQm = gesamtflaeche > 0 ? verkehrswertGeschaetzt / gesamtflaeche : 0;
+
   return (
     <Document>
       {/* ==================== PAGE 1 ==================== */}
@@ -771,7 +738,9 @@ export function AuswertungPDF({
           <View style={styles.metricItem}>
             <Text style={styles.metricLabel}>Verkehrswert*</Text>
             <Text style={styles.metricValue}>{formatCurrency(verkehrswertGeschaetzt)}</Text>
-            <Text style={{ fontSize: 6, color: colors.textLight }}>({formatCurrency(fin?.kaufpreis)} Kaufpreis)</Text>
+            <Text style={{ fontSize: 7, color: colors.primaryLight, fontWeight: 'bold' }}>
+              {gesamtflaeche > 0 ? `${formatCurrency(verkehrswertProQm)}/m²` : '-'}
+            </Text>
           </View>
           <View style={styles.metricItem}>
             <Text style={styles.metricLabel}>EK-Puffer</Text>
@@ -1225,7 +1194,7 @@ export function AuswertungPDF({
             </View>
             <View style={styles.sectionContent}>
               {/* Visueller Vergleich mit Balken */}
-              <View style={{ marginBottom: 10 }}>
+              <View style={{ marginBottom: 8 }}>
                 <ComparisonBar
                   ist={miet?.miete_ist_jahr || 0}
                   soll={miet?.miete_soll_jahr || 0}
@@ -1234,37 +1203,47 @@ export function AuswertungPDF({
                   colorSoll="#22c55e"
                 />
               </View>
-              {/* Cashflow-Werte */}
-              <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10 }}>
-                <View style={{ alignItems: 'center' }}>
-                  <DonutSegment
-                    percentage={Math.abs(cashflow?.cashflow_ist_jahr || 0) / (miet?.miete_ist_jahr || 1) * 100}
-                    color={(cashflow?.cashflow_ist_jahr || 0) >= 0 ? colors.success : colors.danger}
-                    size={45}
-                  />
-                  <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 3 }}>IST</Text>
-                  <Text style={{ fontSize: 9, fontWeight: 'bold', color: (cashflow?.cashflow_ist_jahr || 0) >= 0 ? colors.success : colors.danger }}>
-                    {formatCurrencyShort(cashflow?.cashflow_ist_jahr)}
-                  </Text>
+              {/* Cashflow Balkendiagramm */}
+              <View style={{ marginBottom: 8 }}>
+                <Text style={{ fontSize: 8, color: colors.textMuted, marginBottom: 6, fontWeight: 'bold' }}>Cashflow-Vergleich</Text>
+                {/* IST Balken */}
+                <View style={{ marginBottom: 6 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                    <Text style={{ fontSize: 7, color: colors.textMuted }}>IST</Text>
+                    <Text style={{ fontSize: 9, fontWeight: 'bold', color: (cashflow?.cashflow_ist_jahr || 0) >= 0 ? colors.success : colors.danger }}>
+                      {formatCurrency(cashflow?.cashflow_ist_jahr)}
+                    </Text>
+                  </View>
+                  <View style={{ height: 16, backgroundColor: colors.bgLight, borderRadius: 3, overflow: 'hidden' }}>
+                    <View style={{
+                      width: `${Math.min(100, Math.max(0, Math.abs(cashflow?.cashflow_ist_jahr || 0) / Math.max(Math.abs(cashflow?.cashflow_ist_jahr || 1), Math.abs(cashflow?.cashflow_opt_jahr || 1)) * 100))}%`,
+                      height: '100%',
+                      backgroundColor: (cashflow?.cashflow_ist_jahr || 0) >= 0 ? colors.success : colors.danger,
+                      borderRadius: 3,
+                    }} />
+                  </View>
                 </View>
-                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ fontSize: 16, color: colors.success }}>→</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <DonutSegment
-                    percentage={Math.abs(cashflow?.cashflow_opt_jahr || 0) / (miet?.miete_soll_jahr || 1) * 100}
-                    color={(cashflow?.cashflow_opt_jahr || 0) >= 0 ? colors.success : colors.danger}
-                    size={45}
-                  />
-                  <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 3 }}>OPTIMIERT</Text>
-                  <Text style={{ fontSize: 9, fontWeight: 'bold', color: (cashflow?.cashflow_opt_jahr || 0) >= 0 ? colors.success : colors.danger }}>
-                    {formatCurrencyShort(cashflow?.cashflow_opt_jahr)}
-                  </Text>
+                {/* OPTIMIERT Balken */}
+                <View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                    <Text style={{ fontSize: 7, color: colors.success, fontWeight: 'bold' }}>OPTIMIERT</Text>
+                    <Text style={{ fontSize: 9, fontWeight: 'bold', color: (cashflow?.cashflow_opt_jahr || 0) >= 0 ? colors.success : colors.danger }}>
+                      {formatCurrency(cashflow?.cashflow_opt_jahr)}
+                    </Text>
+                  </View>
+                  <View style={{ height: 16, backgroundColor: colors.bgLight, borderRadius: 3, overflow: 'hidden' }}>
+                    <View style={{
+                      width: `${Math.min(100, Math.max(0, Math.abs(cashflow?.cashflow_opt_jahr || 0) / Math.max(Math.abs(cashflow?.cashflow_ist_jahr || 1), Math.abs(cashflow?.cashflow_opt_jahr || 1)) * 100))}%`,
+                      height: '100%',
+                      backgroundColor: (cashflow?.cashflow_opt_jahr || 0) >= 0 ? '#16a34a' : colors.danger,
+                      borderRadius: 3,
+                    }} />
+                  </View>
                 </View>
               </View>
-              <View style={[styles.infoBox, { backgroundColor: colors.successBg }]}>
-                <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.success, textAlign: 'center' }}>
-                  Δ +{formatCurrency(miet?.potenzial_jahr)} p.a.
+              <View style={[styles.infoBox, { backgroundColor: colors.successBg, padding: 8 }]}>
+                <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success, textAlign: 'center' }}>
+                  Potenzial: +{formatCurrency((cashflow?.cashflow_opt_jahr || 0) - (cashflow?.cashflow_ist_jahr || 0))} p.a.
                 </Text>
               </View>
               <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 4 }}>
@@ -1496,22 +1475,50 @@ export function AuswertungPDF({
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
           </View>
           <View style={styles.sectionContent}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 5 }}>
+            {/* Balkendiagramm für Wertentwicklung */}
+            <View style={{ marginBottom: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 60, gap: 6 }}>
+                {[
+                  { label: 'Heute', value: wert?.heute || 0 },
+                  { label: '+3J', value: wert?.jahr_3 || 0 },
+                  { label: '+5J', value: wert?.jahr_5 || 0 },
+                  { label: '+7J', value: wert?.jahr_7 || 0 },
+                  { label: '+10J', value: wert?.jahr_10 || 0 },
+                ].map((item, i) => {
+                  const maxVal = wert?.jahr_10 || wert?.heute || 1;
+                  const heightPct = (item.value / maxVal) * 100;
+                  return (
+                    <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                      <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary, marginBottom: 2 }}>
+                        {formatCurrencyShort(item.value)}
+                      </Text>
+                      <View style={{
+                        width: '100%',
+                        height: `${heightPct}%`,
+                        backgroundColor: i === 0 ? colors.primary : colors.primaryLight,
+                        borderRadius: 3,
+                        minHeight: 10,
+                        opacity: 0.5 + (i / 5) * 0.5,
+                      }} />
+                      <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 3 }}>{item.label}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+            {/* Wertzuwachs Highlight */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 6 }}>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 7, color: colors.textMuted }}>Wert heute</Text>
-                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary }}>{formatCurrency(wert?.heute)}</Text>
+                <Text style={{ fontSize: 6, color: colors.textMuted }}>Wertzuwachs 10J</Text>
+                <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
+                  +{formatCurrency((wert?.jahr_10 || 0) - (wert?.heute || 0))}
+                </Text>
               </View>
               <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 7, color: colors.textMuted }}>in 3 Jahren</Text>
-                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primaryLight }}>{formatCurrency(wert?.jahr_3)}</Text>
-              </View>
-              <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 7, color: colors.textMuted }}>in 7 Jahren</Text>
-                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primaryLight }}>{formatCurrency(wert?.jahr_7)}</Text>
-              </View>
-              <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 7, color: colors.textMuted }}>in 10 Jahren</Text>
-                <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primaryLight }}>{formatCurrency(wert?.jahr_10)}</Text>
+                <Text style={{ fontSize: 6, color: colors.textMuted }}>Rendite p.a.</Text>
+                <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
+                  +{((wert?.heute && wert?.jahr_10) ? (((wert.jahr_10 / wert.heute) ** (1/10) - 1) * 100).toFixed(1) : '2.5')}%
+                </Text>
               </View>
             </View>
             <Text style={{ fontSize: 6, color: colors.textMuted, textAlign: 'center', marginTop: 5 }}>
@@ -1588,6 +1595,61 @@ export function AuswertungPDF({
 
       {/* ==================== PAGE 4 ==================== */}
       <Page size="A4" style={styles.page}>
+        {/* Zusammenfassung: Wertsteigernde Maßnahmen */}
+        <View style={{
+          backgroundColor: colors.bgGreen,
+          borderRadius: 6,
+          padding: 12,
+          marginBottom: 12,
+          borderWidth: 1,
+          borderColor: colors.success,
+        }}>
+          <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.success, marginBottom: 10 }}>
+            Zusammenfassung: Wertsteigernde Maßnahmen
+          </Text>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            {/* Spalte 1: Mietpotenzial */}
+            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 4, padding: 8 }}>
+              <Text style={{ fontSize: 8, color: colors.textMuted, marginBottom: 4 }}>Mieterhöhungspotenzial</Text>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.success }}>
+                +{formatCurrency(miet?.potenzial_jahr)}/Jahr
+              </Text>
+              <Text style={{ fontSize: 6, color: colors.textMuted, marginTop: 2 }}>
+                durch Anpassung auf Marktmiete
+              </Text>
+            </View>
+            {/* Spalte 2: WEG-Potenzial */}
+            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 4, padding: 8 }}>
+              <Text style={{ fontSize: 8, color: colors.textMuted, marginBottom: 4 }}>WEG-Aufteilung</Text>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', color: weg?.bereits_aufgeteilt ? colors.textMuted : colors.success }}>
+                {weg?.bereits_aufgeteilt ? 'Bereits aufgeteilt' : `+${formatCurrency(weg?.weg_gewinn)}`}
+              </Text>
+              <Text style={{ fontSize: 6, color: colors.textMuted, marginTop: 2 }}>
+                {weg?.hinweistext || 'Einmaliger Wertzuwachs'}
+              </Text>
+            </View>
+            {/* Spalte 3: Steuerersparnis */}
+            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 4, padding: 8 }}>
+              <Text style={{ fontSize: 8, color: colors.textMuted, marginBottom: 4 }}>AfA-Steuerersparnis</Text>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.purple }}>
+                +{formatCurrency(steuerersparnis)}/Jahr
+              </Text>
+              <Text style={{ fontSize: 6, color: colors.textMuted, marginTop: 2 }}>
+                bei 42% Grenzsteuersatz
+              </Text>
+            </View>
+          </View>
+          {/* Gesamtpotenzial */}
+          <View style={{ marginTop: 10, backgroundColor: 'white', borderRadius: 4, padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.text }}>
+              Gesamtpotenzial (jährlich wiederkehrend):
+            </Text>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.success }}>
+              +{formatCurrency((miet?.potenzial_jahr || 0) + steuerersparnis)}/Jahr
+            </Text>
+          </View>
+        </View>
+
         {/* Section 13: Handlungsempfehlung */}
         <View style={[styles.sectionBox, { marginBottom: 10 }]}>
           <View style={styles.sectionHeader}>
@@ -1675,10 +1737,49 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Disclaimer */}
-        <View style={styles.disclaimer}>
-          <Text style={styles.disclaimerText}>
-            Diese Analyse stellt keine Rechts-, Steuer- oder Anlageberatung dar.
+        {/* Basisbeschreibungen / Glossar */}
+        <View style={{ backgroundColor: colors.bgLight, borderRadius: 6, padding: 10, marginBottom: 10, marginTop: 10 }}>
+          <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 8 }}>
+            Begriffserklärungen
+          </Text>
+          <View style={{ gap: 4 }}>
+            {[
+              { term: 'Verkehrswert', desc: 'Der aktuelle Marktwert Ihrer Immobilie, ermittelt über Ertragswert- oder Vergleichswertverfahren.' },
+              { term: 'Cashflow', desc: 'Der Überschuss aus Mieteinnahmen nach Abzug aller Kosten (Kapitaldienst, Bewirtschaftung).' },
+              { term: 'Eigenkapitalrendite', desc: 'Verhältnis von Cashflow zu eingesetztem Eigenkapital – zeigt die Verzinsung Ihres Kapitals.' },
+              { term: '§558 BGB', desc: 'Gesetzliche Grundlage für Mieterhöhungen bis zur ortsüblichen Vergleichsmiete (max. 20%/15% in 3 Jahren).' },
+              { term: '§559 BGB', desc: 'Erlaubt Mieterhöhung nach Modernisierung (8% der Kosten p.a.), begrenzt auf 2-3€/m² in 6 Jahren.' },
+              { term: 'WEG-Aufteilung', desc: 'Umwandlung in Wohnungseigentum ermöglicht Einzelverkauf der Einheiten zu höheren Preisen.' },
+              { term: 'AfA', desc: 'Absetzung für Abnutzung – steuerliche Abschreibung des Gebäudewerts über die Restnutzungsdauer.' },
+              { term: 'Kostenquote', desc: 'Verhältnis der Bewirtschaftungskosten zur Jahresmiete – unter 25% gilt als gesund.' },
+            ].map((item, i) => (
+              <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text, width: 80 }}>{item.term}:</Text>
+                <Text style={{ fontSize: 7, color: colors.textMuted, flex: 1 }}>{item.desc}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Erweiterter Haftungsausschluss */}
+        <View style={{ backgroundColor: colors.warningBg, borderRadius: 6, padding: 10, borderWidth: 1, borderColor: colors.warning }}>
+          <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.warning, marginBottom: 6 }}>
+            Wichtige Hinweise & Haftungsausschluss
+          </Text>
+          <Text style={{ fontSize: 6, color: colors.text, lineHeight: 1.5, marginBottom: 4 }}>
+            Diese Analyse dient ausschließlich Informationszwecken und stellt keine Rechts-, Steuer- oder Anlageberatung dar.
+            Die enthaltenen Berechnungen basieren auf den vom Mandanten übermittelten Daten sowie öffentlich verfügbaren Marktinformationen.
+          </Text>
+          <Text style={{ fontSize: 6, color: colors.text, lineHeight: 1.5, marginBottom: 4 }}>
+            Imperoyal Immobilien übernimmt keine Gewähr für die Richtigkeit, Vollständigkeit oder Aktualität der dargestellten Informationen.
+            Insbesondere können sich Marktbedingungen, rechtliche Rahmenbedingungen und steuerliche Regelungen ändern.
+          </Text>
+          <Text style={{ fontSize: 6, color: colors.text, lineHeight: 1.5, marginBottom: 4 }}>
+            Vor wichtigen Entscheidungen empfehlen wir die Konsultation qualifizierter Fachberater (Steuerberater, Rechtsanwalt, Gutachter).
+            Die tatsächlich erzielbaren Werte können von den hier dargestellten Prognosen abweichen.
+          </Text>
+          <Text style={{ fontSize: 6, color: colors.textMuted, fontStyle: 'italic' }}>
+            * Verkehrswert ist ein geschätzter Wert auf Basis verfügbarer Marktdaten. Ein verbindlicher Wert erfordert ein Sachverständigengutachten.
           </Text>
         </View>
 
