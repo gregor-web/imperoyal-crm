@@ -1097,7 +1097,7 @@ export function AuswertungPDF({
           </View>
           <View style={styles.sectionContent}>
             {/* Table Header */}
-            <View style={styles.tableHeader}>
+            <View wrap={false} style={styles.tableHeader}>
               <Text style={[styles.tableHeaderCell, { width: 20 }]}>#</Text>
               <Text style={[styles.tableHeaderCell, { width: 50 }]}>Nutzung</Text>
               <Text style={[styles.tableHeaderCell, { width: 40 }]}>Fläche</Text>
@@ -1116,7 +1116,7 @@ export function AuswertungPDF({
               const isGewerbe = einheit.nutzung === 'Gewerbe' || einheit.nutzung === 'Stellplatz';
               const marktMiete = einheit.nutzung === 'Gewerbe' ? 20 : einheit.nutzung === 'Stellplatz' ? '-' : 14;
               return (
-                <View key={index} style={[styles.tableRow, index % 2 === 1 ? styles.tableRowAlt : {}]}>
+                <View key={index} wrap={false} style={[styles.tableRow, index % 2 === 1 ? styles.tableRowAlt : {}]}>
                   <Text style={[styles.tableCell, { width: 20 }]}>{einheit.position}</Text>
                   <Text style={[styles.tableCell, styles.tableCellLeft, { width: 50 }]}>{einheit.nutzung}</Text>
                   <Text style={[styles.tableCell, { width: 40 }]}>{einheit.flaeche} m²</Text>
@@ -1137,7 +1137,7 @@ export function AuswertungPDF({
               );
             })}
             {/* Table Footer */}
-            <View style={styles.tableFooter}>
+            <View wrap={false} style={styles.tableFooter}>
               <Text style={[styles.tableCell, { width: 20, fontWeight: 'bold' }]}></Text>
               <Text style={[styles.tableCell, { width: 50, fontWeight: 'bold' }]}>GESAMT</Text>
               <Text style={[styles.tableCell, { width: 40 }]}></Text>
@@ -1155,7 +1155,7 @@ export function AuswertungPDF({
               </Text>
             </View>
             {/* Info Box - kompakter */}
-            <View style={[styles.infoBox, { marginTop: 4, padding: 4 }]}>
+            <View wrap={false} style={[styles.infoBox, { marginTop: 4, padding: 4 }]}>
               <Text style={[styles.infoBoxTitle, { fontSize: 7 }]}>Hinweis §558 BGB (Kappungsgrenze):</Text>
               <Text style={[styles.infoBoxText, { fontSize: 6 }]}>
                 • §558 BGB gilt nur für Wohnraum. Die Miete darf innerhalb von 3 Jahren um max. {objekt.milieuschutz ? '15%' : '20%'} erhöht werden.
