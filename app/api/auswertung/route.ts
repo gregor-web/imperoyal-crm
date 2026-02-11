@@ -383,7 +383,8 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
         .replace(/_+/g, '_')
         .replace(/^_|_$/g, '');
       const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
-      const storagePath = `${auswertung.id}/${dateStr}_${cleanName}.pdf`;
+      // Flat structure without subfolders
+      const storagePath = `${dateStr}_${auswertung.id.slice(0, 8)}_${cleanName}.pdf`;
 
       // Upload to Supabase Storage
       const { error: uploadError } = await adminSupabase.storage

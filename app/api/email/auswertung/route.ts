@@ -234,7 +234,8 @@ export async function POST(request: Request) {
       .replace(/_+/g, '_')
       .replace(/^_|_$/g, '');
     const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
-    const storagePath = `${auswertung_id}/${dateStr}_${cleanName}.pdf`;
+    // Flat structure without subfolders
+    const storagePath = `${dateStr}_${auswertung_id.slice(0, 8)}_${cleanName}.pdf`;
     const attachmentFilename = `Auswertung_${objekt.strasse.replace(/[^a-zA-Z0-9]/g, '_')}_${dateStr}.pdf`;
 
     // Upload to Supabase Storage (upsert to update if exists)
