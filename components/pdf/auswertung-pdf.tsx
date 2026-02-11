@@ -20,7 +20,7 @@ import type { Berechnungen } from '@/lib/types';
 const ProgressBar = ({
   value,
   max = 100,
-  color = '#5a7a9a', // Growth Blue
+  color = '#2a4a6a', // Growth Blue
   bgColor = '#c8d6e5', // Blue Bone border
   height = 8,
   showLabel = true,
@@ -50,7 +50,7 @@ const ProgressBar = ({
         }} />
       </View>
       {showLabel && (
-        <Text style={{ fontSize: 8, color: '#5a7a9a', width: 30, textAlign: 'right' }}>
+        <Text style={{ fontSize: 8, color: '#2a4a6a', width: 30, textAlign: 'right' }}>
           {percentage.toFixed(0)}%
         </Text>
       )}
@@ -77,7 +77,7 @@ const ComparisonBar = ({
   const sollWidth = max > 0 ? (soll / max) * 100 : 0;
   return (
     <View style={{ marginBottom: 8 }}>
-      <Text style={{ fontSize: 7, color: '#5a7a9a', marginBottom: 3 }}>{label}</Text>
+      <Text style={{ fontSize: 7, color: '#2a4a6a', marginBottom: 3 }}>{label}</Text>
       <View style={{ gap: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text style={{ fontSize: 6, color: '#9eb3c8', width: 20 }}>IST</Text>
@@ -152,12 +152,12 @@ const colors = {
   // Brand Primary - Royal Navy (dunkles Markenblau)
   primary: '#1a2744',
   // Brand Secondary - Growth Blue
-  primaryLight: '#5a7a9a',
+  primaryLight: '#2a4a6a',
   // Brand Tertiary - Blue Bone
   blueBone: '#9eb3c8',
   // Text colors
   text: '#1a2744',
-  textMuted: '#5a7a9a',
+  textMuted: '#2a4a6a',
   textLight: '#9eb3c8',
   // Status colors (behalten für positive/negative Indikatoren)
   success: '#16a34a',
@@ -166,8 +166,8 @@ const colors = {
   dangerBg: '#fee2e2',
   warning: '#d4a017',
   warningBg: '#fef9c3',
-  // Accent - Growth Blue Töne
-  purple: '#3a5a7a',
+  // Accent - Royal Navy
+  purple: '#1a2744',
   purpleBg: '#dce8f0',
   // Borders and backgrounds - Blue Bone Töne
   border: '#bccad8',
@@ -793,10 +793,10 @@ export function AuswertungPDF({
             borderColor: '#e9d5ff',
           }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-              <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#4a6a8a' }}>
+              <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#1a2744' }}>
                 Aktuelle Marktdaten
               </Text>
-              <Text style={{ fontSize: 7, color: '#5a7a9a', marginLeft: 'auto' }}>
+              <Text style={{ fontSize: 7, color: '#2a4a6a', marginLeft: 'auto' }}>
                 Standort: {berechnungen.marktdaten.standort}
               </Text>
             </View>
@@ -804,19 +804,19 @@ export function AuswertungPDF({
               {/* Spalte 1: Mieten & Faktoren */}
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#5a7a9a' }}>Vergleichsmiete Wohnen</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Vergleichsmiete Wohnen</Text>
                   <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.vergleichsmiete_wohnen.wert} €/m²
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#5a7a9a' }}>Vergleichsmiete Gewerbe</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Vergleichsmiete Gewerbe</Text>
                   <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.vergleichsmiete_gewerbe.wert} €/m²
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#5a7a9a' }}>Kaufpreisfaktor Region</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Kaufpreisfaktor Region</Text>
                   <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.kaufpreisfaktor_region.wert}x
                   </Text>
@@ -825,7 +825,7 @@ export function AuswertungPDF({
               {/* Spalte 2: Rechtliches */}
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#5a7a9a' }}>Kappungsgrenze</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Kappungsgrenze</Text>
                   <Text style={{
                     fontSize: 7,
                     fontWeight: 'bold',
@@ -835,7 +835,7 @@ export function AuswertungPDF({
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#5a7a9a' }}>Milieuschutz</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Milieuschutz</Text>
                   <Text style={{
                     fontSize: 7,
                     fontWeight: 'bold',
@@ -845,7 +845,7 @@ export function AuswertungPDF({
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#5a7a9a' }}>Akt. Bauzinsen</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Akt. Bauzinsen</Text>
                   <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.aktuelle_bauzinsen.wert}% ({berechnungen.marktdaten.aktuelle_bauzinsen.zinsbindung})
                   </Text>
@@ -853,22 +853,22 @@ export function AuswertungPDF({
               </View>
               {/* Spalte 3: Prognose */}
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 6, color: '#4a6a8a', fontWeight: 'bold', marginBottom: 2 }}>Preisprognose p.a.</Text>
+                <Text style={{ fontSize: 6, color: '#1a2744', fontWeight: 'bold', marginBottom: 2 }}>Preisprognose p.a.</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <Text style={{ fontSize: 7, color: '#5a7a9a' }}>0-3 Jahre</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>0-3 Jahre</Text>
                   <TrendArrow value={berechnungen.marktdaten.preisprognose.kurz_0_3_jahre} />
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <Text style={{ fontSize: 7, color: '#5a7a9a' }}>3-7 Jahre</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>3-7 Jahre</Text>
                   <TrendArrow value={berechnungen.marktdaten.preisprognose.mittel_3_7_jahre} />
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 7, color: '#5a7a9a' }}>7+ Jahre</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>7+ Jahre</Text>
                   <TrendArrow value={berechnungen.marktdaten.preisprognose.lang_7_plus_jahre} />
                 </View>
               </View>
             </View>
-            <Text style={{ fontSize: 6, color: '#5a7a9a', fontStyle: 'italic', marginTop: 6 }}>
+            <Text style={{ fontSize: 6, color: '#2a4a6a', fontStyle: 'italic', marginTop: 6 }}>
               Quelle: Perplexity AI Marktanalyse, Abfrage vom {new Date(berechnungen.marktdaten.abfrage_datum).toLocaleDateString('de-DE')}
             </Text>
           </View>
@@ -1018,7 +1018,7 @@ export function AuswertungPDF({
               {/* Visuelle Kostenbalken */}
               <View style={{ marginBottom: 8 }}>
                 {[
-                  { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: '#5a7a9a' },
+                  { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: '#2a4a6a' },
                   { label: 'Verwaltung', value: kosten?.verwaltung || 0, color: '#8b5cf6' },
                   { label: 'Nicht umlf. BK', value: kosten?.betriebskosten_nicht_umlage || 0, color: '#f59e0b' },
                   { label: 'Rücklagen', value: kosten?.ruecklagen || 0, color: '#10b981' },
