@@ -1305,10 +1305,9 @@ export function AuswertungPDF({
                       <View style={{
                         width: 26,
                         height: `${heightPct}%`,
-                        backgroundColor: colors.primary,
+                        backgroundColor: '#1a2744',
                         borderRadius: 3,
                         minHeight: 30,
-                        opacity: 0.7 + (i / 5) * 0.3,
                       }} />
                     </View>
                   );
