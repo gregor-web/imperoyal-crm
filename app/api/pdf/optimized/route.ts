@@ -208,6 +208,7 @@ export async function POST(request: Request) {
         'Content-Length': pdfBuffer.length.toString(),
         'X-Optimization-Attempts': attempts.toString(),
         'X-Optimization-Success': isOptimal.toString(),
+        'Access-Control-Expose-Headers': 'Content-Disposition, X-Optimization-Attempts, X-Optimization-Success',
       },
     });
   } catch (error) {
