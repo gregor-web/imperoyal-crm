@@ -5,32 +5,32 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { Eye, FileBarChart, Clock, Loader2, CheckCircle, Send, Plus } from 'lucide-react';
+import { Eye, FileBarChart, Clock, UserCheck, CheckCircle, Send, Plus } from 'lucide-react';
 
 const STATUS_CONFIG = {
   offen: {
-    label: 'Angefragt',
+    label: 'Eingereicht',
     variant: 'warning' as const,
     icon: Clock,
-    description: 'Ihre Anfrage wurde eingereicht und wartet auf Bearbeitung.',
+    description: 'Ihre Anfrage wurde eingereicht.',
   },
   in_bearbeitung: {
-    label: 'In Bearbeitung',
+    label: 'Wird geprüft',
     variant: 'info' as const,
-    icon: Loader2,
-    description: 'Die Analyse wird gerade erstellt.',
+    icon: UserCheck,
+    description: 'Ein Experte prüft Ihr Objekt.',
   },
   fertig: {
-    label: 'Fertig',
+    label: 'Abgeschlossen',
     variant: 'success' as const,
     icon: CheckCircle,
-    description: 'Die Auswertung ist fertig und kann eingesehen werden.',
+    description: 'Die Auswertung ist fertig.',
   },
   versendet: {
-    label: 'Versendet',
+    label: 'Zugestellt',
     variant: 'default' as const,
     icon: Send,
-    description: 'Die Auswertung wurde Ihnen per E-Mail zugesendet.',
+    description: 'Per E-Mail zugesendet.',
   },
 };
 
@@ -110,7 +110,7 @@ export default async function MeineAnfragenPage() {
             return (
               <div key={key} className="flex items-center gap-2 text-sm">
                 <Badge variant={config.variant} className="gap-1">
-                  <Icon className={`w-3 h-3 ${key === 'in_bearbeitung' ? 'animate-spin' : ''}`} />
+                  <Icon className="w-3 h-3" />
                   {config.label}
                 </Badge>
                 <span className="text-slate-500 hidden sm:inline">- {config.description}</span>
@@ -163,7 +163,7 @@ export default async function MeineAnfragenPage() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <Badge variant={statusConfig.variant} className="gap-1 mb-1">
-                        <StatusIcon className={`w-3 h-3 ${status === 'in_bearbeitung' ? 'animate-spin' : ''}`} />
+                        <StatusIcon className="w-3 h-3" />
                         {statusConfig.label}
                       </Badge>
                       <p className="text-xs text-slate-500">
