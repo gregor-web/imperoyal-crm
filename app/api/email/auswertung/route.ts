@@ -7,6 +7,108 @@ import type { Berechnungen } from '@/lib/types';
 import fs from 'fs';
 import path from 'path';
 
+interface AuswertungEmailParams {
+  anrede: string;
+  name: string;
+  objektAdresse: string;
+  empfehlung: string;
+  viewUrl: string;
+  pdfUrl: string;
+}
+
+function generateAuswertungEmailHtml(params: AuswertungEmailParams): string {
+  const { anrede, name, objektAdresse, empfehlung, viewUrl } = params;
+
+  const empfehlungColors: Record<string, { bg: string; text: string }> = {
+    HALTEN: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22c55e' },
+    OPTIMIEREN: { bg: 'rgba(93, 122, 153, 0.3)', text: '#5d7a99' },
+    RESTRUKTURIEREN: { bg: 'rgba(234, 179, 8, 0.2)', text: '#eab308' },
+    VERKAUFEN: { bg: 'rgba(239, 68, 68, 0.2)', text: '#ef4444' },
+  };
+
+  const colors = empfehlungColors[empfehlung] || empfehlungColors.OPTIMIEREN;
+
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Georgia', 'Times New Roman', serif; background-color: #1e3a5f;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 20px; background-color: #1e3a5f;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px;">
+
+          <tr>
+            <td style="padding: 50px 40px; text-align: center; background: linear-gradient(180deg, #1e3a5f 0%, #2a4a6e 100%);">
+              <h1 style="margin: 0 0 10px; color: #ffffff; font-size: 32px; font-weight: 400; letter-spacing: 2px;">
+                Ihre Auswertung
+              </h1>
+              <p style="margin: 0; color: #b8c5d4; font-size: 18px; font-style: italic;">
+                ist fertig
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 40px; background-color: #1e3a5f;">
+              <p style="margin: 0 0 25px; color: #ffffff; font-size: 16px; line-height: 1.8;">
+                ${anrede} <span style="color: #b8c5d4;">${name}</span>,
+              </p>
+
+              <p style="margin: 0 0 30px; color: #b8c5d4; font-size: 15px; line-height: 1.8;">
+                Ihre Immobilienauswertung für <strong style="color: #ffffff;">${objektAdresse}</strong> wurde erfolgreich erstellt und steht Ihnen ab sofort zur Verfügung.
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0; background: linear-gradient(135deg, #2a4a6e 0%, #1e3a5f 100%); border: 1px solid rgba(184, 197, 212, 0.3); border-radius: 8px;">
+                <tr>
+                  <td style="padding: 30px; text-align: center;">
+                    <p style="margin: 0 0 15px; color: #b8c5d4; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">
+                      Unsere Empfehlung
+                    </p>
+                    <p style="margin: 0; display: inline-block; background: ${colors.bg}; color: ${colors.text}; font-size: 24px; font-weight: 700; padding: 12px 30px; border-radius: 6px; letter-spacing: 3px;">
+                      ${empfehlung}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 0 0 35px; color: #b8c5d4; font-size: 15px; line-height: 1.8;">
+                In Ihrem persönlichen Dashboard finden Sie die vollständige Analyse mit detaillierten Kennzahlen, Optimierungspotenzialen und konkreten Handlungsempfehlungen. Das PDF mit allen Details ist dieser E-Mail angehängt.
+              </p>
+
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${viewUrl}" style="display: inline-block; background: linear-gradient(135deg, #5d7a99 0%, #4a6580 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 4px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+                      Auswertung ansehen
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 30px 40px; text-align: center; border-top: 1px solid rgba(184, 197, 212, 0.3);">
+              <p style="margin: 0 0 10px; color: #b8c5d4; font-size: 12px;">
+                © 2026 Imperoyal Immobilien. Alle Rechte vorbehalten.
+              </p>
+              <p style="margin: 0; color: #8a9bb0; font-size: 11px;">
+                Für Family Offices, UHNWIs & Institutionelle Vermögensverwalter
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 export async function POST(request: Request) {
   try {
     const { auswertung_id } = await request.json();
@@ -188,27 +290,31 @@ export async function POST(request: Request) {
       });
     }
 
-    // Send to Make.com webhook with PDF attachment
-    // Structure matches welcome email: actionId, type, to_email, to_name, subject, data
+    // Generate HTML email content
+    const recipientName = mandant.ansprechpartner || mandant.name;
+    const anrede = mandant.anrede === 'Frau' ? 'Sehr geehrte Frau' : mandant.anrede === 'Herr' ? 'Sehr geehrter Herr' : 'Sehr geehrte(r)';
+    const viewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/auswertungen/${auswertung_id}`;
+
+    const htmlContent = generateAuswertungEmailHtml({
+      anrede,
+      name: recipientName,
+      objektAdresse: `${objekt.strasse}, ${objekt.plz} ${objekt.ort}`,
+      empfehlung: auswertung.empfehlung || 'OPTIMIEREN',
+      viewUrl,
+      pdfUrl,
+    });
+
+    // Send to Make.com webhook - same format as welcome email
     const webhookPayload = {
-      actionId: 2, // Auswertungs-Mail
+      actionId: 2,
       type: 'auswertung',
-      to_email: mandant.email,
-      to_name: mandant.ansprechpartner || mandant.name,
+      to: mandant.email,
       subject: `Ihre Immobilienauswertung: ${objekt.strasse}`,
-      data: {
-        auswertung_id,
-        mandant_name: mandant.name,
-        objekt_adresse: `${objekt.strasse}, ${objekt.plz} ${objekt.ort}`,
-        empfehlung: auswertung.empfehlung,
-        empfehlung_begruendung: auswertung.empfehlung_begruendung,
-        pdf_url: pdfUrl,
-        view_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auswertungen/${auswertung_id}`,
-        // PDF attachment data
-        attachment_filename: attachmentFilename,
-        attachment_content: pdfBase64,
-        attachment_content_type: 'application/pdf',
-      },
+      html: htmlContent,
+      // Additional data for PDF attachment
+      attachment_filename: attachmentFilename,
+      attachment_content: pdfBase64,
+      attachment_content_type: 'application/pdf',
     };
 
     const response = await fetch(webhookUrl, {

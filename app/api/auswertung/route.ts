@@ -5,8 +5,12 @@ import { berechneAlles } from '@/lib/berechnungen';
 import { ERLAEUTERUNGEN } from '@/lib/erlaeuterungen';
 import { fetchMarktDaten } from '@/lib/marktdaten';
 import { findePassendeKaeufer } from '@/lib/matching';
-import type { Objekt, Einheit, ClaudeEmpfehlung, MarktDaten, Ankaufsprofil, Mandant } from '@/lib/types';
+import type { Objekt, Einheit, ClaudeEmpfehlung, MarktDaten, Ankaufsprofil, Mandant, Berechnungen } from '@/lib/types';
 import { formatCurrency, formatPercent } from '@/lib/formatters';
+import { renderToBuffer } from '@react-pdf/renderer';
+import { AuswertungPDF } from '@/components/pdf/auswertung-pdf';
+import fs from 'fs';
+import path from 'path';
 
 const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
 
@@ -138,10 +142,17 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
 
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
+    }
+
     // Check if user is admin
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
+      .eq('id', user.id)
       .single();
 
     if (profile?.role !== 'admin') {
@@ -294,6 +305,119 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
     }
 
     // =====================================================
+    // PDF GENERIEREN UND SPEICHERN
+    // =====================================================
+    let pdfUrl: string | null = null;
+
+    try {
+      console.log('[AUSWERTUNG] Generiere PDF für Auswertung:', auswertung.id);
+
+      const adminSupabase = createAdminClient();
+
+      // Fetch mandant data for PDF
+      const { data: mandant } = await adminSupabase
+        .from('mandanten')
+        .select('name, ansprechpartner, anrede')
+        .eq('id', objekt.mandant_id)
+        .single();
+
+      // Read logo file
+      let logoUrl: string | undefined;
+      try {
+        const logoPath = path.join(process.cwd(), 'public', 'logo_imperoyal.png');
+        const logoBuffer = fs.readFileSync(logoPath);
+        logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+      } catch {
+        console.warn('[AUSWERTUNG] Logo nicht gefunden');
+      }
+
+      // Generate PDF
+      const pdfBuffer = await renderToBuffer(
+        AuswertungPDF({
+          objekt: {
+            strasse: objekt.strasse,
+            plz: objekt.plz,
+            ort: objekt.ort,
+            baujahr: objekt.baujahr,
+            milieuschutz: objekt.milieuschutz,
+            weg_aufgeteilt: objekt.weg_aufgeteilt,
+            kaufpreis: objekt.kaufpreis,
+          },
+          mandant: mandant ? {
+            name: mandant.name,
+            ansprechpartner: mandant.ansprechpartner,
+            anrede: mandant.anrede as 'Herr' | 'Frau' | null | undefined,
+          } : { name: 'Unbekannt', ansprechpartner: 'Unbekannt' },
+          einheiten: einheiten.map(e => ({
+            position: e.position,
+            nutzung: e.nutzung,
+            flaeche: e.flaeche,
+            kaltmiete: e.kaltmiete,
+            vergleichsmiete: e.vergleichsmiete,
+            mietvertragsart: e.mietvertragsart,
+          })),
+          berechnungen: berechnungenMitMarktdaten as Berechnungen,
+          empfehlung: empfehlung?.empfehlung || undefined,
+          empfehlung_begruendung: empfehlung?.begruendung || undefined,
+          empfehlung_prioritaet: empfehlung?.prioritaet || undefined,
+          empfehlung_handlungsschritte: empfehlung?.handlungsschritte?.map(h =>
+            typeof h === 'string' ? h : `${h.schritt} (${h.zeitrahmen})`
+          ),
+          empfehlung_chancen: empfehlung?.chancen || undefined,
+          empfehlung_risiken: empfehlung?.risiken || undefined,
+          empfehlung_fazit: empfehlung?.fazit || undefined,
+          created_at: auswertung.created_at,
+          logoUrl,
+        })
+      );
+
+      console.log('[AUSWERTUNG] PDF generiert, Größe:', pdfBuffer.length, 'bytes');
+
+      // Create filename for storage
+      const cleanName = (mandant?.name || 'Unbekannt')
+        .replace(/[äÄ]/g, 'ae')
+        .replace(/[öÖ]/g, 'oe')
+        .replace(/[üÜ]/g, 'ue')
+        .replace(/ß/g, 'ss')
+        .replace(/[^a-zA-Z0-9]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '');
+      const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
+      const storagePath = `${auswertung.id}/${dateStr}_${cleanName}.pdf`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await adminSupabase.storage
+        .from('auswertungen-pdfs')
+        .upload(storagePath, Buffer.from(pdfBuffer), {
+          contentType: 'application/pdf',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error('[AUSWERTUNG] Upload Fehler:', uploadError);
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data: urlData } = adminSupabase.storage
+        .from('auswertungen-pdfs')
+        .getPublicUrl(storagePath);
+
+      pdfUrl = urlData.publicUrl;
+      console.log('[AUSWERTUNG] PDF hochgeladen:', pdfUrl);
+
+      // Update auswertung with pdf_url
+      await adminSupabase
+        .from('auswertungen')
+        .update({ pdf_url: pdfUrl })
+        .eq('id', auswertung.id);
+
+    } catch (pdfError) {
+      console.error('[AUSWERTUNG] PDF Generierung fehlgeschlagen:', pdfError);
+      // Don't fail the whole request if PDF generation fails
+    }
+
+    // =====================================================
     // AUTOMATISCHES KÄUFER-MATCHING BEI VERKAUFSEMPFEHLUNG
     // =====================================================
     let matchingResults: { count: number; emailsSent: number } | null = null;
@@ -393,6 +517,7 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
     return NextResponse.json({
       auswertung_id: auswertung.id,
       message: 'Auswertung erfolgreich erstellt',
+      pdf_url: pdfUrl,
       matching: matchingResults,
     });
   } catch (error) {
