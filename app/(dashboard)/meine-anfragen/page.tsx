@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { Eye, FileBarChart, Clock, CheckCircle, Send, Plus } from 'lucide-react';
+import { Eye, FileBarChart, Clock, CheckCircle, Send, Plus, Download } from 'lucide-react';
 
 const STATUS_CONFIG = {
   offen: {
@@ -73,14 +73,14 @@ export default async function MeineAnfragenPage() {
   // Fetch auswertungen for this mandant to link them
   const { data: auswertungen } = await supabase
     .from('auswertungen')
-    .select('id, objekt_id, created_at')
+    .select('id, objekt_id, pdf_url, created_at')
     .eq('mandant_id', profile?.mandant_id);
 
-  // Create a map of objekt_id -> latest auswertung
-  const auswertungMap = new Map<string, string>();
+  // Create a map of objekt_id -> auswertung info
+  const auswertungMap = new Map<string, { id: string; pdf_url: string | null }>();
   auswertungen?.forEach((a) => {
     if (a.objekt_id) {
-      auswertungMap.set(a.objekt_id, a.id);
+      auswertungMap.set(a.objekt_id, { id: a.id, pdf_url: a.pdf_url });
     }
   });
 
@@ -136,7 +136,7 @@ export default async function MeineAnfragenPage() {
             const status = anfrage.status as keyof typeof STATUS_CONFIG;
             const statusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.offen;
             const StatusIcon = statusConfig.icon;
-            const auswertungId = objekt?.id ? auswertungMap.get(objekt.id) : null;
+            const auswertungInfo = objekt?.id ? auswertungMap.get(objekt.id) : null;
 
             return (
               <Card key={anfrage.id} className="hover:shadow-md transition-shadow">
@@ -178,12 +178,19 @@ export default async function MeineAnfragenPage() {
                           <Eye className="w-4 h-4" />
                         </Button>
                       </Link>
-                      {(status === 'fertig' || status === 'versendet') && auswertungId && (
-                        <Link href={`/auswertungen/${auswertungId}`}>
+                      {(status === 'fertig' || status === 'versendet') && auswertungInfo && (
+                        <Link href={`/auswertungen/${auswertungInfo.id}`}>
                           <Button size="sm" title="Auswertung ansehen">
                             <FileBarChart className="w-4 h-4" />
                           </Button>
                         </Link>
+                      )}
+                      {status === 'versendet' && auswertungInfo?.pdf_url && (
+                        <a href={auswertungInfo.pdf_url} target="_blank" rel="noopener noreferrer">
+                          <Button variant="secondary" size="sm" title="PDF herunterladen">
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        </a>
                       )}
                     </div>
                   </div>
