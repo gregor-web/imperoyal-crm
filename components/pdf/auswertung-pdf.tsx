@@ -146,43 +146,43 @@ const TrendArrow = ({
   );
 };
 
-// Color constants - Liquid Glass Design
-// Imperoyal Brand Colors: Royal Navy (Haupt), Growth Blue (Sekundär), Blue Bone (Tertiär)
+// Color constants - Dark Royal Navy Design
+// Imperoyal Brand Colors: Royal Navy (Haupt), Dark Blue (Sekundär), Blue Bone (Tertiär)
 const colors = {
-  // Brand Primary - Royal Navy (Hauptfarbe für Überschriften & wichtige Elemente)
+  // Brand Primary - Royal Navy (dunkles Markenblau)
   primary: '#1a2744',
-  // Brand Secondary - Growth Blue (für Labels & sekundäre Texte)
-  primaryLight: '#627d9b',
-  // Brand Tertiary - Blue Bone (für Hintergründe & Rahmen)
-  blueBone: '#9fb4c8',
+  // Brand Secondary - Dark Growth Blue (kräftiger)
+  primaryLight: '#2a4a6a',
+  // Brand Tertiary - Blue Bone
+  blueBone: '#9eb3c8',
   // Text colors
   text: '#1a2744',           // Royal Navy
-  textMuted: '#627d9b',      // Growth Blue
-  textLight: '#9fb4c8',      // Blue Bone
+  textMuted: '#2a4a6a',      // Dark Growth Blue (kräftiger)
+  textLight: '#9eb3c8',      // Blue Bone
   // Status colors (behalten für positive/negative Indikatoren)
   success: '#16a34a',
-  successBg: '#e8f5ec',
+  successBg: '#dcfce7',
   danger: '#dc2626',
-  dangerBg: '#fce8e8',
+  dangerBg: '#fee2e2',
   warning: '#d4a017',
-  warningBg: '#fdf8e8',
-  // Accent - Growth Blue
-  purple: '#627d9b',
-  purpleBg: '#eef3f8',
+  warningBg: '#fef9c3',
+  // Accent - Royal Navy (kräftig)
+  purple: '#1a2744',
+  purpleBg: '#dce8f0',
   // LIQUID GLASS - Frosted/translucent look
   glassWhite: '#f8fafc',      // Frosty white background
-  glassBorder: '#e2eaf3',     // Soft glass edge
+  glassBorder: '#bccad8',     // Darker glass edge
   glassHighlight: '#ffffff',  // Top shine
-  glassShadow: '#d0dae8',     // Bottom shadow for depth
-  glassInner: '#f1f6fa',      // Inner frosted area
-  // Borders and backgrounds - Softer Blue Bone Töne
-  border: '#d4e0ec',
-  borderLight: '#edf2f7',
-  bgLight: '#f7f9fc',
-  bgBlue: '#eef4fa',
-  bgGreen: '#eef8f2',
-  bgYellow: '#fdfaed',
-  bgPurple: '#eef3f8',
+  glassShadow: '#a8baca',     // Darker shadow for depth
+  glassInner: '#f0f4f7',      // Inner frosted area
+  // Borders and backgrounds - Kräftigere Blue Bone Töne
+  border: '#bccad8',
+  borderLight: '#dce8f0',
+  bgLight: '#f0f4f7',
+  bgBlue: '#dce8f0',
+  bgGreen: '#f0fdf4',
+  bgYellow: '#fef9eb',
+  bgPurple: '#dce8f0',
 };
 
 // Styles - Liquid Glass Design
