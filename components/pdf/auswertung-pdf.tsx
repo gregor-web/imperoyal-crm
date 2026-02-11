@@ -1300,12 +1300,14 @@ export function AuswertungPDF({
                 ].map((item, i) => {
                   const maxVal = wert?.jahr_10 || wert?.heute || 1;
                   const heightPct = Math.max(50, (item.value / maxVal) * 100);
+                  // Gradient von hell nach dunkel (links nach rechts)
+                  const barColors = ['#8a9cad', '#7a8c9d', '#5a6c7d', '#4a5c6d', '#3a4c5d'];
                   return (
                     <View key={i} style={{ width: 32, alignItems: 'center' }}>
                       <View style={{
                         width: 26,
                         height: `${heightPct}%`,
-                        backgroundColor: '#1a2744',
+                        backgroundColor: barColors[i],
                         borderRadius: 3,
                         minHeight: 30,
                       }} />
