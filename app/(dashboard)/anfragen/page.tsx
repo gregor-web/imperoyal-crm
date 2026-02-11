@@ -12,10 +12,18 @@ import { Eye, FileText, CheckCircle, Clock, Heart, Phone, Mail } from 'lucide-re
 export default async function AnfragenPage() {
   const supabase = await createClient();
 
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
   // Check if user is admin
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
+    .eq('id', user.id)
     .single();
 
   if (profile?.role !== 'admin') {
