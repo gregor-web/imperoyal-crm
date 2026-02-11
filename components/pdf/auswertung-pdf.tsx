@@ -117,34 +117,6 @@ const TrafficLight = ({
   );
 };
 
-// Mini-Sparkline (vereinfachte Version mit Balken)
-const MiniChart = ({
-  data,
-  color = '#3b82f6',
-  height = 30,
-}: {
-  data: number[];
-  color?: string;
-  height?: number;
-}) => {
-  const max = Math.max(...data);
-  return (
-    <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 2, height }}>
-      {data.map((value, index) => (
-        <View
-          key={index}
-          style={{
-            flex: 1,
-            height: max > 0 ? (value / max) * height : 0,
-            backgroundColor: color,
-            borderRadius: 2,
-            opacity: 0.3 + (index / data.length) * 0.7,
-          }}
-        />
-      ))}
-    </View>
-  );
-};
 
 
 // Trend-Pfeil
@@ -534,6 +506,7 @@ const styles = StyleSheet.create({
     right: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: colors.border,
     paddingTop: 6,
@@ -541,6 +514,11 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 7,
     color: colors.textLight,
+  },
+  footerCenter: {
+    fontSize: 7,
+    color: colors.primaryLight,
+    fontWeight: 'bold',
   },
   // Kostenquote badge
   kostenquoteBadge: {
@@ -699,7 +677,7 @@ export function AuswertungPDF({
           <View style={styles.headerLeft}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {logoUrl ? (
-                <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
+                <Image src={logoUrl} style={{ width: 180, height: 45, objectFit: 'contain' }} />
               ) : (
                 <Text style={styles.mainTitle}>Imperoyal Immobilien - Optimierungsprotokoll</Text>
               )}
@@ -1093,12 +1071,19 @@ export function AuswertungPDF({
         {/* Footer - fixed prop ensures it appears on every page if content overflows */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 1 von 5</Text>
         </View>
       </Page>
 
       {/* ==================== PAGE 2 ==================== */}
       <Page size="A4" style={styles.page}>
+        {/* Mini Header with Logo */}
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8 }}>
+          {logoUrl && (
+            <Image src={logoUrl} style={{ width: 100, height: 25, objectFit: 'contain' }} />
+          )}
+        </View>
         {/* Section 5: Mieterhöhungspotenzial Table */}
         <View style={[styles.sectionBox, { marginBottom: 6 }]}>
           <View style={styles.sectionHeader}>
@@ -1265,39 +1250,39 @@ export function AuswertungPDF({
               </View>
             </View>
             <View style={styles.sectionContent}>
-              {/* Mini-Chart für Wertentwicklung */}
-              <View style={{ marginBottom: 8 }}>
-                <MiniChart
-                  data={[
-                    wert?.heute || 0,
-                    wert?.jahr_3 || 0,
-                    wert?.jahr_5 || 0,
-                    wert?.jahr_7 || 0,
-                    wert?.jahr_10 || 0,
-                  ]}
-                  color={colors.primaryLight}
-                  height={25}
-                />
-              </View>
-              {/* Werte unter dem Chart */}
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              {/* Wertentwicklung als breite Balken mit Werten */}
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 50, gap: 4, marginBottom: 6 }}>
                 {[
-                  { label: 'Heute', value: wert?.heute, pct: null },
-                  { label: '+3J', value: wert?.jahr_3, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
-                  { label: '+5J', value: wert?.jahr_5, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
-                  { label: '+7J', value: wert?.jahr_7, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
-                  { label: '+10J', value: wert?.jahr_10, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
-                ].map((item, i) => (
-                  <View key={i} style={{ alignItems: 'center' }}>
-                    <Text style={{ fontSize: 6, color: colors.textMuted }}>{item.label}</Text>
-                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>{formatCurrencyShort(item.value)}</Text>
-                    {item.pct !== null && (
-                      <Text style={{ fontSize: 6, color: colors.success }}>+{item.pct.toFixed(0)}%</Text>
-                    )}
-                  </View>
-                ))}
+                  { label: 'Heute', value: wert?.heute || 0, pct: null },
+                  { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+5J', value: wert?.jahr_5 || 0, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
+                  { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
+                ].map((item, i) => {
+                  const maxVal = wert?.jahr_10 || wert?.heute || 1;
+                  const heightPct = Math.max(30, (item.value / maxVal) * 100);
+                  return (
+                    <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                      <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary, marginBottom: 2 }}>
+                        {formatCurrencyShort(item.value)}
+                      </Text>
+                      {item.pct !== null && (
+                        <Text style={{ fontSize: 6, color: colors.success, marginBottom: 2 }}>+{item.pct.toFixed(0)}%</Text>
+                      )}
+                      <View style={{
+                        width: '100%',
+                        height: `${heightPct}%`,
+                        backgroundColor: colors.primaryLight,
+                        borderRadius: 3,
+                        minHeight: 15,
+                        opacity: 0.4 + (i / 5) * 0.6,
+                      }} />
+                      <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 3 }}>{item.label}</Text>
+                    </View>
+                  );
+                })}
               </View>
-              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 4 }}>
+              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center' }}>
                 Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Historischer Durchschnitt DE (2,5% p.a.)'}
               </Text>
             </View>
@@ -1379,12 +1364,19 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 2 von 5</Text>
         </View>
       </Page>
 
       {/* ==================== PAGE 3 ==================== */}
       <Page size="A4" style={styles.page}>
+        {/* Mini Header with Logo */}
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8 }}>
+          {logoUrl && (
+            <Image src={logoUrl} style={{ width: 100, height: 25, objectFit: 'contain' }} />
+          )}
+        </View>
         {/* Section 10 & 11 */}
         <View style={styles.sectionRow}>
           {/* Section 10: RND & AfA - Erweitert */}
@@ -1471,60 +1463,132 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Section 12: Exit-Szenarien */}
+        {/* Section 12: Exit-Szenarien - Verlaufs-Chart */}
         <View style={[styles.sectionBox, { marginBottom: 10 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
           </View>
           <View style={styles.sectionContent}>
-            {/* Balkendiagramm für Wertentwicklung */}
-            <View style={{ marginBottom: 8 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 60, gap: 6 }}>
-                {[
-                  { label: 'Heute', value: wert?.heute || 0 },
-                  { label: '+3J', value: wert?.jahr_3 || 0 },
-                  { label: '+5J', value: wert?.jahr_5 || 0 },
-                  { label: '+7J', value: wert?.jahr_7 || 0 },
-                  { label: '+10J', value: wert?.jahr_10 || 0 },
-                ].map((item, i) => {
-                  const maxVal = wert?.jahr_10 || wert?.heute || 1;
-                  const heightPct = (item.value / maxVal) * 100;
-                  return (
-                    <View key={i} style={{ flex: 1, alignItems: 'center' }}>
-                      <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary, marginBottom: 2 }}>
-                        {formatCurrencyShort(item.value)}
-                      </Text>
+            {/* Verlaufs-Chart mit grüner Fläche */}
+            {(() => {
+              const chartHeight = 70;
+              const heute = wert?.heute || 0;
+              const dataPoints = [
+                { label: 'Heute', value: heute, year: 0 },
+                { label: '+3J', value: wert?.jahr_3 || 0, year: 3 },
+                { label: '+5J', value: wert?.jahr_5 || 0, year: 5 },
+                { label: '+7J', value: wert?.jahr_7 || 0, year: 7 },
+                { label: '+10J', value: wert?.jahr_10 || 0, year: 10 },
+              ];
+              const maxVal = Math.max(...dataPoints.map(d => d.value));
+              const minVal = heute * 0.95; // Start slightly below "heute" for visual effect
+              const range = maxVal - minVal;
+
+              return (
+                <View style={{ marginBottom: 8 }}>
+                  {/* Chart Container */}
+                  <View style={{ height: chartHeight, position: 'relative', marginBottom: 25 }}>
+                    {/* Green gradient area (simulated with stacked views) */}
+                    <View style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: chartHeight,
+                      backgroundColor: '#dcfce7',
+                      borderRadius: 4,
+                      overflow: 'hidden'
+                    }}>
+                      {/* Darker green at bottom */}
                       <View style={{
-                        width: '100%',
-                        height: `${heightPct}%`,
-                        backgroundColor: i === 0 ? colors.primary : colors.primaryLight,
-                        borderRadius: 3,
-                        minHeight: 10,
-                        opacity: 0.5 + (i / 5) * 0.5,
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: '40%',
+                        backgroundColor: '#bbf7d0',
                       }} />
-                      <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 3 }}>{item.label}</Text>
                     </View>
-                  );
-                })}
-              </View>
-            </View>
-            {/* Wertzuwachs Highlight */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 6 }}>
-              <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 6, color: colors.textMuted }}>Wertzuwachs 10J</Text>
-                <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
-                  +{formatCurrency((wert?.jahr_10 || 0) - (wert?.heute || 0))}
-                </Text>
-              </View>
-              <View style={{ alignItems: 'center' }}>
-                <Text style={{ fontSize: 6, color: colors.textMuted }}>Rendite p.a.</Text>
-                <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
-                  +{((wert?.heute && wert?.jahr_10) ? (((wert.jahr_10 / wert.heute) ** (1/10) - 1) * 100).toFixed(1) : '2.5')}%
-                </Text>
-              </View>
-            </View>
-            <Text style={{ fontSize: 6, color: colors.textMuted, textAlign: 'center', marginTop: 5 }}>
+
+                    {/* Data points and connecting line visualization */}
+                    {dataPoints.map((point, i) => {
+                      const yPos = range > 0 ? ((point.value - minVal) / range) * (chartHeight - 20) : 0;
+                      const xPos = (i / (dataPoints.length - 1)) * 100;
+                      const prevPoint = i > 0 ? dataPoints[i - 1] : null;
+                      const increment = prevPoint ? point.value - prevPoint.value : 0;
+
+                      return (
+                        <View key={i} style={{
+                          position: 'absolute',
+                          bottom: yPos,
+                          left: `${xPos}%`,
+                          transform: 'translateX(-50%)',
+                          alignItems: 'center',
+                        }}>
+                          {/* Value label above dot */}
+                          <Text style={{
+                            fontSize: 8,
+                            fontWeight: 'bold',
+                            color: colors.primary,
+                            marginBottom: 2,
+                          }}>
+                            {formatCurrencyShort(point.value)}
+                          </Text>
+                          {/* Increment in green (except for first point) */}
+                          {i > 0 && increment > 0 && (
+                            <Text style={{
+                              fontSize: 7,
+                              fontWeight: 'bold',
+                              color: colors.success,
+                              marginBottom: 2,
+                            }}>
+                              +{formatCurrencyShort(increment)}
+                            </Text>
+                          )}
+                          {/* Dot */}
+                          <View style={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: 5,
+                            backgroundColor: i === 0 ? colors.primary : colors.success,
+                            borderWidth: 2,
+                            borderColor: 'white',
+                          }} />
+                          {/* X-axis label */}
+                          <Text style={{
+                            fontSize: 7,
+                            color: colors.textMuted,
+                            marginTop: 4,
+                            position: 'absolute',
+                            top: chartHeight - yPos + 5,
+                          }}>
+                            {point.label}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+
+                  {/* Summary row */}
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 6, marginTop: 5 }}>
+                    <View style={{ alignItems: 'center' }}>
+                      <Text style={{ fontSize: 6, color: colors.textMuted }}>Wertzuwachs 10J</Text>
+                      <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
+                        +{formatCurrency((wert?.jahr_10 || 0) - (wert?.heute || 0))}
+                      </Text>
+                    </View>
+                    <View style={{ alignItems: 'center' }}>
+                      <Text style={{ fontSize: 6, color: colors.textMuted }}>Rendite p.a.</Text>
+                      <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
+                        +{((wert?.heute && wert?.jahr_10) ? (((wert.jahr_10 / wert.heute) ** (1/10) - 1) * 100).toFixed(1) : '2.5')}%
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              );
+            })()}
+            <Text style={{ fontSize: 6, color: colors.textMuted, textAlign: 'center' }}>
               Annahme: {marktdaten?.preisprognose ? 'Dynamische Prognose lt. Marktdaten' : '2,5% p.a. Wertsteigerung'} | Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Bundesbank Immobilienpreisindex'}
             </Text>
           </View>
@@ -1592,12 +1656,19 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 3 von 5</Text>
         </View>
       </Page>
 
       {/* ==================== PAGE 4 ==================== */}
       <Page size="A4" style={styles.page}>
+        {/* Mini Header with Logo */}
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8 }}>
+          {logoUrl && (
+            <Image src={logoUrl} style={{ width: 100, height: 25, objectFit: 'contain' }} />
+          )}
+        </View>
         {/* Zusammenfassung: Wertsteigernde Maßnahmen */}
         <View style={{
           backgroundColor: colors.bgGreen,
@@ -1743,16 +1814,22 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 4 von 5</Text>
         </View>
       </Page>
 
       {/* ==================== PAGE 5: Ergänzende Erläuterungen ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Überschrift */}
-        <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary, marginBottom: 15 }}>
-          Ergänzende Erläuterungen
-        </Text>
+        {/* Header mit Logo */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+          <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary }}>
+            Ergänzende Erläuterungen
+          </Text>
+          {logoUrl && (
+            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+          )}
+        </View>
 
         {/* Verkehrswert */}
         <View style={{ marginBottom: 12 }}>
@@ -1829,6 +1906,7 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>imperoyal-immobilien.de</Text>
           <Text style={styles.footerText}>Seite 5 von 5</Text>
         </View>
       </Page>
