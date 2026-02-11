@@ -7,6 +7,8 @@ import type { Berechnungen } from '@/lib/types';
 import fs from 'fs';
 import path from 'path';
 
+const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
+
 interface AuswertungEmailParams {
   anrede: string;
   name: string;
@@ -265,30 +267,8 @@ export async function POST(request: Request) {
     // Convert PDF to base64 for email attachment
     const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
 
-    // Check if webhook URL is configured
-    const webhookUrl = process.env.MAKE_WEBHOOK_URL;
-    if (!webhookUrl) {
-      console.warn('MAKE_WEBHOOK_URL not configured, skipping email');
-
-      // Still update status to versendet and update anfrage status
-      await adminSupabase
-        .from('auswertungen')
-        .update({ status: 'versendet' })
-        .eq('id', auswertung_id);
-
-      // Update anfrage status
-      await adminSupabase
-        .from('anfragen')
-        .update({ status: 'versendet' })
-        .eq('objekt_id', objekt.id);
-
-      return NextResponse.json({
-        success: true,
-        message: 'PDF gespeichert. E-Mail-Versand nicht konfiguriert (MAKE_WEBHOOK_URL fehlt)',
-        pdf_url: pdfUrl,
-        skipped: true,
-      });
-    }
+    // Use hardcoded webhook URL (fallback to env var if needed)
+    const webhookUrl = MAKE_WEBHOOK_URL;
 
     // Generate HTML email content
     const recipientName = mandant.ansprechpartner || mandant.name;
