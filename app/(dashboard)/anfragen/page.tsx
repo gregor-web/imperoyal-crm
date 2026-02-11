@@ -62,7 +62,8 @@ export default async function AnfragenPage() {
   }
 
   const offeneAnfragen = anfragen?.filter((a) => a.status === 'offen') || [];
-  const fertigeAnfragen = anfragen?.filter((a) => a.status === 'fertig' || a.status === 'versendet' || a.status === 'in_bearbeitung') || [];
+  // Versendet = komplett erledigt, wird nicht mehr angezeigt
+  const fertigeAnfragen = anfragen?.filter((a) => a.status === 'fertig' || a.status === 'in_bearbeitung') || [];
   const neueInteressen = interessen?.filter((i) => i.status === 'neu') || [];
   const bearbeiteteInteressen = interessen?.filter((i) => i.status !== 'neu') || [];
 
