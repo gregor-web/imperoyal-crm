@@ -20,6 +20,13 @@ export function StartAnalyseButton({ objektId, anfrageId }: StartAnalyseButtonPr
     setError(null);
 
     try {
+      // Set status to "in_bearbeitung"
+      await fetch('/api/anfragen/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ anfrage_id: anfrageId, status: 'in_bearbeitung' }),
+      });
+
       // Start the analysis
       const response = await fetch('/api/auswertung', {
         method: 'POST',
@@ -34,11 +41,11 @@ export function StartAnalyseButton({ objektId, anfrageId }: StartAnalyseButtonPr
 
       const { auswertung_id } = await response.json();
 
-      // Mark Anfrage as processed
-      await fetch('/api/anfragen/bearbeiten', {
+      // Set status to "fertig"
+      await fetch('/api/anfragen/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ anfrage_id: anfrageId }),
+        body: JSON.stringify({ anfrage_id: anfrageId, status: 'fertig' }),
       });
 
       // Navigate to the new Auswertung

@@ -20,6 +20,7 @@ interface NavItem {
   href: string;
   icon: React.ReactNode;
   adminOnly?: boolean;
+  mandantOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -50,6 +51,12 @@ const navItems: NavItem[] = [
     icon: <ShoppingCart className="w-5 h-5" />,
   },
   {
+    label: 'Meine Anfragen',
+    href: '/meine-anfragen',
+    icon: <MessageSquare className="w-5 h-5" />,
+    mandantOnly: true,
+  },
+  {
     label: 'Anfragen',
     href: '/anfragen',
     icon: <MessageSquare className="w-5 h-5" />,
@@ -73,9 +80,11 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
     router.refresh();
   };
 
-  const filteredNavItems = navItems.filter(
-    (item) => !item.adminOnly || userRole === 'admin'
-  );
+  const filteredNavItems = navItems.filter((item) => {
+    if (item.adminOnly && userRole !== 'admin') return false;
+    if (item.mandantOnly && userRole !== 'mandant') return false;
+    return true;
+  });
 
   return (
     <aside className="glass-sidebar w-64 h-screen flex flex-col text-white fixed top-0 left-0 z-40">

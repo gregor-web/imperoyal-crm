@@ -62,7 +62,8 @@ export default async function AnfragenPage() {
   }
 
   const offeneAnfragen = anfragen?.filter((a) => a.status === 'offen') || [];
-  const bearbeiteteAnfragen = anfragen?.filter((a) => a.status === 'bearbeitet') || [];
+  const inBearbeitungAnfragen = anfragen?.filter((a) => a.status === 'in_bearbeitung') || [];
+  const fertigeAnfragen = anfragen?.filter((a) => a.status === 'fertig' || a.status === 'versendet') || [];
   const neueInteressen = interessen?.filter((i) => i.status === 'neu') || [];
   const bearbeiteteInteressen = interessen?.filter((i) => i.status !== 'neu') || [];
 
@@ -106,8 +107,8 @@ export default async function AnfragenPage() {
               <CheckCircle className="w-6 h-6 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-slate-500">Bearbeitet</p>
-              <p className="text-2xl font-bold text-slate-800">{bearbeiteteAnfragen.length + bearbeiteteInteressen.length}</p>
+              <p className="text-sm text-slate-500">Fertig</p>
+              <p className="text-2xl font-bold text-slate-800">{fertigeAnfragen.length + bearbeiteteInteressen.length}</p>
             </div>
           </div>
         </Card>
@@ -244,9 +245,9 @@ export default async function AnfragenPage() {
         </Card>
       )}
 
-      {/* Bearbeitete Anfragen */}
-      {bearbeiteteAnfragen.length > 0 && (
-        <Card title="Bearbeitete Anfragen">
+      {/* In Bearbeitung */}
+      {inBearbeitungAnfragen.length > 0 && (
+        <Card title="In Bearbeitung" className="border-l-4 border-l-blue-500">
           <Table>
             <TableHeader>
               <TableRow>
@@ -254,11 +255,10 @@ export default async function AnfragenPage() {
                 <TableHead>Mandant</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Angefragt am</TableHead>
-                <TableHead className="text-right">Aktionen</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {bearbeiteteAnfragen.map((anfrage) => {
+              {inBearbeitungAnfragen.map((anfrage) => {
                 const objekt = anfrage.objekte as { id: string; strasse: string; plz: string; ort: string } | null;
                 const mandant = anfrage.mandanten as { name: string } | null;
 
@@ -272,7 +272,48 @@ export default async function AnfragenPage() {
                     </TableCell>
                     <TableCell>{mandant?.name || '-'}</TableCell>
                     <TableCell>
-                      <Badge variant="success">Bearbeitet</Badge>
+                      <Badge variant="info">In Bearbeitung</Badge>
+                    </TableCell>
+                    <TableCell>{formatDate(anfrage.created_at)}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+
+      {/* Fertige Anfragen */}
+      {fertigeAnfragen.length > 0 && (
+        <Card title="Fertige Anfragen">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Objekt</TableHead>
+                <TableHead>Mandant</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Angefragt am</TableHead>
+                <TableHead className="text-right">Aktionen</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {fertigeAnfragen.map((anfrage) => {
+                const objekt = anfrage.objekte as { id: string; strasse: string; plz: string; ort: string } | null;
+                const mandant = anfrage.mandanten as { name: string } | null;
+
+                return (
+                  <TableRow key={anfrage.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{objekt?.strasse}</p>
+                        <p className="text-sm text-slate-500">{objekt?.plz} {objekt?.ort}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>{mandant?.name || '-'}</TableCell>
+                    <TableCell>
+                      <Badge variant={anfrage.status === 'versendet' ? 'default' : 'success'}>
+                        {anfrage.status === 'versendet' ? 'Versendet' : 'Fertig'}
+                      </Badge>
                     </TableCell>
                     <TableCell>{formatDate(anfrage.created_at)}</TableCell>
                     <TableCell>
