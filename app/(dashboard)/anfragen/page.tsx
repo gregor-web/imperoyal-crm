@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { Eye, FileText, CheckCircle, Clock, Heart, Phone, Mail } from 'lucide-react';
+import { Eye, CheckCircle, Clock, Heart, Phone, Mail } from 'lucide-react';
+import { StartAnalyseButton } from '@/components/anfragen/start-analyse-button';
 
 export default async function AnfragenPage() {
   const supabase = await createClient();
@@ -144,15 +145,16 @@ export default async function AnfragenPage() {
                     <TableCell>
                       <div className="flex justify-end gap-2">
                         <Link href={`/objekte/${objekt?.id}`}>
-                          <Button variant="secondary" className="p-2">
+                          <Button variant="secondary" className="p-2" title="Objekt ansehen">
                             <Eye className="w-4 h-4" />
                           </Button>
                         </Link>
-                        <Link href={`/objekte/${objekt?.id}?auswerten=true`}>
-                          <Button className="p-2">
-                            <FileText className="w-4 h-4" />
-                          </Button>
-                        </Link>
+                        {objekt?.id && (
+                          <StartAnalyseButton
+                            objektId={objekt.id}
+                            anfrageId={anfrage.id}
+                          />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
