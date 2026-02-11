@@ -174,7 +174,7 @@ const colors = {
   glassBorder: '#bccad8',     // Darker glass edge
   glassHighlight: '#ffffff',  // Top shine
   glassShadow: '#a8baca',     // Darker shadow for depth
-  glassInner: '#dde8f0',      // Inner frosted area - kräftiger blau
+  glassInner: '#f0f4f7',      // Inner frosted area
   // Borders and backgrounds - Kräftigere Blue Bone Töne
   border: '#bccad8',
   borderLight: '#dce8f0',
