@@ -8,8 +8,13 @@ import { formatDate, formatCurrency } from '@/lib/formatters';
 export default async function AuswertungenPage() {
   const supabase = await createClient();
 
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser();
+
   // Check user role
-  const { data: profile } = await supabase.from('profiles').select('role').single();
+  const { data: profile } = user
+    ? await supabase.from('profiles').select('role').eq('id', user.id).single()
+    : { data: null };
   const isAdmin = profile?.role === 'admin';
 
   // Fetch auswertungen with objekt data

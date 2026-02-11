@@ -34,6 +34,7 @@ export async function POST(request: Request) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
+      .eq('id', user.id)
       .single();
 
     let ankaufsprofileQuery = supabase
