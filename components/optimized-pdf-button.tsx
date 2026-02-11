@@ -56,6 +56,17 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
       const attempts = response.headers.get('X-Optimization-Attempts');
       console.log('[OptimizedPDF] Optimization attempts:', attempts);
 
+      // Get filename from Content-Disposition header
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `auswertung-${auswertungId}-optimized.pdf`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) {
+          filename = match[1];
+        }
+      }
+      console.log('[OptimizedPDF] Filename:', filename);
+
       setStatus('Lade PDF herunter...');
 
       // Get the PDF blob
@@ -74,7 +85,7 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
       const link = document.createElement('a');
       link.style.display = 'none';
       link.href = url;
-      link.download = `auswertung-${auswertungId}-optimized.pdf`;
+      link.download = filename;
       link.setAttribute('target', '_blank');
       document.body.appendChild(link);
 

@@ -30,6 +30,16 @@ export function PdfExportButton({ auswertungId }: PdfExportButtonProps) {
         throw new Error(data.error || 'Fehler beim PDF-Export');
       }
 
+      // Get filename from Content-Disposition header
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `auswertung-${auswertungId}.pdf`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) {
+          filename = match[1];
+        }
+      }
+
       // Get the PDF blob
       const blob = await response.blob();
 
@@ -37,7 +47,7 @@ export function PdfExportButton({ auswertungId }: PdfExportButtonProps) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `auswertung-${auswertungId}.pdf`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
