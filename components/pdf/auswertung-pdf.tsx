@@ -146,7 +146,7 @@ const TrendArrow = ({
   );
 };
 
-// Color constants - Liquid Glass Design
+// Color constants - LIQUID GLASS Design
 // Imperoyal Brand Colors: Royal Navy (Haupt), Growth Blue (Sekundär), Blue Bone (Tertiär)
 const colors = {
   // Brand Primary - Royal Navy (Hauptfarbe für Überschriften & wichtige Elemente)
@@ -161,31 +161,36 @@ const colors = {
   textLight: '#9fb4c8',      // Blue Bone
   // Status colors (behalten für positive/negative Indikatoren)
   success: '#16a34a',
-  successBg: '#e8f5ec',
+  successBg: '#dcfce7',
   danger: '#dc2626',
-  dangerBg: '#fce8e8',
+  dangerBg: '#fee2e2',
   warning: '#d4a017',
-  warningBg: '#fdf8e8',
+  warningBg: '#fef3c7',
   // Accent - Growth Blue
   purple: '#627d9b',
-  purpleBg: '#eef3f8',
-  // LIQUID GLASS - Frosted/translucent look
-  glassWhite: '#f8fafc',      // Frosty white background
-  glassBorder: '#e2eaf3',     // Soft glass edge
-  glassHighlight: '#ffffff',  // Top shine
-  glassShadow: '#d0dae8',     // Bottom shadow for depth
-  glassInner: '#f1f6fa',      // Inner frosted area
-  // Borders and backgrounds - Softer Blue Bone Töne
-  border: '#d4e0ec',
-  borderLight: '#edf2f7',
-  bgLight: '#f7f9fc',
-  bgBlue: '#eef4fa',
-  bgGreen: '#eef8f2',
-  bgYellow: '#fdfaed',
-  bgPurple: '#eef3f8',
+  purpleBg: '#dbeafe',
+  // ========== LIQUID GLASS COLORS ==========
+  // Sichtbare Frost/Glas-Effekte mit bläulichem Schimmer
+  glassWhite: '#eef4fb',        // Leicht bläulicher Frost-Hintergrund
+  glassBorder: '#b8cde0',       // Sichtbare Glas-Kante
+  glassHighlight: '#ffffff',    // Starker Highlight oben
+  glassShadow: '#94b3d0',       // Deutlicher Schatten unten
+  glassInner: '#dae8f5',        // Bläulicher Frost-Innenbereich
+  glassPanel: '#c9ddef',        // Sichtbares Glas-Panel
+  // Section headers with glass effect
+  glassHeader: '#cddff0',       // Glasiger Header-Hintergrund
+  glassHeaderBorder: '#a8c8e0', // Header-Rahmen
+  // Borders and backgrounds
+  border: '#b0c9de',
+  borderLight: '#d4e4f0',
+  bgLight: '#e8f1f8',
+  bgBlue: '#dbeafe',
+  bgGreen: '#dcfce7',
+  bgYellow: '#fef3c7',
+  bgPurple: '#dbeafe',
 };
 
-// Styles - Liquid Glass Design
+// Styles - LIQUID GLASS Design
 const styles = StyleSheet.create({
   page: {
     padding: 25,
@@ -193,7 +198,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 9,
     color: colors.text,
-    backgroundColor: colors.glassWhite,
+    backgroundColor: '#f0f7fc', // Leicht bläulicher Frost-Hintergrund
   },
   // Header
   header: {
@@ -228,17 +233,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
   },
-  // Key Metrics Bar - Liquid Glass Style
+  // Key Metrics Bar - LIQUID GLASS Style
   metricsBar: {
     flexDirection: 'row',
-    backgroundColor: colors.glassInner,
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: colors.glassPanel,    // Sichtbares Glas-Panel
+    borderRadius: 12,
+    marginBottom: 12,
     overflow: 'hidden',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
-    borderLeftColor: colors.glassHighlight,
+    borderTopColor: '#ffffff',             // Starker Highlight oben
+    borderLeftColor: '#f0f8ff',
     borderBottomColor: colors.glassShadow,
     borderRightColor: colors.glassShadow,
   },
@@ -290,12 +295,12 @@ const styles = StyleSheet.create({
   },
   sectionBox: {
     flex: 1,
-    backgroundColor: colors.glassWhite,
-    borderRadius: 8,
-    borderWidth: 1,
+    backgroundColor: colors.glassPanel,  // Sichtbarer Glas-Hintergrund
+    borderRadius: 10,
+    borderWidth: 2,
     borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
-    borderLeftColor: colors.glassHighlight,
+    borderTopColor: '#ffffff',           // Starker weißer Highlight oben
+    borderLeftColor: '#f0f8ff',          // Leichter Highlight links
     borderBottomColor: colors.glassShadow,
     borderRightColor: colors.glassShadow,
     overflow: 'hidden',
@@ -303,11 +308,11 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.glassInner,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
+    backgroundColor: colors.glassHeader,  // Glasiger Header
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.glassHeaderBorder,
   },
   sectionNumber: {
     width: 18,
@@ -375,36 +380,38 @@ const styles = StyleSheet.create({
     color: colors.danger,
     textAlign: 'right',
   },
-  // Table - Liquid Glass Style
+  // Table - LIQUID GLASS Style
   table: {
-    marginTop: 5,
-    borderRadius: 4,
+    marginTop: 6,
+    borderRadius: 8,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: colors.glassInner,
-    paddingVertical: 6,
-    paddingHorizontal: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
+    backgroundColor: colors.glassHeader,   // Glasiger Header
+    paddingVertical: 7,
+    paddingHorizontal: 6,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.glassHeaderBorder,
   },
   tableHeaderCell: {
     fontSize: 7,
     fontWeight: 'bold',
-    color: colors.textMuted,
+    color: colors.primary,
     textAlign: 'center',
   },
   tableRow: {
     flexDirection: 'row',
-    paddingVertical: 4,
-    paddingHorizontal: 4,
+    paddingVertical: 5,
+    paddingHorizontal: 6,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderLight,
-    backgroundColor: colors.glassWhite,
+    backgroundColor: colors.glassPanel,    // Glasiger Zeilenhintergrund
   },
   tableRowAlt: {
-    backgroundColor: colors.glassInner,
+    backgroundColor: colors.glassInner,    // Alternierender Glas-Hintergrund
   },
   tableCell: {
     fontSize: 8,
@@ -418,23 +425,23 @@ const styles = StyleSheet.create({
   },
   tableFooter: {
     flexDirection: 'row',
-    backgroundColor: colors.glassInner,
-    paddingVertical: 6,
+    backgroundColor: colors.glassHeader,   // Glasiger Footer
+    paddingVertical: 7,
     paddingHorizontal: 4,
     fontWeight: 'bold',
-    borderTopWidth: 1,
-    borderTopColor: colors.glassBorder,
+    borderTopWidth: 2,
+    borderTopColor: colors.glassHeaderBorder,
   },
-  // Info boxes - Liquid Glass Style
+  // Info boxes - LIQUID GLASS Style
   infoBox: {
-    backgroundColor: colors.glassInner,
-    padding: 8,
-    borderRadius: 6,
-    marginTop: 6,
-    borderWidth: 1,
+    backgroundColor: colors.glassHeader,   // Sichtbarer Glas-Hintergrund
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 8,
+    borderWidth: 2,
     borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
-    borderLeftColor: colors.glassHighlight,
+    borderTopColor: '#ffffff',
+    borderLeftColor: '#f0f8ff',
   },
   infoBoxTitle: {
     fontSize: 8,
@@ -447,16 +454,16 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     lineHeight: 1.4,
   },
-  // Empfehlung page - Liquid Glass Style
+  // Empfehlung page - LIQUID GLASS Style
   empfehlungContainer: {
-    backgroundColor: colors.glassInner,
-    borderRadius: 12,
+    backgroundColor: colors.glassPanel,    // Sichtbares Glas-Panel
+    borderRadius: 14,
     padding: 20,
     marginBottom: 15,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.glassBorder,
-    borderTopColor: colors.glassHighlight,
-    borderLeftColor: colors.glassHighlight,
+    borderTopColor: '#ffffff',
+    borderLeftColor: '#f0f8ff',
     borderBottomColor: colors.glassShadow,
     borderRightColor: colors.glassShadow,
   },
