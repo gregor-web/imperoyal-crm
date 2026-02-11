@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { Eye, FileBarChart, Clock, UserCheck, CheckCircle, Send, Plus } from 'lucide-react';
+import { Eye, FileBarChart, Clock, CheckCircle, Send, Plus } from 'lucide-react';
 
 const STATUS_CONFIG = {
   offen: {
@@ -15,10 +15,10 @@ const STATUS_CONFIG = {
     description: 'Ihre Anfrage wurde eingereicht.',
   },
   in_bearbeitung: {
-    label: 'Wird geprüft',
-    variant: 'info' as const,
-    icon: UserCheck,
-    description: 'Ein Experte prüft Ihr Objekt.',
+    label: 'Abgeschlossen',
+    variant: 'success' as const,
+    icon: CheckCircle,
+    description: 'Die Auswertung ist fertig.',
   },
   fertig: {
     label: 'Abgeschlossen',

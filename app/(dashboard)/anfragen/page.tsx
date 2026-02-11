@@ -62,8 +62,7 @@ export default async function AnfragenPage() {
   }
 
   const offeneAnfragen = anfragen?.filter((a) => a.status === 'offen') || [];
-  const inBearbeitungAnfragen = anfragen?.filter((a) => a.status === 'in_bearbeitung') || [];
-  const fertigeAnfragen = anfragen?.filter((a) => a.status === 'fertig' || a.status === 'versendet') || [];
+  const fertigeAnfragen = anfragen?.filter((a) => a.status === 'fertig' || a.status === 'versendet' || a.status === 'in_bearbeitung') || [];
   const neueInteressen = interessen?.filter((i) => i.status === 'neu') || [];
   const bearbeiteteInteressen = interessen?.filter((i) => i.status !== 'neu') || [];
 
@@ -237,44 +236,6 @@ export default async function AnfragenPage() {
                         </Link>
                       </div>
                     </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Card>
-      )}
-
-      {/* In Bearbeitung */}
-      {inBearbeitungAnfragen.length > 0 && (
-        <Card title="In Bearbeitung" className="border-l-4 border-l-blue-500">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Objekt</TableHead>
-                <TableHead>Mandant</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Angefragt am</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {inBearbeitungAnfragen.map((anfrage) => {
-                const objekt = anfrage.objekte as { id: string; strasse: string; plz: string; ort: string } | null;
-                const mandant = anfrage.mandanten as { name: string } | null;
-
-                return (
-                  <TableRow key={anfrage.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{objekt?.strasse}</p>
-                        <p className="text-sm text-slate-500">{objekt?.plz} {objekt?.ort}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>{mandant?.name || '-'}</TableCell>
-                    <TableCell>
-                      <Badge variant="info">In Bearbeitung</Badge>
-                    </TableCell>
-                    <TableCell>{formatDate(anfrage.created_at)}</TableCell>
                   </TableRow>
                 );
               })}

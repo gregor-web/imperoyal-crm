@@ -20,13 +20,6 @@ export function StartAnalyseButton({ objektId, anfrageId }: StartAnalyseButtonPr
     setError(null);
 
     try {
-      // Set status to "in_bearbeitung"
-      await fetch('/api/anfragen/status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ anfrage_id: anfrageId, status: 'in_bearbeitung' }),
-      });
-
       // Start the analysis
       const response = await fetch('/api/auswertung', {
         method: 'POST',
