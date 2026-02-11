@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { Eye, FileBarChart, Clock, CheckCircle, Send, Plus, Download } from 'lucide-react';
+import { FileBarChart, Clock, CheckCircle, Send, Plus, Download } from 'lucide-react';
 
 // Status config for display - in_bearbeitung maps to fertig for backwards compatibility
 const STATUS_CONFIG = {
@@ -180,11 +180,6 @@ export default async function MeineAnfragenPage() {
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                      <Link href={`/objekte/${objekt?.id}`}>
-                        <Button variant="secondary" size="sm" title="Objekt ansehen">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </Link>
                       {(status === 'fertig' || status === 'versendet') && auswertungInfo && (
                         <Link href={`/auswertungen/${auswertungInfo.id}`}>
                           <Button size="sm" title="Auswertung ansehen">
