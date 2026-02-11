@@ -1306,9 +1306,9 @@ export function AuswertungPDF({
                 <TrendArrow value={2.5} showValue={false} />
               </View>
             </View>
-            <View style={[styles.sectionContent, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
-              {/* Wertentwicklung als Balken - zentriert mit fester Breite */}
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 80 }}>
+            <View style={styles.sectionContent}>
+              {/* Wertentwicklung als Balken - höher für bessere Optik */}
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 110, gap: 4 }}>
                 {[
                   { label: 'Heute', value: wert?.heute || 0, pct: null },
                   { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
@@ -1319,12 +1319,12 @@ export function AuswertungPDF({
                   const maxVal = wert?.jahr_10 || wert?.heute || 1;
                   const heightPct = Math.max(50, (item.value / maxVal) * 100);
                   return (
-                    <View key={i} style={{ width: 36, alignItems: 'center', marginHorizontal: 4 }}>
+                    <View key={i} style={{ flex: 1, alignItems: 'center' }}>
                       <View style={{
-                        width: 28,
+                        width: '100%',
                         height: `${heightPct}%`,
                         backgroundColor: colors.primaryLight,
-                        borderRadius: 4,
+                        borderRadius: 3,
                         minHeight: 30,
                         opacity: 0.4 + (i / 5) * 0.6,
                       }} />
@@ -1333,7 +1333,7 @@ export function AuswertungPDF({
                 })}
               </View>
               {/* Labels unter den Balken */}
-              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 6 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, gap: 4 }}>
                 {[
                   { label: 'Heute', value: wert?.heute || 0, pct: null },
                   { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
@@ -1341,7 +1341,7 @@ export function AuswertungPDF({
                   { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
                   { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
                 ].map((item, i) => (
-                  <View key={i} style={{ width: 36, alignItems: 'center', marginHorizontal: 4 }}>
+                  <View key={i} style={{ flex: 1, alignItems: 'center' }}>
                     <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary }}>
                       {formatCurrencyShort(item.value)}
                     </Text>
@@ -1352,7 +1352,7 @@ export function AuswertungPDF({
                   </View>
                 ))}
               </View>
-              <Text style={{ fontSize: 5, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 4 }}>
+              <Text style={{ fontSize: 5, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 3 }}>
                 Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Hist. Durchschnitt (2,5% p.a.)'}
               </Text>
             </View>
@@ -1534,23 +1534,16 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 12: Exit-Szenarien - SVG Linien-Chart */}
-        <View style={{
-          backgroundColor: colors.glassWhite,
-          borderRadius: 8,
-          borderWidth: 1,
-          borderColor: colors.glassBorder,
-          overflow: 'hidden',
-          marginBottom: 2,
-        }}>
+        <View style={[styles.sectionBox, { marginBottom: 6 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
           </View>
-          <View style={[styles.sectionContent, { paddingBottom: 2 }]}>
-            {/* SVG Linien-Chart - kompakter */}
+          <View style={styles.sectionContent}>
+            {/* SVG Linien-Chart - höher für bessere Optik */}
             {(() => {
               const svgWidth = 500;
-              const svgHeight = 80;
+              const svgHeight = 110;
               const padding = { top: 10, right: 10, bottom: 10, left: 10 };
               const chartWidth = svgWidth - padding.left - padding.right;
               const chartHeight = svgHeight - padding.top - padding.bottom;
@@ -1583,7 +1576,7 @@ export function AuswertungPDF({
               const areaPath = `${linePath} L ${points[points.length - 1].x} ${svgHeight - padding.bottom} L ${points[0].x} ${svgHeight - padding.bottom} Z`;
 
               return (
-                <View style={{ marginBottom: 2 }}>
+                <View style={{ marginBottom: 8 }}>
                   {/* SVG Chart */}
                   <Svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
                     {/* Filled area under line */}
@@ -1602,7 +1595,7 @@ export function AuswertungPDF({
                   </Svg>
 
                   {/* Labels below chart */}
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, paddingHorizontal: 5 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, paddingHorizontal: 5 }}>
                     {dataPoints.map((point, i) => {
                       const prevPoint = i > 0 ? dataPoints[i - 1] : null;
                       const increment = prevPoint ? point.value - prevPoint.value : 0;
@@ -1625,7 +1618,7 @@ export function AuswertungPDF({
                   </View>
 
                   {/* Summary row */}
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 4, marginTop: 2 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 6, marginTop: 8 }}>
                     <View style={{ alignItems: 'center' }}>
                       <Text style={{ fontSize: 6, color: colors.textMuted }}>Wertzuwachs 10J</Text>
                       <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
@@ -1648,23 +1641,23 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Investment-Übersicht Dashboard */}
+        {/* Investment-Übersicht Dashboard - auf Seite 3 verschoben um Whitespace zu füllen */}
         <View style={{
           backgroundColor: colors.bgLight,
           borderRadius: 6,
-          padding: 6,
-          marginTop: 2,
+          padding: 10,
+          marginBottom: 10,
           borderWidth: 1,
           borderColor: colors.border,
         }}>
-          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 4 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 10 }}>
             Investment-Übersicht
           </Text>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
             {/* Spalte 1: Kapitalstruktur */}
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 3 }}>Kapitalstruktur</Text>
-              <View style={{ height: 32, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
+              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kapitalstruktur</Text>
+              <View style={{ height: 40, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
                 <View style={{ flex: (fin?.eigenkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.success }} />
                 <View style={{ flex: (fin?.fremdkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.danger }} />
               </View>
@@ -1675,8 +1668,8 @@ export function AuswertungPDF({
             </View>
             {/* Spalte 2: Cashflow-Verwendung */}
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 3 }}>Mietverteilung</Text>
-              <View style={{ height: 32, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
+              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Mietverteilung</Text>
+              <View style={{ height: 40, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
                 <View style={{ flex: (fin?.kapitaldienst || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#ef4444' }} />
                 <View style={{ flex: (kosten?.kosten_gesamt || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#f59e0b' }} />
                 <View style={{ flex: Math.max(0, (cashflow?.cashflow_ist_jahr || 0)) / (miet?.miete_ist_jahr || 1), backgroundColor: '#22c55e' }} />
@@ -1689,7 +1682,7 @@ export function AuswertungPDF({
             </View>
             {/* Spalte 3: Key Metrics */}
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 3 }}>Kennzahlen</Text>
+              <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kennzahlen</Text>
               {[
                 { label: 'Rendite', value: formatPercent(rendite?.rendite_ist), color: colors.text },
                 { label: 'Kostenquote', value: formatPercent(kosten?.kostenquote), color: kosten?.bewertung === 'gesund' ? colors.success : colors.warning },
@@ -1702,7 +1695,7 @@ export function AuswertungPDF({
               ))}
             </View>
           </View>
-          <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'right', marginTop: 4 }}>
+          <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'right', marginTop: 6 }}>
             Quelle: Aggregierte Berechnung aus Mandantenangaben und Marktdaten
           </Text>
         </View>
