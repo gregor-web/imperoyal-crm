@@ -1244,52 +1244,66 @@ export function AuswertungPDF({
             </View>
           </View>
 
-          {/* Section 7: Wertentwicklung */}
-          <View style={styles.sectionBox}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionNumber}>7</Text>
-              <Text style={styles.sectionTitle}>Wertentwicklung</Text>
-              <View style={{ marginLeft: 'auto' }}>
-                <TrendArrow value={2.5} showValue={false} />
-              </View>
+        </View>
+
+        {/* Section 7: Wertentwicklung - Volle Breite */}
+        <View style={[styles.sectionBox, { marginBottom: 6 }]}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionNumber}>7</Text>
+            <Text style={styles.sectionTitle}>Wertentwicklung</Text>
+            <View style={{ marginLeft: 'auto' }}>
+              <TrendArrow value={2.5} showValue={false} />
             </View>
-            <View style={styles.sectionContent}>
-              {/* Wertentwicklung als breite Balken mit Werten */}
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 50, gap: 4, marginBottom: 6 }}>
-                {[
-                  { label: 'Heute', value: wert?.heute || 0, pct: null },
-                  { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
-                  { label: '+5J', value: wert?.jahr_5 || 0, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
-                  { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
-                  { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
-                ].map((item, i) => {
-                  const maxVal = wert?.jahr_10 || wert?.heute || 1;
-                  const heightPct = Math.max(30, (item.value / maxVal) * 100);
-                  return (
-                    <View key={i} style={{ flex: 1, alignItems: 'center' }}>
-                      <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary, marginBottom: 2 }}>
-                        {formatCurrencyShort(item.value)}
-                      </Text>
-                      {item.pct !== null && (
-                        <Text style={{ fontSize: 6, color: colors.success, marginBottom: 2 }}>+{item.pct.toFixed(0)}%</Text>
-                      )}
-                      <View style={{
-                        width: '100%',
-                        height: `${heightPct}%`,
-                        backgroundColor: colors.primaryLight,
-                        borderRadius: 3,
-                        minHeight: 15,
-                        opacity: 0.4 + (i / 5) * 0.6,
-                      }} />
-                      <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 3 }}>{item.label}</Text>
-                    </View>
-                  );
-                })}
-              </View>
-              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center' }}>
-                Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Historischer Durchschnitt DE (2,5% p.a.)'}
-              </Text>
+          </View>
+          <View style={styles.sectionContent}>
+            {/* Wertentwicklung als breite Balken - Labels unten */}
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 70, gap: 8 }}>
+              {[
+                { label: 'Heute', value: wert?.heute || 0, pct: null },
+                { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
+                { label: '+5J', value: wert?.jahr_5 || 0, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
+                { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
+                { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
+              ].map((item, i) => {
+                const maxVal = wert?.jahr_10 || wert?.heute || 1;
+                const heightPct = Math.max(40, (item.value / maxVal) * 100);
+                return (
+                  <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                    <View style={{
+                      width: '100%',
+                      height: `${heightPct}%`,
+                      backgroundColor: colors.primaryLight,
+                      borderRadius: 4,
+                      minHeight: 25,
+                      opacity: 0.4 + (i / 5) * 0.6,
+                    }} />
+                  </View>
+                );
+              })}
             </View>
+            {/* Labels unter den Balken */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, gap: 8 }}>
+              {[
+                { label: 'Heute', value: wert?.heute || 0, pct: null },
+                { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
+                { label: '+5J', value: wert?.jahr_5 || 0, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
+                { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
+                { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
+              ].map((item, i) => (
+                <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary }}>
+                    {formatCurrencyShort(item.value)}
+                  </Text>
+                  {item.pct !== null && (
+                    <Text style={{ fontSize: 7, color: colors.success, fontWeight: 'bold' }}>+{item.pct.toFixed(0)}%</Text>
+                  )}
+                  <Text style={{ fontSize: 8, color: colors.textMuted, marginTop: 2 }}>{item.label}</Text>
+                </View>
+              ))}
+            </View>
+            <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 6 }}>
+              Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Historischer Durchschnitt DE (2,5% p.a.)'}
+            </Text>
           </View>
         </View>
 
