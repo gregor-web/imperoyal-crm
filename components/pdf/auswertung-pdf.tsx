@@ -5,6 +5,10 @@ import {
   View,
   Image,
   StyleSheet,
+  Svg,
+  Path,
+  Circle,
+  G,
 } from '@react-pdf/renderer';
 import type { Berechnungen } from '@/lib/types';
 
@@ -1079,7 +1083,7 @@ export function AuswertungPDF({
       {/* ==================== PAGE 2 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Mini Header with Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 8 }}>
           {logoUrl && (
             <Image src={logoUrl} style={{ width: 100, height: 25, objectFit: 'contain' }} />
           )}
@@ -1372,7 +1376,7 @@ export function AuswertungPDF({
       {/* ==================== PAGE 3 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Mini Header with Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 8 }}>
           {logoUrl && (
             <Image src={logoUrl} style={{ width: 100, height: 25, objectFit: 'contain' }} />
           )}
@@ -1463,106 +1467,83 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Section 12: Exit-Szenarien - Verlaufs-Chart */}
+        {/* Section 12: Exit-Szenarien - SVG Linien-Chart */}
         <View style={[styles.sectionBox, { marginBottom: 10 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
           </View>
           <View style={styles.sectionContent}>
-            {/* Verlaufs-Chart mit grüner Fläche */}
+            {/* SVG Linien-Chart */}
             {(() => {
-              const chartHeight = 70;
+              const svgWidth = 500;
+              const svgHeight = 80;
+              const padding = { top: 5, right: 10, bottom: 5, left: 10 };
+              const chartWidth = svgWidth - padding.left - padding.right;
+              const chartHeight = svgHeight - padding.top - padding.bottom;
+
               const heute = wert?.heute || 0;
               const dataPoints = [
-                { label: 'Heute', value: heute, year: 0 },
-                { label: '+3J', value: wert?.jahr_3 || 0, year: 3 },
-                { label: '+5J', value: wert?.jahr_5 || 0, year: 5 },
-                { label: '+7J', value: wert?.jahr_7 || 0, year: 7 },
-                { label: '+10J', value: wert?.jahr_10 || 0, year: 10 },
+                { label: 'Heute', value: heute },
+                { label: '+3J', value: wert?.jahr_3 || 0 },
+                { label: '+5J', value: wert?.jahr_5 || 0 },
+                { label: '+7J', value: wert?.jahr_7 || 0 },
+                { label: '+10J', value: wert?.jahr_10 || 0 },
               ];
+
               const maxVal = Math.max(...dataPoints.map(d => d.value));
-              const minVal = heute * 0.95; // Start slightly below "heute" for visual effect
-              const range = maxVal - minVal;
+              const minVal = heute * 0.92;
+              const range = maxVal - minVal || 1;
+
+              // Calculate points
+              const points = dataPoints.map((d, i) => ({
+                x: padding.left + (i / (dataPoints.length - 1)) * chartWidth,
+                y: padding.top + chartHeight - ((d.value - minVal) / range) * chartHeight,
+                value: d.value,
+                label: d.label,
+              }));
+
+              // Create path for line
+              const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+
+              // Create path for filled area
+              const areaPath = `${linePath} L ${points[points.length - 1].x} ${svgHeight - padding.bottom} L ${points[0].x} ${svgHeight - padding.bottom} Z`;
 
               return (
                 <View style={{ marginBottom: 8 }}>
-                  {/* Chart Container */}
-                  <View style={{ height: chartHeight, position: 'relative', marginBottom: 25 }}>
-                    {/* Green gradient area (simulated with stacked views) */}
-                    <View style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      height: chartHeight,
-                      backgroundColor: '#dcfce7',
-                      borderRadius: 4,
-                      overflow: 'hidden'
-                    }}>
-                      {/* Darker green at bottom */}
-                      <View style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: '40%',
-                        backgroundColor: '#bbf7d0',
-                      }} />
-                    </View>
+                  {/* SVG Chart */}
+                  <Svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
+                    {/* Filled area under line */}
+                    <Path d={areaPath} fill="#dcfce7" />
 
-                    {/* Data points and connecting line visualization */}
+                    {/* Main line */}
+                    <Path d={linePath} stroke="#22c55e" strokeWidth={3} fill="none" />
+
+                    {/* Data points */}
+                    {points.map((p, i) => (
+                      <G key={i}>
+                        <Circle cx={p.x} cy={p.y} r={6} fill="#22c55e" />
+                        <Circle cx={p.x} cy={p.y} r={4} fill="white" />
+                      </G>
+                    ))}
+                  </Svg>
+
+                  {/* Labels below chart */}
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, paddingHorizontal: 5 }}>
                     {dataPoints.map((point, i) => {
-                      const yPos = range > 0 ? ((point.value - minVal) / range) * (chartHeight - 20) : 0;
-                      const xPos = (i / (dataPoints.length - 1)) * 100;
                       const prevPoint = i > 0 ? dataPoints[i - 1] : null;
                       const increment = prevPoint ? point.value - prevPoint.value : 0;
-
                       return (
-                        <View key={i} style={{
-                          position: 'absolute',
-                          bottom: yPos,
-                          left: `${xPos}%`,
-                          transform: 'translateX(-50%)',
-                          alignItems: 'center',
-                        }}>
-                          {/* Value label above dot */}
-                          <Text style={{
-                            fontSize: 8,
-                            fontWeight: 'bold',
-                            color: colors.primary,
-                            marginBottom: 2,
-                          }}>
+                        <View key={i} style={{ alignItems: 'center', flex: 1 }}>
+                          <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.primary }}>
                             {formatCurrencyShort(point.value)}
                           </Text>
-                          {/* Increment in green (except for first point) */}
                           {i > 0 && increment > 0 && (
-                            <Text style={{
-                              fontSize: 7,
-                              fontWeight: 'bold',
-                              color: colors.success,
-                              marginBottom: 2,
-                            }}>
+                            <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.success }}>
                               +{formatCurrencyShort(increment)}
                             </Text>
                           )}
-                          {/* Dot */}
-                          <View style={{
-                            width: 10,
-                            height: 10,
-                            borderRadius: 5,
-                            backgroundColor: i === 0 ? colors.primary : colors.success,
-                            borderWidth: 2,
-                            borderColor: 'white',
-                          }} />
-                          {/* X-axis label */}
-                          <Text style={{
-                            fontSize: 7,
-                            color: colors.textMuted,
-                            marginTop: 4,
-                            position: 'absolute',
-                            top: chartHeight - yPos + 5,
-                          }}>
+                          <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 2 }}>
                             {point.label}
                           </Text>
                         </View>
@@ -1571,7 +1552,7 @@ export function AuswertungPDF({
                   </View>
 
                   {/* Summary row */}
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 6, marginTop: 5 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 6, marginTop: 8 }}>
                     <View style={{ alignItems: 'center' }}>
                       <Text style={{ fontSize: 6, color: colors.textMuted }}>Wertzuwachs 10J</Text>
                       <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
@@ -1664,7 +1645,7 @@ export function AuswertungPDF({
       {/* ==================== PAGE 4 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Mini Header with Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 8 }}>
           {logoUrl && (
             <Image src={logoUrl} style={{ width: 100, height: 25, objectFit: 'contain' }} />
           )}
@@ -1821,14 +1802,14 @@ export function AuswertungPDF({
 
       {/* ==================== PAGE 5: Ergänzende Erläuterungen ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Header mit Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+        {/* Header mit Logo links */}
+        <View style={{ marginBottom: 15, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+          {logoUrl && (
+            <Image src={logoUrl} style={{ width: 100, height: 25, objectFit: 'contain', marginBottom: 8 }} />
+          )}
           <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary }}>
             Ergänzende Erläuterungen
           </Text>
-          {logoUrl && (
-            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
-          )}
         </View>
 
         {/* Verkehrswert */}
