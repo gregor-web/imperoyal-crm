@@ -74,90 +74,94 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Mandant hat keine E-Mail-Adresse' }, { status: 400 });
     }
 
-    // Generate and upload PDF if not already stored
-    let pdfUrl = auswertung.pdf_url;
-
-    if (!pdfUrl && objekt) {
-      console.log('[EMAIL] Generating PDF for auswertung:', auswertung_id);
-
-      // Fetch einheiten for PDF
-      const { data: einheiten } = await supabase
-        .from('einheiten')
-        .select('position, nutzung, flaeche, kaltmiete, vergleichsmiete, mietvertragsart')
-        .eq('objekt_id', objekt.id)
-        .order('position');
-
-      // Read logo file
-      let logoUrl: string | undefined;
-      try {
-        const logoPath = path.join(process.cwd(), 'public', 'logo_imperoyal.png');
-        const logoBuffer = fs.readFileSync(logoPath);
-        logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`;
-      } catch {
-        console.warn('[EMAIL] Logo not found');
-      }
-
-      // Generate PDF
-      const berechnungen = auswertung.berechnungen as Berechnungen;
-      const pdfBuffer = await renderToBuffer(
-        AuswertungPDF({
-          objekt,
-          mandant: { name: mandant.name, ansprechpartner: mandant.ansprechpartner, anrede: mandant.anrede as 'Herr' | 'Frau' | null | undefined },
-          einheiten: einheiten || [],
-          berechnungen,
-          empfehlung: auswertung.empfehlung,
-          empfehlung_begruendung: auswertung.empfehlung_begruendung,
-          empfehlung_prioritaet: auswertung.empfehlung_prioritaet,
-          empfehlung_handlungsschritte: auswertung.empfehlung_handlungsschritte as string[] | undefined,
-          empfehlung_chancen: auswertung.empfehlung_chancen as string[] | undefined,
-          empfehlung_risiken: auswertung.empfehlung_risiken as string[] | undefined,
-          empfehlung_fazit: auswertung.empfehlung_fazit,
-          created_at: auswertung.created_at,
-          logoUrl,
-        })
-      );
-
-      console.log('[EMAIL] PDF generated, size:', pdfBuffer.length, 'bytes');
-
-      // Create filename
-      const cleanName = (mandant.name || 'Unbekannt')
-        .replace(/[äÄ]/g, 'ae')
-        .replace(/[öÖ]/g, 'oe')
-        .replace(/[üÜ]/g, 'ue')
-        .replace(/ß/g, 'ss')
-        .replace(/[^a-zA-Z0-9]/g, '_')
-        .replace(/_+/g, '_')
-        .replace(/^_|_$/g, '');
-      const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
-      const filename = `${auswertung_id}/${dateStr}_${cleanName}.pdf`;
-
-      // Upload to Supabase Storage using admin client
-      const { error: uploadError } = await adminSupabase.storage
-        .from('auswertungen-pdfs')
-        .upload(filename, Buffer.from(pdfBuffer), {
-          contentType: 'application/pdf',
-          upsert: true,
-        });
-
-      if (uploadError) {
-        console.error('[EMAIL] Upload error:', uploadError);
-        throw new Error(`PDF Upload fehlgeschlagen: ${uploadError.message}`);
-      }
-
-      // Get public URL
-      const { data: urlData } = adminSupabase.storage
-        .from('auswertungen-pdfs')
-        .getPublicUrl(filename);
-
-      pdfUrl = urlData.publicUrl;
-      console.log('[EMAIL] PDF uploaded, URL:', pdfUrl);
-
-      // Update auswertung with pdf_url
-      await adminSupabase
-        .from('auswertungen')
-        .update({ pdf_url: pdfUrl })
-        .eq('id', auswertung_id);
+    if (!objekt) {
+      return NextResponse.json({ error: 'Objekt nicht gefunden' }, { status: 404 });
     }
+
+    // Generate PDF (always fresh for email to ensure we have the buffer)
+    console.log('[EMAIL] Generating PDF for auswertung:', auswertung_id);
+
+    // Fetch einheiten for PDF
+    const { data: einheiten } = await supabase
+      .from('einheiten')
+      .select('position, nutzung, flaeche, kaltmiete, vergleichsmiete, mietvertragsart')
+      .eq('objekt_id', objekt.id)
+      .order('position');
+
+    // Read logo file
+    let logoUrl: string | undefined;
+    try {
+      const logoPath = path.join(process.cwd(), 'public', 'logo_imperoyal.png');
+      const logoBuffer = fs.readFileSync(logoPath);
+      logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+    } catch {
+      console.warn('[EMAIL] Logo not found');
+    }
+
+    // Generate PDF
+    const berechnungen = auswertung.berechnungen as Berechnungen;
+    const pdfBuffer = await renderToBuffer(
+      AuswertungPDF({
+        objekt,
+        mandant: { name: mandant.name, ansprechpartner: mandant.ansprechpartner, anrede: mandant.anrede as 'Herr' | 'Frau' | null | undefined },
+        einheiten: einheiten || [],
+        berechnungen,
+        empfehlung: auswertung.empfehlung,
+        empfehlung_begruendung: auswertung.empfehlung_begruendung,
+        empfehlung_prioritaet: auswertung.empfehlung_prioritaet,
+        empfehlung_handlungsschritte: auswertung.empfehlung_handlungsschritte as string[] | undefined,
+        empfehlung_chancen: auswertung.empfehlung_chancen as string[] | undefined,
+        empfehlung_risiken: auswertung.empfehlung_risiken as string[] | undefined,
+        empfehlung_fazit: auswertung.empfehlung_fazit,
+        created_at: auswertung.created_at,
+        logoUrl,
+      })
+    );
+
+    console.log('[EMAIL] PDF generated, size:', pdfBuffer.length, 'bytes');
+
+    // Create filename for attachment and storage
+    const cleanName = (mandant.name || 'Unbekannt')
+      .replace(/[äÄ]/g, 'ae')
+      .replace(/[öÖ]/g, 'oe')
+      .replace(/[üÜ]/g, 'ue')
+      .replace(/ß/g, 'ss')
+      .replace(/[^a-zA-Z0-9]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '');
+    const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
+    const storagePath = `${auswertung_id}/${dateStr}_${cleanName}.pdf`;
+    const attachmentFilename = `Auswertung_${objekt.strasse.replace(/[^a-zA-Z0-9]/g, '_')}_${dateStr}.pdf`;
+
+    // Upload to Supabase Storage (upsert to update if exists)
+    const { error: uploadError } = await adminSupabase.storage
+      .from('auswertungen-pdfs')
+      .upload(storagePath, Buffer.from(pdfBuffer), {
+        contentType: 'application/pdf',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error('[EMAIL] Upload error:', uploadError);
+      throw new Error(`PDF Upload fehlgeschlagen: ${uploadError.message}`);
+    }
+
+    // Get public URL
+    const { data: urlData } = adminSupabase.storage
+      .from('auswertungen-pdfs')
+      .getPublicUrl(storagePath);
+
+    const pdfUrl = urlData.publicUrl;
+    console.log('[EMAIL] PDF uploaded, URL:', pdfUrl);
+
+    // Update auswertung with pdf_url
+    await adminSupabase
+      .from('auswertungen')
+      .update({ pdf_url: pdfUrl })
+      .eq('id', auswertung_id);
+
+    // Convert PDF to base64 for email attachment
+    const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
 
     // Check if webhook URL is configured
     const webhookUrl = process.env.MAKE_WEBHOOK_URL;
@@ -174,7 +178,7 @@ export async function POST(request: Request) {
       await adminSupabase
         .from('anfragen')
         .update({ status: 'versendet' })
-        .eq('objekt_id', objekt?.id);
+        .eq('objekt_id', objekt.id);
 
       return NextResponse.json({
         success: true,
@@ -184,21 +188,27 @@ export async function POST(request: Request) {
       });
     }
 
-    // Send to Make.com webhook
+    // Send to Make.com webhook with PDF attachment
     const webhookPayload = {
       actionId: 2, // Auswertungs-Mail
       type: 'auswertung',
       to_email: mandant.email,
       to_name: mandant.ansprechpartner || mandant.name,
-      subject: `Ihre Immobilienauswertung: ${objekt?.strasse}`,
+      subject: `Ihre Immobilienauswertung: ${objekt.strasse}`,
       data: {
         auswertung_id,
         mandant_name: mandant.name,
-        objekt_adresse: `${objekt?.strasse}, ${objekt?.plz} ${objekt?.ort}`,
+        objekt_adresse: `${objekt.strasse}, ${objekt.plz} ${objekt.ort}`,
         empfehlung: auswertung.empfehlung,
         empfehlung_begruendung: auswertung.empfehlung_begruendung,
         pdf_url: pdfUrl,
         view_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auswertungen/${auswertung_id}`,
+      },
+      // PDF attachment for Make.com
+      attachment: {
+        filename: attachmentFilename,
+        content: pdfBase64,
+        contentType: 'application/pdf',
       },
     };
 
@@ -222,7 +232,7 @@ export async function POST(request: Request) {
     await adminSupabase
       .from('anfragen')
       .update({ status: 'versendet' })
-      .eq('objekt_id', objekt?.id);
+      .eq('objekt_id', objekt.id);
 
     return NextResponse.json({
       success: true,
