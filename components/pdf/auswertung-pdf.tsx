@@ -670,6 +670,7 @@ export function AuswertungPDF({
 
   const einheitenMitPotenzial = miet?.einheiten?.filter(e => e.potenzial > 0).length || 0;
   const einheitenGesamt = miet?.einheiten?.length || 0;
+  const allEinheiten = miet?.einheiten || [];
 
   // Verkehrswert = Aktueller Marktwert der Immobilie
   // Berechnung: Jahresmiete × Kaufpreisfaktor (Ertragswertverfahren)
@@ -1111,7 +1112,7 @@ export function AuswertungPDF({
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
           <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
-          <Text style={styles.footerText}>Seite 1 von 5</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
 
@@ -1144,9 +1145,9 @@ export function AuswertungPDF({
               <Text style={[styles.tableHeaderCell, { width: 50 }]}>Nächste Erhöhung</Text>
               <Text style={[styles.tableHeaderCell, { width: 45 }]}>§558 Betrag</Text>
             </View>
-            {/* Table Body */}
-            {miet?.einheiten?.map((einheit, index) => {
-              const mieterhoehung = miet.mieterhoehungen_558?.find(m => m.position === einheit.position);
+            {/* Table Body - alle Einheiten */}
+            {allEinheiten.map((einheit, index) => {
+              const mieterhoehung = miet?.mieterhoehungen_558?.find(m => m.position === einheit.position);
               const euroPerSqm = einheit.flaeche > 0 ? einheit.kaltmiete_ist / einheit.flaeche : 0;
               const isGewerbe = einheit.nutzung === 'Gewerbe' || einheit.nutzung === 'Stellplatz';
               const marktMiete = einheit.nutzung === 'Gewerbe' ? 20 : einheit.nutzung === 'Stellplatz' ? '-' : 14;
@@ -1418,7 +1419,7 @@ export function AuswertungPDF({
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
           <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
-          <Text style={styles.footerText}>Seite 2 von 5</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
 
@@ -1583,16 +1584,16 @@ export function AuswertungPDF({
                       const prevPoint = i > 0 ? dataPoints[i - 1] : null;
                       const increment = prevPoint ? point.value - prevPoint.value : 0;
                       return (
-                        <View key={i} style={{ alignItems: 'center', flex: 1 }}>
-                          <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary }}>
+                        <View key={i} style={{ alignItems: 'center', width: 80 }}>
+                          <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary, textAlign: 'center' }}>
                             {formatCurrency(point.value)}
                           </Text>
                           {i > 0 && increment > 0 && (
-                            <Text style={{ fontSize: 6, fontWeight: 'bold', color: colors.success }}>
+                            <Text style={{ fontSize: 6, fontWeight: 'bold', color: colors.success, textAlign: 'center' }}>
                               +{formatCurrency(increment)}
                             </Text>
                           )}
-                          <Text style={{ fontSize: 6, color: colors.textMuted, marginTop: 2 }}>
+                          <Text style={{ fontSize: 6, color: colors.textMuted, marginTop: 2, textAlign: 'center' }}>
                             {point.label}
                           </Text>
                         </View>
@@ -1687,7 +1688,7 @@ export function AuswertungPDF({
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
           <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
-          <Text style={styles.footerText}>Seite 3 von 5</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
 
@@ -1845,7 +1846,7 @@ export function AuswertungPDF({
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
           <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
-          <Text style={styles.footerText}>Seite 4 von 5</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
 
@@ -1939,7 +1940,7 @@ export function AuswertungPDF({
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
           <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
-          <Text style={styles.footerText}>Seite 5 von 5</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
     </Document>
