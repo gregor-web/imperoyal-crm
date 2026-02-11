@@ -61,14 +61,16 @@ export async function POST() {
       if (authError) {
         results.push(`Auth-User-Erstellung fehlgeschlagen: ${authError.message}`);
       } else {
+        // Use upsert to ensure profile is created even if trigger didn't fire
         await adminClient
           .from('profiles')
-          .update({
+          .upsert({
+            id: authData.user.id,
+            email: 'kunde@test.de',
             mandant_id: mandantId,
             name: 'Max Mustermann',
             role: 'mandant',
-          })
-          .eq('id', authData.user.id);
+          });
 
         results.push('Test-Kunde erstellt: kunde@test.de / kunde123');
       }

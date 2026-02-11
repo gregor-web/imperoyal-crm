@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -92,7 +91,7 @@ export function EinheitenForm({ objektId, defaultValues = [], onSubmit, isLoadin
               )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               <Select
                 label="Nutzung"
                 options={OPTIONS.nutzung}
@@ -114,7 +113,7 @@ export function EinheitenForm({ objektId, defaultValues = [], onSubmit, isLoadin
                 error={errors.einheiten?.[index]?.kaltmiete?.message}
               />
               <Input
-                label="Vergleichsmiete (€/m²)"
+                label="Marktmiete (€/m²)"
                 type="number"
                 step="0.01"
                 {...register(`einheiten.${index}.vergleichsmiete`)}
