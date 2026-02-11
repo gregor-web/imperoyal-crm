@@ -3,11 +3,11 @@ import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Card, StatCard } from '@/components/ui/card';
 import { EmpfehlungBadge, Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercent, formatDate } from '@/lib/formatters';
 import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
-import { ArrowLeft, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle } from 'lucide-react';
-import { PdfExportButton } from '@/components/pdf-export-button';
-import { DebugPdfButton } from '@/components/debug-pdf-button';
+import { ArrowLeft, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle, Download, Clock, Send } from 'lucide-react';
+import { SendEmailButton } from '@/components/send-email-button';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -63,9 +63,36 @@ export default async function AuswertungDetailPage({ params }: Props) {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          {isAdmin && <DebugPdfButton auswertungId={id} />}
-          <PdfExportButton auswertungId={id} />
+        <div className="flex items-center gap-3">
+          {/* Status Badge */}
+          <Badge variant={auswertung.status === 'versendet' ? 'success' : 'warning'} className="gap-1">
+            {auswertung.status === 'versendet' ? (
+              <>
+                <Send className="w-3 h-3" />
+                Versendet
+              </>
+            ) : (
+              <>
+                <Clock className="w-3 h-3" />
+                Erstellt
+              </>
+            )}
+          </Badge>
+
+          {/* PDF View Button - only if PDF exists */}
+          {auswertung.pdf_url && (
+            <a href={auswertung.pdf_url} target="_blank" rel="noopener noreferrer">
+              <Button variant="secondary" className="gap-2">
+                <Download className="w-4 h-4" />
+                PDF ansehen
+              </Button>
+            </a>
+          )}
+
+          {/* Send Email Button - only for admin */}
+          {isAdmin && (
+            <SendEmailButton auswertungId={id} status={auswertung.status} />
+          )}
         </div>
       </div>
 
