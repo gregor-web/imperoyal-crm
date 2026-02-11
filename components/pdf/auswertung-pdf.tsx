@@ -1290,7 +1290,7 @@ export function AuswertungPDF({
             </View>
             <View style={[styles.sectionContent, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
               {/* Wertentwicklung als Balken - zentriert */}
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 100, gap: 6 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 100, gap: 8 }}>
                 {[
                   { label: 'Heute', value: wert?.heute || 0, pct: null },
                   { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
@@ -1303,12 +1303,12 @@ export function AuswertungPDF({
                   // Gradient von hell nach dunkel (links nach rechts)
                   const barColors = ['#8a9cad', '#7a8c9d', '#5a6c7d', '#4a5c6d', '#3a4c5d'];
                   return (
-                    <View key={i} style={{ width: 32, alignItems: 'center' }}>
+                    <View key={i} style={{ width: 42, alignItems: 'center' }}>
                       <View style={{
-                        width: 26,
+                        width: 38,
                         height: `${heightPct}%`,
                         backgroundColor: barColors[i],
-                        borderRadius: 3,
+                        borderRadius: 4,
                         minHeight: 30,
                       }} />
                     </View>
@@ -1316,7 +1316,7 @@ export function AuswertungPDF({
                 })}
               </View>
               {/* Labels unter den Balken */}
-              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4, gap: 6 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4, gap: 8 }}>
                 {[
                   { label: 'Heute', value: wert?.heute || 0, pct: null },
                   { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
@@ -1324,7 +1324,7 @@ export function AuswertungPDF({
                   { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
                   { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
                 ].map((item, i) => (
-                  <View key={i} style={{ width: 32, alignItems: 'center' }}>
+                  <View key={i} style={{ width: 42, alignItems: 'center' }}>
                     <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary }}>
                       {formatCurrencyShort(item.value)}
                     </Text>
