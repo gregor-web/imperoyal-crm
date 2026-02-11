@@ -1090,7 +1090,7 @@ export function AuswertungPDF({
         {/* Footer - fixed prop ensures it appears on every page if content overflows */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerText}>Seite 1 von 4</Text>
+          <Text style={styles.footerText}>Seite 1 von 5</Text>
         </View>
       </Page>
 
@@ -1376,7 +1376,7 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerText}>Seite 2 von 4</Text>
+          <Text style={styles.footerText}>Seite 2 von 5</Text>
         </View>
       </Page>
 
@@ -1589,7 +1589,7 @@ export function AuswertungPDF({
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerText}>Seite 3 von 4</Text>
+          <Text style={styles.footerText}>Seite 3 von 5</Text>
         </View>
       </Page>
 
@@ -1737,56 +1737,96 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Basisbeschreibungen / Glossar */}
-        <View style={{ backgroundColor: colors.bgLight, borderRadius: 6, padding: 10, marginBottom: 10, marginTop: 10 }}>
-          <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 8 }}>
-            Begriffserklärungen
+        {/* Footer */}
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerText}>Seite 4 von 5</Text>
+        </View>
+      </Page>
+
+      {/* ==================== PAGE 5: Ergänzende Erläuterungen ==================== */}
+      <Page size="A4" style={styles.page}>
+        {/* Überschrift */}
+        <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary, marginBottom: 15 }}>
+          Ergänzende Erläuterungen
+        </Text>
+
+        {/* Verkehrswert */}
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4 }}>Verkehrswert</Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify' }}>
+            Der Verkehrswert (Marktwert) ist der geschätzte Betrag, für welchen eine Immobilie am Bewertungsstichtag zwischen einem verkaufsbereiten Verkäufer und einem kaufbereiten Erwerber nach angemessenem Vermarktungszeitraum in einer Transaktion im gewöhnlichen Geschäftsverkehr verkauft werden könnte, wobei jede Partei mit Sachkenntnis, Umsicht und ohne Zwang handelt. Die Ermittlung erfolgt hier auf Basis des Ertragswertverfahrens unter Verwendung der aktuellen Marktmieten und regionaler Kaufpreisfaktoren.
           </Text>
-          <View style={{ gap: 4 }}>
-            {[
-              { term: 'Verkehrswert', desc: 'Der aktuelle Marktwert Ihrer Immobilie, ermittelt über Ertragswert- oder Vergleichswertverfahren.' },
-              { term: 'Cashflow', desc: 'Der Überschuss aus Mieteinnahmen nach Abzug aller Kosten (Kapitaldienst, Bewirtschaftung).' },
-              { term: 'Eigenkapitalrendite', desc: 'Verhältnis von Cashflow zu eingesetztem Eigenkapital – zeigt die Verzinsung Ihres Kapitals.' },
-              { term: '§558 BGB', desc: 'Gesetzliche Grundlage für Mieterhöhungen bis zur ortsüblichen Vergleichsmiete (max. 20%/15% in 3 Jahren).' },
-              { term: '§559 BGB', desc: 'Erlaubt Mieterhöhung nach Modernisierung (8% der Kosten p.a.), begrenzt auf 2-3€/m² in 6 Jahren.' },
-              { term: 'WEG-Aufteilung', desc: 'Umwandlung in Wohnungseigentum ermöglicht Einzelverkauf der Einheiten zu höheren Preisen.' },
-              { term: 'AfA', desc: 'Absetzung für Abnutzung – steuerliche Abschreibung des Gebäudewerts über die Restnutzungsdauer.' },
-              { term: 'Kostenquote', desc: 'Verhältnis der Bewirtschaftungskosten zur Jahresmiete – unter 25% gilt als gesund.' },
-            ].map((item, i) => (
-              <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
-                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text, width: 80 }}>{item.term}:</Text>
-                <Text style={{ fontSize: 7, color: colors.textMuted, flex: 1 }}>{item.desc}</Text>
-              </View>
-            ))}
-          </View>
         </View>
 
-        {/* Erweiterter Haftungsausschluss */}
-        <View style={{ backgroundColor: colors.warningBg, borderRadius: 6, padding: 10, borderWidth: 1, borderColor: colors.warning }}>
-          <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.warning, marginBottom: 6 }}>
-            Wichtige Hinweise & Haftungsausschluss
+        {/* Cashflow-Analyse */}
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4 }}>Cashflow-Analyse</Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify' }}>
+            Der Cashflow beschreibt den tatsächlichen Geldüberschuss aus der Immobilie nach Abzug aller laufenden Kosten. Er berechnet sich aus den Mieteinnahmen abzüglich Kapitaldienst (Zins und Tilgung), nicht umlagefähiger Betriebskosten, Instandhaltungsrücklagen und Verwaltungskosten. Ein positiver Cashflow bedeutet, dass sich die Immobilie selbst trägt und zusätzlich Liquidität generiert. Der optimierte Cashflow zeigt das Potenzial bei Ausschöpfung aller Mieterhöhungsmöglichkeiten.
           </Text>
-          <Text style={{ fontSize: 6, color: colors.text, lineHeight: 1.5, marginBottom: 4 }}>
-            Diese Analyse dient ausschließlich Informationszwecken und stellt keine Rechts-, Steuer- oder Anlageberatung dar.
-            Die enthaltenen Berechnungen basieren auf den vom Mandanten übermittelten Daten sowie öffentlich verfügbaren Marktinformationen.
+        </View>
+
+        {/* Mieterhöhung nach §558 BGB */}
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4 }}>Mieterhöhung nach §558 BGB (Kappungsgrenze)</Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify' }}>
+            Nach §558 BGB kann der Vermieter die Zustimmung zu einer Mieterhöhung bis zur ortsüblichen Vergleichsmiete verlangen, sofern die Miete seit 15 Monaten unverändert ist. Die Kappungsgrenze begrenzt die Erhöhung auf maximal 20% innerhalb von drei Jahren (in angespannten Wohnungsmärkten auf 15%). Die ortsübliche Vergleichsmiete wird anhand von Mietspiegeln, Vergleichswohnungen oder Sachverständigengutachten ermittelt. Diese Regelung gilt nur für Wohnraum mit Standardmietvertrag, nicht für Index- oder Staffelmietverträge.
           </Text>
-          <Text style={{ fontSize: 6, color: colors.text, lineHeight: 1.5, marginBottom: 4 }}>
-            Imperoyal Immobilien übernimmt keine Gewähr für die Richtigkeit, Vollständigkeit oder Aktualität der dargestellten Informationen.
-            Insbesondere können sich Marktbedingungen, rechtliche Rahmenbedingungen und steuerliche Regelungen ändern.
+        </View>
+
+        {/* Modernisierungsumlage nach §559 BGB */}
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4 }}>Modernisierungsumlage nach §559 BGB</Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify' }}>
+            Hat der Vermieter Modernisierungsmaßnahmen durchgeführt, kann er nach §559 BGB die jährliche Miete um 8% der für die Wohnung aufgewendeten Kosten erhöhen. Die Mieterhöhung ist jedoch nach §559 Abs. 3a BGB begrenzt: Bei einer Miete unter 7€/m² darf die Miete innerhalb von 6 Jahren um maximal 2€/m² steigen, bei einer Miete ab 7€/m² um maximal 3€/m². Diese Regelung gilt nicht für Einheiten mit Indexmietvertrag.
           </Text>
-          <Text style={{ fontSize: 6, color: colors.text, lineHeight: 1.5, marginBottom: 4 }}>
-            Vor wichtigen Entscheidungen empfehlen wir die Konsultation qualifizierter Fachberater (Steuerberater, Rechtsanwalt, Gutachter).
-            Die tatsächlich erzielbaren Werte können von den hier dargestellten Prognosen abweichen.
+        </View>
+
+        {/* WEG-Aufteilung */}
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4 }}>WEG-Aufteilung (Wohnungseigentum)</Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify' }}>
+            Die Aufteilung eines Mehrfamilienhauses in Wohnungseigentum nach dem Wohnungseigentumsgesetz (WEG) ermöglicht den Einzelverkauf der Einheiten. Aufgeteilte Einheiten erzielen in der Regel höhere Quadratmeterpreise als anteilige Miteigentumsanteile am Gesamtobjekt. In Milieuschutzgebieten bedarf die Umwandlung einer behördlichen Genehmigung, die versagt werden kann. Der Aufschlag von ca. 15% auf den Gesamtwert ist ein Erfahrungswert, der je nach Markt und Lage variieren kann.
           </Text>
-          <Text style={{ fontSize: 6, color: colors.textMuted, fontStyle: 'italic' }}>
-            * Verkehrswert ist ein geschätzter Wert auf Basis verfügbarer Marktdaten. Ein verbindlicher Wert erfordert ein Sachverständigengutachten.
+        </View>
+
+        {/* AfA und Restnutzungsdauer */}
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4 }}>Absetzung für Abnutzung (AfA) und Restnutzungsdauer</Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify' }}>
+            Die AfA (Absetzung für Abnutzung) ist die steuerliche Abschreibung des Gebäudeanteils einer Immobilie. Bei vermieteten Wohngebäuden beträgt der jährliche AfA-Satz grundsätzlich 2% (bei Gebäuden vor 1925: 2,5%). Die Restnutzungsdauer (RND) beschreibt die verbleibende wirtschaftliche Nutzungsdauer des Gebäudes und wird auf Basis von Baujahr, Gebäudezustand und durchgeführten Modernisierungen ermittelt. Die jährliche AfA mindert die steuerliche Bemessungsgrundlage und führt bei entsprechendem Grenzsteuersatz zu einer Steuerersparnis.
+          </Text>
+        </View>
+
+        {/* Eigenkapitalrendite */}
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4 }}>Eigenkapitalrendite</Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify' }}>
+            Die Eigenkapitalrendite (auch: Return on Equity) setzt den jährlichen Cashflow ins Verhältnis zum eingesetzten Eigenkapital. Sie zeigt die tatsächliche Verzinsung des eigenen Kapitaleinsatzes unter Berücksichtigung des Fremdkapitalhebels. Durch den Einsatz von Fremdkapital kann die Eigenkapitalrendite deutlich über der Objektrendite (Miete/Kaufpreis) liegen, birgt jedoch auch höhere Risiken bei Zinsänderungen oder Leerständen.
+          </Text>
+        </View>
+
+        {/* Haftungsausschluss */}
+        <View style={{ backgroundColor: colors.bgLight, borderRadius: 6, padding: 12, marginTop: 10 }}>
+          <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.primary, marginBottom: 8 }}>
+            Haftungsausschluss
+          </Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify', marginBottom: 6 }}>
+            Die vorliegende Analyse dient ausschließlich der Einschätzung des Optimierungspotenzials für die betrachtete Immobilie und unterscheidet sich insofern von einem formalen Gutachten. Die Analyse ist ausschließlich zur Nutzung durch den Auftraggeber bestimmt. Sie stellt kein Gutachten im Sinne des geltenden deutschen Rechts dar und basiert auf den Angaben des Mandanten, statistischen und öffentlich verfügbaren Marktdaten.
+          </Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify', marginBottom: 6 }}>
+            Für etwaige Abweichungen von tatsächlich erzielten Kauf- und/oder Verkaufspreisen und/oder Mieten wird jedwede Haftung ausgeschlossen. Insgesamt ist die Haftung auf Vorsatz und grobe Fahrlässigkeit beschränkt und auf den Betrag begrenzt, der für die Erstellung dieser Analyse erhoben wird.
+          </Text>
+          <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.6, textAlign: 'justify' }}>
+            Diese Analyse ersetzt keine Rechts-, Steuer- oder Finanzberatung. Vor wichtigen Investitionsentscheidungen empfehlen wir die Konsultation entsprechender Fachberater (Steuerberater, Rechtsanwalt, Sachverständiger für Immobilienbewertung).
           </Text>
         </View>
 
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerText}>Seite 4 von 4</Text>
+          <Text style={styles.footerText}>Seite 5 von 5</Text>
         </View>
       </Page>
     </Document>
