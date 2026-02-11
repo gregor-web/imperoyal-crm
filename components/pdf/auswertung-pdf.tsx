@@ -20,8 +20,8 @@ import type { Berechnungen } from '@/lib/types';
 const ProgressBar = ({
   value,
   max = 100,
-  color = '#3b82f6',
-  bgColor = '#e2e8f0',
+  color = '#5f7c99', // Growth Blue
+  bgColor = '#c8d6e5', // Blue Bone border
   height = 8,
   showLabel = true,
 }: {
@@ -50,7 +50,7 @@ const ProgressBar = ({
         }} />
       </View>
       {showLabel && (
-        <Text style={{ fontSize: 8, color: '#64748b', width: 30, textAlign: 'right' }}>
+        <Text style={{ fontSize: 8, color: '#5f7c99', width: 30, textAlign: 'right' }}>
           {percentage.toFixed(0)}%
         </Text>
       )}
@@ -63,7 +63,7 @@ const ComparisonBar = ({
   ist,
   soll,
   label,
-  colorIst = '#94a3b8',
+  colorIst = '#8aa0b8', // Blue Bone lighter
   colorSoll = '#22c55e',
 }: {
   ist: number;
@@ -77,17 +77,17 @@ const ComparisonBar = ({
   const sollWidth = max > 0 ? (soll / max) * 100 : 0;
   return (
     <View style={{ marginBottom: 8 }}>
-      <Text style={{ fontSize: 7, color: '#64748b', marginBottom: 3 }}>{label}</Text>
+      <Text style={{ fontSize: 7, color: '#5f7c99', marginBottom: 3 }}>{label}</Text>
       <View style={{ gap: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Text style={{ fontSize: 6, color: '#94a3b8', width: 20 }}>IST</Text>
-          <View style={{ flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3 }}>
+          <Text style={{ fontSize: 6, color: '#8aa0b8', width: 20 }}>IST</Text>
+          <View style={{ flex: 1, height: 6, backgroundColor: '#e8f0f5', borderRadius: 3 }}>
             <View style={{ width: `${istWidth}%`, height: '100%', backgroundColor: colorIst, borderRadius: 3 }} />
           </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text style={{ fontSize: 6, color: '#22c55e', width: 20 }}>SOLL</Text>
-          <View style={{ flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3 }}>
+          <View style={{ flex: 1, height: 6, backgroundColor: '#e8f0f5', borderRadius: 3 }}>
             <View style={{ width: `${sollWidth}%`, height: '100%', backgroundColor: colorSoll, borderRadius: 3 }} />
           </View>
         </View>
@@ -132,7 +132,7 @@ const TrendArrow = ({
   showValue?: boolean;
 }) => {
   const direction = value > 0.5 ? 'up' : value < -0.5 ? 'down' : 'stable';
-  const arrowColor = direction === 'up' ? '#22c55e' : direction === 'down' ? '#ef4444' : '#94a3b8';
+  const arrowColor = direction === 'up' ? '#22c55e' : direction === 'down' ? '#ef4444' : '#8aa0b8';
   const symbol = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '●';
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
@@ -147,27 +147,36 @@ const TrendArrow = ({
 };
 
 // Color constants
+// Imperoyal Brand Colors
 const colors = {
-  primary: '#1e3a5f',
-  primaryLight: '#3b82f6',
-  text: '#1e293b',
-  textMuted: '#64748b',
-  textLight: '#94a3b8',
+  // Brand Primary - Royal Navy
+  primary: '#1a2744',
+  // Brand Secondary - Growth Blue
+  primaryLight: '#5f7c99',
+  // Brand Tertiary - Blue Bone
+  blueBone: '#a8bdd0',
+  // Text colors
+  text: '#1a2744',
+  textMuted: '#5f7c99',
+  textLight: '#8aa0b8',
+  // Status colors (kept for positive/negative indicators)
   success: '#16a34a',
   successBg: '#dcfce7',
   danger: '#dc2626',
   dangerBg: '#fee2e2',
-  warning: '#eab308',
+  warning: '#d4a017',
   warningBg: '#fef9c3',
-  purple: '#7c3aed',
-  purpleBg: '#f3e8ff',
-  border: '#e2e8f0',
-  borderLight: '#f1f5f9',
-  bgLight: '#f8fafc',
-  bgBlue: '#eff6ff',
+  // Accent - use Growth Blue tones
+  purple: '#4a6a8a',
+  purpleBg: '#e8f0f5',
+  // Borders and backgrounds - Blue Bone tones
+  border: '#c8d6e5',
+  borderLight: '#e8f0f5',
+  bgLight: '#f5f8fa',
+  bgBlue: '#e8f0f5',
   bgGreen: '#f0fdf4',
-  bgYellow: '#fffbeb',
-  bgPurple: '#faf5ff',
+  bgYellow: '#fef9eb',
+  bgPurple: '#e8f0f5',
 };
 
 // Styles
@@ -680,7 +689,7 @@ export function AuswertungPDF({
           <View style={styles.headerLeft}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {logoUrl ? (
-                <Image src={logoUrl} style={{ width: 180, height: 45, objectFit: 'contain' }} />
+                <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
               ) : (
                 <Text style={styles.mainTitle}>Imperoyal Immobilien - Optimierungsprotokoll</Text>
               )}
@@ -784,10 +793,10 @@ export function AuswertungPDF({
             borderColor: '#e9d5ff',
           }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-              <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#7c3aed' }}>
+              <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#4a6a8a' }}>
                 Aktuelle Marktdaten
               </Text>
-              <Text style={{ fontSize: 7, color: '#a78bfa', marginLeft: 'auto' }}>
+              <Text style={{ fontSize: 7, color: '#5f7c99', marginLeft: 'auto' }}>
                 Standort: {berechnungen.marktdaten.standort}
               </Text>
             </View>
@@ -795,20 +804,20 @@ export function AuswertungPDF({
               {/* Spalte 1: Mieten & Faktoren */}
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#64748b' }}>Vergleichsmiete Wohnen</Text>
-                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1e293b' }}>
+                  <Text style={{ fontSize: 7, color: '#5f7c99' }}>Vergleichsmiete Wohnen</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.vergleichsmiete_wohnen.wert} €/m²
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#64748b' }}>Vergleichsmiete Gewerbe</Text>
-                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1e293b' }}>
+                  <Text style={{ fontSize: 7, color: '#5f7c99' }}>Vergleichsmiete Gewerbe</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.vergleichsmiete_gewerbe.wert} €/m²
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#64748b' }}>Kaufpreisfaktor Region</Text>
-                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1e293b' }}>
+                  <Text style={{ fontSize: 7, color: '#5f7c99' }}>Kaufpreisfaktor Region</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.kaufpreisfaktor_region.wert}x
                   </Text>
                 </View>
@@ -816,7 +825,7 @@ export function AuswertungPDF({
               {/* Spalte 2: Rechtliches */}
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#64748b' }}>Kappungsgrenze</Text>
+                  <Text style={{ fontSize: 7, color: '#5f7c99' }}>Kappungsgrenze</Text>
                   <Text style={{
                     fontSize: 7,
                     fontWeight: 'bold',
@@ -826,7 +835,7 @@ export function AuswertungPDF({
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#64748b' }}>Milieuschutz</Text>
+                  <Text style={{ fontSize: 7, color: '#5f7c99' }}>Milieuschutz</Text>
                   <Text style={{
                     fontSize: 7,
                     fontWeight: 'bold',
@@ -836,30 +845,30 @@ export function AuswertungPDF({
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#64748b' }}>Akt. Bauzinsen</Text>
-                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1e293b' }}>
+                  <Text style={{ fontSize: 7, color: '#5f7c99' }}>Akt. Bauzinsen</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.aktuelle_bauzinsen.wert}% ({berechnungen.marktdaten.aktuelle_bauzinsen.zinsbindung})
                   </Text>
                 </View>
               </View>
               {/* Spalte 3: Prognose */}
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 6, color: '#7c3aed', fontWeight: 'bold', marginBottom: 2 }}>Preisprognose p.a.</Text>
+                <Text style={{ fontSize: 6, color: '#4a6a8a', fontWeight: 'bold', marginBottom: 2 }}>Preisprognose p.a.</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <Text style={{ fontSize: 7, color: '#64748b' }}>0-3 Jahre</Text>
+                  <Text style={{ fontSize: 7, color: '#5f7c99' }}>0-3 Jahre</Text>
                   <TrendArrow value={berechnungen.marktdaten.preisprognose.kurz_0_3_jahre} />
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <Text style={{ fontSize: 7, color: '#64748b' }}>3-7 Jahre</Text>
+                  <Text style={{ fontSize: 7, color: '#5f7c99' }}>3-7 Jahre</Text>
                   <TrendArrow value={berechnungen.marktdaten.preisprognose.mittel_3_7_jahre} />
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 7, color: '#64748b' }}>7+ Jahre</Text>
+                  <Text style={{ fontSize: 7, color: '#5f7c99' }}>7+ Jahre</Text>
                   <TrendArrow value={berechnungen.marktdaten.preisprognose.lang_7_plus_jahre} />
                 </View>
               </View>
             </View>
-            <Text style={{ fontSize: 6, color: '#a78bfa', fontStyle: 'italic', marginTop: 6 }}>
+            <Text style={{ fontSize: 6, color: '#5f7c99', fontStyle: 'italic', marginTop: 6 }}>
               Quelle: Perplexity AI Marktanalyse, Abfrage vom {new Date(berechnungen.marktdaten.abfrage_datum).toLocaleDateString('de-DE')}
             </Text>
           </View>
@@ -1009,7 +1018,7 @@ export function AuswertungPDF({
               {/* Visuelle Kostenbalken */}
               <View style={{ marginBottom: 8 }}>
                 {[
-                  { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: '#3b82f6' },
+                  { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: '#5f7c99' },
                   { label: 'Verwaltung', value: kosten?.verwaltung || 0, color: '#8b5cf6' },
                   { label: 'Nicht umlf. BK', value: kosten?.betriebskosten_nicht_umlage || 0, color: '#f59e0b' },
                   { label: 'Rücklagen', value: kosten?.ruecklagen || 0, color: '#10b981' },
@@ -1082,9 +1091,9 @@ export function AuswertungPDF({
       {/* ==================== PAGE 2 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Mini Header with Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 6 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 6 }}>
           {logoUrl && (
-            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+            <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
           )}
         </View>
         {/* Section 5: Mieterhöhungspotenzial Table */}
@@ -1388,9 +1397,9 @@ export function AuswertungPDF({
       {/* ==================== PAGE 3 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Mini Header with Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 6 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 6 }}>
           {logoUrl && (
-            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+            <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
           )}
         </View>
         {/* Section 10 & 11 */}
@@ -1453,7 +1462,7 @@ export function AuswertungPDF({
               {/* Visuelle ROI-Balken */}
               <View style={{ marginBottom: 10 }}>
                 {[
-                  { label: 'Brutto-Rendite IST', value: rendite?.rendite_ist || 0, color: '#94a3b8' },
+                  { label: 'Brutto-Rendite IST', value: rendite?.rendite_ist || 0, color: '#8aa0b8' },
                   { label: 'Brutto-Rendite OPT', value: rendite?.rendite_opt || 0, color: colors.success },
                   { label: 'Nach AfA (eff.)', value: rendite_nach_steuer, color: colors.purple },
                   { label: 'EK-Rendite IST', value: rendite?.eigenkapitalrendite_ist || 0, color: colors.primaryLight },
@@ -1547,15 +1556,15 @@ export function AuswertungPDF({
                       const increment = prevPoint ? point.value - prevPoint.value : 0;
                       return (
                         <View key={i} style={{ alignItems: 'center', flex: 1 }}>
-                          <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.primary }}>
-                            {formatCurrencyShort(point.value)}
+                          <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary }}>
+                            {formatCurrency(point.value)}
                           </Text>
                           {i > 0 && increment > 0 && (
-                            <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.success }}>
-                              +{formatCurrencyShort(increment)}
+                            <Text style={{ fontSize: 6, fontWeight: 'bold', color: colors.success }}>
+                              +{formatCurrency(increment)}
                             </Text>
                           )}
-                          <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 2 }}>
+                          <Text style={{ fontSize: 6, color: colors.textMuted, marginTop: 2 }}>
                             {point.label}
                           </Text>
                         </View>
@@ -1657,9 +1666,9 @@ export function AuswertungPDF({
       {/* ==================== PAGE 4 ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Mini Header with Logo */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 6 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 6 }}>
           {logoUrl && (
-            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+            <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
           )}
         </View>
         {/* Zusammenfassung: Wertsteigernde Maßnahmen */}
@@ -1814,14 +1823,16 @@ export function AuswertungPDF({
 
       {/* ==================== PAGE 5: Ergänzende Erläuterungen ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Header mit Logo rechts */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+        {/* Header mit Logo links */}
+        <View style={{ marginBottom: 12, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 6 }}>
+            {logoUrl && (
+              <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
+            )}
+          </View>
           <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary }}>
             Ergänzende Erläuterungen
           </Text>
-          {logoUrl && (
-            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
-          )}
         </View>
 
         {/* Verkehrswert */}
