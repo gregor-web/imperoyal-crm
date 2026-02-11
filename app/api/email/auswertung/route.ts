@@ -189,6 +189,7 @@ export async function POST(request: Request) {
     }
 
     // Send to Make.com webhook with PDF attachment
+    // Structure matches welcome email: actionId, type, to_email, to_name, subject, data
     const webhookPayload = {
       actionId: 2, // Auswertungs-Mail
       type: 'auswertung',
@@ -203,12 +204,10 @@ export async function POST(request: Request) {
         empfehlung_begruendung: auswertung.empfehlung_begruendung,
         pdf_url: pdfUrl,
         view_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auswertungen/${auswertung_id}`,
-      },
-      // PDF attachment for Make.com
-      attachment: {
-        filename: attachmentFilename,
-        content: pdfBase64,
-        contentType: 'application/pdf',
+        // PDF attachment data
+        attachment_filename: attachmentFilename,
+        attachment_content: pdfBase64,
+        attachment_content_type: 'application/pdf',
       },
     };
 
