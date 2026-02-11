@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   headerLeft: {},
   headerRight: {
@@ -218,12 +218,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.bgLight,
     borderRadius: 6,
-    marginBottom: 10,
+    marginBottom: 8,
     overflow: 'hidden',
   },
   metricItem: {
     flex: 1,
-    padding: 10,
+    padding: 8,
     alignItems: 'center',
     borderRightWidth: 1,
     borderRightColor: colors.border,
@@ -264,8 +264,8 @@ const styles = StyleSheet.create({
   // Sections
   sectionRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 8,
+    gap: 6,
+    marginBottom: 6,
   },
   sectionBox: {
     flex: 1,
@@ -279,8 +279,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.bgBlue,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
   },
   sectionNumber: {
     width: 18,
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     fontSize: 7,
   },
   sectionContent: {
-    padding: 8,
+    padding: 6,
   },
   row: {
     flexDirection: 'row',
@@ -702,7 +702,7 @@ export function AuswertungPDF({
           backgroundColor: '#f8fafc',
           borderRadius: 6,
           padding: 10 * sm.paddingMultiplier,
-          marginBottom: 10 * sm.spacingMultiplier,
+          marginBottom: 8 * sm.spacingMultiplier,
           borderLeftWidth: 3,
           borderLeftColor: colors.primary,
         }}>
@@ -756,7 +756,7 @@ export function AuswertungPDF({
           backgroundColor: colors.bgPurple,
           borderRadius: 4,
           padding: 8 * sm.paddingMultiplier,
-          marginBottom: 10 * sm.spacingMultiplier,
+          marginBottom: 8 * sm.spacingMultiplier,
           alignItems: 'center',
         }}>
           <View style={{ flex: 1 }}>
@@ -1482,7 +1482,7 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 12: Exit-Szenarien - SVG Linien-Chart */}
-        <View style={[styles.sectionBox, { marginBottom: 10 }]}>
+        <View style={[styles.sectionBox, { marginBottom: 6 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
@@ -1720,7 +1720,7 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 13: Handlungsempfehlung */}
-        <View style={[styles.sectionBox, { marginBottom: 10 }]}>
+        <View style={[styles.sectionBox, { marginBottom: 6 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>13</Text>
             <Text style={styles.sectionTitle}>Handlungsempfehlung</Text>
