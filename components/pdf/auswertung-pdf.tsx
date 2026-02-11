@@ -897,7 +897,7 @@ export function AuswertungPDF({
               </View>
             </View>
             <Text style={{ fontSize: 6, color: '#2a4a6a', fontStyle: 'italic', marginTop: 6 }}>
-              Quelle: Perplexity AI Marktanalyse, Abfrage vom {new Date(berechnungen.marktdaten.abfrage_datum).toLocaleDateString('de-DE')}
+              Quelle: Aktuelle Marktanalyse, Stand: {new Date(berechnungen.marktdaten.abfrage_datum).toLocaleDateString('de-DE')}
             </Text>
           </View>
         )}

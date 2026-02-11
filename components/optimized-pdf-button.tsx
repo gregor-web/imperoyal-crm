@@ -20,7 +20,7 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
     console.log('[OptimizedPDF] Starting export for:', auswertungId);
 
     try {
-      setStatus('Generiere PDF & analysiere mit KI...');
+      setStatus('Generiere optimiertes PDF...');
       console.log('[OptimizedPDF] Sending request...');
 
       // Use AbortController for timeout handling
@@ -124,7 +124,7 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
         ) : (
           <Sparkles className="w-4 h-4 mr-2" />
         )}
-        {loading ? 'KI optimiert...' : 'KI-Optimiertes PDF'}
+        {loading ? 'Optimiere...' : 'Optimiertes PDF'}
       </Button>
       {status && (
         <p className="text-green-600 text-sm mt-2">{status}</p>
