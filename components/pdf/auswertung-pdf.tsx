@@ -1534,7 +1534,14 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 12: Exit-Szenarien - SVG Linien-Chart */}
-        <View style={[styles.sectionBox, { flexGrow: 0, flexShrink: 0, marginBottom: 2 }]}>
+        <View style={{
+          backgroundColor: colors.glassWhite,
+          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: colors.glassBorder,
+          overflow: 'hidden',
+          marginBottom: 2,
+        }}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
             <Text style={styles.sectionTitle}>Exit-Szenarien</Text>
