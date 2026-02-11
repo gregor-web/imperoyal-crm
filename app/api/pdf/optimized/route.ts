@@ -185,8 +185,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create a clean filename from address and date
-    const cleanAddress = objekt.strasse
+    // Create a clean filename: auswertung_datum_Name
+    const cleanName = (mandant.name || 'Unbekannt')
       .replace(/[äÄ]/g, 'ae')
       .replace(/[öÖ]/g, 'oe')
       .replace(/[üÜ]/g, 'ue')
@@ -195,7 +195,7 @@ export async function POST(request: Request) {
       .replace(/_+/g, '_')
       .replace(/^_|_$/g, '');
     const dateStr = new Date(auswertung.created_at).toISOString().split('T')[0];
-    const filename = `Auswertung_${cleanAddress}_${dateStr}_optimized.pdf`;
+    const filename = `auswertung_${dateStr}_${cleanName}.pdf`;
 
     console.log('[PDF-OPTIMIZER] Sende Response mit', pdfBuffer.length, 'bytes');
 
