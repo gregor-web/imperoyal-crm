@@ -20,7 +20,7 @@ import type { Berechnungen } from '@/lib/types';
 const ProgressBar = ({
   value,
   max = 100,
-  color = '#627d9b', // Growth Blue
+  color = '#2a4a6a', // Growth Blue
   bgColor = '#c8d6e5', // Blue Bone border
   height = 8,
   showLabel = true,
@@ -50,7 +50,7 @@ const ProgressBar = ({
         }} />
       </View>
       {showLabel && (
-        <Text style={{ fontSize: 8, color: '#627d9b', width: 30, textAlign: 'right' }}>
+        <Text style={{ fontSize: 8, color: '#2a4a6a', width: 30, textAlign: 'right' }}>
           {percentage.toFixed(0)}%
         </Text>
       )}
@@ -77,7 +77,7 @@ const ComparisonBar = ({
   const sollWidth = max > 0 ? (soll / max) * 100 : 0;
   return (
     <View style={{ marginBottom: 8 }}>
-      <Text style={{ fontSize: 7, color: '#627d9b', marginBottom: 3 }}>{label}</Text>
+      <Text style={{ fontSize: 7, color: '#2a4a6a', marginBottom: 3 }}>{label}</Text>
       <View style={{ gap: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text style={{ fontSize: 6, color: '#9eb3c8', width: 20 }}>IST</Text>
@@ -823,7 +823,7 @@ export function AuswertungPDF({
               <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#1a2744' }}>
                 Aktuelle Marktdaten
               </Text>
-              <Text style={{ fontSize: 7, color: '#627d9b', marginLeft: 'auto' }}>
+              <Text style={{ fontSize: 7, color: '#2a4a6a', marginLeft: 'auto' }}>
                 Standort: {berechnungen.marktdaten.standort}
               </Text>
             </View>
@@ -831,19 +831,19 @@ export function AuswertungPDF({
               {/* Spalte 1: Mieten & Faktoren */}
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#627d9b' }}>Vergleichsmiete Wohnen</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Vergleichsmiete Wohnen</Text>
                   <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.vergleichsmiete_wohnen.wert} €/m²
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#627d9b' }}>Vergleichsmiete Gewerbe</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Vergleichsmiete Gewerbe</Text>
                   <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.vergleichsmiete_gewerbe.wert} €/m²
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#627d9b' }}>Kaufpreisfaktor Region</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Kaufpreisfaktor Region</Text>
                   <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.kaufpreisfaktor_region.wert}x
                   </Text>
@@ -852,7 +852,7 @@ export function AuswertungPDF({
               {/* Spalte 2: Rechtliches */}
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#627d9b' }}>Kappungsgrenze</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Kappungsgrenze</Text>
                   <Text style={{
                     fontSize: 7,
                     fontWeight: 'bold',
@@ -862,7 +862,7 @@ export function AuswertungPDF({
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#627d9b' }}>Milieuschutz</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Milieuschutz</Text>
                   <Text style={{
                     fontSize: 7,
                     fontWeight: 'bold',
@@ -872,7 +872,7 @@ export function AuswertungPDF({
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <Text style={{ fontSize: 7, color: '#627d9b' }}>Akt. Bauzinsen</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>Akt. Bauzinsen</Text>
                   <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#1a2744' }}>
                     {berechnungen.marktdaten.aktuelle_bauzinsen.wert}% ({berechnungen.marktdaten.aktuelle_bauzinsen.zinsbindung})
                   </Text>
@@ -882,20 +882,20 @@ export function AuswertungPDF({
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 6, color: '#1a2744', fontWeight: 'bold', marginBottom: 2 }}>Preisprognose p.a.</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <Text style={{ fontSize: 7, color: '#627d9b' }}>0-3 Jahre</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>0-3 Jahre</Text>
                   <TrendArrow value={berechnungen.marktdaten.preisprognose.kurz_0_3_jahre} />
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                  <Text style={{ fontSize: 7, color: '#627d9b' }}>3-7 Jahre</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>3-7 Jahre</Text>
                   <TrendArrow value={berechnungen.marktdaten.preisprognose.mittel_3_7_jahre} />
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 7, color: '#627d9b' }}>7+ Jahre</Text>
+                  <Text style={{ fontSize: 7, color: '#2a4a6a' }}>7+ Jahre</Text>
                   <TrendArrow value={berechnungen.marktdaten.preisprognose.lang_7_plus_jahre} />
                 </View>
               </View>
             </View>
-            <Text style={{ fontSize: 6, color: '#627d9b', fontStyle: 'italic', marginTop: 6 }}>
+            <Text style={{ fontSize: 6, color: '#2a4a6a', fontStyle: 'italic', marginTop: 6 }}>
               Quelle: Perplexity AI Marktanalyse, Abfrage vom {new Date(berechnungen.marktdaten.abfrage_datum).toLocaleDateString('de-DE')}
             </Text>
           </View>
@@ -1045,7 +1045,7 @@ export function AuswertungPDF({
               {/* Visuelle Kostenbalken */}
               <View style={{ marginBottom: 8 }}>
                 {[
-                  { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: '#627d9b' },
+                  { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: '#2a4a6a' },
                   { label: 'Verwaltung', value: kosten?.verwaltung || 0, color: '#8b5cf6' },
                   { label: 'Nicht umlf. BK', value: kosten?.betriebskosten_nicht_umlage || 0, color: '#f59e0b' },
                   { label: 'Rücklagen', value: kosten?.ruecklagen || 0, color: '#10b981' },
