@@ -95,7 +95,16 @@ export const einheitSchema = z.object({
   kaltmiete: z.coerce.number().min(0).optional().nullable(),
   vergleichsmiete: z.coerce.number().min(0).default(12),
   mietvertragsart: z.enum(['Standard', 'Index', 'Staffel']).default('Standard'),
+  vertragsbeginn: z.string().optional().nullable(),
   letzte_mieterhoehung: z.string().optional().nullable(),
+  hoehe_mieterhoehung: z.coerce.number().min(0).optional().nullable(),
+  // §558 BGB Felder
+  datum_558: z.string().optional().nullable(),
+  hoehe_558: z.coerce.number().min(0).optional().nullable(),
+  // §559 BGB Felder
+  datum_559: z.string().optional().nullable(),
+  art_modernisierung_559: z.string().optional().nullable(),
+  hoehe_559: z.coerce.number().min(0).optional().nullable(),
 });
 
 export type EinheitInput = z.infer<typeof einheitSchema>;
@@ -109,12 +118,33 @@ export const einheitenArraySchema = z.array(einheitSchema);
 export const ankaufsprofilSchema = z.object({
   mandant_id: z.string().uuid().optional(),
   name: z.string().min(1, 'Name ist erforderlich'),
+  // 2.1 Allgemeine Ankaufsparameter
+  kaufinteresse_aktiv: z.boolean().default(true),
+  assetklassen: z.array(z.string()).default([]),
+  // 2.2 Standortprofil
+  regionen: z.string().optional(),
+  lagepraeferenz: z.array(z.string()).default([]),
+  // 2.3 Finanzielle Ankaufsparameter
   min_volumen: z.coerce.number().min(0).optional().nullable(),
   max_volumen: z.coerce.number().min(0).optional().nullable(),
-  assetklassen: z.array(z.string()).default([]),
-  regionen: z.string().optional(),
-  rendite_min: z.coerce.number().min(0).max(100).optional().nullable(),
-  sonstiges: z.string().optional(),
+  kaufpreisfaktor: z.coerce.number().min(0).optional().nullable(),
+  rendite_min: z.coerce.number().min(0).max(100).optional().nullable(), // Zielrendite IST
+  rendite_soll: z.coerce.number().min(0).max(100).optional().nullable(), // Zielrendite SOLL
+  finanzierungsform: z.string().optional(),
+  // 2.3 Objektspezifische Kriterien
+  zustand: z.array(z.string()).default([]),
+  baujahr_von: z.coerce.number().int().min(1800).max(2100).optional().nullable(),
+  baujahr_bis: z.coerce.number().int().min(1800).max(2100).optional().nullable(),
+  min_wohnflaeche: z.coerce.number().min(0).optional().nullable(),
+  min_gewerbeflaeche: z.coerce.number().min(0).optional().nullable(),
+  min_wohneinheiten: z.coerce.number().int().min(0).optional().nullable(),
+  min_gewerbeeinheiten: z.coerce.number().int().min(0).optional().nullable(),
+  min_grundstueck: z.coerce.number().min(0).optional().nullable(),
+  // 2.4 Zusätzliche Angaben
+  ausgeschlossene_partner: z.boolean().default(false),
+  ausgeschlossene_partner_liste: z.string().optional(),
+  sonstiges: z.string().optional(), // Besondere Bedingungen / Präferenzen
+  weitere_projektarten: z.string().optional(),
 });
 
 export type AnkaufsprofilInput = z.infer<typeof ankaufsprofilSchema>;

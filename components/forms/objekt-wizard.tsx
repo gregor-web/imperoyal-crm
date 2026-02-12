@@ -1,16 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { objektSchema, type ObjektInput } from '@/lib/validators';
 import { Input, Select, Button } from '@/components/ui';
 import { OPTIONS } from '@/lib/types';
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+
+// Einheiten-Daten Typ
+interface EinheitData {
+  position: number;
+  nutzung: 'Wohnen' | 'Gewerbe' | 'Stellplatz';
+  flaeche: number | null;
+  kaltmiete: number | null;
+  vergleichsmiete: number;
+  mietvertragsart: 'Standard' | 'Index' | 'Staffel';
+  vertragsbeginn: string | null;
+  letzte_mieterhoehung: string | null;
+  hoehe_mieterhoehung: number | null;
+  datum_558: string | null;
+  hoehe_558: number | null;
+  datum_559: string | null;
+  art_modernisierung_559: string | null;
+  hoehe_559: number | null;
+}
 
 interface ObjektWizardProps {
   defaultValues?: Partial<ObjektInput>;
-  onSubmit: (data: ObjektInput) => Promise<void>;
+  onSubmit: (data: ObjektInput, einheiten: EinheitData[]) => Promise<void>;
   onCancel?: () => void;
   isLoading?: boolean;
   mandantId?: string;
@@ -25,10 +43,14 @@ const STEPS = [
   { id: 6, title: 'Investitionen', description: 'CAPEX & Modernisierung' },
   { id: 7, title: 'Rechtliches', description: 'WEG, Milieuschutz & mehr' },
   { id: 8, title: 'Strategie', description: 'Ziele & Haltedauer' },
+  { id: 9, title: 'Einheiten', description: 'Details pro Einheit' },
 ];
 
 export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, mandantId }: ObjektWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [einheiten, setEinheiten] = useState<EinheitData[]>([]);
+  const [expandedUnits, setExpandedUnits] = useState<Set<number>>(new Set());
+  const [stellplaetze, setStellplaetze] = useState(0);
 
   const {
     register,
@@ -36,6 +58,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
     formState: { errors },
     trigger,
     watch,
+    getValues,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<ObjektInput>({
     resolver: zodResolver(objektSchema) as any,
@@ -44,6 +67,8 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
       zinssatz: 3.8,
       tilgung: 2,
       eigenkapital_prozent: 30,
+      wohneinheiten: 0,
+      gewerbeeinheiten: 0,
       denkmalschutz: false,
       aufzug: false,
       weg_aufgeteilt: false,
@@ -62,6 +87,100 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
     { value: 'true', label: 'Ja' },
     { value: 'false', label: 'Nein' },
   ];
+
+  // Watch einheiten counts
+  const wohneinheiten = watch('wohneinheiten') || 0;
+  const gewerbeeinheiten = watch('gewerbeeinheiten') || 0;
+
+  // Generiere Einheiten basierend auf Anzahlen wenn zu Step 9 gewechselt wird
+  useEffect(() => {
+    if (currentStep === 9) {
+      generateEinheiten();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep]);
+
+  const generateEinheiten = () => {
+    const wohn = Number(getValues('wohneinheiten')) || 0;
+    const gewerbe = Number(getValues('gewerbeeinheiten')) || 0;
+    const stell = stellplaetze || 0;
+    const total = wohn + gewerbe + stell;
+
+    // Nur neu generieren wenn Anzahl nicht übereinstimmt
+    const currentWohn = einheiten.filter(e => e.nutzung === 'Wohnen').length;
+    const currentGewerbe = einheiten.filter(e => e.nutzung === 'Gewerbe').length;
+    const currentStell = einheiten.filter(e => e.nutzung === 'Stellplatz').length;
+
+    if (currentWohn === wohn && currentGewerbe === gewerbe && currentStell === stell) {
+      return; // Keine Änderung nötig
+    }
+
+    const newEinheiten: EinheitData[] = [];
+    let position = 1;
+
+    // Wohneinheiten
+    for (let i = 0; i < wohn; i++) {
+      const existing = einheiten.find(e => e.nutzung === 'Wohnen' && e.position === position);
+      newEinheiten.push(existing || createEmptyEinheit(position, 'Wohnen'));
+      position++;
+    }
+
+    // Gewerbeeinheiten
+    for (let i = 0; i < gewerbe; i++) {
+      const existing = einheiten.find(e => e.nutzung === 'Gewerbe' && e.position === position);
+      newEinheiten.push(existing || createEmptyEinheit(position, 'Gewerbe'));
+      position++;
+    }
+
+    // Stellplätze
+    for (let i = 0; i < stell; i++) {
+      const existing = einheiten.find(e => e.nutzung === 'Stellplatz' && e.position === position);
+      newEinheiten.push(existing || createEmptyEinheit(position, 'Stellplatz'));
+      position++;
+    }
+
+    setEinheiten(newEinheiten);
+  };
+
+  const createEmptyEinheit = (position: number, nutzung: 'Wohnen' | 'Gewerbe' | 'Stellplatz'): EinheitData => ({
+    position,
+    nutzung,
+    flaeche: null,
+    kaltmiete: null,
+    vergleichsmiete: nutzung === 'Gewerbe' ? 20 : nutzung === 'Stellplatz' ? 0 : 12,
+    mietvertragsart: 'Standard',
+    vertragsbeginn: null,
+    letzte_mieterhoehung: null,
+    hoehe_mieterhoehung: null,
+    datum_558: null,
+    hoehe_558: null,
+    datum_559: null,
+    art_modernisierung_559: null,
+    hoehe_559: null,
+  });
+
+  const updateEinheit = (index: number, field: keyof EinheitData, value: string | number | null) => {
+    setEinheiten(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const toggleExpanded = (index: number) => {
+    setExpandedUnits(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
+  };
+
+  const expandAll = () => setExpandedUnits(new Set(einheiten.map((_, i) => i)));
+  const collapseAll = () => setExpandedUnits(new Set());
 
   // Validate current step before moving forward
   const validateStep = async (step: number): Promise<boolean> => {
@@ -96,6 +215,11 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
     }
   };
 
+  // Final submit
+  const onFormSubmit = (data: ObjektInput) => {
+    onSubmit(data, einheiten);
+  };
+
   // Watch some values for display
   const strasse = watch('strasse');
   const plz = watch('plz');
@@ -106,14 +230,14 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
       {/* Progress Header */}
       <div className="mb-8">
         {/* Step Indicators */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 overflow-x-auto pb-2">
           {STEPS.map((step, index) => (
-            <div key={step.id} className="flex items-center">
+            <div key={step.id} className="flex items-center flex-shrink-0">
               <button
                 type="button"
                 onClick={() => goToStep(step.id)}
                 className={`
-                  w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all
+                  w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm transition-all
                   ${currentStep === step.id
                     ? 'bg-blue-600 text-white shadow-lg scale-110'
                     : currentStep > step.id
@@ -122,14 +246,13 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                   }
                 `}
               >
-                {currentStep > step.id ? <Check className="w-5 h-5" /> : step.id}
+                {currentStep > step.id ? <Check className="w-4 h-4" /> : step.id}
               </button>
               {index < STEPS.length - 1 && (
                 <div
-                  className={`w-full h-1 mx-2 rounded ${
+                  className={`w-4 sm:w-8 h-1 mx-1 rounded ${
                     currentStep > step.id ? 'bg-green-500' : 'bg-slate-200'
                   }`}
-                  style={{ minWidth: '20px', maxWidth: '60px' }}
                 />
               )}
             </div>
@@ -147,7 +270,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
       </div>
 
       {/* Form Content */}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col">
+      <form onSubmit={handleSubmit(onFormSubmit)} className="flex-1 flex flex-col">
         <div className="flex-1">
           {/* Step 1: Adresse */}
           {currentStep === 1 && (
@@ -198,36 +321,55 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                 placeholder="Falls saniert..."
                 {...register('kernsanierung_jahr')}
               />
+
+              {/* Einheiten-Anzahlen - Wichtig für Step 9 */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="text-sm font-semibold text-blue-800 mb-3">Anzahl Einheiten (bestimmt Felder in Step 9)</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <Input
+                    label="Wohneinheiten"
+                    type="number"
+                    placeholder="0"
+                    {...register('wohneinheiten')}
+                  />
+                  <Input
+                    label="Gewerbeeinheiten"
+                    type="number"
+                    placeholder="0"
+                    {...register('gewerbeeinheiten')}
+                  />
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Stellplätze</label>
+                    <input
+                      type="number"
+                      value={stellplaetze}
+                      onChange={(e) => setStellplaetze(Number(e.target.value) || 0)}
+                      placeholder="0"
+                      className="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-blue-600 mt-2">
+                  Basierend auf diesen Angaben werden im letzten Schritt automatisch {Number(wohneinheiten) + Number(gewerbeeinheiten) + stellplaetze} Einheit(en) zum Ausfüllen generiert.
+                </p>
+              </div>
+
               <div className="grid grid-cols-3 gap-4">
-                <Input
-                  label="Wohneinheiten"
-                  type="number"
-                  placeholder="0"
-                  {...register('wohneinheiten')}
-                />
-                <Input
-                  label="Gewerbeeinheiten"
-                  type="number"
-                  placeholder="0"
-                  {...register('gewerbeeinheiten')}
-                />
                 <Input
                   label="Geschosse"
                   type="number"
                   placeholder="z.B. 5"
                   {...register('geschosse')}
                 />
-              </div>
-              <div className="grid grid-cols-3 gap-4">
                 <Select label="Denkmalschutz" options={booleanOptions} {...register('denkmalschutz')} />
                 <Select label="Aufzug" options={booleanOptions} {...register('aufzug')} />
-                <Select
-                  label="Heizungsart"
-                  options={OPTIONS.heizungsart}
-                  {...register('heizungsart')}
-                  placeholder="Auswählen..."
-                />
               </div>
+              <Select
+                label="Heizungsart"
+                options={OPTIONS.heizungsart}
+                {...register('heizungsart')}
+                placeholder="Auswählen..."
+              />
             </div>
           )}
 
@@ -425,6 +567,228 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                 placeholder="z.B. Bis 200.000€ für Wertsteigerung"
                 {...register('investitionsbereitschaft')}
               />
+            </div>
+          )}
+
+          {/* Step 9: Einheiten */}
+          {currentStep === 9 && (
+            <div className="space-y-4">
+              {einheiten.length === 0 ? (
+                <div className="text-center py-8 bg-slate-50 rounded-lg">
+                  <p className="text-slate-500">
+                    Keine Einheiten definiert. Bitte gehen Sie zurück zu Schritt 2 und geben Sie die Anzahl der Einheiten ein.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Header mit Buttons */}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-slate-800">
+                      {einheiten.length} Einheit(en)
+                    </h3>
+                    <div className="flex gap-2">
+                      <Button type="button" variant="secondary" size="sm" onClick={expandAll}>
+                        Alle öffnen
+                      </Button>
+                      <Button type="button" variant="secondary" size="sm" onClick={collapseAll}>
+                        Alle schließen
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Einheiten-Liste */}
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                    {einheiten.map((einheit, index) => {
+                      const isExpanded = expandedUnits.has(index);
+                      const nutzungColor = einheit.nutzung === 'Wohnen' ? 'blue' : einheit.nutzung === 'Gewerbe' ? 'amber' : 'slate';
+
+                      return (
+                        <div key={index} className={`border rounded-lg p-3 bg-${nutzungColor}-50/50 border-${nutzungColor}-200`}>
+                          {/* Header */}
+                          <div className="flex items-center justify-between">
+                            <button
+                              type="button"
+                              onClick={() => toggleExpanded(index)}
+                              className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
+                            >
+                              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                              <span className={`px-2 py-0.5 rounded text-xs font-semibold bg-${nutzungColor}-100 text-${nutzungColor}-700`}>
+                                {einheit.nutzung}
+                              </span>
+                              Einheit {index + 1}
+                              {einheit.flaeche && einheit.kaltmiete && (
+                                <span className="text-slate-500 font-normal">
+                                  ({einheit.flaeche}m², {einheit.kaltmiete}€)
+                                </span>
+                              )}
+                            </button>
+                          </div>
+
+                          {/* Basis-Felder (immer sichtbar) */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Nutzung</label>
+                              <select
+                                value={einheit.nutzung}
+                                onChange={(e) => updateEinheit(index, 'nutzung', e.target.value as 'Wohnen' | 'Gewerbe' | 'Stellplatz')}
+                                className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                              >
+                                <option value="Wohnen">Wohnen</option>
+                                <option value="Gewerbe">Gewerbe</option>
+                                <option value="Stellplatz">Stellplatz</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Fläche (m²)</label>
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={einheit.flaeche || ''}
+                                onChange={(e) => updateEinheit(index, 'flaeche', e.target.value ? Number(e.target.value) : null)}
+                                className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Kaltmiete (€)</label>
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={einheit.kaltmiete || ''}
+                                onChange={(e) => updateEinheit(index, 'kaltmiete', e.target.value ? Number(e.target.value) : null)}
+                                className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Vertragsart</label>
+                              <select
+                                value={einheit.mietvertragsart}
+                                onChange={(e) => updateEinheit(index, 'mietvertragsart', e.target.value as 'Standard' | 'Index' | 'Staffel')}
+                                className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                              >
+                                <option value="Standard">Standard</option>
+                                <option value="Index">Index</option>
+                                <option value="Staffel">Staffel</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Erweiterte Felder */}
+                          {isExpanded && (
+                            <>
+                              {/* Vertragsdaten */}
+                              <div className="mt-4 pt-3 border-t border-slate-200">
+                                <h5 className="text-xs font-semibold text-slate-500 mb-2">Vertragsdaten</h5>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Vertragsbeginn</label>
+                                    <input
+                                      type="date"
+                                      value={einheit.vertragsbeginn || ''}
+                                      onChange={(e) => updateEinheit(index, 'vertragsbeginn', e.target.value || null)}
+                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Marktmiete (€/m²)</label>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      value={einheit.vergleichsmiete || ''}
+                                      onChange={(e) => updateEinheit(index, 'vergleichsmiete', Number(e.target.value) || 12)}
+                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Letzte Erhöhung</label>
+                                    <input
+                                      type="date"
+                                      value={einheit.letzte_mieterhoehung || ''}
+                                      onChange={(e) => updateEinheit(index, 'letzte_mieterhoehung', e.target.value || null)}
+                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Höhe (€)</label>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      value={einheit.hoehe_mieterhoehung || ''}
+                                      onChange={(e) => updateEinheit(index, 'hoehe_mieterhoehung', e.target.value ? Number(e.target.value) : null)}
+                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* §558 BGB */}
+                              <div className="mt-3 pt-3 border-t border-slate-200">
+                                <h5 className="text-xs font-semibold text-slate-500 mb-2">§558 BGB - Vergleichsmiete</h5>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Datum §558</label>
+                                    <input
+                                      type="date"
+                                      value={einheit.datum_558 || ''}
+                                      onChange={(e) => updateEinheit(index, 'datum_558', e.target.value || null)}
+                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Höhe §558 (€)</label>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      value={einheit.hoehe_558 || ''}
+                                      onChange={(e) => updateEinheit(index, 'hoehe_558', e.target.value ? Number(e.target.value) : null)}
+                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* §559 BGB */}
+                              <div className="mt-3 pt-3 border-t border-slate-200">
+                                <h5 className="text-xs font-semibold text-slate-500 mb-2">§559 BGB - Modernisierung</h5>
+                                <div className="grid grid-cols-3 gap-3">
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Datum §559</label>
+                                    <input
+                                      type="date"
+                                      value={einheit.datum_559 || ''}
+                                      onChange={(e) => updateEinheit(index, 'datum_559', e.target.value || null)}
+                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Art</label>
+                                    <input
+                                      type="text"
+                                      placeholder="z.B. Dämmung"
+                                      value={einheit.art_modernisierung_559 || ''}
+                                      onChange={(e) => updateEinheit(index, 'art_modernisierung_559', e.target.value || null)}
+                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Höhe (€/Mon)</label>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      value={einheit.hoehe_559 || ''}
+                                      onChange={(e) => updateEinheit(index, 'hoehe_559', e.target.value ? Number(e.target.value) : null)}
+                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

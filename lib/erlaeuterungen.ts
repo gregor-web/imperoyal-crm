@@ -88,3 +88,85 @@ export const EMPFEHLUNGS_ERLAEUTERUNGEN = {
   RESTRUKTURIEREN: 'Größere Veränderungen wie Refinanzierung, WEG-Aufteilung oder Modernisierung sind sinnvoll.',
   VERKAUFEN: 'Die Immobilie passt nicht zur Strategie oder bietet eine attraktive Exit-Möglichkeit.',
 };
+
+/**
+ * Dynamische Hinweistexte basierend auf Objektdaten
+ */
+
+/**
+ * Hinweistext für Zinsänderungsszenario
+ * Wenn Zinsbindung > 3 Jahre in der Zukunft liegt, kann keine fundierte Aussage getroffen werden
+ */
+export function getZinsaenderungHinweis(zinsbindungEndet: string | Date): {
+  text: string;
+  kannAnalysieren: boolean;
+} {
+  const endeDatum = typeof zinsbindungEndet === 'string' ? new Date(zinsbindungEndet) : zinsbindungEndet;
+  const heute = new Date();
+  const jahresBisEnde = (endeDatum.getTime() - heute.getTime()) / (1000 * 60 * 60 * 24 * 365);
+
+  if (jahresBisEnde > 3) {
+    return {
+      text: `Da Ihre Zinsbindung erst am ${endeDatum.toLocaleDateString('de-DE')} endet (in mehr als 3 Jahren), können wir zum jetzigen Zeitpunkt keine fundierte Aussage zur zukünftigen Zinsentwicklung treffen. Eine Neubewertung empfehlen wir ca. 18-24 Monate vor Ablauf der Zinsbindung.`,
+      kannAnalysieren: false,
+    };
+  }
+
+  return {
+    text: `Ihre Zinsbindung endet am ${endeDatum.toLocaleDateString('de-DE')}. Wir empfehlen, frühzeitig Angebote für die Anschlussfinanzierung einzuholen.`,
+    kannAnalysieren: true,
+  };
+}
+
+/**
+ * Hinweistexte für Mietvertragsarten
+ */
+export const MIETVERTRAGSART_HINWEISE = {
+  Standard: {
+    titel: 'Standard-Mietvertrag',
+    hinweis: 'Bei Standard-Mietverträgen können Mieterhöhungen nach §558 BGB (bis zur ortsüblichen Vergleichsmiete) und §559 BGB (nach Modernisierung) durchgeführt werden.',
+    mieterhoeunngMoeglich: true,
+  },
+  Index: {
+    titel: 'Index-Mietvertrag',
+    hinweis: 'Bei Index-Mietverträgen ist die Miete an den Verbraucherpreisindex gekoppelt. Mieterhöhungen nach §558 und §559 BGB sind ausgeschlossen. Die Anpassung erfolgt automatisch basierend auf dem Index (§557b BGB).',
+    mieterhoeunngMoeglich: false,
+    modernisierungUmlageErlaubt: false,
+  },
+  Staffel: {
+    titel: 'Staffel-Mietvertrag',
+    hinweis: 'Bei Staffel-Mietverträgen sind die zukünftigen Mieterhöhungen bereits vertraglich festgelegt. Mieterhöhungen nach §558 und §559 BGB sind für die Laufzeit der Staffelvereinbarung ausgeschlossen. Da uns die individuellen Staffelvereinbarungen nicht vorliegen, können wir keine datenbasierten Prognosen zur Mietentwicklung treffen.',
+    mieterhoeunngMoeglich: false,
+    prognoseUnmoeglich: true,
+  },
+};
+
+/**
+ * Erstellt eine Zusammenfassung der Mietvertragsarten im Objekt
+ */
+export function getMietvertragsartZusammenfassung(einheiten: Array<{ mietvertragsart: string }>): string {
+  const counts = {
+    Standard: 0,
+    Index: 0,
+    Staffel: 0,
+  };
+
+  einheiten.forEach((e) => {
+    const art = e.mietvertragsart as keyof typeof counts;
+    if (art in counts) counts[art]++;
+  });
+
+  const parts: string[] = [];
+
+  if (counts.Standard > 0) {
+    parts.push(`${counts.Standard}x Standard-Mietvertrag`);
+  }
+  if (counts.Index > 0) {
+    parts.push(`${counts.Index}x Index-Mietvertrag (§559 ausgeschlossen)`);
+  }
+  if (counts.Staffel > 0) {
+    parts.push(`${counts.Staffel}x Staffel-Mietvertrag (keine Prognose möglich)`);
+  }
+
+  return parts.join(', ');
+}

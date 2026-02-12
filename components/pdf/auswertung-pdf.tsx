@@ -11,6 +11,7 @@ import {
   G,
 } from '@react-pdf/renderer';
 import type { Berechnungen } from '@/lib/types';
+import { getZinsaenderungHinweis, getMietvertragsartZusammenfassung, MIETVERTRAGSART_HINWEISE } from '@/lib/erlaeuterungen';
 
 // =====================================================
 // GRAFISCHE KOMPONENTEN
@@ -943,6 +944,46 @@ export function AuswertungPDF({
                   Quelle: Angaben Mandant
                 </Text>
               </View>
+              {/* Zinsänderungsszenario */}
+              {fin?.zinsaenderung && (() => {
+                const hinweis = getZinsaenderungHinweis(fin.zinsaenderung.zinsbindung_endet);
+                return (
+                  <View style={[styles.infoBox, { marginTop: 6, padding: 5, backgroundColor: hinweis.kannAnalysieren ? colors.warningBg : colors.bgLight }]}>
+                    <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 3 }}>
+                      Zinsänderungsszenario
+                    </Text>
+                    {hinweis.kannAnalysieren ? (
+                      <>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                          <Text style={{ fontSize: 6, color: colors.textMuted }}>Zinsbindung endet:</Text>
+                          <Text style={{ fontSize: 6, fontWeight: 'bold', color: colors.warning }}>{new Date(fin.zinsaenderung.zinsbindung_endet).toLocaleDateString('de-DE')}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                          <Text style={{ fontSize: 6, color: colors.textMuted }}>Erwartete Restschuld:</Text>
+                          <Text style={{ fontSize: 6, color: colors.text }}>{formatCurrency(fin.zinsaenderung.restschuld_bei_ende)}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
+                          <Text style={{ fontSize: 6, color: colors.textMuted }}>Erwarteter Zinssatz:</Text>
+                          <Text style={{ fontSize: 6, color: fin.zinsaenderung.erwarteter_zins > fin.zinssatz ? colors.danger : colors.success }}>{formatPercent(fin.zinsaenderung.erwarteter_zins, 1)}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                          <Text style={{ fontSize: 6, color: colors.textMuted }}>Mehrbelastung p.a.:</Text>
+                          <Text style={{ fontSize: 6, fontWeight: 'bold', color: fin.zinsaenderung.kapitaldienst_differenz > 0 ? colors.danger : colors.success }}>
+                            {fin.zinsaenderung.kapitaldienst_differenz > 0 ? '+' : ''}{formatCurrency(fin.zinsaenderung.kapitaldienst_differenz)}
+                          </Text>
+                        </View>
+                        <Text style={{ fontSize: 5, color: colors.textLight, fontStyle: 'italic', marginTop: 3 }}>
+                          {hinweis.text}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.4 }}>
+                        {hinweis.text}
+                      </Text>
+                    )}
+                  </View>
+                );
+              })()}
             </View>
           </View>
 
@@ -1206,6 +1247,34 @@ export function AuswertungPDF({
                 Quelle: §558 BGB, Kappungsgrenzen-VO {objekt.ort || 'Region'}
               </Text>
             </View>
+            {/* Mietvertragsarten-Hinweis */}
+            {einheiten && einheiten.length > 0 && (() => {
+              const mietvertragsarten = einheiten.map(e => ({ mietvertragsart: e.mietvertragsart || 'Standard' }));
+              const zusammenfassung = getMietvertragsartZusammenfassung(mietvertragsarten);
+              const hasIndex = mietvertragsarten.some(e => e.mietvertragsart === 'Index');
+              const hasStaffel = mietvertragsarten.some(e => e.mietvertragsart === 'Staffel');
+
+              if (!hasIndex && !hasStaffel) return null;
+
+              return (
+                <View wrap={false} style={[styles.infoBox, { marginTop: 4, padding: 4, backgroundColor: colors.bgYellow }]}>
+                  <Text style={[styles.infoBoxTitle, { fontSize: 7 }]}>Hinweis zu Mietvertragsarten:</Text>
+                  <Text style={[styles.infoBoxText, { fontSize: 6, marginBottom: 2 }]}>
+                    Dieses Objekt enthält: {zusammenfassung}
+                  </Text>
+                  {hasIndex && (
+                    <Text style={[styles.infoBoxText, { fontSize: 6 }]}>
+                      • Index-Mietvertrag: {MIETVERTRAGSART_HINWEISE.Index.hinweis}
+                    </Text>
+                  )}
+                  {hasStaffel && (
+                    <Text style={[styles.infoBoxText, { fontSize: 6 }]}>
+                      • Staffel-Mietvertrag: {MIETVERTRAGSART_HINWEISE.Staffel.hinweis}
+                    </Text>
+                  )}
+                </View>
+              );
+            })()}
           </View>
         </View>
 

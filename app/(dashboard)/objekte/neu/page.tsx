@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
 import { ObjektWizard } from '@/components/forms/objekt-wizard';
-import type { ObjektInput } from '@/lib/validators';
+import type { ObjektInput, EinheitInput } from '@/lib/validators';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -55,7 +55,7 @@ function NeuObjektContent() {
     fetchData();
   }, []);
 
-  const handleSubmit = async (data: ObjektInput) => {
+  const handleSubmit = async (data: ObjektInput, einheiten: EinheitInput[]) => {
     setIsLoading(true);
     setError(null);
 
@@ -69,13 +69,30 @@ function NeuObjektContent() {
 
     try {
       const supabase = createClient();
-      const { data: objekt, error } = await supabase
+
+      // 1. Create the Objekt
+      const { data: objekt, error: objektError } = await supabase
         .from('objekte')
         .insert({ ...data, mandant_id: mandantId })
         .select()
         .single();
 
-      if (error) throw error;
+      if (objektError) throw objektError;
+
+      // 2. Create the Einheiten with objekt_id
+      if (einheiten.length > 0) {
+        const einheitenWithObjektId = einheiten.map((e, index) => ({
+          ...e,
+          objekt_id: objekt.id,
+          position: index + 1,
+        }));
+
+        const { error: einheitenError } = await supabase
+          .from('einheiten')
+          .insert(einheitenWithObjektId);
+
+        if (einheitenError) throw einheitenError;
+      }
 
       router.push(`/objekte/${objekt.id}`);
     } catch (err) {

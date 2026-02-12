@@ -48,6 +48,28 @@ export const OPTIONS = {
   ] as const,
   risikoprofil: ['Konservativ', 'Core', 'Core+', 'Value-Add', 'Opportunistisch'] as const,
   laender: ['Deutschland', 'Österreich', 'Schweiz'] as const,
+  // Ankaufsprofil-spezifische Optionen
+  lagepraeferenz: [
+    'A-Lage',
+    'B-Lage',
+    'C-Lage',
+    'Metropolregion',
+    'Universitätsstadt',
+    'Wachstumsregion',
+  ] as const,
+  finanzierungsform: [
+    'Voll-EK',
+    'EK-dominant',
+    'Standard-Finanzierung',
+    'Offen',
+  ] as const,
+  zustand: [
+    'Sanierungsbedürftig',
+    'Teilsaniert',
+    'Vollsaniert',
+    'Denkmal',
+    'Revitalisierung möglich',
+  ] as const,
 } as const;
 
 // =====================================================
@@ -161,7 +183,16 @@ export interface Einheit {
   kaltmiete: number | null;
   vergleichsmiete: number;
   mietvertragsart: Mietvertragsart;
+  vertragsbeginn: string | null;
   letzte_mieterhoehung: string | null;
+  hoehe_mieterhoehung: number | null;
+  // §558 BGB Felder
+  datum_558: string | null;
+  hoehe_558: number | null;
+  // §559 BGB Felder
+  datum_559: string | null;
+  art_modernisierung_559: string | null;
+  hoehe_559: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -188,12 +219,33 @@ export interface Ankaufsprofil {
   id: string;
   mandant_id: string;
   name: string;
+  // 2.1 Allgemeine Ankaufsparameter
+  kaufinteresse_aktiv: boolean;
+  assetklassen: string[] | null;
+  // 2.2 Standortprofil
+  regionen: string | null;
+  lagepraeferenz: string[] | null;
+  // 2.3 Finanzielle Ankaufsparameter
   min_volumen: number | null;
   max_volumen: number | null;
-  assetklassen: string[] | null;
-  regionen: string | null;
-  rendite_min: number | null;
-  sonstiges: string | null;
+  kaufpreisfaktor: number | null;
+  rendite_min: number | null; // Zielrendite IST
+  rendite_soll: number | null; // Zielrendite SOLL
+  finanzierungsform: string | null;
+  // 2.3 Objektspezifische Kriterien
+  zustand: string[] | null;
+  baujahr_von: number | null;
+  baujahr_bis: number | null;
+  min_wohnflaeche: number | null;
+  min_gewerbeflaeche: number | null;
+  min_wohneinheiten: number | null;
+  min_gewerbeeinheiten: number | null;
+  min_grundstueck: number | null;
+  // 2.4 Zusätzliche Angaben
+  ausgeschlossene_partner: boolean;
+  ausgeschlossene_partner_liste: string | null;
+  sonstiges: string | null; // Besondere Bedingungen / Präferenzen
+  weitere_projektarten: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -480,12 +532,33 @@ export interface EinheitFormData {
 
 export interface AnkaufsprofilFormData {
   name: string;
+  // 2.1 Allgemeine Ankaufsparameter
+  kaufinteresse_aktiv: boolean;
+  assetklassen: string[];
+  // 2.2 Standortprofil
+  regionen: string;
+  lagepraeferenz: string[];
+  // 2.3 Finanzielle Ankaufsparameter
   min_volumen: number | null;
   max_volumen: number | null;
-  assetklassen: string[];
-  regionen: string;
+  kaufpreisfaktor: number | null;
   rendite_min: number | null;
+  rendite_soll: number | null;
+  finanzierungsform: string;
+  // 2.3 Objektspezifische Kriterien
+  zustand: string[];
+  baujahr_von: number | null;
+  baujahr_bis: number | null;
+  min_wohnflaeche: number | null;
+  min_gewerbeflaeche: number | null;
+  min_wohneinheiten: number | null;
+  min_gewerbeeinheiten: number | null;
+  min_grundstueck: number | null;
+  // 2.4 Zusätzliche Angaben
+  ausgeschlossene_partner: boolean;
+  ausgeschlossene_partner_liste: string;
   sonstiges: string;
+  weitere_projektarten: string;
 }
 
 // =====================================================

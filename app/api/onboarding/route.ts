@@ -35,7 +35,7 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
 
               <p style="margin: 0 0 30px; color: #b8c5d4; font-size: 15px; line-height: 1.8;">
                 Vielen Dank für Ihre Anfrage! Ihr exklusiver Zugang zum Imperoyal Immobilien Portal wurde erfolgreich eingerichtet.
-                Wir werden Ihr Objekt analysieren und Sie benachrichtigen, sobald Ihre Auswertung bereit ist.
+                Wir werden Ihre Objekte analysieren und Sie benachrichtigen, sobald Ihre Auswertungen bereit sind.
               </p>
 
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0; background: linear-gradient(135deg, #2a4a6e 0%, #1e3a5f 100%); border: 1px solid rgba(184, 197, 212, 0.3); border-radius: 8px;">
@@ -101,39 +101,86 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
 </html>`;
 }
 
+// =====================================================
+// TYPES
+// =====================================================
+
 interface Einheit {
   nutzung: 'Wohnen' | 'Gewerbe' | 'Stellplatz';
   flaeche: string;
   kaltmiete: string;
   vergleichsmiete: string;
   mietvertragsart: 'Standard' | 'Index' | 'Staffel';
+  vertragsbeginn: string;
+  letzte_mieterhoehung: string;
+  hoehe_mieterhoehung: string;
+  datum_558: string;
+  hoehe_558: string;
+  datum_559: string;
+  art_modernisierung_559: string;
+  hoehe_559: string;
+}
+
+interface Objekt {
+  strasse: string;
+  plz: string;
+  ort: string;
+  gebaeudetyp: string;
+  baujahr: string;
+  kaufpreis: string;
+  kaufdatum: string;
+  eigenkapital_prozent: string;
+  zinssatz: string;
+  tilgung: string;
+  instandhaltung: string;
+  verwaltung: string;
+  einheiten: Einheit[];
+}
+
+interface Ankaufsprofil {
+  name: string;
+  kaufinteresse_aktiv: boolean;
+  assetklassen: string[];
+  regionen: string;
+  lagepraeferenz: string[];
+  min_volumen: string;
+  max_volumen: string;
+  kaufpreisfaktor: string;
+  rendite_min: string;
+  rendite_soll: string;
+  finanzierungsform: string;
+  zustand: string[];
+  baujahr_von: string;
+  baujahr_bis: string;
+  min_wohnflaeche: string;
+  min_gewerbeflaeche: string;
+  min_wohneinheiten: string;
+  min_gewerbeeinheiten: string;
+  min_grundstueck: string;
+  ausgeschlossene_partner: boolean;
+  ausgeschlossene_partner_liste: string;
+  sonstiges: string;
+  weitere_projektarten: string;
 }
 
 interface OnboardingData {
   // Mandanteninformationen
   name: string;
   ansprechpartner: string;
+  anrede: string;
   position: string;
   email: string;
   telefon: string;
-  // Objektdaten
-  objekt_strasse: string;
-  objekt_plz: string;
-  objekt_ort: string;
-  gebaeudetyp: string;
-  baujahr: string;
-  kaufpreis: string;
-  kaufdatum: string;
-  // Finanzierung
-  eigenkapital_prozent: string;
-  zinssatz: string;
-  tilgung: string;
-  // Kosten
-  instandhaltung: string;
-  verwaltung: string;
-  // Einheiten
-  einheiten: Einheit[];
+  // Ankaufsprofil (optional)
+  createAnkaufsprofil: boolean;
+  ankaufsprofil?: Ankaufsprofil;
+  // Objekte mit ihren Einheiten
+  objekte: Objekt[];
 }
+
+// =====================================================
+// API HANDLER
+// =====================================================
 
 export async function POST(request: Request) {
   try {
@@ -147,11 +194,22 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!data.objekt_strasse || !data.objekt_plz || !data.kaufpreis) {
+    if (!data.objekte || data.objekte.length === 0) {
       return NextResponse.json(
-        { error: 'Objektadresse und Kaufpreis sind erforderlich' },
+        { error: 'Mindestens ein Objekt ist erforderlich' },
         { status: 400 }
       );
+    }
+
+    // Validate each object has required fields
+    for (let i = 0; i < data.objekte.length; i++) {
+      const obj = data.objekte[i];
+      if (!obj.strasse || !obj.plz || !obj.kaufpreis) {
+        return NextResponse.json(
+          { error: `Objekt ${i + 1}: Straße, PLZ und Kaufpreis sind erforderlich` },
+          { status: 400 }
+        );
+      }
     }
 
     // Use admin client to bypass RLS
@@ -187,6 +245,7 @@ export async function POST(request: Request) {
       .insert({
         name: data.name,
         ansprechpartner: data.ansprechpartner,
+        anrede: data.anrede || null,
         position: data.position || null,
         email: data.email,
         telefon: data.telefon || null,
@@ -199,12 +258,54 @@ export async function POST(request: Request) {
       throw new Error('Fehler beim Erstellen des Mandanten');
     }
 
-    // 1b. Create Auth user and send welcome email
+    // 1b. Create Ankaufsprofil if requested
+    let ankaufsprofilId: string | null = null;
+    if (data.createAnkaufsprofil && data.ankaufsprofil) {
+      const ap = data.ankaufsprofil;
+      const { data: ankaufsprofil, error: apError } = await supabase
+        .from('ankaufsprofile')
+        .insert({
+          mandant_id: mandant.id,
+          name: ap.name || `${data.name} - Ankaufsprofil`,
+          kaufinteresse_aktiv: ap.kaufinteresse_aktiv ?? true,
+          assetklassen: ap.assetklassen || [],
+          regionen: ap.regionen || null,
+          lagepraeferenz: ap.lagepraeferenz || [],
+          min_volumen: ap.min_volumen ? parseFloat(ap.min_volumen) : null,
+          max_volumen: ap.max_volumen ? parseFloat(ap.max_volumen) : null,
+          kaufpreisfaktor: ap.kaufpreisfaktor ? parseFloat(ap.kaufpreisfaktor) : null,
+          rendite_min: ap.rendite_min ? parseFloat(ap.rendite_min) : null,
+          rendite_soll: ap.rendite_soll ? parseFloat(ap.rendite_soll) : null,
+          finanzierungsform: ap.finanzierungsform || null,
+          zustand: ap.zustand || [],
+          baujahr_von: ap.baujahr_von ? parseInt(ap.baujahr_von) : null,
+          baujahr_bis: ap.baujahr_bis ? parseInt(ap.baujahr_bis) : null,
+          min_wohnflaeche: ap.min_wohnflaeche ? parseFloat(ap.min_wohnflaeche) : null,
+          min_gewerbeflaeche: ap.min_gewerbeflaeche ? parseFloat(ap.min_gewerbeflaeche) : null,
+          min_wohneinheiten: ap.min_wohneinheiten ? parseInt(ap.min_wohneinheiten) : null,
+          min_gewerbeeinheiten: ap.min_gewerbeeinheiten ? parseInt(ap.min_gewerbeeinheiten) : null,
+          min_grundstueck: ap.min_grundstueck ? parseFloat(ap.min_grundstueck) : null,
+          ausgeschlossene_partner: ap.ausgeschlossene_partner ?? false,
+          ausgeschlossene_partner_liste: ap.ausgeschlossene_partner_liste || null,
+          sonstiges: ap.sonstiges || null,
+          weitere_projektarten: ap.weitere_projektarten || null,
+        })
+        .select('id')
+        .single();
+
+      if (apError) {
+        console.error('Ankaufsprofil creation error:', apError);
+        // Don't fail the whole onboarding, just log the error
+      } else {
+        ankaufsprofilId = ankaufsprofil.id;
+      }
+    }
+
+    // 2. Create Auth user and send welcome email
     const password = generatePassword(10);
     let emailSent = false;
 
     try {
-      // Create auth user
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email: data.email,
         password,
@@ -247,73 +348,90 @@ export async function POST(request: Request) {
       console.error('Auth/Email error:', authErr);
     }
 
-    // Calculate totals from einheiten
-    const wohneinheiten = data.einheiten.filter(e => e.nutzung === 'Wohnen').length;
-    const gewerbeeinheiten = data.einheiten.filter(e => e.nutzung === 'Gewerbe').length;
-    const wohnflaeche = data.einheiten
-      .filter(e => e.nutzung === 'Wohnen')
-      .reduce((sum, e) => sum + (parseFloat(e.flaeche) || 0), 0);
-    const gewerbeflaeche = data.einheiten
-      .filter(e => e.nutzung === 'Gewerbe')
-      .reduce((sum, e) => sum + (parseFloat(e.flaeche) || 0), 0);
+    // 3. Create Objekte and their Einheiten
+    const createdObjektIds: string[] = [];
 
-    // 2. Create Objekt
-    const { data: objekt, error: objektError } = await supabase
-      .from('objekte')
-      .insert({
-        mandant_id: mandant.id,
-        strasse: data.objekt_strasse,
-        plz: data.objekt_plz,
-        ort: data.objekt_ort || null,
-        gebaeudetyp: data.gebaeudetyp || null,
-        baujahr: data.baujahr ? parseInt(data.baujahr) : null,
-        kaufpreis: parseFloat(data.kaufpreis),
-        kaufdatum: data.kaufdatum || null,
-        eigenkapital_prozent: data.eigenkapital_prozent ? parseFloat(data.eigenkapital_prozent) : 30,
-        zinssatz: data.zinssatz ? parseFloat(data.zinssatz) : 3.8,
-        tilgung: data.tilgung ? parseFloat(data.tilgung) : 2,
-        instandhaltung: data.instandhaltung ? parseFloat(data.instandhaltung) : null,
-        verwaltung: data.verwaltung ? parseFloat(data.verwaltung) : null,
-        wohneinheiten,
-        gewerbeeinheiten,
-        wohnflaeche: wohnflaeche || null,
-        gewerbeflaeche: gewerbeflaeche || null,
-      })
-      .select()
-      .single();
+    for (const objektData of data.objekte) {
+      // Calculate totals from einheiten
+      const wohneinheiten = objektData.einheiten.filter(e => e.nutzung === 'Wohnen').length;
+      const gewerbeeinheiten = objektData.einheiten.filter(e => e.nutzung === 'Gewerbe').length;
+      const wohnflaeche = objektData.einheiten
+        .filter(e => e.nutzung === 'Wohnen')
+        .reduce((sum, e) => sum + (parseFloat(e.flaeche) || 0), 0);
+      const gewerbeflaeche = objektData.einheiten
+        .filter(e => e.nutzung === 'Gewerbe')
+        .reduce((sum, e) => sum + (parseFloat(e.flaeche) || 0), 0);
 
-    if (objektError) {
-      console.error('Objekt creation error:', objektError);
-      throw new Error('Fehler beim Erstellen des Objekts');
-    }
+      // Create Objekt
+      const { data: objekt, error: objektError } = await supabase
+        .from('objekte')
+        .insert({
+          mandant_id: mandant.id,
+          strasse: objektData.strasse,
+          plz: objektData.plz,
+          ort: objektData.ort || null,
+          gebaeudetyp: objektData.gebaeudetyp || null,
+          baujahr: objektData.baujahr ? parseInt(objektData.baujahr) : null,
+          kaufpreis: parseFloat(objektData.kaufpreis),
+          kaufdatum: objektData.kaufdatum || null,
+          eigenkapital_prozent: objektData.eigenkapital_prozent ? parseFloat(objektData.eigenkapital_prozent) : 30,
+          zinssatz: objektData.zinssatz ? parseFloat(objektData.zinssatz) : 3.8,
+          tilgung: objektData.tilgung ? parseFloat(objektData.tilgung) : 2,
+          instandhaltung: objektData.instandhaltung ? parseFloat(objektData.instandhaltung) : null,
+          verwaltung: objektData.verwaltung ? parseFloat(objektData.verwaltung) : null,
+          wohneinheiten,
+          gewerbeeinheiten,
+          wohnflaeche: wohnflaeche || null,
+          gewerbeflaeche: gewerbeflaeche || null,
+        })
+        .select()
+        .single();
 
-    // 3. Create Einheiten
-    if (data.einheiten && data.einheiten.length > 0) {
-      const einheitenToInsert = data.einheiten.map((e, index) => ({
-        objekt_id: objekt.id,
-        position: index + 1,
-        nutzung: e.nutzung,
-        flaeche: e.flaeche ? parseFloat(e.flaeche) : null,
-        kaltmiete: e.kaltmiete ? parseFloat(e.kaltmiete) : null,
-        vergleichsmiete: e.vergleichsmiete ? parseFloat(e.vergleichsmiete) : 12,
-        mietvertragsart: e.mietvertragsart || 'Standard',
-      }));
+      if (objektError) {
+        console.error('Objekt creation error:', objektError);
+        continue; // Continue with other objects
+      }
 
-      const { error: einheitenError } = await supabase
-        .from('einheiten')
-        .insert(einheitenToInsert);
+      createdObjektIds.push(objekt.id);
 
-      if (einheitenError) {
-        console.error('Einheiten creation error:', einheitenError);
-        // Don't fail completely, mandant and objekt were created
+      // Create Einheiten for this Objekt
+      if (objektData.einheiten && objektData.einheiten.length > 0) {
+        const einheitenToInsert = objektData.einheiten.map((e, index) => ({
+          objekt_id: objekt.id,
+          position: index + 1,
+          nutzung: e.nutzung,
+          flaeche: e.flaeche ? parseFloat(e.flaeche) : null,
+          kaltmiete: e.kaltmiete ? parseFloat(e.kaltmiete) : null,
+          vergleichsmiete: e.vergleichsmiete ? parseFloat(e.vergleichsmiete) : 12,
+          mietvertragsart: e.mietvertragsart || 'Standard',
+          vertragsbeginn: e.vertragsbeginn || null,
+          letzte_mieterhoehung: e.letzte_mieterhoehung || null,
+          hoehe_mieterhoehung: e.hoehe_mieterhoehung ? parseFloat(e.hoehe_mieterhoehung) : null,
+          datum_558: e.datum_558 || null,
+          hoehe_558: e.hoehe_558 ? parseFloat(e.hoehe_558) : null,
+          datum_559: e.datum_559 || null,
+          art_modernisierung_559: e.art_modernisierung_559 || null,
+          hoehe_559: e.hoehe_559 ? parseFloat(e.hoehe_559) : null,
+        }));
+
+        const { error: einheitenError } = await supabase
+          .from('einheiten')
+          .insert(einheitenToInsert);
+
+        if (einheitenError) {
+          console.error('Einheiten creation error:', einheitenError);
+        }
       }
     }
 
-    // 4. Optionally send notification via Make.com webhook
-    // NOTE: No automatic Anfrage creation - customer must explicitly request an Auswertung
+    // 4. Send notification via Make.com webhook
     const webhookUrl = process.env.MAKE_WEBHOOK_URL;
     if (webhookUrl) {
       try {
+        // Calculate total stats for notification
+        const totalEinheiten = data.objekte.reduce((sum, o) => sum + o.einheiten.length, 0);
+        const totalKaufpreis = data.objekte.reduce((sum, o) => sum + (parseFloat(o.kaufpreis) || 0), 0);
+
         await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -324,9 +442,10 @@ export async function POST(request: Request) {
             mandant_email: data.email,
             ansprechpartner: data.ansprechpartner,
             telefon: data.telefon,
-            objekt_adresse: `${data.objekt_strasse}, ${data.objekt_plz} ${data.objekt_ort}`,
-            kaufpreis: data.kaufpreis,
-            einheiten_anzahl: data.einheiten.length,
+            objekte_anzahl: data.objekte.length,
+            einheiten_gesamt: totalEinheiten,
+            gesamtvolumen: totalKaufpreis,
+            objekt_adressen: data.objekte.map(o => `${o.strasse}, ${o.plz} ${o.ort}`).join(' | '),
           }),
         });
       } catch (webhookError) {
@@ -334,14 +453,25 @@ export async function POST(request: Request) {
       }
     }
 
+    // Build success message
+    let successMessage = `Onboarding erfolgreich! ${createdObjektIds.length} Objekte wurden erstellt.`;
+    if (ankaufsprofilId) {
+      successMessage += ' Ankaufsprofil wurde erstellt.';
+    }
+    if (emailSent) {
+      successMessage += ' Zugangsdaten wurden per E-Mail versendet.';
+    } else {
+      successMessage += ' Bitte kontaktieren Sie uns für Ihre Zugangsdaten.';
+    }
+
     return NextResponse.json({
       success: true,
       mandant_id: mandant.id,
-      objekt_id: objekt.id,
+      objekt_ids: createdObjektIds,
+      objekte_count: createdObjektIds.length,
+      ankaufsprofil_id: ankaufsprofilId,
       emailSent,
-      message: emailSent
-        ? 'Onboarding erfolgreich! Zugangsdaten wurden per E-Mail versendet.'
-        : 'Onboarding erfolgreich! Bitte kontaktieren Sie uns für Ihre Zugangsdaten.',
+      message: successMessage,
     });
   } catch (error) {
     console.error('Onboarding error:', error);
