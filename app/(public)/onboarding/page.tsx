@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { CheckCircle, ArrowRight, ArrowLeft, Building2, User, Home, ShoppingCart, AlertTriangle } from 'lucide-react';
 
@@ -202,11 +202,32 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<FormData>({
-    name: '', anrede: '', vorname: '', nachname: '', email: '', telefon: '',
-    anzahl_objekte: 1,
-    createAnkaufsprofil: false, ankaufsprofil: createEmptyAnkaufsprofil(), objekte: [createEmptyObjekt()],
+  // Auto-Save: Load from localStorage on mount
+  const [formData, setFormData] = useState<FormData>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('onboarding_draft');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch { /* ignore */ }
+      }
+    }
+    return {
+      name: '', anrede: '', vorname: '', nachname: '', email: '', telefon: '',
+      anzahl_objekte: 1,
+      createAnkaufsprofil: false, ankaufsprofil: createEmptyAnkaufsprofil(), objekte: [createEmptyObjekt()],
+    };
   });
+
+  // Auto-Save: Persist to localStorage on change
+  useEffect(() => {
+    if (!submitted) {
+      localStorage.setItem('onboarding_draft', JSON.stringify(formData));
+    }
+  }, [formData, submitted]);
+
+  // Clear draft on successful submit
+  const clearDraft = () => localStorage.removeItem('onboarding_draft');
 
   // Calculate total steps and current position
   const getTotalSteps = () => {
@@ -427,6 +448,7 @@ export default function OnboardingPage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Fehler beim Speichern');
+      clearDraft();
       setSubmitted(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');

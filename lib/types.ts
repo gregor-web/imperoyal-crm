@@ -527,7 +527,16 @@ export interface EinheitFormData {
   kaltmiete: number | null;
   vergleichsmiete: number;
   mietvertragsart: Mietvertragsart;
-  letzte_mieterhoehung: string;
+  vertragsbeginn: string | null;
+  letzte_mieterhoehung: string | null;
+  hoehe_mieterhoehung: number | null;
+  // §558 BGB
+  datum_558: string | null;
+  hoehe_558: number | null;
+  // §559 BGB
+  datum_559: string | null;
+  art_modernisierung_559: string | null;
+  hoehe_559: number | null;
 }
 
 export interface AnkaufsprofilFormData {

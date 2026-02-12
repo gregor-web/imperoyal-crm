@@ -166,9 +166,11 @@ interface Ankaufsprofil {
 interface OnboardingData {
   // Mandanteninformationen
   name: string;
-  ansprechpartner: string;
+  ansprechpartner?: string; // Legacy: einzelnes Feld
+  vorname?: string; // Neu: getrennte Felder
+  nachname?: string;
   anrede: string;
-  position: string;
+  position?: string;
   email: string;
   telefon: string;
   // Ankaufsprofil (optional)
@@ -186,10 +188,14 @@ export async function POST(request: Request) {
   try {
     const data: OnboardingData = await request.json();
 
+    // Build ansprechpartner from vorname/nachname if not provided
+    const ansprechpartner = data.ansprechpartner ||
+      (data.vorname && data.nachname ? `${data.vorname} ${data.nachname}` : data.vorname || data.nachname || '');
+
     // Validate required fields
-    if (!data.name || !data.email || !data.ansprechpartner) {
+    if (!data.name || !data.email || !ansprechpartner) {
       return NextResponse.json(
-        { error: 'Name, E-Mail und Ansprechpartner sind erforderlich' },
+        { error: 'Name, E-Mail und Ansprechpartner (Vorname/Nachname) sind erforderlich' },
         { status: 400 }
       );
     }
@@ -244,7 +250,7 @@ export async function POST(request: Request) {
       .from('mandanten')
       .insert({
         name: data.name,
-        ansprechpartner: data.ansprechpartner,
+        ansprechpartner,
         anrede: data.anrede || null,
         position: data.position || null,
         email: data.email,
@@ -311,7 +317,7 @@ export async function POST(request: Request) {
         password,
         email_confirm: true,
         user_metadata: {
-          name: data.ansprechpartner || data.name,
+          name: ansprechpartner || data.name,
         },
       });
 
@@ -323,14 +329,14 @@ export async function POST(request: Request) {
           .from('profiles')
           .update({
             mandant_id: mandant.id,
-            name: data.ansprechpartner || data.name,
+            name: ansprechpartner || data.name,
             role: 'mandant',
           })
           .eq('id', authData.user.id);
 
         // Send welcome email via Make.com webhook
         const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/login`;
-        const htmlContent = generateWelcomeEmailHtml(data.ansprechpartner || data.name, data.email, password, loginUrl);
+        const htmlContent = generateWelcomeEmailHtml(ansprechpartner || data.name, data.email, password, loginUrl);
 
         const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {
           method: 'POST',
@@ -440,7 +446,7 @@ export async function POST(request: Request) {
             type: 'onboarding',
             mandant_name: data.name,
             mandant_email: data.email,
-            ansprechpartner: data.ansprechpartner,
+            ansprechpartner,
             telefon: data.telefon,
             objekte_anzahl: data.objekte.length,
             einheiten_gesamt: totalEinheiten,
