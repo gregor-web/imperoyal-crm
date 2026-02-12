@@ -1,25 +1,19 @@
-import React from 'react';
 import { renderToFile } from '@react-pdf/renderer';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
-// Brand Colors (exakt wie im Onboarding)
+// Brand Colors
 const COLORS = {
-  // Royal Navy
   royalNavy: '#1E2A3A',
   royalNavyMedium: '#2A3F54',
   royalNavyLight: '#3D5167',
-  // Growth Blue
   growthBlue: '#5B7A9D',
   growthBlueDark: '#4A6A8D',
   growthBlueLight: '#6B8AAD',
-  // Blue Bone
   blueBone: '#B8C5D1',
   blueBoneDark: '#9EAFC0',
   blueBoneLight: '#D5DEE6',
   blueBoneLightest: '#EDF1F5',
-  // Utility
   white: '#FFFFFF',
-  // Additional Colors for Flow Diagram
   purple: '#7C3AED',
   green: '#22C55E',
   orange: '#F59E0B',
@@ -28,254 +22,246 @@ const COLORS = {
 
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    paddingTop: 30,
+    paddingBottom: 50,
+    paddingHorizontal: 35,
     fontFamily: 'Helvetica',
-    fontSize: 10,
+    fontSize: 9,
     backgroundColor: COLORS.white,
   },
   header: {
-    marginBottom: 25,
-    paddingBottom: 15,
-    borderBottom: `3px solid ${COLORS.royalNavy}`,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottom: `2px solid ${COLORS.royalNavy}`,
   },
   logo: {
-    fontSize: 20,
+    fontSize: 14,
     fontFamily: 'Helvetica-Bold',
     color: COLORS.royalNavy,
-    marginBottom: 5,
+    letterSpacing: 1,
   },
   title: {
-    fontSize: 28,
+    fontSize: 22,
     fontFamily: 'Helvetica-Bold',
     color: COLORS.royalNavy,
-    marginBottom: 5,
+    marginTop: 2,
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: 9,
     color: COLORS.growthBlue,
   },
   pageTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontFamily: 'Helvetica-Bold',
     color: COLORS.royalNavy,
-    marginBottom: 15,
-    paddingBottom: 8,
-    borderBottom: `2px solid ${COLORS.blueBone}`,
+    marginBottom: 8,
+    paddingBottom: 4,
+    borderBottom: `1px solid ${COLORS.blueBone}`,
   },
-
-  // Flow Diagram
   flowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 25,
-    padding: 20,
+    marginBottom: 10,
+    padding: 12,
     backgroundColor: COLORS.blueBoneLightest,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   flowStep: {
     alignItems: 'center',
-    width: '20%',
+    width: '22%',
   },
   flowCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   flowNumber: {
     color: COLORS.white,
-    fontSize: 20,
+    fontSize: 14,
     fontFamily: 'Helvetica-Bold',
   },
   flowLabel: {
-    fontSize: 10,
+    fontSize: 8,
     fontFamily: 'Helvetica-Bold',
     color: COLORS.royalNavy,
     textAlign: 'center',
   },
   flowSublabel: {
-    fontSize: 8,
+    fontSize: 6,
     color: COLORS.growthBlue,
     textAlign: 'center',
-    marginTop: 2,
   },
   flowArrow: {
-    fontSize: 24,
+    fontSize: 16,
     color: COLORS.blueBone,
-    marginTop: 12,
+    marginTop: 8,
   },
-
-  // Sections
   section: {
-    marginBottom: 20,
-    padding: 15,
+    marginBottom: 8,
+    padding: 8,
     backgroundColor: COLORS.blueBoneLightest,
-    borderRadius: 6,
-    borderLeft: `4px solid ${COLORS.growthBlue}`,
+    borderRadius: 4,
+    borderLeft: `3px solid ${COLORS.growthBlue}`,
   },
-  sectionGreen: {
-    borderLeftColor: COLORS.growthBlue,
-  },
-  sectionPurple: {
-    borderLeftColor: COLORS.growthBlueDark,
-  },
-  sectionOrange: {
-    borderLeftColor: COLORS.royalNavyLight,
-  },
+  sectionGreen: { borderLeftColor: COLORS.green },
+  sectionPurple: { borderLeftColor: COLORS.purple },
+  sectionOrange: { borderLeftColor: COLORS.orange },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 10,
     fontFamily: 'Helvetica-Bold',
     color: COLORS.royalNavy,
-    marginBottom: 10,
+    marginBottom: 4,
   },
-
-  // Info Box
   infoBox: {
     backgroundColor: '#E0F2FE',
-    padding: 12,
-    borderRadius: 6,
-    marginBottom: 15,
-    borderLeft: `4px solid #0EA5E9`,
+    padding: 6,
+    borderRadius: 4,
+    marginBottom: 8,
+    borderLeft: `3px solid #0EA5E9`,
   },
   warningBox: {
     backgroundColor: COLORS.blueBoneLight,
-    padding: 12,
-    borderRadius: 6,
-    marginBottom: 15,
-    borderLeft: `4px solid ${COLORS.royalNavyLight}`,
+    padding: 6,
+    borderRadius: 4,
+    marginTop: 4,
+    borderLeft: `3px solid ${COLORS.royalNavyLight}`,
   },
   infoText: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#0369A1',
-    lineHeight: 1.5,
+    lineHeight: 1.3,
   },
   warningText: {
-    fontSize: 9,
-    color: '#92400E',
-    lineHeight: 1.5,
+    fontSize: 7,
+    color: COLORS.royalNavy,
+    lineHeight: 1.3,
   },
-
-  // Table
-  table: {
-    marginTop: 10,
-  },
+  table: { marginTop: 4 },
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: COLORS.royalNavy,
-    padding: 8,
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
+    padding: 4,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
   },
   tableHeaderCell: {
     color: COLORS.white,
-    fontSize: 9,
+    fontSize: 7,
     fontFamily: 'Helvetica-Bold',
   },
   tableRow: {
     flexDirection: 'row',
-    padding: 8,
+    padding: 4,
     borderBottom: `1px solid ${COLORS.blueBone}`,
     backgroundColor: COLORS.white,
   },
-  tableRowAlt: {
-    backgroundColor: COLORS.blueBoneLightest,
-  },
+  tableRowAlt: { backgroundColor: COLORS.blueBoneLightest },
   tableCell: {
-    fontSize: 9,
+    fontSize: 7,
     color: COLORS.royalNavy,
   },
-  tableCellBold: {
-    fontFamily: 'Helvetica-Bold',
-  },
-  required: {
-    color: COLORS.red,
-    fontFamily: 'Helvetica-Bold',
-  },
-
-  // Toggle Box
+  required: { color: COLORS.red },
   toggleBox: {
     backgroundColor: '#F0FDF4',
-    padding: 15,
-    borderRadius: 8,
-    marginVertical: 15,
-    border: `2px solid ${COLORS.green}`,
+    padding: 8,
+    borderRadius: 6,
+    marginBottom: 8,
+    border: `1px solid ${COLORS.green}`,
   },
   toggleTitle: {
-    fontSize: 12,
+    fontSize: 9,
     fontFamily: 'Helvetica-Bold',
     color: COLORS.green,
-    marginBottom: 8,
-  },
-
-  // Automatic Feature Box
-  autoBox: {
-    backgroundColor: '#FEF3C7',
-    padding: 15,
-    borderRadius: 8,
-    marginVertical: 15,
-    border: `2px dashed ${COLORS.orange}`,
-  },
-  autoTitle: {
-    fontSize: 12,
-    fontFamily: 'Helvetica-Bold',
-    color: '#B45309',
-    marginBottom: 8,
-  },
-
-  // Bullet List
-  bulletList: {
-    marginTop: 8,
-  },
-  bulletItem: {
-    flexDirection: 'row',
     marginBottom: 4,
   },
-  bullet: {
-    width: 15,
+  autoBox: {
+    backgroundColor: '#FEF3C7',
+    padding: 8,
+    borderRadius: 6,
+    marginBottom: 8,
+    border: `1px dashed ${COLORS.orange}`,
+  },
+  autoTitle: {
     fontSize: 9,
+    fontFamily: 'Helvetica-Bold',
+    color: '#B45309',
+    marginBottom: 4,
+  },
+  bulletList: { marginTop: 2 },
+  bulletItem: {
+    flexDirection: 'row',
+    marginBottom: 2,
+  },
+  bullet: {
+    width: 10,
+    fontSize: 7,
     color: COLORS.growthBlue,
   },
   bulletText: {
     flex: 1,
-    fontSize: 9,
+    fontSize: 7,
     color: COLORS.royalNavy,
-    lineHeight: 1.4,
+    lineHeight: 1.3,
   },
-
-  // Footer
   footer: {
     position: 'absolute',
-    bottom: 30,
-    left: 40,
-    right: 40,
+    bottom: 20,
+    left: 35,
+    right: 35,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 10,
+    paddingTop: 6,
     borderTop: `1px solid ${COLORS.blueBone}`,
   },
   footerText: {
-    fontSize: 8,
+    fontSize: 7,
     color: COLORS.growthBlue,
   },
-
-  // Chips
   chipContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 6,
+    marginTop: 2,
   },
   chip: {
     backgroundColor: COLORS.blueBone,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-    fontSize: 8,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 8,
+    fontSize: 6,
     color: COLORS.royalNavy,
+    marginRight: 2,
+    marginBottom: 2,
+  },
+  subHeader: {
+    fontSize: 8,
+    fontFamily: 'Helvetica-Bold',
+    color: COLORS.royalNavy,
+    marginBottom: 2,
+    marginTop: 4,
+  },
+  colorRow: {
+    flexDirection: 'row',
+    marginBottom: 2,
+    alignItems: 'center',
+  },
+  colorSwatch: {
+    width: 12,
+    height: 12,
+    borderRadius: 2,
     marginRight: 4,
-    marginBottom: 4,
+  },
+  colorLabel: {
+    fontSize: 6,
+    color: '#666',
+    width: 35,
+  },
+  colorHex: {
+    fontSize: 6,
+    fontFamily: 'Helvetica-Bold',
   },
 });
 
@@ -298,37 +284,44 @@ const ChipList = ({ items }: { items: string[] }) => (
   </View>
 );
 
-const TableRow = ({ cells, isHeader = false, isAlt = false }: { cells: { text: string; width: string; bold?: boolean; required?: boolean }[]; isHeader?: boolean; isAlt?: boolean }) => (
-  <View style={[
-    isHeader ? styles.tableHeader : styles.tableRow,
-    ...(!isHeader && isAlt ? [styles.tableRowAlt] : [])
-  ]}>
+const TableRow = ({ cells, isHeader = false, isAlt = false }: { cells: { text: string; width: string; required?: boolean }[]; isHeader?: boolean; isAlt?: boolean }) => (
+  <View style={[isHeader ? styles.tableHeader : styles.tableRow, ...(!isHeader && isAlt ? [styles.tableRowAlt] : [])]}>
     {cells.map((cell, idx) => (
-      <Text key={idx} style={[
-        isHeader ? styles.tableHeaderCell : styles.tableCell,
-        { width: cell.width },
-        ...(cell.bold ? [styles.tableCellBold] : []),
-        ...(cell.required ? [styles.required] : []),
-      ]}>
+      <Text key={idx} style={[isHeader ? styles.tableHeaderCell : styles.tableCell, { width: cell.width }, ...(cell.required ? [styles.required] : [])]}>
         {cell.text}{cell.required ? ' *' : ''}
       </Text>
     ))}
   </View>
 );
 
+const ColorSwatch = ({ color, label, hex }: { color: string; label: string; hex: string }) => (
+  <View style={styles.colorRow}>
+    <View style={[styles.colorSwatch, { backgroundColor: color }]} />
+    <Text style={styles.colorLabel}>{label}</Text>
+    <Text style={styles.colorHex}>{hex}</Text>
+  </View>
+);
+
+// Fixed footer component that renders on each page
+const Footer = ({ pageNum }: { pageNum: number }) => (
+  <View style={styles.footer} fixed>
+    <Text style={styles.footerText}>Imperoyal Immobilien - Onboarding Dokumentation</Text>
+    <Text style={styles.footerText}>Seite {pageNum} von 4</Text>
+  </View>
+);
+
 const OnboardingFunnelPDF = () => (
   <Document>
-    {/* SEITE 1: Übersicht */}
-    <Page size="A4" style={styles.page}>
+    {/* PAGE 1 */}
+    <Page size="A4" style={styles.page} wrap={false}>
       <View style={styles.header}>
         <Text style={styles.logo}>IMPEROYAL IMMOBILIEN</Text>
         <Text style={styles.title}>Onboarding Funnel</Text>
-        <Text style={styles.subtitle}>Dokumentation des Mandanten-Erfassungsprozesses</Text>
+        <Text style={styles.subtitle}>Technische Dokumentation des Mandanten-Erfassungsprozesses</Text>
       </View>
 
       <Text style={styles.pageTitle}>Prozessübersicht</Text>
 
-      {/* Flow Diagram */}
       <View style={styles.flowContainer}>
         <View style={styles.flowStep}>
           <View style={[styles.flowCircle, { backgroundColor: COLORS.growthBlue }]}>
@@ -365,440 +358,343 @@ const OnboardingFunnelPDF = () => (
 
       <View style={styles.infoBox}>
         <Text style={styles.infoText}>
-          Der Onboarding-Funnel passt sich dynamisch an: Standardmäßig hat er 3 Schritte. Aktiviert der Nutzer "Ankaufsprofil erstellen" in Schritt 1, erweitert sich der Funnel auf 4 Schritte.
+          Der Funnel passt sich dynamisch an: Standardmäßig 3 Schritte. Mit "Ankaufsprofil erstellen" wird es zu 4 Schritten.
         </Text>
       </View>
 
-      {/* Toggle Erklärung */}
       <View style={styles.toggleBox}>
-        <Text style={styles.toggleTitle}>☐ Ankaufsprofil erstellen - Was passiert beim Aktivieren?</Text>
+        <Text style={styles.toggleTitle}>☐ Ankaufsprofil erstellen - Was passiert?</Text>
         <BulletList items={[
-          'Der Funnel erweitert sich von 3 auf 4 Schritte',
-          'Ein neuer Schritt "Ankaufsprofil" erscheint zwischen Kontakt und Objekte',
-          'Der Mandant kann seine Kaufkriterien definieren (Assetklassen, Regionen, Volumen, etc.)',
-          'Nach Absenden wird automatisch ein Ankaufsprofil in der Datenbank erstellt',
-          'Das Profil kann später für Objekt-Matching verwendet werden',
+          'Funnel erweitert sich von 3 auf 4 Schritte',
+          'Schritt "Ankaufsprofil" erscheint zwischen Kontakt und Objekte (5 Sub-Steps)',
+          'Mandant definiert Kaufkriterien (Assetklassen, Regionen, Volumen)',
+          'Nach Absenden wird automatisch ein Ankaufsprofil erstellt',
         ]} />
       </View>
 
-      {/* Brand Colors */}
       <View style={[styles.section]}>
         <Text style={styles.sectionTitle}>Brand Colors</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-          {/* Royal Navy */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
           <View style={{ width: '30%' }}>
-            <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6 }}>Royal Navy</Text>
-            <View style={{ flexDirection: 'row', marginBottom: 4 }}>
-              <View style={{ width: 20, height: 20, backgroundColor: '#1E2A3A', borderRadius: 3, marginRight: 6 }} />
-              <View>
-                <Text style={{ fontSize: 8, color: '#666' }}>Dark</Text>
-                <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold' }}>#1E2A3A</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row', marginBottom: 4 }}>
-              <View style={{ width: 20, height: 20, backgroundColor: '#2A3F54', borderRadius: 3, marginRight: 6 }} />
-              <View>
-                <Text style={{ fontSize: 8, color: '#666' }}>Medium</Text>
-                <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold' }}>#2A3F54</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row' }}>
-              <View style={{ width: 20, height: 20, backgroundColor: '#3D5167', borderRadius: 3, marginRight: 6 }} />
-              <View>
-                <Text style={{ fontSize: 8, color: '#666' }}>Light</Text>
-                <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold' }}>#3D5167</Text>
-              </View>
-            </View>
+            <Text style={{ fontSize: 8, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 2 }}>Royal Navy</Text>
+            <ColorSwatch color="#1E2A3A" label="Dark" hex="#1E2A3A" />
+            <ColorSwatch color="#2A3F54" label="Medium" hex="#2A3F54" />
+            <ColorSwatch color="#3D5167" label="Light" hex="#3D5167" />
           </View>
-          {/* Growth Blue */}
           <View style={{ width: '30%' }}>
-            <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#5B7A9D', marginBottom: 6 }}>Growth Blue</Text>
-            <View style={{ flexDirection: 'row', marginBottom: 4 }}>
-              <View style={{ width: 20, height: 20, backgroundColor: '#4A6A8D', borderRadius: 3, marginRight: 6 }} />
-              <View>
-                <Text style={{ fontSize: 8, color: '#666' }}>Dark</Text>
-                <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold' }}>#4A6A8D</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row', marginBottom: 4 }}>
-              <View style={{ width: 20, height: 20, backgroundColor: '#5B7A9D', borderRadius: 3, marginRight: 6 }} />
-              <View>
-                <Text style={{ fontSize: 8, color: '#666' }}>Base</Text>
-                <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold' }}>#5B7A9D</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row' }}>
-              <View style={{ width: 20, height: 20, backgroundColor: '#6B8AAD', borderRadius: 3, marginRight: 6 }} />
-              <View>
-                <Text style={{ fontSize: 8, color: '#666' }}>Light</Text>
-                <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold' }}>#6B8AAD</Text>
-              </View>
-            </View>
+            <Text style={{ fontSize: 8, fontFamily: 'Helvetica-Bold', color: COLORS.growthBlue, marginBottom: 2 }}>Growth Blue</Text>
+            <ColorSwatch color="#4A6A8D" label="Dark" hex="#4A6A8D" />
+            <ColorSwatch color="#5B7A9D" label="Base" hex="#5B7A9D" />
+            <ColorSwatch color="#6B8AAD" label="Light" hex="#6B8AAD" />
           </View>
-          {/* Blue Bone */}
           <View style={{ width: '30%' }}>
-            <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#5B7A9D', marginBottom: 6 }}>Blue Bone</Text>
-            <View style={{ flexDirection: 'row', marginBottom: 4 }}>
-              <View style={{ width: 20, height: 20, backgroundColor: '#9EAFC0', borderRadius: 3, marginRight: 6 }} />
-              <View>
-                <Text style={{ fontSize: 8, color: '#666' }}>Dark</Text>
-                <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold' }}>#9EAFC0</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row', marginBottom: 4 }}>
-              <View style={{ width: 20, height: 20, backgroundColor: '#B8C5D1', borderRadius: 3, marginRight: 6 }} />
-              <View>
-                <Text style={{ fontSize: 8, color: '#666' }}>Base</Text>
-                <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold' }}>#B8C5D1</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'row' }}>
-              <View style={{ width: 20, height: 20, backgroundColor: '#EDF1F5', borderRadius: 3, marginRight: 6 }} />
-              <View>
-                <Text style={{ fontSize: 8, color: '#666' }}>Lightest</Text>
-                <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold' }}>#EDF1F5</Text>
-              </View>
-            </View>
+            <Text style={{ fontSize: 8, fontFamily: 'Helvetica-Bold', color: COLORS.growthBlue, marginBottom: 2 }}>Blue Bone</Text>
+            <ColorSwatch color="#9EAFC0" label="Dark" hex="#9EAFC0" />
+            <ColorSwatch color="#B8C5D1" label="Base" hex="#B8C5D1" />
+            <ColorSwatch color="#EDF1F5" label="Lightest" hex="#EDF1F5" />
           </View>
         </View>
-        <Text style={{ fontSize: 8, color: '#666', marginTop: 10, fontStyle: 'italic' }}>
-          Verwendung: Royal Navy für Text/Header, Growth Blue für Buttons/Aktionen, Blue Bone für Hintergründe/Chips
+        <Text style={{ fontSize: 6, color: '#666', marginTop: 4 }}>
+          Royal Navy = Text/Header | Growth Blue = Buttons/Akzente | Blue Bone = Hintergründe/Chips
         </Text>
       </View>
 
-      {/* Was passiert nach Absenden */}
       <View style={[styles.section, styles.sectionOrange]}>
         <Text style={styles.sectionTitle}>Was passiert nach dem Absenden?</Text>
         <BulletList items={[
           '1. Mandant wird in der Datenbank erstellt',
           '2. Ankaufsprofil wird erstellt (wenn aktiviert)',
-          '3. Auth-User wird mit generiertem Passwort erstellt',
-          '4. Alle Objekte und Einheiten werden gespeichert',
-          '5. Welcome-E-Mail mit Zugangsdaten wird versendet',
-          '6. Admin wird per Webhook benachrichtigt',
+          '3. Auth-User mit generiertem Passwort erstellt',
+          '4. Alle Objekte und Einheiten gespeichert',
+          '5. Welcome-E-Mail mit Zugangsdaten versendet',
+          '6. Admin per Webhook benachrichtigt',
         ]} />
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Imperoyal Immobilien - Onboarding Dokumentation</Text>
-        <Text style={styles.footerText}>Seite 1 von 4</Text>
-      </View>
+      <Footer pageNum={1} />
     </Page>
 
-    {/* SEITE 2: Schritt 1 + 2 */}
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.pageTitle}>Schritt 1: Kontaktdaten + Schritt 2: Ankaufsprofil</Text>
+    {/* PAGE 2 */}
+    <Page size="A4" style={styles.page} wrap={false}>
+      <Text style={styles.pageTitle}>Schritt 1: Kontaktdaten</Text>
 
-      {/* Schritt 1 */}
       <View style={[styles.section]}>
-        <Text style={styles.sectionTitle}>SCHRITT 1: Kontaktdaten</Text>
+        <Text style={styles.sectionTitle}>Kontaktdaten-Formular</Text>
         <View style={styles.table}>
           <TableRow isHeader cells={[
-            { text: 'Feld', width: '35%' },
-            { text: 'Typ', width: '20%' },
-            { text: 'Pflicht', width: '15%' },
-            { text: 'Beschreibung', width: '30%' },
+            { text: 'Feld', width: '28%' },
+            { text: 'Typ', width: '14%' },
+            { text: 'Pflicht', width: '12%' },
+            { text: 'Beschreibung', width: '46%' },
           ]} />
           <TableRow cells={[
-            { text: 'Firmenname / Name', width: '35%', required: true },
-            { text: 'Text', width: '20%' },
-            { text: 'Ja', width: '15%' },
-            { text: 'Name des Mandanten', width: '30%' },
+            { text: 'Firmenname / Name', width: '28%', required: true },
+            { text: 'Text', width: '14%' },
+            { text: 'Ja', width: '12%' },
+            { text: 'Name des Mandanten oder der Firma', width: '46%' },
           ]} />
           <TableRow isAlt cells={[
-            { text: 'Ansprechpartner', width: '35%', required: true },
-            { text: 'Text', width: '20%' },
-            { text: 'Ja', width: '15%' },
-            { text: 'Kontaktperson', width: '30%' },
+            { text: 'Anrede', width: '28%', required: true },
+            { text: 'Select', width: '14%' },
+            { text: 'Ja', width: '12%' },
+            { text: 'Herr | Frau | Herr Dr. | Frau Dr. | Herr Prof. | ...', width: '46%' },
           ]} />
           <TableRow cells={[
-            { text: 'Position', width: '35%' },
-            { text: 'Text', width: '20%' },
-            { text: 'Nein', width: '15%' },
-            { text: 'z.B. Geschäftsführer', width: '30%' },
+            { text: 'Vorname', width: '28%', required: true },
+            { text: 'Text', width: '14%' },
+            { text: 'Ja', width: '12%' },
+            { text: 'Vorname des Ansprechpartners', width: '46%' },
           ]} />
           <TableRow isAlt cells={[
-            { text: 'E-Mail', width: '35%', required: true },
-            { text: 'Email', width: '20%' },
-            { text: 'Ja', width: '15%' },
-            { text: 'Login + Kontakt', width: '30%' },
+            { text: 'Nachname', width: '28%', required: true },
+            { text: 'Text', width: '14%' },
+            { text: 'Ja', width: '12%' },
+            { text: 'Nachname des Ansprechpartners', width: '46%' },
           ]} />
           <TableRow cells={[
-            { text: 'Telefon', width: '35%' },
-            { text: 'Tel', width: '20%' },
-            { text: 'Nein', width: '15%' },
-            { text: 'Für Rückfragen', width: '30%' },
+            { text: 'E-Mail', width: '28%', required: true },
+            { text: 'Email', width: '14%' },
+            { text: 'Ja', width: '12%' },
+            { text: 'Für Login + Kommunikation', width: '46%' },
+          ]} />
+          <TableRow isAlt cells={[
+            { text: 'Telefon', width: '28%' },
+            { text: 'Tel', width: '14%' },
+            { text: 'Nein', width: '12%' },
+            { text: 'Optional für Rückfragen', width: '46%' },
           ]} />
         </View>
+
+        <Text style={styles.subHeader}>Objekt-Anzahl & Ankaufsprofil-Toggle</Text>
+        <BulletList items={[
+          '+/- Buttons oder Direkteingabe für Anzahl Objekte (Min: 1)',
+          'Checkbox "Ankaufsprofil erstellen" → +5 Sub-Steps',
+        ]} />
       </View>
 
-      {/* Schritt 2 */}
-      <View style={[styles.section, styles.sectionPurple]}>
-        <Text style={styles.sectionTitle}>SCHRITT 2: Ankaufsprofil (nur wenn Toggle aktiv)</Text>
+      <Text style={[styles.pageTitle, { marginTop: 6 }]}>Schritt 2: Ankaufsprofil (Optional)</Text>
 
-        <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6, marginTop: 8 }}>
-          2.1 Allgemeine Ankaufsparameter
-        </Text>
-        <BulletList items={[
-          'Profilname (z.B. "Core-Portfolio Deutschland")',
-          'Kaufinteresse aktiv? (Ja/Nein)',
-          'Bevorzugte Assetklassen (Multi-Select):',
-        ]} />
+      <View style={[styles.section, styles.sectionPurple]}>
+        <Text style={styles.sectionTitle}>5 Sub-Steps für Ankaufsprofil</Text>
+
+        <Text style={styles.subHeader}>2.1 Basics</Text>
+        <Text style={{ fontSize: 6, color: COLORS.growthBlue }}>Profilname, Kaufinteresse aktiv? (Ja/Nein), Assetklassen:</Text>
         <ChipList items={['MFH', 'Wohn- & Geschäftshaus', 'Büro', 'Retail', 'Logistik', 'Light Industrial', 'Betreiberimmobilien', 'Grundstücke', 'Development']} />
 
-        <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6, marginTop: 12 }}>
-          2.2 Standortprofil
-        </Text>
-        <BulletList items={[
-          'Bevorzugte Städte/Regionen (Freitext)',
-          'Lagepräferenz (Multi-Select):',
-        ]} />
+        <Text style={styles.subHeader}>2.2 Standort</Text>
+        <Text style={{ fontSize: 6, color: COLORS.growthBlue }}>Bevorzugte Städte/Regionen (Freitext), Lagepräferenz:</Text>
         <ChipList items={['A-Lage', 'B-Lage', 'C-Lage', 'Metropolregion', 'Universitätsstadt', 'Wachstumsregion']} />
 
-        <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6, marginTop: 12 }}>
-          2.3 Finanzielle Parameter
-        </Text>
+        <Text style={styles.subHeader}>2.3 Finanzen</Text>
         <BulletList items={[
-          'Mindest-/Maximalvolumen (EUR)',
-          'Kaufpreisfaktor, Zielrendite IST/SOLL (%)',
+          'Min./Max. Volumen (EUR), Zielrendite IST (%)',
           'Finanzierungsform: Voll-EK | EK-dominant | Standard | Offen',
         ]} />
 
-        <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6, marginTop: 12 }}>
-          2.4 Objektkriterien + 2.5 Zusätzliches
-        </Text>
+        <Text style={styles.subHeader}>2.4 Objektkriterien</Text>
+        <Text style={{ fontSize: 6, color: COLORS.growthBlue }}>Zustand:</Text>
+        <ChipList items={['Sanierungsbedürftig', 'Teilsaniert', 'Vollsaniert', 'Denkmal', 'Revitalisierung']} />
+        <Text style={{ fontSize: 6, color: COLORS.royalNavy, marginTop: 2 }}>+ Baujahr von/bis, Min. Wohnfläche, Min. Einheiten</Text>
+
+        <Text style={styles.subHeader}>2.5 Sonstiges</Text>
         <BulletList items={[
-          'Zustand: Sanierungsbedürftig | Teilsaniert | Vollsaniert | Denkmal | Revitalisierung',
-          'Baujahr von/bis, Min. Wohn-/Gewerbefläche, Min. Einheiten, Min. Grundstück',
-          'Ausgeschlossene Partner/Makler, Besondere Bedingungen, Weitere Projektarten (ESG, etc.)',
+          'Ausgeschlossene Partner? (Ja/Nein + Textarea)',
+          'Sonstiges / Anmerkungen (Textarea)',
         ]} />
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Imperoyal Immobilien - Onboarding Dokumentation</Text>
-        <Text style={styles.footerText}>Seite 2 von 4</Text>
-      </View>
+      <Footer pageNum={2} />
     </Page>
 
-    {/* SEITE 3: Objekte + Einheiten */}
-    <Page size="A4" style={styles.page}>
+    {/* PAGE 3 */}
+    <Page size="A4" style={styles.page} wrap={false}>
       <Text style={styles.pageTitle}>Schritt 3: Objekte & Einheiten</Text>
 
       <View style={styles.infoBox}>
         <Text style={styles.infoText}>
-          Mindestens 1 Objekt ist erforderlich. Pro Objekt können beliebig viele Einheiten erfasst werden. Einheiten können Wohnungen, Gewerbeeinheiten oder Stellplätze sein.
+          Pro Objekt 3 Sub-Steps: Adresse → Finanzierung → Einheiten. Mindestens 1 Objekt erforderlich.
         </Text>
       </View>
 
-      {/* Objekte */}
       <View style={[styles.section, styles.sectionGreen]}>
-        <Text style={styles.sectionTitle}>Objektdaten (pro Objekt)</Text>
+        <Text style={styles.sectionTitle}>Sub-Step 3.1: Adresse & Einheiten-Anzahl</Text>
         <View style={styles.table}>
           <TableRow isHeader cells={[
-            { text: 'Feld', width: '30%' },
-            { text: 'Typ', width: '15%' },
+            { text: 'Feld', width: '26%' },
+            { text: 'Typ', width: '14%' },
             { text: 'Pflicht', width: '12%' },
-            { text: 'Beschreibung', width: '43%' },
+            { text: 'Beschreibung', width: '48%' },
           ]} />
           <TableRow cells={[
-            { text: 'Straße, PLZ, Ort', width: '30%', required: true },
-            { text: 'Text', width: '15%' },
+            { text: 'Straße', width: '26%', required: true },
+            { text: 'Text', width: '14%' },
             { text: 'Ja', width: '12%' },
-            { text: 'Adresse des Objekts', width: '43%' },
+            { text: 'Straße mit Hausnummer', width: '48%' },
           ]} />
           <TableRow isAlt cells={[
-            { text: 'Gebäudetyp', width: '30%' },
-            { text: 'Select', width: '15%' },
-            { text: 'Nein', width: '12%' },
-            { text: 'MFH | Wohn- & Geschäftshaus | Büro | Retail | Logistik', width: '43%' },
+            { text: 'PLZ', width: '26%', required: true },
+            { text: 'Text', width: '14%' },
+            { text: 'Ja', width: '12%' },
+            { text: 'Postleitzahl', width: '48%' },
           ]} />
           <TableRow cells={[
-            { text: 'Baujahr', width: '30%' },
-            { text: 'Jahr', width: '15%' },
+            { text: 'Ort', width: '26%' },
+            { text: 'Text', width: '14%' },
             { text: 'Nein', width: '12%' },
-            { text: 'Für Alter-/AfA-Berechnung', width: '43%' },
+            { text: 'Stadt/Gemeinde', width: '48%' },
           ]} />
           <TableRow isAlt cells={[
-            { text: 'Anz. Wohn/Gewerbe/Stellpl.', width: '30%', bold: true },
-            { text: 'Zahl', width: '15%' },
-            { text: 'Ja', width: '12%' },
-            { text: '→ Generiert automatisch Einheiten-Formulare!', width: '43%' },
+            { text: 'Gebäudetyp', width: '26%' },
+            { text: 'Select', width: '14%' },
+            { text: 'Nein', width: '12%' },
+            { text: 'MFH | Wohn- & Geschäftshaus | Büro | Retail | Logistik', width: '48%' },
           ]} />
           <TableRow cells={[
-            { text: 'Kaufpreis', width: '30%', required: true },
-            { text: 'EUR', width: '15%' },
-            { text: 'Ja', width: '12%' },
-            { text: 'Gesamtkaufpreis des Objekts', width: '43%' },
-          ]} />
-          <TableRow cells={[
-            { text: 'Kaufdatum', width: '30%' },
-            { text: 'Datum', width: '15%' },
+            { text: 'Baujahr', width: '26%' },
+            { text: 'Number', width: '14%' },
             { text: 'Nein', width: '12%' },
-            { text: 'Für Zinsbindungs-Berechnung', width: '43%' },
+            { text: 'Für Alter-/AfA-Berechnung', width: '48%' },
           ]} />
-          <TableRow isAlt cells={[
-            { text: 'EK%, Zins%, Tilgung%', width: '30%' },
-            { text: 'Prozent', width: '15%' },
-            { text: 'Nein', width: '12%' },
-            { text: 'Finanzierungsstruktur (Defaults: 30/3.8/2)', width: '43%' },
-          ]} />
-          <TableRow cells={[
-            { text: 'Instandhaltung, Verwaltung', width: '30%' },
-            { text: 'EUR/Jahr', width: '15%' },
-            { text: 'Nein', width: '12%' },
-            { text: 'Jährliche Kosten', width: '43%' },
-          ]} />
+        </View>
+        <View style={styles.warningBox}>
+          <Text style={[styles.warningText, { fontFamily: 'Helvetica-Bold' }]}>⚠️ Duplikat-Erkennung: Bei doppelter Adresse erscheint Warnung</Text>
         </View>
       </View>
 
-      {/* Automatische Einheiten */}
       <View style={styles.autoBox}>
         <Text style={styles.autoTitle}>⚡ Automatische Einheiten-Generierung</Text>
-        <Text style={{ fontSize: 9, color: '#92400E', marginBottom: 8 }}>
-          Im Adresse-Schritt gibt der Nutzer die ANZAHL der Einheiten pro Nutzungsart ein:
+        <Text style={{ fontSize: 7, color: '#92400E' }}>
+          Nutzer gibt Anzahl pro Nutzungsart ein: Wohneinheiten (Default: 1) | Gewerbe (0) | Stellplätze (0)
         </Text>
-        <BulletList items={[
-          'Anzahl Wohneinheiten (Default: 1)',
-          'Anzahl Gewerbeeinheiten (Default: 0)',
-          'Anzahl Stellplätze (Default: 0)',
-        ]} />
-        <Text style={{ fontSize: 9, color: '#92400E', marginTop: 8, fontFamily: 'Helvetica-Bold' }}>
-          → Basierend auf diesen Zahlen werden im Einheiten-Schritt automatisch die entsprechenden Formulare generiert
-        </Text>
-        <Text style={{ fontSize: 9, color: '#92400E', marginTop: 4 }}>
-          → Nutzungsart ist pro Einheit vorbelegt (Wohnen/Gewerbe/Stellplatz), Nutzer muss nur Fläche, Miete, etc. ausfüllen
+        <Text style={{ fontSize: 7, color: '#92400E', fontFamily: 'Helvetica-Bold', marginTop: 2 }}>
+          → Formulare werden automatisch in Sub-Step 3.3 generiert
         </Text>
       </View>
 
-      {/* Einheiten */}
       <View style={[styles.section, styles.sectionGreen]}>
-        <Text style={styles.sectionTitle}>Einheiten (automatisch generiert)</Text>
-
-        <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6 }}>
-          Felder pro Einheit (Nutzung ist vorbelegt):
-        </Text>
+        <Text style={styles.sectionTitle}>Sub-Step 3.2: Finanzierung</Text>
         <View style={styles.table}>
           <TableRow isHeader cells={[
-            { text: 'Feld', width: '25%' },
-            { text: 'Typ', width: '20%' },
-            { text: 'Beschreibung', width: '55%' },
+            { text: 'Feld', width: '28%' },
+            { text: 'Typ', width: '14%' },
+            { text: 'Default', width: '14%' },
+            { text: 'Beschreibung', width: '44%' },
           ]} />
           <TableRow cells={[
-            { text: 'Nutzung', width: '25%' },
-            { text: 'Badge', width: '20%' },
-            { text: 'Automatisch: Wohnen | Gewerbe | Stellplatz (nicht editierbar)', width: '55%' },
+            { text: 'Kaufpreis (EUR)', width: '28%', required: true },
+            { text: 'Number', width: '14%' },
+            { text: '-', width: '14%' },
+            { text: 'Gesamtkaufpreis', width: '44%' },
           ]} />
           <TableRow isAlt cells={[
-            { text: 'Fläche', width: '25%' },
-            { text: 'm²', width: '20%' },
-            { text: 'Wohn-/Nutzfläche der Einheit', width: '55%' },
+            { text: 'Kaufdatum', width: '28%' },
+            { text: 'Date', width: '14%' },
+            { text: '-', width: '14%' },
+            { text: 'Für Zinsbindung', width: '44%' },
           ]} />
           <TableRow cells={[
-            { text: 'Kaltmiete', width: '25%' },
-            { text: 'EUR/Monat', width: '20%' },
-            { text: 'Aktuelle monatliche Kaltmiete', width: '55%' },
+            { text: 'EK% / Zins% / Tilgung%', width: '28%' },
+            { text: 'Number', width: '14%' },
+            { text: '30/3.8/2', width: '14%' },
+            { text: 'Finanzierungsstruktur', width: '44%' },
           ]} />
           <TableRow isAlt cells={[
-            { text: 'Marktmiete', width: '25%' },
-            { text: 'EUR/m²', width: '20%' },
-            { text: 'Ortsübliche Vergleichsmiete (Default: 12)', width: '55%' },
-          ]} />
-          <TableRow cells={[
-            { text: 'Mietvertragsart', width: '25%' },
-            { text: 'Select', width: '20%' },
-            { text: 'Standard | Index | Staffel (wichtig für §558/§559!)', width: '55%' },
+            { text: 'Verwaltung (EUR/Jahr)', width: '28%' },
+            { text: 'Number', width: '14%' },
+            { text: '-', width: '14%' },
+            { text: 'Jährliche Kosten', width: '44%' },
           ]} />
         </View>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Imperoyal Immobilien - Onboarding Dokumentation</Text>
-        <Text style={styles.footerText}>Seite 3 von 4</Text>
-      </View>
+      <Footer pageNum={3} />
     </Page>
 
-    {/* SEITE 4: Erweiterte Einheiten + Übersicht */}
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.pageTitle}>Einheiten (Fortsetzung) + Schritt 4: Übersicht</Text>
+    {/* PAGE 4 */}
+    <Page size="A4" style={styles.page} wrap={false}>
+      <Text style={styles.pageTitle}>Sub-Step 3.3: Einheiten + Schritt 4: Übersicht</Text>
 
-      {/* Erweiterte Einheiten */}
       <View style={[styles.section, styles.sectionGreen]}>
-        <Text style={styles.sectionTitle}>Erweiterte Einheiten-Daten (aufklappbar)</Text>
-        <Text style={{ fontSize: 9, color: COLORS.growthBlue, marginBottom: 8 }}>
-          Diese Felder sind in einem aufklappbaren Bereich versteckt und können bei Bedarf ausgefüllt werden:
-        </Text>
-
-        <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6, marginTop: 8 }}>
-          Vertragsdaten:
-        </Text>
-        <BulletList items={[
-          'Vertragsbeginn (Datum) - Wann begann das Mietverhältnis?',
-          'Letzte Mieterhöhung (Datum) - Für §558 Sperrfrist-Berechnung',
-          'Höhe Mieterhöhung (EUR) - Betrag der letzten Erhöhung',
-        ]} />
-
-        <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6, marginTop: 10 }}>
-          §558 / §559 BGB Daten:
-        </Text>
-        <BulletList items={[
-          '§558 Datum + Betrag - Mieterhöhung zur ortsüblichen Vergleichsmiete',
-          '§559 Datum + Art + Betrag - Modernisierungsumlage (8% der CAPEX)',
-        ]} />
-
+        <Text style={styles.sectionTitle}>Einheiten-Details (automatisch generiert)</Text>
+        <View style={styles.table}>
+          <TableRow isHeader cells={[
+            { text: 'Feld', width: '22%' },
+            { text: 'Typ', width: '16%' },
+            { text: 'Default', width: '14%' },
+            { text: 'Beschreibung', width: '48%' },
+          ]} />
+          <TableRow cells={[
+            { text: 'Nutzung', width: '22%' },
+            { text: 'Badge', width: '16%' },
+            { text: 'Auto', width: '14%' },
+            { text: 'Wohnen | Gewerbe | Stellplatz (nicht editierbar)', width: '48%' },
+          ]} />
+          <TableRow isAlt cells={[
+            { text: 'Fläche (m²)', width: '22%' },
+            { text: 'Number', width: '16%' },
+            { text: '-', width: '14%' },
+            { text: 'Wohn-/Nutzfläche', width: '48%' },
+          ]} />
+          <TableRow cells={[
+            { text: 'Miete (€/Mon)', width: '22%' },
+            { text: 'Number', width: '16%' },
+            { text: '-', width: '14%' },
+            { text: 'Aktuelle Kaltmiete', width: '48%' },
+          ]} />
+          <TableRow isAlt cells={[
+            { text: 'Markt (€/m²)', width: '22%' },
+            { text: 'Number', width: '16%' },
+            { text: '12', width: '14%' },
+            { text: 'Vergleichsmiete (Stellplatz: 0)', width: '48%' },
+          ]} />
+          <TableRow cells={[
+            { text: 'Vertragsart', width: '22%' },
+            { text: 'Select', width: '16%' },
+            { text: 'Standard', width: '14%' },
+            { text: 'Standard | Index | Staffel', width: '48%' },
+          ]} />
+        </View>
         <View style={styles.warningBox}>
-          <Text style={styles.warningText}>
-            ⚠️ Mietvertragsart beeinflusst Berechnungen:{'\n'}
-            • Standard: §558 + §559 möglich{'\n'}
-            • Index: Nur Index-Anpassung, KEIN §558/§559{'\n'}
-            • Staffel: Festgelegte Staffeln, KEINE Prognose möglich
-          </Text>
+          <Text style={[styles.warningText, { fontFamily: 'Helvetica-Bold' }]}>⚠️ Mietvertragsart beeinflusst Berechnungen:</Text>
+          <Text style={styles.warningText}>Standard: §558+§559 möglich | Index: Nur Index, kein §558/§559 | Staffel: Festgelegt</Text>
         </View>
       </View>
 
-      {/* Schritt 4: Übersicht */}
       <View style={[styles.section, styles.sectionOrange]}>
-        <Text style={styles.sectionTitle}>SCHRITT 4: Übersicht & Absenden</Text>
-
-        <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6 }}>
-          Angezeigte Zusammenfassung:
-        </Text>
+        <Text style={styles.sectionTitle}>Schritt 4: Übersicht & Absenden</Text>
+        <Text style={styles.subHeader}>Angezeigte Zusammenfassung</Text>
         <BulletList items={[
-          'Kontaktdaten des Mandanten (Name, Email, Telefon)',
-          'Ankaufsprofil-Zusammenfassung (wenn erstellt): Assetklassen, Regionen, Volumen',
-          'Portfolio-Übersicht: Anzahl Objekte, Einheiten, Gesamtfläche, Jahresmiete',
-          'Liste aller Objekte mit Kurzinfo (Adresse, Einheiten, Miete)',
+          'Kontaktdaten: Firma, Ansprechpartner (Anrede Vorname Nachname), E-Mail, Telefon',
+          'Ankaufsprofil (wenn erstellt): Assetklassen, Regionen',
+          'Portfolio-KPIs: Anzahl Objekte, Einheiten, Gesamtfläche, Jahresmiete',
+          'Objekt-Liste: Adresse + Monatsmiete pro Objekt',
         ]} />
-
-        <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy, marginBottom: 6, marginTop: 10 }}>
-          Nach Klick auf "Absenden":
-        </Text>
+        <Text style={styles.subHeader}>Nach Klick auf "Absenden"</Text>
         <BulletList items={[
-          '✓ Daten werden validiert (Pflichtfelder, min. 1 Objekt)',
-          '✓ Mandant + Objekte + Einheiten werden erstellt',
-          '✓ Ankaufsprofil wird erstellt (falls aktiviert)',
-          '✓ Auth-User mit Passwort wird generiert',
-          '✓ Welcome-E-Mail mit Zugangsdaten wird versendet',
-          '✓ Erfolgs-Seite mit Bestätigung wird angezeigt',
+          '✓ Client-Validierung (Pflichtfelder, min. 1 Objekt)',
+          '✓ Server-Validierung (Duplikat-Check E-Mail)',
+          '✓ Mandant + Objekte + Einheiten in Supabase erstellt',
+          '✓ Auth-User mit 10-Zeichen-Passwort generiert',
+          '✓ Welcome-E-Mail via Make.com Webhook',
+          '✓ Erfolgs-Screen mit Bestätigung',
         ]} />
       </View>
 
-      {/* Zusammenfassung */}
       <View style={styles.infoBox}>
-        <Text style={[styles.infoText, { fontFamily: 'Helvetica-Bold', marginBottom: 4 }]}>
-          Zusammenfassung der Datenstruktur:
-        </Text>
-        <Text style={styles.infoText}>
-          1 Mandant → 0-1 Ankaufsprofil (optional){'\n'}
-          1 Mandant → N Objekte (min. 1){'\n'}
-          1 Objekt → N Einheiten (min. 1, automatisch 1 erstellt){'\n'}
-          1 Einheit → Basisdaten + erweiterte Daten (aufklappbar)
+        <Text style={[styles.infoText, { fontFamily: 'Helvetica-Bold' }]}>Datenstruktur</Text>
+        <Text style={styles.infoText}>1 Mandant → 0-1 Ankaufsprofil → N Objekte (min. 1) → M Einheiten/Objekt (min. 1)</Text>
+      </View>
+
+      <View style={[styles.section]}>
+        <Text style={styles.sectionTitle}>API Endpoint</Text>
+        <Text style={{ fontSize: 7, fontFamily: 'Helvetica-Bold', color: COLORS.royalNavy }}>POST /api/onboarding</Text>
+        <Text style={{ fontSize: 6, color: COLORS.growthBlue, marginTop: 2 }}>
+          Request: {'{'} name, anrede, vorname, nachname, email, telefon, createAnkaufsprofil, ankaufsprofil?, objekte[] {'}'}{'\n'}
+          Response: {'{'} success, mandant_id, objekt_ids[], emailSent, message {'}'}
         </Text>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Imperoyal Immobilien - Onboarding Dokumentation</Text>
-        <Text style={styles.footerText}>Seite 4 von 4</Text>
-      </View>
+      <Footer pageNum={4} />
     </Page>
   </Document>
 );

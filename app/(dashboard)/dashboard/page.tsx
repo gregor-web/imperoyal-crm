@@ -56,10 +56,10 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-800">
+        <h1 className="text-3xl font-bold text-[#1E2A3A]">
           Willkommen{profile?.name ? `, ${profile.name}` : ''}
         </h1>
-        <p className="text-slate-600 mt-1">
+        <p className="text-[#4A6A8D] mt-1">
           {isAdmin
             ? 'Verwalten Sie Mandanten, Objekte und Auswertungen.'
             : 'Verwalten Sie Ihre Objekte und Auswertungen.'}
@@ -71,13 +71,13 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="glass-card rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-slate-800 mb-4">
+        <h2 className="text-lg font-semibold text-[#1E2A3A] mb-4">
           Schnellaktionen
         </h2>
         <div className="flex flex-wrap gap-3">
           <Link
             href="/objekte/neu"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium"
           >
             <Plus className="w-4 h-4" />
             Neues Objekt anlegen
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
           {isAdmin && (
             <Link
               href="/mandanten/neu"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium"
             >
               <Plus className="w-4 h-4" />
               Neuen Mandanten anlegen
@@ -93,7 +93,7 @@ export default async function DashboardPage() {
           )}
           <Link
             href="/ankaufsprofile/neu"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium"
           >
             <Plus className="w-4 h-4" />
             Ankaufsprofil erstellen
@@ -128,7 +128,7 @@ async function RecentActivity() {
 
   return (
     <div className="glass-card rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-slate-800 mb-4">
+      <h2 className="text-lg font-semibold text-[#1E2A3A] mb-4">
         Letzte Auswertungen
       </h2>
       <div className="space-y-3">
@@ -138,13 +138,13 @@ async function RecentActivity() {
             <Link
               key={a.id}
               href={`/auswertungen/${a.id}`}
-              className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors"
+              className="flex items-center justify-between p-3 rounded-lg hover:bg-[#EDF1F5] transition-colors"
             >
               <div>
-                <p className="font-medium text-slate-800">
+                <p className="font-medium text-[#1E2A3A]">
                   {objekt?.strasse || 'Unbekannt'}
                 </p>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-[#5B7A9D]">
                   {objekt?.plz} {objekt?.ort}
                 </p>
               </div>
@@ -152,14 +152,14 @@ async function RecentActivity() {
                 {a.empfehlung && (
                   <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${
                     a.empfehlung === 'HALTEN' ? 'bg-green-100 text-green-700' :
-                    a.empfehlung === 'OPTIMIEREN' ? 'bg-blue-100 text-blue-700' :
+                    a.empfehlung === 'OPTIMIEREN' ? 'bg-[#D5DEE6] text-[#1E2A3A]' :
                     a.empfehlung === 'RESTRUKTURIEREN' ? 'bg-amber-100 text-amber-700' :
                     'bg-red-100 text-red-700'
                   }`}>
                     {a.empfehlung}
                   </span>
                 )}
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-[#9EAFC0] mt-1">
                   {new Date(a.created_at).toLocaleDateString('de-DE')}
                 </p>
               </div>

@@ -117,7 +117,7 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
         variant="primary"
         onClick={handleExport}
         disabled={loading}
-        className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
+        className="bg-gradient-to-r from-[#1E2A3A] to-[#4A6A8D] hover:from-[#2A3F54] hover:to-[#5B7A9D]"
       >
         {loading ? (
           <Loader2 className="w-4 h-4 mr-2 animate-spin" />

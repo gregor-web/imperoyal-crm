@@ -239,10 +239,10 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                 className={`
                   w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm transition-all
                   ${currentStep === step.id
-                    ? 'bg-blue-600 text-white shadow-lg scale-110'
+                    ? 'bg-[#1E2A3A] text-white shadow-lg scale-110'
                     : currentStep > step.id
                     ? 'bg-green-500 text-white cursor-pointer hover:bg-green-600'
-                    : 'bg-slate-200 text-slate-500'
+                    : 'bg-[#D5DEE6] text-[#5B7A9D]'
                   }
                 `}
               >
@@ -251,7 +251,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
               {index < STEPS.length - 1 && (
                 <div
                   className={`w-4 sm:w-8 h-1 mx-1 rounded ${
-                    currentStep > step.id ? 'bg-green-500' : 'bg-slate-200'
+                    currentStep > step.id ? 'bg-green-500' : 'bg-[#D5DEE6]'
                   }`}
                 />
               )}
@@ -261,10 +261,10 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
 
         {/* Current Step Info */}
         <div className="text-center">
-          <h2 className="text-xl font-bold text-slate-800">{STEPS[currentStep - 1].title}</h2>
-          <p className="text-slate-500 text-sm">{STEPS[currentStep - 1].description}</p>
+          <h2 className="text-xl font-bold text-[#1E2A3A]">{STEPS[currentStep - 1].title}</h2>
+          <p className="text-[#5B7A9D] text-sm">{STEPS[currentStep - 1].description}</p>
           {strasse && plz && ort && currentStep > 1 && (
-            <p className="text-xs text-blue-600 mt-1">{strasse}, {plz} {ort}</p>
+            <p className="text-xs text-[#5B7A9D] mt-1">{strasse}, {plz} {ort}</p>
           )}
         </div>
       </div>
@@ -323,8 +323,8 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
               />
 
               {/* Einheiten-Anzahlen - Wichtig für Step 9 */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="text-sm font-semibold text-blue-800 mb-3">Anzahl Einheiten (bestimmt Felder in Step 9)</h4>
+              <div className="bg-[#EDF1F5] border border-[#B8C5D1] rounded-lg p-4">
+                <h4 className="text-sm font-semibold text-[#1E2A3A] mb-3">Anzahl Einheiten (bestimmt Felder in Step 9)</h4>
                 <div className="grid grid-cols-3 gap-4">
                   <Input
                     label="Wohneinheiten"
@@ -339,17 +339,17 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                     {...register('gewerbeeinheiten')}
                   />
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Stellplätze</label>
+                    <label className="block text-sm font-medium text-[#1E2A3A] mb-1">Stellplätze</label>
                     <input
                       type="number"
                       value={stellplaetze}
                       onChange={(e) => setStellplaetze(Number(e.target.value) || 0)}
                       placeholder="0"
-                      className="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-[#D5DEE6] rounded-lg focus:ring-2 focus:ring-[#5B7A9D] focus:border-[#5B7A9D]"
                     />
                   </div>
                 </div>
-                <p className="text-xs text-blue-600 mt-2">
+                <p className="text-xs text-[#5B7A9D] mt-2">
                   Basierend auf diesen Angaben werden im letzten Schritt automatisch {Number(wohneinheiten) + Number(gewerbeeinheiten) + stellplaetze} Einheit(en) zum Ausfüllen generiert.
                 </p>
               </div>
@@ -513,7 +513,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                 placeholder="z.B. 150000"
                 {...register('capex_geplant_betrag')}
               />
-              <p className="text-sm text-slate-500 bg-blue-50 p-3 rounded-lg">
+              <p className="text-sm text-[#5B7A9D] bg-[#EDF1F5] p-3 rounded-lg">
                 CAPEX-Investitionen können nach §559 BGB auf Mieter umgelegt werden (8% p.a., mit Kappungsgrenzen).
               </p>
             </div>
@@ -574,8 +574,8 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
           {currentStep === 9 && (
             <div className="space-y-4">
               {einheiten.length === 0 ? (
-                <div className="text-center py-8 bg-slate-50 rounded-lg">
-                  <p className="text-slate-500">
+                <div className="text-center py-8 bg-[#EDF1F5] rounded-lg">
+                  <p className="text-[#5B7A9D]">
                     Keine Einheiten definiert. Bitte gehen Sie zurück zu Schritt 2 und geben Sie die Anzahl der Einheiten ein.
                   </p>
                 </div>
@@ -583,7 +583,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                 <>
                   {/* Header mit Buttons */}
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-slate-800">
+                    <h3 className="text-lg font-semibold text-[#1E2A3A]">
                       {einheiten.length} Einheit(en)
                     </h3>
                     <div className="flex gap-2">
@@ -609,7 +609,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                             <button
                               type="button"
                               onClick={() => toggleExpanded(index)}
-                              className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
+                              className="flex items-center gap-2 text-sm font-medium text-[#1E2A3A] hover:text-[#1E2A3A]"
                             >
                               {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                               <span className={`px-2 py-0.5 rounded text-xs font-semibold bg-${nutzungColor}-100 text-${nutzungColor}-700`}>
@@ -617,7 +617,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                               </span>
                               Einheit {index + 1}
                               {einheit.flaeche && einheit.kaltmiete && (
-                                <span className="text-slate-500 font-normal">
+                                <span className="text-[#5B7A9D] font-normal">
                                   ({einheit.flaeche}m², {einheit.kaltmiete}€)
                                 </span>
                               )}
@@ -627,11 +627,11 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                           {/* Basis-Felder (immer sichtbar) */}
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
                             <div>
-                              <label className="block text-xs font-medium text-slate-600 mb-1">Nutzung</label>
+                              <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Nutzung</label>
                               <select
                                 value={einheit.nutzung}
                                 onChange={(e) => updateEinheit(index, 'nutzung', e.target.value as 'Wohnen' | 'Gewerbe' | 'Stellplatz')}
-                                className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                               >
                                 <option value="Wohnen">Wohnen</option>
                                 <option value="Gewerbe">Gewerbe</option>
@@ -639,31 +639,31 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                               </select>
                             </div>
                             <div>
-                              <label className="block text-xs font-medium text-slate-600 mb-1">Fläche (m²)</label>
+                              <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Fläche (m²)</label>
                               <input
                                 type="number"
                                 step="0.01"
                                 value={einheit.flaeche || ''}
                                 onChange={(e) => updateEinheit(index, 'flaeche', e.target.value ? Number(e.target.value) : null)}
-                                className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                               />
                             </div>
                             <div>
-                              <label className="block text-xs font-medium text-slate-600 mb-1">Kaltmiete (€)</label>
+                              <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Kaltmiete (€)</label>
                               <input
                                 type="number"
                                 step="0.01"
                                 value={einheit.kaltmiete || ''}
                                 onChange={(e) => updateEinheit(index, 'kaltmiete', e.target.value ? Number(e.target.value) : null)}
-                                className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                               />
                             </div>
                             <div>
-                              <label className="block text-xs font-medium text-slate-600 mb-1">Vertragsart</label>
+                              <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Vertragsart</label>
                               <select
                                 value={einheit.mietvertragsart}
                                 onChange={(e) => updateEinheit(index, 'mietvertragsart', e.target.value as 'Standard' | 'Index' | 'Staffel')}
-                                className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                               >
                                 <option value="Standard">Standard</option>
                                 <option value="Index">Index</option>
@@ -676,107 +676,107 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                           {isExpanded && (
                             <>
                               {/* Vertragsdaten */}
-                              <div className="mt-4 pt-3 border-t border-slate-200">
-                                <h5 className="text-xs font-semibold text-slate-500 mb-2">Vertragsdaten</h5>
+                              <div className="mt-4 pt-3 border-t border-[#D5DEE6]">
+                                <h5 className="text-xs font-semibold text-[#5B7A9D] mb-2">Vertragsdaten</h5>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                   <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Vertragsbeginn</label>
+                                    <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Vertragsbeginn</label>
                                     <input
                                       type="date"
                                       value={einheit.vertragsbeginn || ''}
                                       onChange={(e) => updateEinheit(index, 'vertragsbeginn', e.target.value || null)}
-                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                      className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                                     />
                                   </div>
                                   <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Marktmiete (€/m²)</label>
+                                    <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Marktmiete (€/m²)</label>
                                     <input
                                       type="number"
                                       step="0.01"
                                       value={einheit.vergleichsmiete || ''}
                                       onChange={(e) => updateEinheit(index, 'vergleichsmiete', Number(e.target.value) || 12)}
-                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                      className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                                     />
                                   </div>
                                   <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Letzte Erhöhung</label>
+                                    <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Letzte Erhöhung</label>
                                     <input
                                       type="date"
                                       value={einheit.letzte_mieterhoehung || ''}
                                       onChange={(e) => updateEinheit(index, 'letzte_mieterhoehung', e.target.value || null)}
-                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                      className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                                     />
                                   </div>
                                   <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Höhe (€)</label>
+                                    <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Höhe (€)</label>
                                     <input
                                       type="number"
                                       step="0.01"
                                       value={einheit.hoehe_mieterhoehung || ''}
                                       onChange={(e) => updateEinheit(index, 'hoehe_mieterhoehung', e.target.value ? Number(e.target.value) : null)}
-                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                      className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                                     />
                                   </div>
                                 </div>
                               </div>
 
                               {/* §558 BGB */}
-                              <div className="mt-3 pt-3 border-t border-slate-200">
-                                <h5 className="text-xs font-semibold text-slate-500 mb-2">§558 BGB - Vergleichsmiete</h5>
+                              <div className="mt-3 pt-3 border-t border-[#D5DEE6]">
+                                <h5 className="text-xs font-semibold text-[#5B7A9D] mb-2">§558 BGB - Vergleichsmiete</h5>
                                 <div className="grid grid-cols-2 gap-3">
                                   <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Datum §558</label>
+                                    <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Datum §558</label>
                                     <input
                                       type="date"
                                       value={einheit.datum_558 || ''}
                                       onChange={(e) => updateEinheit(index, 'datum_558', e.target.value || null)}
-                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                      className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                                     />
                                   </div>
                                   <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Höhe §558 (€)</label>
+                                    <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Höhe §558 (€)</label>
                                     <input
                                       type="number"
                                       step="0.01"
                                       value={einheit.hoehe_558 || ''}
                                       onChange={(e) => updateEinheit(index, 'hoehe_558', e.target.value ? Number(e.target.value) : null)}
-                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                      className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                                     />
                                   </div>
                                 </div>
                               </div>
 
                               {/* §559 BGB */}
-                              <div className="mt-3 pt-3 border-t border-slate-200">
-                                <h5 className="text-xs font-semibold text-slate-500 mb-2">§559 BGB - Modernisierung</h5>
+                              <div className="mt-3 pt-3 border-t border-[#D5DEE6]">
+                                <h5 className="text-xs font-semibold text-[#5B7A9D] mb-2">§559 BGB - Modernisierung</h5>
                                 <div className="grid grid-cols-3 gap-3">
                                   <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Datum §559</label>
+                                    <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Datum §559</label>
                                     <input
                                       type="date"
                                       value={einheit.datum_559 || ''}
                                       onChange={(e) => updateEinheit(index, 'datum_559', e.target.value || null)}
-                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                      className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                                     />
                                   </div>
                                   <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Art</label>
+                                    <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Art</label>
                                     <input
                                       type="text"
                                       placeholder="z.B. Dämmung"
                                       value={einheit.art_modernisierung_559 || ''}
                                       onChange={(e) => updateEinheit(index, 'art_modernisierung_559', e.target.value || null)}
-                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                      className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                                     />
                                   </div>
                                   <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Höhe (€/Mon)</label>
+                                    <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Höhe (€/Mon)</label>
                                     <input
                                       type="number"
                                       step="0.01"
                                       value={einheit.hoehe_559 || ''}
                                       onChange={(e) => updateEinheit(index, 'hoehe_559', e.target.value ? Number(e.target.value) : null)}
-                                      className="w-full px-2 py-1.5 text-sm border border-slate-200 rounded-lg"
+                                      className="w-full px-2 py-1.5 text-sm border border-[#D5DEE6] rounded-lg"
                                     />
                                   </div>
                                 </div>
@@ -794,7 +794,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between items-center pt-6 mt-6 border-t border-slate-200">
+        <div className="flex justify-between items-center pt-6 mt-6 border-t border-[#D5DEE6]">
           <div>
             {currentStep > 1 ? (
               <Button type="button" variant="secondary" onClick={prevStep}>
@@ -810,7 +810,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
             )}
           </div>
 
-          <div className="text-sm text-slate-500">
+          <div className="text-sm text-[#5B7A9D]">
             Schritt {currentStep} von {STEPS.length}
           </div>
 

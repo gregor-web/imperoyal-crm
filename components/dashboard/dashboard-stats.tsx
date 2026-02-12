@@ -161,19 +161,19 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   const colorClasses = {
-    blue: 'from-blue-500 to-blue-600',
+    blue: 'from-[#4A6A8D] to-[#5B7A9D]',
     green: 'from-green-500 to-green-600',
     amber: 'from-amber-500 to-amber-600',
-    purple: 'from-purple-500 to-purple-600',
+    purple: 'from-[#1E2A3A] to-[#2A3F54]',
   };
 
   return (
     <div className="glass-card rounded-xl p-6">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-600">{title}</p>
-          <p className="text-3xl font-bold text-slate-800 mt-1">{value}</p>
-          <p className="text-sm text-slate-500 mt-1">{subtitle}</p>
+          <p className="text-sm font-medium text-[#4A6A8D]">{title}</p>
+          <p className="text-3xl font-bold text-[#1E2A3A] mt-1">{value}</p>
+          <p className="text-sm text-[#5B7A9D] mt-1">{subtitle}</p>
         </div>
         <div
           className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center`}

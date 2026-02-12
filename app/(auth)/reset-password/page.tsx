@@ -50,16 +50,16 @@ export default function ResetPasswordPage() {
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800 mb-2">
+          <h1 className="text-2xl font-bold text-[#1E2A3A] mb-2">
             E-Mail gesendet
           </h1>
-          <p className="text-slate-600 mb-6">
+          <p className="text-[#4A6A8D] mb-6">
             Wir haben Ihnen eine E-Mail mit einem Link zum Zurücksetzen Ihres
             Passworts gesendet. Bitte überprüfen Sie Ihren Posteingang.
           </p>
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
+            className="inline-flex items-center gap-2 text-[#5B7A9D] hover:text-[#4A6A8D]"
           >
             <ArrowLeft className="w-4 h-4" />
             Zurück zum Login
@@ -73,13 +73,13 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen login-bg flex items-center justify-center p-4">
       <div className="glass-card rounded-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div className="w-16 h-16 bg-[#1E2A3A] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Mail className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">
+          <h1 className="text-2xl font-bold text-[#1E2A3A]">
             Passwort zurücksetzen
           </h1>
-          <p className="text-slate-600 mt-2">
+          <p className="text-[#4A6A8D] mt-2">
             Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link
             zum Zurücksetzen.
           </p>
@@ -95,7 +95,7 @@ export default function ResetPasswordPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-slate-700 mb-1"
+              className="block text-sm font-medium text-[#1E2A3A] mb-1"
             >
               E-Mail-Adresse
             </label>
@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
               type="email"
               autoComplete="email"
               {...register('email')}
-              className="glass-input w-full px-4 py-3 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="glass-input w-full px-4 py-3 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0]"
               placeholder="name@firma.de"
             />
             {errors.email && (
@@ -146,7 +146,7 @@ export default function ResetPasswordPage() {
         <div className="mt-6 text-center">
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-800"
+            className="inline-flex items-center gap-2 text-sm text-[#4A6A8D] hover:text-[#1E2A3A]"
           >
             <ArrowLeft className="w-4 h-4" />
             Zurück zum Login

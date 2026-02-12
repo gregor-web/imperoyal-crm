@@ -12,8 +12,8 @@ export function Card({ children, className = '', title, subtitle, actions }: Car
       {(title || actions) && (
         <div className="flex items-start justify-between p-6 border-b border-white/20">
           <div>
-            {title && <h3 className="text-lg font-semibold text-slate-800">{title}</h3>}
-            {subtitle && <p className="text-sm text-slate-600 mt-1">{subtitle}</p>}
+            {title && <h3 className="text-lg font-semibold text-[#1E2A3A]">{title}</h3>}
+            {subtitle && <p className="text-sm text-[#4A6A8D] mt-1">{subtitle}</p>}
           </div>
           {actions && <div className="flex gap-2">{actions}</div>}
         </div>
@@ -55,20 +55,20 @@ interface StatCardProps {
 
 export function StatCard({ title, value, subtitle, icon, trend, color = 'blue' }: StatCardProps) {
   const colors = {
-    blue: 'from-blue-500 to-blue-600',
+    blue: 'from-[#4A6A8D] to-[#5B7A9D]',
     green: 'from-green-500 to-green-600',
     red: 'from-red-500 to-red-600',
     amber: 'from-amber-500 to-amber-600',
-    purple: 'from-purple-500 to-purple-600',
+    purple: 'from-[#1E2A3A] to-[#2A3F54]',
   };
 
   return (
     <div className="glass-card rounded-xl p-6">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-600">{title}</p>
-          <p className="text-2xl font-bold text-slate-800 mt-1">{value}</p>
-          {subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}
+          <p className="text-sm font-medium text-[#4A6A8D]">{title}</p>
+          <p className="text-2xl font-bold text-[#1E2A3A] mt-1">{value}</p>
+          {subtitle && <p className="text-sm text-[#5B7A9D] mt-1">{subtitle}</p>}
           {trend && (
             <p className={`text-sm mt-2 ${trend.value >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {trend.value >= 0 ? '+' : ''}{trend.value}% {trend.label}

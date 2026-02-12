@@ -53,16 +53,16 @@ export default function UpdatePasswordPage() {
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800 mb-2">
+          <h1 className="text-2xl font-bold text-[#1E2A3A] mb-2">
             Passwort aktualisiert
           </h1>
-          <p className="text-slate-600 mb-6">
+          <p className="text-[#4A6A8D] mb-6">
             Ihr Passwort wurde erfolgreich geändert. Sie können sich jetzt mit
             Ihrem neuen Passwort anmelden.
           </p>
           <Link
             href="/login"
-            className="inline-block w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 transition-all"
+            className="inline-block w-full bg-gradient-to-r from-[#1E2A3A] to-[#2A3F54] text-white py-3 px-4 rounded-lg font-medium hover:from-[#2A3F54] hover:to-[#3D5167] transition-all"
           >
             Zum Login
           </Link>
@@ -75,13 +75,13 @@ export default function UpdatePasswordPage() {
     <div className="w-full max-w-md">
       <div className="glass-card rounded-2xl p-8">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div className="w-16 h-16 bg-[#1E2A3A] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">
+          <h1 className="text-2xl font-bold text-[#1E2A3A]">
             Neues Passwort festlegen
           </h1>
-          <p className="text-slate-600 mt-2">
+          <p className="text-[#4A6A8D] mt-2">
             Geben Sie Ihr neues Passwort ein.
           </p>
         </div>
@@ -96,7 +96,7 @@ export default function UpdatePasswordPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-slate-700 mb-1"
+              className="block text-sm font-medium text-[#1E2A3A] mb-1"
             >
               Neues Passwort
             </label>
@@ -107,7 +107,7 @@ export default function UpdatePasswordPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="glass-input w-full px-4 py-3 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="glass-input w-full px-4 py-3 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]"
               placeholder="Mindestens 6 Zeichen"
             />
           </div>
@@ -115,7 +115,7 @@ export default function UpdatePasswordPage() {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-slate-700 mb-1"
+              className="block text-sm font-medium text-[#1E2A3A] mb-1"
             >
               Passwort bestätigen
             </label>
@@ -126,7 +126,7 @@ export default function UpdatePasswordPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={6}
-              className="glass-input w-full px-4 py-3 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="glass-input w-full px-4 py-3 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]"
               placeholder="Passwort wiederholen"
             />
           </div>
@@ -134,7 +134,7 @@ export default function UpdatePasswordPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full bg-gradient-to-r from-[#1E2A3A] to-[#2A3F54] text-white py-3 px-4 rounded-lg font-medium hover:from-[#2A3F54] hover:to-[#3D5167] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isLoading ? 'Wird gespeichert...' : 'Passwort speichern'}
           </button>

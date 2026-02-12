@@ -70,8 +70,8 @@ export default async function ObjektePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Objekte</h1>
-          <p className="text-slate-600 mt-1">
+          <h1 className="text-2xl font-bold text-[#1E2A3A]">Objekte</h1>
+          <p className="text-[#4A6A8D] mt-1">
             {isAdmin
               ? `${totalObjekte} Objekte von ${totalMandanten} Mandanten`
               : 'Ihre Immobilien'}
@@ -94,7 +94,7 @@ export default async function ObjektePage() {
               return (
                 <Card key={mandantId} className="overflow-hidden">
                   {/* Mandant Header */}
-                  <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4">
+                  <div className="bg-gradient-to-r from-[#1E2A3A] to-[#2A3F54] px-6 py-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="bg-white/10 p-2 rounded-lg">
@@ -103,21 +103,21 @@ export default async function ObjektePage() {
                         <div>
                           <Link
                             href={`/mandanten/${mandantId}`}
-                            className="text-lg font-semibold text-white hover:text-blue-200 transition-colors"
+                            className="text-lg font-semibold text-white hover:text-[#D5DEE6] transition-colors"
                           >
                             {group.mandantName}
                           </Link>
-                          <p className="text-slate-300 text-sm">
+                          <p className="text-[#B8C5D1] text-sm">
                             {group.objekte.length} {group.objekte.length === 1 ? 'Objekt' : 'Objekte'}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Building2 className="w-5 h-5 text-slate-400" />
+                        <Building2 className="w-5 h-5 text-[#9EAFC0]" />
                         <span className="text-white font-medium">
                           {formatCurrency(group.objekte.reduce((sum, o) => sum + (o.kaufpreis || 0), 0))}
                         </span>
-                        <span className="text-slate-400 text-sm">Gesamtwert</span>
+                        <span className="text-[#9EAFC0] text-sm">Gesamtwert</span>
                       </div>
                     </div>
                   </div>
@@ -140,7 +140,7 @@ export default async function ObjektePage() {
                           <TableCell>
                             <div>
                               <p className="font-medium">{objekt.strasse}</p>
-                              <p className="text-sm text-slate-500">{objekt.plz} {objekt.ort}</p>
+                              <p className="text-sm text-[#5B7A9D]">{objekt.plz} {objekt.ort}</p>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -154,7 +154,7 @@ export default async function ObjektePage() {
                           <TableCell>
                             <Link
                               href={`/objekte/${objekt.id}`}
-                              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                              className="text-[#5B7A9D] hover:text-[#4A6A8D] text-sm font-medium"
                             >
                               Details
                             </Link>
@@ -167,7 +167,7 @@ export default async function ObjektePage() {
               );
             })
           ) : (
-            <Card className="p-8 text-center text-slate-500">
+            <Card className="p-8 text-center text-[#5B7A9D]">
               Keine Objekte vorhanden
             </Card>
           )}
@@ -193,7 +193,7 @@ export default async function ObjektePage() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{objekt.strasse}</p>
-                        <p className="text-sm text-slate-500">{objekt.plz} {objekt.ort}</p>
+                        <p className="text-sm text-[#5B7A9D]">{objekt.plz} {objekt.ort}</p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -207,7 +207,7 @@ export default async function ObjektePage() {
                     <TableCell>
                       <Link
                         href={`/objekte/${objekt.id}`}
-                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                        className="text-[#5B7A9D] hover:text-[#4A6A8D] text-sm font-medium"
                       >
                         Details
                       </Link>

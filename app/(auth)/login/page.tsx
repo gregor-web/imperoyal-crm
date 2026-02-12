@@ -47,7 +47,7 @@ export default function LoginPage() {
             className="h-16 w-auto mx-auto mb-4"
             priority
           />
-          <p className="text-slate-600 mt-1">
+          <p className="text-[#4A6A8D] mt-1">
             Optimierungsprotokoll-System
           </p>
         </div>
@@ -57,7 +57,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-slate-700 mb-1"
+              className="block text-sm font-medium text-[#1E2A3A] mb-1"
             >
               E-Mail
             </label>
@@ -67,7 +67,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800"
+              className="glass-input w-full px-4 py-3 rounded-lg text-slate-800"
               placeholder="name@beispiel.de"
             />
           </div>
@@ -75,7 +75,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-slate-700 mb-1"
+              className="block text-sm font-medium text-[#1E2A3A] mb-1"
             >
               Passwort
             </label>
@@ -85,7 +85,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="glass-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800"
+              className="glass-input w-full px-4 py-3 rounded-lg text-slate-800"
               placeholder="••••••••"
             />
           </div>
@@ -99,7 +99,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full btn-primary py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-[#5B7A9D] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Anmelden...' : 'Anmelden'}
           </button>
@@ -126,7 +126,7 @@ export default function LoginPage() {
               router.refresh();
             }}
             disabled={loading}
-            className="w-full bg-slate-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50 transition-all"
+            className="w-full bg-[#2A3F54] text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-[#3D5167] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D] disabled:opacity-50 transition-all"
           >
             {loading ? 'Anmelden...' : 'Admin Login (Demo)'}
           </button>
@@ -169,7 +169,7 @@ export default function LoginPage() {
               router.refresh();
             }}
             disabled={loading}
-            className="w-full bg-green-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 transition-all"
+            className="w-full bg-[#4A6A8D] text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-[#5B7A9D] focus:outline-none focus:ring-2 focus:ring-[#6B8AAD] disabled:opacity-50 transition-all"
           >
             {loading ? 'Anmelden...' : 'Kunden Login (Demo)'}
           </button>
@@ -179,7 +179,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <a
             href="/reset-password"
-            className="text-sm text-blue-600 hover:text-blue-700"
+            className="text-sm text-[#5B7A9D] hover:text-[#4A6A8D]"
           >
             Passwort vergessen?
           </a>
