@@ -63,8 +63,9 @@ type Ankaufsprofil = {
 
 type FormData = {
   name: string;
-  ansprechpartner: string;
-  position: string;
+  anrede: string;
+  vorname: string;
+  nachname: string;
   email: string;
   telefon: string;
   anzahl_objekte: number;
@@ -183,7 +184,7 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
-    name: '', ansprechpartner: '', position: '', email: '', telefon: '',
+    name: '', anrede: '', vorname: '', nachname: '', email: '', telefon: '',
     anzahl_objekte: 1,
     createAnkaufsprofil: false, ankaufsprofil: createEmptyAnkaufsprofil(), objekte: [createEmptyObjekt()],
   });
@@ -290,7 +291,7 @@ export default function OnboardingPage() {
   const isLastStep = mainStep === 4;
 
   // Update functions
-  const updateMandant = (field: keyof Pick<FormData, 'name' | 'ansprechpartner' | 'position' | 'email' | 'telefon'>, value: string) => {
+  const updateMandant = (field: keyof Pick<FormData, 'name' | 'anrede' | 'vorname' | 'nachname' | 'email' | 'telefon'>, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -475,14 +476,34 @@ export default function OnboardingPage() {
             <div>
               <h2 className="text-lg font-bold mb-4" style={{ color: COLORS.royalNavy.dark }}>Ihre Kontaktdaten</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-slate-700 mb-1">Firmenname / Name *</label>
                   <input type="text" value={formData.name} onChange={(e) => updateMandant('name', e.target.value)}
                     className="glass-input w-full px-3 py-2.5 rounded-lg" required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Ansprechpartner *</label>
-                  <input type="text" value={formData.ansprechpartner} onChange={(e) => updateMandant('ansprechpartner', e.target.value)}
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Anrede *</label>
+                  <select value={formData.anrede} onChange={(e) => updateMandant('anrede', e.target.value)}
+                    className="glass-input w-full px-3 py-2.5 rounded-lg" required>
+                    <option value="">Bitte wählen...</option>
+                    <option value="Herr">Herr</option>
+                    <option value="Frau">Frau</option>
+                    <option value="Herr Dr.">Herr Dr.</option>
+                    <option value="Frau Dr.">Frau Dr.</option>
+                    <option value="Herr Prof.">Herr Prof.</option>
+                    <option value="Frau Prof.">Frau Prof.</option>
+                    <option value="Herr Prof. Dr.">Herr Prof. Dr.</option>
+                    <option value="Frau Prof. Dr.">Frau Prof. Dr.</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Vorname *</label>
+                  <input type="text" value={formData.vorname} onChange={(e) => updateMandant('vorname', e.target.value)}
+                    className="glass-input w-full px-3 py-2.5 rounded-lg" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Nachname *</label>
+                  <input type="text" value={formData.nachname} onChange={(e) => updateMandant('nachname', e.target.value)}
                     className="glass-input w-full px-3 py-2.5 rounded-lg" required />
                 </div>
                 <div>
@@ -889,7 +910,7 @@ export default function OnboardingPage() {
                 <h3 className="font-semibold mb-2" style={{ color: COLORS.royalNavy.dark }}>Kontakt</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div><span className="text-slate-500">Firma:</span> {formData.name}</div>
-                  <div><span className="text-slate-500">Ansprechpartner:</span> {formData.ansprechpartner}</div>
+                  <div><span className="text-slate-500">Ansprechpartner:</span> {formData.anrede} {formData.vorname} {formData.nachname}</div>
                   <div><span className="text-slate-500">E-Mail:</span> {formData.email}</div>
                   <div><span className="text-slate-500">Telefon:</span> {formData.telefon || '-'}</div>
                 </div>
