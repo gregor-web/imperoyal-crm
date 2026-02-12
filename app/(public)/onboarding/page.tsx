@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { CheckCircle, ArrowRight, ArrowLeft, Building2, User, Home, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { CheckCircle, ArrowRight, ArrowLeft, Building2, User, Home, Plus, ShoppingCart } from 'lucide-react';
 
 // =====================================================
 // TYPES
@@ -29,6 +29,10 @@ type Objekt = {
   tilgung: string;
   instandhaltung: string;
   verwaltung: string;
+  // Anzahl-Felder für automatische Einheiten-Generierung
+  anzahl_wohneinheiten: number;
+  anzahl_gewerbeeinheiten: number;
+  anzahl_stellplaetze: number;
   einheiten: Einheit[];
 };
 
@@ -99,8 +103,24 @@ const createEmptyEinheit = (): Einheit => ({
 const createEmptyObjekt = (): Objekt => ({
   strasse: '', plz: '', ort: '', gebaeudetyp: 'MFH', baujahr: '', kaufpreis: '', kaufdatum: '',
   eigenkapital_prozent: '30', zinssatz: '3.8', tilgung: '2', instandhaltung: '', verwaltung: '',
+  anzahl_wohneinheiten: 1, anzahl_gewerbeeinheiten: 0, anzahl_stellplaetze: 0,
   einheiten: [createEmptyEinheit()],
 });
+
+// Generiert Einheiten basierend auf Anzahl pro Nutzungsart
+const generateEinheiten = (wohn: number, gewerbe: number, stellplaetze: number): Einheit[] => {
+  const einheiten: Einheit[] = [];
+  for (let i = 0; i < wohn; i++) {
+    einheiten.push({ nutzung: 'Wohnen', flaeche: '', kaltmiete: '', vergleichsmiete: '12', mietvertragsart: 'Standard' });
+  }
+  for (let i = 0; i < gewerbe; i++) {
+    einheiten.push({ nutzung: 'Gewerbe', flaeche: '', kaltmiete: '', vergleichsmiete: '12', mietvertragsart: 'Standard' });
+  }
+  for (let i = 0; i < stellplaetze; i++) {
+    einheiten.push({ nutzung: 'Stellplatz', flaeche: '', kaltmiete: '', vergleichsmiete: '0', mietvertragsart: 'Standard' });
+  }
+  return einheiten.length > 0 ? einheiten : [{ nutzung: 'Wohnen', flaeche: '', kaltmiete: '', vergleichsmiete: '12', mietvertragsart: 'Standard' }];
+};
 
 const createEmptyAnkaufsprofil = (): Ankaufsprofil => ({
   name: 'Ankaufsprofil', kaufinteresse_aktiv: true, assetklassen: [], regionen: '', lagepraeferenz: [],
@@ -276,10 +296,27 @@ export default function OnboardingPage() {
     setFormData((prev) => ({ ...prev, ankaufsprofil: { ...prev.ankaufsprofil, [field]: value } }));
   };
 
-  const updateObjekt = (field: keyof Omit<Objekt, 'einheiten'>, value: string) => {
+  const updateObjekt = (field: keyof Omit<Objekt, 'einheiten' | 'anzahl_wohneinheiten' | 'anzahl_gewerbeeinheiten' | 'anzahl_stellplaetze'>, value: string) => {
     setFormData((prev) => ({
       ...prev,
       objekte: prev.objekte.map((o, i) => (i === currentObjektIndex ? { ...o, [field]: value } : o)),
+    }));
+  };
+
+  // Aktualisiert Anzahl-Felder und regeneriert Einheiten automatisch
+  const updateObjektAnzahl = (field: 'anzahl_wohneinheiten' | 'anzahl_gewerbeeinheiten' | 'anzahl_stellplaetze', value: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      objekte: prev.objekte.map((o, i) => {
+        if (i !== currentObjektIndex) return o;
+        const newAnzahl = { ...o, [field]: value };
+        const newEinheiten = generateEinheiten(
+          newAnzahl.anzahl_wohneinheiten,
+          newAnzahl.anzahl_gewerbeeinheiten,
+          newAnzahl.anzahl_stellplaetze
+        );
+        return { ...newAnzahl, einheiten: newEinheiten };
+      }),
     }));
   };
 
@@ -304,26 +341,6 @@ export default function OnboardingPage() {
     if (currentObjektIndex >= formData.objekte.length - 1) {
       setCurrentObjektIndex(Math.max(0, formData.objekte.length - 2));
     }
-  };
-
-  const addEinheit = () => {
-    setFormData((prev) => ({
-      ...prev,
-      objekte: prev.objekte.map((o, i) =>
-        i === currentObjektIndex ? { ...o, einheiten: [...o.einheiten, createEmptyEinheit()] } : o
-      ),
-    }));
-  };
-
-  const removeEinheit = (einheitIndex: number) => {
-    const objekt = formData.objekte[currentObjektIndex];
-    if (objekt.einheiten.length <= 1) return;
-    setFormData((prev) => ({
-      ...prev,
-      objekte: prev.objekte.map((o, i) =>
-        i === currentObjektIndex ? { ...o, einheiten: o.einheiten.filter((_, ei) => ei !== einheitIndex) } : o
-      ),
-    }));
   };
 
   // Stats
@@ -651,6 +668,36 @@ export default function OnboardingPage() {
                     <input type="text" inputMode="numeric" value={currentObjekt.baujahr} onChange={(e) => updateObjekt('baujahr', e.target.value)}
                       className="glass-input w-full px-3 py-2 rounded-lg" placeholder="1985" />
                   </div>
+
+                  {/* Anzahl Einheiten - automatische Generierung */}
+                  <div className="md:col-span-2 mt-4 p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                    <label className="block text-sm font-medium mb-3" style={{ color: COLORS.royalNavy.dark }}>
+                      Anzahl Einheiten (bestimmt Formulare im Einheiten-Schritt)
+                    </label>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs text-slate-500 mb-1">Wohneinheiten</label>
+                        <input type="number" min="0" value={currentObjekt.anzahl_wohneinheiten}
+                          onChange={(e) => updateObjektAnzahl('anzahl_wohneinheiten', Math.max(0, parseInt(e.target.value) || 0))}
+                          className="glass-input w-full px-3 py-2 rounded-lg text-center" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-slate-500 mb-1">Gewerbeeinheiten</label>
+                        <input type="number" min="0" value={currentObjekt.anzahl_gewerbeeinheiten}
+                          onChange={(e) => updateObjektAnzahl('anzahl_gewerbeeinheiten', Math.max(0, parseInt(e.target.value) || 0))}
+                          className="glass-input w-full px-3 py-2 rounded-lg text-center" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-slate-500 mb-1">Stellplätze</label>
+                        <input type="number" min="0" value={currentObjekt.anzahl_stellplaetze}
+                          onChange={(e) => updateObjektAnzahl('anzahl_stellplaetze', Math.max(0, parseInt(e.target.value) || 0))}
+                          className="glass-input w-full px-3 py-2 rounded-lg text-center" />
+                      </div>
+                    </div>
+                    <p className="text-xs mt-2" style={{ color: COLORS.growthBlue.dark }}>
+                      → {currentObjekt.anzahl_wohneinheiten + currentObjekt.anzahl_gewerbeeinheiten + currentObjekt.anzahl_stellplaetze} Einheit(en) werden im nächsten Schritt zum Ausfüllen generiert
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -696,31 +743,25 @@ export default function OnboardingPage() {
               {objektSubStep === 3 && (
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm text-slate-600">{currentObjekt.einheiten.length} Einheit(en)</span>
-                    <button onClick={addEinheit} className="flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg"
-                      style={{ backgroundColor: COLORS.blueBone.lightest, color: COLORS.royalNavy.dark }}>
-                      <Plus className="w-4 h-4" /> Einheit
-                    </button>
+                    <span className="text-sm" style={{ color: COLORS.growthBlue.dark }}>
+                      {currentObjekt.anzahl_wohneinheiten} Wohnen + {currentObjekt.anzahl_gewerbeeinheiten} Gewerbe + {currentObjekt.anzahl_stellplaetze} Stellplätze = {currentObjekt.einheiten.length} Einheit(en)
+                    </span>
                   </div>
+                  <p className="text-xs text-slate-500 mb-3">
+                    Einheiten wurden automatisch basierend auf Ihrer Eingabe generiert. Bitte füllen Sie die Details aus.
+                  </p>
                   <div className="space-y-3">
                     {currentObjekt.einheiten.map((einheit, idx) => (
                       <div key={idx} className="p-3 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium">Einheit {idx + 1}</span>
-                          {currentObjekt.einheiten.length > 1 && (
-                            <button onClick={() => removeEinheit(idx)} className="text-red-500"><Trash2 className="w-4 h-4" /></button>
-                          )}
+                          <span className="text-sm font-medium" style={{ color: COLORS.royalNavy.dark }}>
+                            {einheit.nutzung === 'Wohnen' ? 'Wohnung' : einheit.nutzung === 'Gewerbe' ? 'Gewerbe' : 'Stellplatz'} {idx + 1}
+                          </span>
+                          <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: COLORS.growthBlue.base, color: 'white' }}>
+                            {einheit.nutzung}
+                          </span>
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                          <div>
-                            <label className="block text-xs text-slate-500 mb-1">Nutzung</label>
-                            <select value={einheit.nutzung} onChange={(e) => updateEinheit(idx, 'nutzung', e.target.value)}
-                              className="glass-input w-full px-2 py-1.5 rounded text-sm">
-                              <option value="Wohnen">Wohnen</option>
-                              <option value="Gewerbe">Gewerbe</option>
-                              <option value="Stellplatz">Stellplatz</option>
-                            </select>
-                          </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                           <div>
                             <label className="block text-xs text-slate-500 mb-1">m²</label>
                             <input type="text" inputMode="decimal" value={einheit.flaeche}
@@ -728,7 +769,7 @@ export default function OnboardingPage() {
                               className="glass-input w-full px-2 py-1.5 rounded text-sm" placeholder="75" />
                           </div>
                           <div>
-                            <label className="block text-xs text-slate-500 mb-1">Miete €</label>
+                            <label className="block text-xs text-slate-500 mb-1">Miete €/Mon</label>
                             <input type="text" inputMode="decimal" value={einheit.kaltmiete}
                               onChange={(e) => updateEinheit(idx, 'kaltmiete', e.target.value)}
                               className="glass-input w-full px-2 py-1.5 rounded text-sm" placeholder="850" />
