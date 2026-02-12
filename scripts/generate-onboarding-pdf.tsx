@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 25,
     padding: 20,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.blueBoneLightest,
     borderRadius: 8,
   },
   flowStep: {
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   tableRowAlt: {
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.blueBoneLightest,
   },
   tableCell: {
     fontSize: 9,
