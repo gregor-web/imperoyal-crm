@@ -615,7 +615,7 @@ export default function OnboardingPage() {
               )}
 
               {ankaufSubStep === 3 && (
-                <div className="flex-1 flex flex-col justify-evenly min-h-0">
+                <div className="flex-1 flex flex-col min-h-0">
                   <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Min. Vol. (EUR)</label>
@@ -643,6 +643,10 @@ export default function OnboardingPage() {
                         {FINANZIERUNGSFORMEN.map((f) => <option key={f} value={f}>{f}</option>)}
                       </select>
                     </div>
+                  </div>
+                  {/* Info Hint - pushed to bottom */}
+                  <div className="mt-auto pt-3 sm:pt-4 p-2 sm:p-3 rounded-lg text-[10px] sm:text-xs text-slate-500" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                    Diese Angaben helfen uns, passende Objekte für Sie zu finden.
                   </div>
                 </div>
               )}
@@ -802,7 +806,7 @@ export default function OnboardingPage() {
               )}
 
               {objektSubStep === 2 && (
-                <div className="flex-1 flex flex-col justify-evenly min-h-0">
+                <div className="flex-1 flex flex-col min-h-0">
                   <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufpreis *</label>
@@ -838,6 +842,10 @@ export default function OnboardingPage() {
                         onChange={(e) => updateObjekt('verwaltung', e.target.value)}
                         className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="4800" />
                     </div>
+                  </div>
+                  {/* Info Hint - pushed to bottom */}
+                  <div className="mt-auto pt-3 sm:pt-4 p-2 sm:p-3 rounded-lg text-[10px] sm:text-xs text-slate-500" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                    Finanzierungsdaten werden für die Renditeberechnung und Cashflow-Analyse verwendet.
                   </div>
                 </div>
               )}
