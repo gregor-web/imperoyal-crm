@@ -81,6 +81,29 @@ type FormData = {
 };
 
 // =====================================================
+// BRAND COLORS
+// =====================================================
+
+const COLORS = {
+  royalNavy: {
+    dark: '#1E2A3A',
+    medium: '#2A3F54',
+    light: '#3D5167',
+  },
+  growthBlue: {
+    dark: '#4A6A8D',
+    base: '#5B7A9D',
+    light: '#6B8AAD',
+  },
+  blueBone: {
+    dark: '#9EAFC0',
+    base: '#B8C5D1',
+    light: '#D5DEE6',
+    lightest: '#EDF1F5',
+  },
+};
+
+// =====================================================
 // CONSTANTS
 // =====================================================
 
@@ -175,11 +198,12 @@ function MultiSelectChips({
           key={option}
           type="button"
           onClick={() => toggle(option)}
-          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+          className="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+          style={
             selected.includes(option)
-              ? 'bg-blue-600 text-white'
-              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-          }`}
+              ? { backgroundColor: COLORS.growthBlue.base, color: 'white' }
+              : { backgroundColor: COLORS.blueBone.lightest, color: COLORS.royalNavy.dark }
+          }
         >
           {option}
         </button>
@@ -499,19 +523,22 @@ export default function OnboardingPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #1E2A3A 0%, #2A3F54 50%, #3D5167 100%)' }}>
         <div className="glass-card rounded-2xl p-8 max-w-lg text-center">
-          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: '#5B7A9D' }}>
             <CheckCircle className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800 mb-4">Vielen Dank!</h1>
+          <h1 className="text-2xl font-bold mb-4" style={{ color: '#1E2A3A' }}>Vielen Dank!</h1>
           <p className="text-slate-600 mb-6">
             Ihre Daten wurden erfolgreich übermittelt. Wir werden Ihre {stats.totalObjekte} Objekte analysieren und uns in Kürze bei Ihnen melden.
             {formData.createAnkaufsprofil && ' Ihr Ankaufsprofil wurde ebenfalls erstellt.'}
           </p>
           <a
             href="/"
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-block px-6 py-3 text-white rounded-lg transition-colors"
+            style={{ backgroundColor: '#5B7A9D' }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#4A6A8D'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#5B7A9D'}
           >
             Zur Startseite
           </a>
@@ -525,7 +552,7 @@ export default function OnboardingPage() {
   // =====================================================
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #1E2A3A 0%, #2A3F54 50%, #3D5167 100%)' }}>
       {/* Header */}
       <div className="py-4 px-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -559,22 +586,21 @@ export default function OnboardingPage() {
             <span>{STEPS[step - 1]?.title}</span>
           </div>
           <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500 transition-all duration-300" style={{ width: `${(step / maxStep) * 100}%` }} />
+            <div className="h-full transition-all duration-300" style={{ width: `${(step / maxStep) * 100}%`, backgroundColor: COLORS.growthBlue.base }} />
           </div>
         </div>
         <div className="hidden sm:flex items-center justify-between">
           {STEPS.map((s, idx) => (
             <div key={s.id} className="flex items-center">
               <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
-                  step >= s.id ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/50'
-                }`}
+                className="flex items-center justify-center w-10 h-10 rounded-full transition-colors"
+                style={step >= s.id ? { backgroundColor: COLORS.growthBlue.base, color: 'white' } : { backgroundColor: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.5)' }}
               >
                 <s.icon className="w-5 h-5" />
               </div>
-              <span className={`ml-2 text-sm ${step >= s.id ? 'text-white' : 'text-white/50'}`}>{s.title}</span>
+              <span className="ml-2 text-sm" style={{ color: step >= s.id ? 'white' : 'rgba(255,255,255,0.5)' }}>{s.title}</span>
               {idx < STEPS.length - 1 && (
-                <div className={`w-16 h-0.5 mx-3 transition-colors ${step > s.id ? 'bg-blue-500' : 'bg-white/20'}`} />
+                <div className="w-16 h-0.5 mx-3 transition-colors" style={{ backgroundColor: step > s.id ? COLORS.growthBlue.base : 'rgba(255,255,255,0.2)' }} />
               )}
             </div>
           ))}
@@ -589,7 +615,7 @@ export default function OnboardingPage() {
               ===================================================== */}
           {contentStep === 1 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-slate-800 mb-4">1. Ihre Kontaktdaten</h2>
+              <h2 className="text-lg font-bold text-[#1E2A3A] mb-4">1. Ihre Kontaktdaten</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Firmenname / Name *</label>
@@ -643,15 +669,19 @@ export default function OnboardingPage() {
 
               {/* Ankaufsprofil Toggle */}
               <div className="mt-6 pt-6 border-t border-slate-200">
-                <label className="flex items-center gap-3 cursor-pointer p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <label
+                  className="flex items-center gap-3 cursor-pointer p-4 rounded-lg transition-colors"
+                  style={{ backgroundColor: COLORS.blueBone.lightest }}
+                >
                   <input
                     type="checkbox"
                     checked={formData.createAnkaufsprofil}
                     onChange={(e) => setFormData((prev) => ({ ...prev, createAnkaufsprofil: e.target.checked }))}
-                    className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    className="w-5 h-5 rounded border-slate-300"
+                    style={{ accentColor: COLORS.growthBlue.base }}
                   />
                   <div>
-                    <span className="font-medium text-slate-800">Ankaufsprofil erstellen</span>
+                    <span className="font-medium" style={{ color: COLORS.royalNavy.dark }}>Ankaufsprofil erstellen</span>
                     <p className="text-sm text-slate-600">
                       Erstellen Sie ein Ankaufsprofil, um passende Objekte von uns zu erhalten
                     </p>
@@ -666,7 +696,7 @@ export default function OnboardingPage() {
               ===================================================== */}
           {contentStep === 2 && formData.createAnkaufsprofil && (
             <div className="space-y-6">
-              <h2 className="text-lg font-bold text-slate-800 mb-4">2. Ihr Ankaufsprofil</h2>
+              <h2 className="text-lg font-bold text-[#1E2A3A] mb-4">2. Ihr Ankaufsprofil</h2>
 
               {/* 2.1 Allgemeine Ankaufsparameter */}
               <div className="border border-slate-200 rounded-lg p-4">
@@ -691,7 +721,7 @@ export default function OnboardingPage() {
                         type="radio"
                         checked={formData.ankaufsprofil.kaufinteresse_aktiv === true}
                         onChange={() => updateAnkaufsprofilField('kaufinteresse_aktiv', true)}
-                        className="w-4 h-4 text-blue-600"
+                        className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }}
                       />
                       <span className="text-sm">Ja</span>
                     </label>
@@ -700,7 +730,7 @@ export default function OnboardingPage() {
                         type="radio"
                         checked={formData.ankaufsprofil.kaufinteresse_aktiv === false}
                         onChange={() => updateAnkaufsprofilField('kaufinteresse_aktiv', false)}
-                        className="w-4 h-4 text-blue-600"
+                        className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }}
                       />
                       <span className="text-sm">Nein</span>
                     </label>
@@ -932,7 +962,7 @@ export default function OnboardingPage() {
                           type="radio"
                           checked={formData.ankaufsprofil.ausgeschlossene_partner === true}
                           onChange={() => updateAnkaufsprofilField('ausgeschlossene_partner', true)}
-                          className="w-4 h-4 text-blue-600"
+                          className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }}
                         />
                         <span className="text-sm">Ja</span>
                       </label>
@@ -941,7 +971,7 @@ export default function OnboardingPage() {
                           type="radio"
                           checked={formData.ankaufsprofil.ausgeschlossene_partner === false}
                           onChange={() => updateAnkaufsprofilField('ausgeschlossene_partner', false)}
-                          className="w-4 h-4 text-blue-600"
+                          className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }}
                         />
                         <span className="text-sm">Nein</span>
                       </label>
@@ -989,11 +1019,14 @@ export default function OnboardingPage() {
           {contentStep === 3 && (
             <div className="space-y-4">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-bold text-slate-800">{formData.createAnkaufsprofil ? '3' : '2'}. Ihre Objekte</h2>
+                <h2 className="text-lg font-bold text-[#1E2A3A]">{formData.createAnkaufsprofil ? '3' : '2'}. Ihre Objekte</h2>
                 <button
                   type="button"
                   onClick={addObjekt}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+                  className="flex items-center gap-1 px-3 py-1.5 text-white rounded-lg text-sm transition-colors"
+                  style={{ backgroundColor: COLORS.growthBlue.base }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = COLORS.growthBlue.dark}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.growthBlue.base}
                 >
                   <Plus className="w-4 h-4" />
                   Objekt hinzufügen
@@ -1001,7 +1034,7 @@ export default function OnboardingPage() {
               </div>
 
               {/* Global Summary */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 bg-blue-50 rounded-lg text-sm">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-lg text-sm" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                 <div>
                   <span className="text-slate-600">Objekte:</span>
                   <span className="font-bold ml-2">{stats.totalObjekte}</span>
@@ -1036,7 +1069,7 @@ export default function OnboardingPage() {
                         <div className="flex items-center gap-3">
                           {isObjektExpanded ? <ChevronUp className="w-5 h-5 text-slate-500" /> : <ChevronDown className="w-5 h-5 text-slate-500" />}
                           <div>
-                            <h3 className="font-semibold text-slate-800">
+                            <h3 className="font-semibold text-[#1E2A3A]">
                               Objekt {objektIndex + 1}
                               {objekt.strasse && ` – ${objekt.strasse}`}
                               {objekt.ort && `, ${objekt.ort}`}
@@ -1231,7 +1264,7 @@ export default function OnboardingPage() {
                                       <button
                                         type="button"
                                         onClick={() => toggleEinheitExpanded(objektIndex, einheitIndex)}
-                                        className="flex items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-800"
+                                        className="flex items-center gap-2 text-xs font-medium text-slate-600 hover:text-[#1E2A3A]"
                                       >
                                         {isEinheitExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                                         Einheit {einheitIndex + 1} ({einheit.nutzung})
@@ -1410,11 +1443,11 @@ export default function OnboardingPage() {
               ===================================================== */}
           {contentStep === 4 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-slate-800 mb-4">{formData.createAnkaufsprofil ? '4' : '3'}. Übersicht & Absenden</h2>
+              <h2 className="text-lg font-bold text-[#1E2A3A] mb-4">{formData.createAnkaufsprofil ? '4' : '3'}. Übersicht & Absenden</h2>
 
               {/* Mandant Info */}
               <div className="p-4 bg-slate-50 rounded-lg">
-                <h3 className="font-semibold text-slate-800 mb-2">Kontaktdaten</h3>
+                <h3 className="font-semibold text-[#1E2A3A] mb-2">Kontaktdaten</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div><span className="text-slate-500">Firma:</span> {formData.name}</div>
                   <div><span className="text-slate-500">Ansprechpartner:</span> {formData.ansprechpartner}</div>
@@ -1425,8 +1458,8 @@ export default function OnboardingPage() {
 
               {/* Ankaufsprofil Summary */}
               {formData.createAnkaufsprofil && (
-                <div className="p-4 bg-purple-50 rounded-lg">
-                  <h3 className="font-semibold text-slate-800 mb-2">Ankaufsprofil: {formData.ankaufsprofil.name}</h3>
+                <div className="p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.light }}>
+                  <h3 className="font-semibold text-[#1E2A3A] mb-2">Ankaufsprofil: {formData.ankaufsprofil.name}</h3>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div><span className="text-slate-500">Kaufinteresse:</span> {formData.ankaufsprofil.kaufinteresse_aktiv ? 'Aktiv' : 'Inaktiv'}</div>
                     <div><span className="text-slate-500">Assetklassen:</span> {formData.ankaufsprofil.assetklassen.join(', ') || '-'}</div>
@@ -1437,20 +1470,20 @@ export default function OnboardingPage() {
               )}
 
               {/* Objekte Summary */}
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-semibold text-slate-800 mb-3">Portfolio-Übersicht</h3>
+              <div className="p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                <h3 className="font-semibold text-[#1E2A3A] mb-3">Portfolio-Übersicht</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm mb-4">
                   <div>
                     <div className="text-slate-500">Objekte</div>
-                    <div className="text-2xl font-bold text-slate-800">{stats.totalObjekte}</div>
+                    <div className="text-2xl font-bold text-[#1E2A3A]">{stats.totalObjekte}</div>
                   </div>
                   <div>
                     <div className="text-slate-500">Einheiten</div>
-                    <div className="text-2xl font-bold text-slate-800">{stats.totalEinheiten}</div>
+                    <div className="text-2xl font-bold text-[#1E2A3A]">{stats.totalEinheiten}</div>
                   </div>
                   <div>
                     <div className="text-slate-500">Gesamtfläche</div>
-                    <div className="text-2xl font-bold text-slate-800">{stats.totalFlaeche.toLocaleString('de-DE')} m²</div>
+                    <div className="text-2xl font-bold text-[#1E2A3A]">{stats.totalFlaeche.toLocaleString('de-DE')} m²</div>
                   </div>
                   <div>
                     <div className="text-slate-500">Jahresmiete</div>
@@ -1497,7 +1530,7 @@ export default function OnboardingPage() {
               type="button"
               onClick={() => setStep((s) => Math.max(1, s - 1))}
               disabled={step === 1}
-              className="flex items-center justify-center gap-2 px-6 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center justify-center gap-2 px-6 py-3 text-slate-600 hover:text-[#1E2A3A] hover:bg-slate-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Zurück
@@ -1506,7 +1539,10 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep((s) => Math.min(maxStep, s + 1))}
-                className="flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                className="flex items-center justify-center gap-2 px-6 py-3.5 text-white rounded-lg transition-colors font-medium"
+                style={{ backgroundColor: COLORS.growthBlue.base }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = COLORS.growthBlue.dark}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.growthBlue.base}
               >
                 Weiter
                 <ArrowRight className="w-4 h-4" />
@@ -1516,7 +1552,10 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="flex items-center justify-center gap-2 px-8 py-3.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 font-medium"
+                className="flex items-center justify-center gap-2 px-8 py-3.5 text-white rounded-lg transition-colors disabled:opacity-50 font-medium"
+                style={{ backgroundColor: COLORS.growthBlue.base }}
+                onMouseOver={(e) => !loading && (e.currentTarget.style.backgroundColor = COLORS.growthBlue.dark)}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.growthBlue.base}
               >
                 {loading ? 'Wird gesendet...' : 'Absenden'}
                 <CheckCircle className="w-4 h-4" />
