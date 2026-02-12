@@ -19,6 +19,11 @@ const COLORS = {
   blueBoneLightest: '#EDF1F5',
   // Utility
   white: '#FFFFFF',
+  // Additional Colors for Flow Diagram
+  purple: '#7C3AED',
+  green: '#22C55E',
+  orange: '#F59E0B',
+  red: '#EF4444',
 };
 
 const styles = StyleSheet.create({
