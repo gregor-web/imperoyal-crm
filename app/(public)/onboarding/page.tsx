@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { CheckCircle, ArrowRight, ArrowLeft, Building2, User, Home, Plus, ShoppingCart } from 'lucide-react';
+import { CheckCircle, ArrowRight, ArrowLeft, Building2, User, Home, ShoppingCart, AlertTriangle } from 'lucide-react';
 
 // =====================================================
 // TYPES
@@ -67,6 +67,7 @@ type FormData = {
   position: string;
   email: string;
   telefon: string;
+  anzahl_objekte: number;
   createAnkaufsprofil: boolean;
   ankaufsprofil: Ankaufsprofil;
   objekte: Objekt[];
@@ -183,6 +184,7 @@ export default function OnboardingPage() {
 
   const [formData, setFormData] = useState<FormData>({
     name: '', ansprechpartner: '', position: '', email: '', telefon: '',
+    anzahl_objekte: 1,
     createAnkaufsprofil: false, ankaufsprofil: createEmptyAnkaufsprofil(), objekte: [createEmptyObjekt()],
   });
 
@@ -292,6 +294,28 @@ export default function OnboardingPage() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Aktualisiert Anzahl Objekte und generiert/entfernt Objekte automatisch
+  const updateAnzahlObjekte = (count: number) => {
+    const newCount = Math.max(1, count); // Min 1, kein Maximum
+    setFormData((prev) => {
+      const currentObjekte = [...prev.objekte];
+      if (newCount > currentObjekte.length) {
+        // Füge neue leere Objekte hinzu
+        for (let i = currentObjekte.length; i < newCount; i++) {
+          currentObjekte.push(createEmptyObjekt());
+        }
+      } else if (newCount < currentObjekte.length) {
+        // Entferne überschüssige Objekte (von hinten)
+        currentObjekte.splice(newCount);
+      }
+      return { ...prev, anzahl_objekte: newCount, objekte: currentObjekte };
+    });
+    // Falls currentObjektIndex jetzt out of bounds ist, zurücksetzen
+    if (currentObjektIndex >= count) {
+      setCurrentObjektIndex(Math.max(0, count - 1));
+    }
+  };
+
   const updateAnkauf = (field: keyof Ankaufsprofil, value: string | boolean | string[]) => {
     setFormData((prev) => ({ ...prev, ankaufsprofil: { ...prev.ankaufsprofil, [field]: value } }));
   };
@@ -331,10 +355,6 @@ export default function OnboardingPage() {
     }));
   };
 
-  const addObjekt = () => {
-    setFormData((prev) => ({ ...prev, objekte: [...prev.objekte, createEmptyObjekt()] }));
-  };
-
   const removeObjekt = (idx: number) => {
     if (formData.objekte.length <= 1) return;
     setFormData((prev) => ({ ...prev, objekte: prev.objekte.filter((_, i) => i !== idx) }));
@@ -358,6 +378,22 @@ export default function OnboardingPage() {
 
   const stats = getTotalStats();
   const currentObjekt = formData.objekte[currentObjektIndex];
+
+  // Prüft ob die aktuelle Straße bereits in einem anderen Objekt existiert
+  const getDuplicateStrasse = (): number | null => {
+    if (!currentObjekt?.strasse?.trim()) return null;
+    const currentStrasse = currentObjekt.strasse.trim().toLowerCase();
+    for (let i = 0; i < formData.objekte.length; i++) {
+      if (i !== currentObjektIndex) {
+        const otherStrasse = formData.objekte[i].strasse?.trim().toLowerCase();
+        if (otherStrasse && otherStrasse === currentStrasse) {
+          return i + 1; // 1-basiert für Anzeige
+        }
+      }
+    }
+    return null;
+  };
+  const duplicateObjektNr = getDuplicateStrasse();
 
   // Submit
   const handleSubmit = async () => {
@@ -460,6 +496,35 @@ export default function OnboardingPage() {
                     className="glass-input w-full px-3 py-2.5 rounded-lg" />
                 </div>
               </div>
+
+              {/* Anzahl Objekte */}
+              <div className="mt-6 pt-6 border-t border-slate-200">
+                <div className="p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                  <label className="block text-sm font-medium mb-2" style={{ color: COLORS.royalNavy.dark }}>
+                    <Home className="inline w-4 h-4 mr-1" /> Wie viele Objekte möchten Sie erfassen?
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <button type="button" onClick={() => updateAnzahlObjekte(formData.anzahl_objekte - 1)}
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold"
+                      style={{ backgroundColor: COLORS.blueBone.light, color: COLORS.royalNavy.dark }}
+                      disabled={formData.anzahl_objekte <= 1}>
+                      −
+                    </button>
+                    <input type="number" min="1" value={formData.anzahl_objekte}
+                      onChange={(e) => updateAnzahlObjekte(parseInt(e.target.value) || 1)}
+                      className="glass-input w-20 px-3 py-2 rounded-lg text-center text-xl font-bold" />
+                    <button type="button" onClick={() => updateAnzahlObjekte(formData.anzahl_objekte + 1)}
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold"
+                      style={{ backgroundColor: COLORS.growthBlue.base, color: 'white' }}>
+                      +
+                    </button>
+                  </div>
+                  <p className="text-xs mt-2" style={{ color: COLORS.growthBlue.dark }}>
+                    → {formData.anzahl_objekte} Objekt{formData.anzahl_objekte !== 1 ? 'e' : ''} werden erfasst (je 3 Schritte: Adresse, Finanzierung, Einheiten)
+                  </p>
+                </div>
+              </div>
+
               <div className="mt-6 pt-6 border-t border-slate-200">
                 <label className="flex items-center gap-3 cursor-pointer p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                   <input type="checkbox" checked={formData.createAnkaufsprofil}
@@ -644,7 +709,14 @@ export default function OnboardingPage() {
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-slate-700 mb-1">Straße *</label>
                     <input type="text" value={currentObjekt.strasse} onChange={(e) => updateObjekt('strasse', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="Musterstraße 1" />
+                      className={`glass-input w-full px-3 py-2 rounded-lg ${duplicateObjektNr ? 'border-amber-400 border-2' : ''}`}
+                      placeholder="Musterstraße 1" />
+                    {duplicateObjektNr && (
+                      <div className="flex items-center gap-2 mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
+                        <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                        <span>Diese Adresse wurde bereits bei Objekt {duplicateObjektNr} eingegeben.</span>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">PLZ *</label>
@@ -794,13 +866,15 @@ export default function OnboardingPage() {
                     ))}
                   </div>
 
-                  {/* Add another object option */}
-                  <div className="mt-4 pt-4 border-t border-slate-200">
-                    <button onClick={addObjekt} className="flex items-center gap-2 text-sm"
-                      style={{ color: COLORS.growthBlue.base }}>
-                      <Plus className="w-4 h-4" /> Weiteres Objekt hinzufügen
-                    </button>
-                  </div>
+                  {/* Info: Weitere Objekte können im Kontakt-Schritt hinzugefügt werden */}
+                  {currentObjektIndex === formData.objekte.length - 1 && (
+                    <div className="mt-4 pt-4 border-t border-slate-200 text-center">
+                      <p className="text-xs text-slate-500">
+                        Sie erfassen {formData.objekte.length} Objekt{formData.objekte.length !== 1 ? 'e' : ''}.
+                        {' '}Mehr Objekte können Sie im ersten Schritt (Kontakt) hinzufügen.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

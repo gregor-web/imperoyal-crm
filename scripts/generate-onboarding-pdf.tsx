@@ -2,17 +2,23 @@ import React from 'react';
 import { renderToFile } from '@react-pdf/renderer';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
-// Brand Colors
+// Brand Colors (exakt wie im Onboarding)
 const COLORS = {
+  // Royal Navy
   royalNavy: '#1E2A3A',
+  royalNavyMedium: '#2A3F54',
+  royalNavyLight: '#3D5167',
+  // Growth Blue
   growthBlue: '#5B7A9D',
+  growthBlueDark: '#4A6A8D',
+  growthBlueLight: '#6B8AAD',
+  // Blue Bone
   blueBone: '#B8C5D1',
+  blueBoneDark: '#9EAFC0',
+  blueBoneLight: '#D5DEE6',
+  blueBoneLightest: '#EDF1F5',
+  // Utility
   white: '#FFFFFF',
-  lightGray: '#F8FAFC',
-  green: '#10B981',
-  purple: '#8B5CF6',
-  orange: '#F59E0B',
-  red: '#EF4444',
 };
 
 const styles = StyleSheet.create({
@@ -101,18 +107,18 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 20,
     padding: 15,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.blueBoneLightest,
     borderRadius: 6,
     borderLeft: `4px solid ${COLORS.growthBlue}`,
   },
   sectionGreen: {
-    borderLeftColor: COLORS.green,
+    borderLeftColor: COLORS.growthBlue,
   },
   sectionPurple: {
-    borderLeftColor: COLORS.purple,
+    borderLeftColor: COLORS.growthBlueDark,
   },
   sectionOrange: {
-    borderLeftColor: COLORS.orange,
+    borderLeftColor: COLORS.royalNavyLight,
   },
   sectionTitle: {
     fontSize: 13,
@@ -130,11 +136,11 @@ const styles = StyleSheet.create({
     borderLeft: `4px solid #0EA5E9`,
   },
   warningBox: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: COLORS.blueBoneLight,
     padding: 12,
     borderRadius: 6,
     marginBottom: 15,
-    borderLeft: `4px solid ${COLORS.orange}`,
+    borderLeft: `4px solid ${COLORS.royalNavyLight}`,
   },
   infoText: {
     fontSize: 9,
