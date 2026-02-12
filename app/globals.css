@@ -90,10 +90,39 @@ select {
   box-sizing: border-box;
 }
 
-/* Fix date input on mobile - prevent overflow */
+/* Fix date input on mobile - prevent overflow and match text input sizing */
 input[type="date"] {
   min-width: 0;
   max-width: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  line-height: 1.5;
+}
+
+/* Ensure date input has same height as text inputs */
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+/* Remove extra padding in Safari/Chrome date picker */
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-clear-button {
+  display: none;
+}
+
+/* Prevent iOS Safari auto-zoom on input focus (requires min 16px font) */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="tel"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
 input[type="text"]:focus,

@@ -800,10 +800,10 @@ export default function OnboardingPage() {
                     <input type="text" inputMode="numeric" value={currentObjekt.kaufpreis} onChange={(e) => updateObjekt('kaufpreis', e.target.value)}
                       className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" placeholder="2500000" />
                   </div>
-                  <div className="overflow-hidden">
+                  <div>
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufdatum</label>
                     <input type="date" value={currentObjekt.kaufdatum} onChange={(e) => updateObjekt('kaufdatum', e.target.value)}
-                      className="glass-input w-full max-w-full px-1 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base box-border" />
+                      className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer" />
                   </div>
                   <div>
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">EK %</label>
