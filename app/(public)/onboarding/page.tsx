@@ -14,6 +14,17 @@ type Einheit = {
   kaltmiete: string;
   vergleichsmiete: string;
   mietvertragsart: 'Standard' | 'Index' | 'Staffel';
+  // Vertragsdaten
+  vertragsbeginn: string;
+  letzte_mieterhoehung: string;
+  hoehe_mieterhoehung: string;
+  // §558 BGB - Vergleichsmiete
+  datum_558: string;
+  hoehe_558: string;
+  // §559 BGB - Modernisierung
+  datum_559: string;
+  art_modernisierung_559: string;
+  hoehe_559: string;
 };
 
 type Objekt = {
@@ -94,34 +105,42 @@ const LAGEPRAEFERENZEN = ['A-Lage', 'B-Lage', 'C-Lage', 'Metropolregion', 'Unive
 const FINANZIERUNGSFORMEN = ['Voll-EK', 'EK-dominant', 'Standard-Finanzierung', 'Offen'];
 const ZUSTAENDE = ['Sanierungsbedürftig', 'Teilsaniert', 'Vollsaniert', 'Denkmal', 'Revitalisierung möglich'];
 
-const createEmptyEinheit = (): Einheit => ({
-  nutzung: 'Wohnen',
+const createEmptyEinheit = (nutzung: 'Wohnen' | 'Gewerbe' | 'Stellplatz' = 'Wohnen'): Einheit => ({
+  nutzung,
   flaeche: '',
   kaltmiete: '',
-  vergleichsmiete: '12',
+  vergleichsmiete: nutzung === 'Stellplatz' ? '0' : '12',
   mietvertragsart: 'Standard',
+  vertragsbeginn: '',
+  letzte_mieterhoehung: '',
+  hoehe_mieterhoehung: '',
+  datum_558: '',
+  hoehe_558: '',
+  datum_559: '',
+  art_modernisierung_559: '',
+  hoehe_559: '',
 });
 
 const createEmptyObjekt = (): Objekt => ({
   strasse: '', plz: '', ort: '', gebaeudetyp: 'MFH', baujahr: '', kaufpreis: '', kaufdatum: '',
   eigenkapital_prozent: '30', zinssatz: '3.8', tilgung: '2', instandhaltung: '', verwaltung: '',
   anzahl_wohneinheiten: 1, anzahl_gewerbeeinheiten: 0, anzahl_stellplaetze: 0,
-  einheiten: [createEmptyEinheit()],
+  einheiten: [createEmptyEinheit('Wohnen')],
 });
 
 // Generiert Einheiten basierend auf Anzahl pro Nutzungsart
 const generateEinheiten = (wohn: number, gewerbe: number, stellplaetze: number): Einheit[] => {
   const einheiten: Einheit[] = [];
   for (let i = 0; i < wohn; i++) {
-    einheiten.push({ nutzung: 'Wohnen', flaeche: '', kaltmiete: '', vergleichsmiete: '12', mietvertragsart: 'Standard' });
+    einheiten.push(createEmptyEinheit('Wohnen'));
   }
   for (let i = 0; i < gewerbe; i++) {
-    einheiten.push({ nutzung: 'Gewerbe', flaeche: '', kaltmiete: '', vergleichsmiete: '12', mietvertragsart: 'Standard' });
+    einheiten.push(createEmptyEinheit('Gewerbe'));
   }
   for (let i = 0; i < stellplaetze; i++) {
-    einheiten.push({ nutzung: 'Stellplatz', flaeche: '', kaltmiete: '', vergleichsmiete: '0', mietvertragsart: 'Standard' });
+    einheiten.push(createEmptyEinheit('Stellplatz'));
   }
-  return einheiten.length > 0 ? einheiten : [{ nutzung: 'Wohnen', flaeche: '', kaltmiete: '', vergleichsmiete: '12', mietvertragsart: 'Standard' }];
+  return einheiten.length > 0 ? einheiten : [createEmptyEinheit('Wohnen')];
 };
 
 const createEmptyAnkaufsprofil = (): Ankaufsprofil => ({
@@ -615,38 +634,32 @@ export default function OnboardingPage() {
               )}
 
               {ankaufSubStep === 3 && (
-                <div className="flex-1 flex flex-col min-h-0">
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Min. Vol. (EUR)</label>
-                      <input type="text" inputMode="numeric" value={formData.ankaufsprofil.min_volumen}
-                        onChange={(e) => updateAnkauf('min_volumen', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="1000000" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Max. Vol. (EUR)</label>
-                      <input type="text" inputMode="numeric" value={formData.ankaufsprofil.max_volumen}
-                        onChange={(e) => updateAnkauf('max_volumen', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="10000000" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Rendite (%)</label>
-                      <input type="text" inputMode="decimal" value={formData.ankaufsprofil.rendite_min}
-                        onChange={(e) => updateAnkauf('rendite_min', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="4.5" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Finanzierung</label>
-                      <select value={formData.ankaufsprofil.finanzierungsform} onChange={(e) => updateAnkauf('finanzierungsform', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base">
-                        <option value="">Wählen...</option>
-                        {FINANZIERUNGSFORMEN.map((f) => <option key={f} value={f}>{f}</option>)}
-                      </select>
-                    </div>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Min. Vol. (EUR)</label>
+                    <input type="text" inputMode="numeric" value={formData.ankaufsprofil.min_volumen}
+                      onChange={(e) => updateAnkauf('min_volumen', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="1000000" />
                   </div>
-                  {/* Info Hint - pushed to bottom */}
-                  <div className="mt-auto pt-3 sm:pt-4 p-2 sm:p-3 rounded-lg text-[10px] sm:text-xs text-slate-500" style={{ backgroundColor: COLORS.blueBone.lightest }}>
-                    Diese Angaben helfen uns, passende Objekte für Sie zu finden.
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Max. Vol. (EUR)</label>
+                    <input type="text" inputMode="numeric" value={formData.ankaufsprofil.max_volumen}
+                      onChange={(e) => updateAnkauf('max_volumen', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="10000000" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Rendite (%)</label>
+                    <input type="text" inputMode="decimal" value={formData.ankaufsprofil.rendite_min}
+                      onChange={(e) => updateAnkauf('rendite_min', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="4.5" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Finanzierung</label>
+                    <select value={formData.ankaufsprofil.finanzierungsform} onChange={(e) => updateAnkauf('finanzierungsform', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base">
+                      <option value="">Wählen...</option>
+                      {FINANZIERUNGSFORMEN.map((f) => <option key={f} value={f}>{f}</option>)}
+                    </select>
                   </div>
                 </div>
               )}
@@ -806,46 +819,40 @@ export default function OnboardingPage() {
               )}
 
               {objektSubStep === 2 && (
-                <div className="flex-1 flex flex-col min-h-0">
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufpreis *</label>
-                      <input type="text" inputMode="numeric" value={currentObjekt.kaufpreis} onChange={(e) => updateObjekt('kaufpreis', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="2500000" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufdatum</label>
-                      <input type="date" value={currentObjekt.kaufdatum} onChange={(e) => updateObjekt('kaufdatum', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">EK %</label>
-                      <input type="text" inputMode="decimal" value={currentObjekt.eigenkapital_prozent}
-                        onChange={(e) => updateObjekt('eigenkapital_prozent', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="30" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Zins %</label>
-                      <input type="text" inputMode="decimal" value={currentObjekt.zinssatz}
-                        onChange={(e) => updateObjekt('zinssatz', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="3.8" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Tilgung %</label>
-                      <input type="text" inputMode="decimal" value={currentObjekt.tilgung}
-                        onChange={(e) => updateObjekt('tilgung', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="2" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Verwaltung/J</label>
-                      <input type="text" inputMode="numeric" value={currentObjekt.verwaltung}
-                        onChange={(e) => updateObjekt('verwaltung', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="4800" />
-                    </div>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufpreis *</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.kaufpreis} onChange={(e) => updateObjekt('kaufpreis', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="2500000" />
                   </div>
-                  {/* Info Hint - pushed to bottom */}
-                  <div className="mt-auto pt-3 sm:pt-4 p-2 sm:p-3 rounded-lg text-[10px] sm:text-xs text-slate-500" style={{ backgroundColor: COLORS.blueBone.lightest }}>
-                    Finanzierungsdaten werden für die Renditeberechnung und Cashflow-Analyse verwendet.
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufdatum</label>
+                    <input type="date" value={currentObjekt.kaufdatum} onChange={(e) => updateObjekt('kaufdatum', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">EK %</label>
+                    <input type="text" inputMode="decimal" value={currentObjekt.eigenkapital_prozent}
+                      onChange={(e) => updateObjekt('eigenkapital_prozent', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="30" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Zins %</label>
+                    <input type="text" inputMode="decimal" value={currentObjekt.zinssatz}
+                      onChange={(e) => updateObjekt('zinssatz', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="3.8" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Tilgung %</label>
+                    <input type="text" inputMode="decimal" value={currentObjekt.tilgung}
+                      onChange={(e) => updateObjekt('tilgung', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="2" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Verwaltung/J</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.verwaltung}
+                      onChange={(e) => updateObjekt('verwaltung', e.target.value)}
+                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="4800" />
                   </div>
                 </div>
               )}
@@ -857,46 +864,127 @@ export default function OnboardingPage() {
                       {currentObjekt.anzahl_wohneinheiten}W + {currentObjekt.anzahl_gewerbeeinheiten}G + {currentObjekt.anzahl_stellplaetze}S
                     </span>
                   </div>
-                  <div className="flex-1 overflow-y-auto space-y-1.5 sm:space-y-3 min-h-0">
+                  <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-4 min-h-0">
                     {currentObjekt.einheiten.map((einheit, idx) => (
-                      <div key={idx} className="p-1.5 sm:p-3 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
-                        <div className="flex justify-between items-center mb-1 sm:mb-2">
-                          <span className="text-[10px] sm:text-sm font-medium" style={{ color: COLORS.royalNavy.dark }}>
-                            {einheit.nutzung === 'Wohnen' ? 'WE' : einheit.nutzung === 'Gewerbe' ? 'GE' : 'SP'} {idx + 1}
+                      <div key={idx} className="p-2 sm:p-4 rounded-lg border-l-4"
+                        style={{
+                          backgroundColor: COLORS.blueBone.lightest,
+                          borderLeftColor: einheit.nutzung === 'Wohnen' ? '#3B82F6' : einheit.nutzung === 'Gewerbe' ? '#F59E0B' : '#6B7280'
+                        }}>
+                        {/* Header */}
+                        <div className="flex justify-between items-center mb-2 sm:mb-3">
+                          <span className="text-xs sm:text-sm font-semibold" style={{ color: COLORS.royalNavy.dark }}>
+                            {einheit.nutzung === 'Wohnen' ? 'Wohneinheit' : einheit.nutzung === 'Gewerbe' ? 'Gewerbeeinheit' : 'Stellplatz'} {idx + 1}
                           </span>
-                          <span className="text-[8px] sm:text-xs px-1 sm:px-2 py-0.5 rounded-full" style={{ backgroundColor: COLORS.growthBlue.base, color: 'white' }}>
+                          <span className="text-[8px] sm:text-xs px-2 py-0.5 rounded-full font-medium"
+                            style={{
+                              backgroundColor: einheit.nutzung === 'Wohnen' ? '#DBEAFE' : einheit.nutzung === 'Gewerbe' ? '#FEF3C7' : '#F3F4F6',
+                              color: einheit.nutzung === 'Wohnen' ? '#1D4ED8' : einheit.nutzung === 'Gewerbe' ? '#B45309' : '#4B5563'
+                            }}>
                             {einheit.nutzung}
                           </span>
                         </div>
-                        <div className="grid grid-cols-4 gap-1 sm:gap-2">
+
+                        {/* Basis-Felder */}
+                        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                           <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">m²</label>
+                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Fläche m² *</label>
                             <input type="text" inputMode="decimal" value={einheit.flaeche}
                               onChange={(e) => updateEinheit(idx, 'flaeche', e.target.value)}
-                              className="glass-input w-full px-1 sm:px-2 py-0.5 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="75" />
+                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="75" />
                           </div>
                           <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">€/M</label>
+                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Miete €/M *</label>
                             <input type="text" inputMode="decimal" value={einheit.kaltmiete}
                               onChange={(e) => updateEinheit(idx, 'kaltmiete', e.target.value)}
-                              className="glass-input w-full px-1 sm:px-2 py-0.5 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="850" />
+                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="850" />
                           </div>
                           <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">€/m²</label>
+                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Markt €/m²</label>
                             <input type="text" inputMode="decimal" value={einheit.vergleichsmiete}
                               onChange={(e) => updateEinheit(idx, 'vergleichsmiete', e.target.value)}
-                              className="glass-input w-full px-1 sm:px-2 py-0.5 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="14" />
+                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="14" />
                           </div>
                           <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Typ</label>
+                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Vertragsart *</label>
                             <select value={einheit.mietvertragsart} onChange={(e) => updateEinheit(idx, 'mietvertragsart', e.target.value)}
-                              className="glass-input w-full px-0.5 sm:px-2 py-0.5 sm:py-1.5 rounded text-[10px] sm:text-sm">
-                              <option value="Standard">Std</option>
-                              <option value="Index">Idx</option>
-                              <option value="Staffel">Stf</option>
+                              className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm">
+                              <option value="Standard">Standard</option>
+                              <option value="Index">Index</option>
+                              <option value="Staffel">Staffel</option>
                             </select>
                           </div>
                         </div>
+
+                        {/* Vertragsdaten */}
+                        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-2 sm:mb-3 pt-2 border-t border-slate-200">
+                          <div>
+                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Vertragsbeginn *</label>
+                            <input type="date" value={einheit.vertragsbeginn}
+                              onChange={(e) => updateEinheit(idx, 'vertragsbeginn', e.target.value)}
+                              className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" />
+                          </div>
+                          <div>
+                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Letzte Erhöhung</label>
+                            <input type="date" value={einheit.letzte_mieterhoehung}
+                              onChange={(e) => updateEinheit(idx, 'letzte_mieterhoehung', e.target.value)}
+                              className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" />
+                          </div>
+                          <div className="col-span-2">
+                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Höhe Erhöhung (€)</label>
+                            <input type="text" inputMode="decimal" value={einheit.hoehe_mieterhoehung}
+                              onChange={(e) => updateEinheit(idx, 'hoehe_mieterhoehung', e.target.value)}
+                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="50" />
+                          </div>
+                        </div>
+
+                        {/* §558 BGB - nur für Wohnen mit Standard-Vertrag */}
+                        {einheit.nutzung === 'Wohnen' && einheit.mietvertragsart === 'Standard' && (
+                          <div className="grid grid-cols-2 gap-1.5 sm:gap-2 mb-2 sm:mb-3 pt-2 border-t border-slate-200">
+                            <div className="col-span-2">
+                              <span className="text-[8px] sm:text-xs font-medium text-blue-700">§558 BGB - Vergleichsmiete</span>
+                            </div>
+                            <div>
+                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Datum §558</label>
+                              <input type="date" value={einheit.datum_558}
+                                onChange={(e) => updateEinheit(idx, 'datum_558', e.target.value)}
+                                className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" />
+                            </div>
+                            <div>
+                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Höhe §558 (€)</label>
+                              <input type="text" inputMode="decimal" value={einheit.hoehe_558}
+                                onChange={(e) => updateEinheit(idx, 'hoehe_558', e.target.value)}
+                                className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="30" />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* §559 BGB - für Wohnen mit Standard oder Staffel (nicht Index!) */}
+                        {einheit.nutzung === 'Wohnen' && einheit.mietvertragsart !== 'Index' && (
+                          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-2 border-t border-slate-200">
+                            <div className="col-span-3">
+                              <span className="text-[8px] sm:text-xs font-medium text-amber-700">§559 BGB - Modernisierung</span>
+                            </div>
+                            <div>
+                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Datum §559</label>
+                              <input type="date" value={einheit.datum_559}
+                                onChange={(e) => updateEinheit(idx, 'datum_559', e.target.value)}
+                                className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" />
+                            </div>
+                            <div>
+                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Art</label>
+                              <input type="text" value={einheit.art_modernisierung_559}
+                                onChange={(e) => updateEinheit(idx, 'art_modernisierung_559', e.target.value)}
+                                className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="Dämmung" />
+                            </div>
+                            <div>
+                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Höhe (€/M)</label>
+                              <input type="text" inputMode="decimal" value={einheit.hoehe_559}
+                                onChange={(e) => updateEinheit(idx, 'hoehe_559', e.target.value)}
+                                className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="25" />
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
