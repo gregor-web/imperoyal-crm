@@ -160,10 +160,10 @@ function MultiSelectChips({ options, selected, onChange }: { options: string[]; 
     onChange(selected.includes(option) ? selected.filter((s) => s !== option) : [...selected, option]);
   };
   return (
-    <div className="flex flex-wrap gap-1 sm:gap-2">
+    <div className="flex flex-wrap gap-1.5 sm:gap-2">
       {options.map((option) => (
         <button key={option} type="button" onClick={() => toggle(option)}
-          className="px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-full text-[10px] sm:text-sm font-medium transition-colors active:scale-95"
+          className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors active:scale-95 min-h-[36px] sm:min-h-[40px]"
           style={selected.includes(option) ? { backgroundColor: COLORS.growthBlue.base, color: 'white' } : { backgroundColor: COLORS.blueBone.lightest, color: COLORS.royalNavy.dark }}>
           {option}
         </button>
@@ -174,15 +174,15 @@ function MultiSelectChips({ options, selected, onChange }: { options: string[]; 
 
 function SubStepIndicator({ current, total, labels }: { current: number; total: number; labels: string[] }) {
   return (
-    <div className="flex items-center justify-center gap-0.5 sm:gap-1 mb-2 sm:mb-4">
+    <div className="flex items-center justify-center gap-1 sm:gap-2 mb-3 sm:mb-4">
       {labels.map((label, idx) => (
         <div key={idx} className="flex items-center flex-shrink-0">
-          <div className={`w-4 h-4 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[8px] sm:text-xs font-medium ${idx + 1 <= current ? 'text-white' : 'text-slate-400'}`}
+          <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-medium ${idx + 1 <= current ? 'text-white' : 'text-slate-400'}`}
             style={{ backgroundColor: idx + 1 <= current ? COLORS.growthBlue.base : COLORS.blueBone.light }}>
             {idx + 1}
           </div>
-          <span className={`ml-0.5 sm:ml-1 text-[8px] sm:text-xs hidden sm:inline ${idx + 1 === current ? 'font-medium text-slate-700' : 'text-slate-400'}`}>{label}</span>
-          {idx < total - 1 && <div className="w-1.5 sm:w-4 h-0.5 mx-0.5 sm:mx-1" style={{ backgroundColor: idx + 1 < current ? COLORS.growthBlue.base : COLORS.blueBone.light }} />}
+          <span className={`ml-1 sm:ml-1.5 text-[10px] sm:text-xs ${idx + 1 === current ? 'font-medium text-slate-700' : 'text-slate-400 hidden sm:inline'}`}>{label}</span>
+          {idx < total - 1 && <div className="w-3 sm:w-6 h-0.5 mx-1 sm:mx-1.5" style={{ backgroundColor: idx + 1 < current ? COLORS.growthBlue.base : COLORS.blueBone.light }} />}
         </div>
       ))}
     </div>
@@ -228,6 +228,17 @@ export default function OnboardingPage() {
 
   // Clear draft on successful submit
   const clearDraft = () => localStorage.removeItem('onboarding_draft');
+
+  // State for expandable BGB sections per Einheit (key = "objIdx-einheitIdx")
+  const [expandedBGB, setExpandedBGB] = useState<Set<string>>(new Set());
+  const toggleBGB = (key: string) => {
+    setExpandedBGB(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   // Calculate total steps and current position
   const getTotalSteps = () => {
@@ -517,17 +528,17 @@ export default function OnboardingPage() {
           {/* ===== STEP 1: KONTAKT ===== */}
           {mainStep === 1 && (
             <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
-              <h2 className="text-sm sm:text-lg font-bold mb-2 sm:mb-4 flex-shrink-0" style={{ color: COLORS.royalNavy.dark }}>Ihre Kontaktdaten</h2>
-              <div className="grid grid-cols-2 gap-2 sm:gap-4">
-                <div className="col-span-2">
-                  <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Firmenname *</label>
+              <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 flex-shrink-0" style={{ color: COLORS.royalNavy.dark }}>Ihre Kontaktdaten</h2>
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
+                <div className="col-span-1 xs:col-span-2">
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Firmenname *</label>
                   <input type="text" value={formData.name} onChange={(e) => updateMandant('name', e.target.value)}
-                    className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-base" required />
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Anrede *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Anrede *</label>
                   <select value={formData.anrede} onChange={(e) => updateMandant('anrede', e.target.value)}
-                    className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-base" required>
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required>
                     <option value="">Wählen...</option>
                     <option value="Herr">Herr</option>
                     <option value="Frau">Frau</option>
@@ -536,24 +547,24 @@ export default function OnboardingPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Vorname *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Vorname *</label>
                   <input type="text" value={formData.vorname} onChange={(e) => updateMandant('vorname', e.target.value)}
-                    className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-base" required />
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Nachname *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Nachname *</label>
                   <input type="text" value={formData.nachname} onChange={(e) => updateMandant('nachname', e.target.value)}
-                    className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-base" required />
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">E-Mail *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">E-Mail *</label>
                   <input type="email" value={formData.email} onChange={(e) => updateMandant('email', e.target.value)}
-                    className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-base" required />
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Telefon</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Telefon</label>
                   <input type="tel" value={formData.telefon} onChange={(e) => updateMandant('telefon', e.target.value)}
-                    className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2.5 rounded-lg text-xs sm:text-base" />
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" />
                 </div>
               </div>
 
@@ -777,63 +788,63 @@ export default function OnboardingPage() {
 
               {objektSubStep === 1 && (
                 <div className="flex-1 flex flex-col justify-between min-h-0">
-                  <div className="grid grid-cols-2 gap-2 sm:gap-4">
-                    <div className="col-span-2">
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Straße *</label>
+                  <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="col-span-1 xs:col-span-2">
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Straße *</label>
                       <input type="text" value={currentObjekt.strasse} onChange={(e) => updateObjekt('strasse', e.target.value)}
-                        className={`glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base ${duplicateObjektNr ? 'border-amber-400 border-2' : ''}`}
+                        className={`glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base ${duplicateObjektNr ? 'border-amber-400 border-2' : ''}`}
                         placeholder="Musterstraße 1" />
                       {duplicateObjektNr && (
-                        <div className="flex items-center gap-1 mt-1 text-amber-700 text-[10px] sm:text-xs">
-                          <AlertTriangle className="w-3 h-3 flex-shrink-0" />
+                        <div className="flex items-center gap-1 mt-1.5 text-amber-700 text-xs">
+                          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
                           <span>Bereits bei Objekt {duplicateObjektNr}</span>
                         </div>
                       )}
                     </div>
                     <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">PLZ *</label>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">PLZ *</label>
                       <input type="text" value={currentObjekt.plz} onChange={(e) => updateObjekt('plz', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="80000" />
+                        className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="80000" />
                     </div>
                     <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Ort *</label>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Ort *</label>
                       <input type="text" value={currentObjekt.ort} onChange={(e) => updateObjekt('ort', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="München" />
+                        className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="München" />
                     </div>
                     <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Typ</label>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Typ</label>
                       <select value={currentObjekt.gebaeudetyp} onChange={(e) => updateObjekt('gebaeudetyp', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base">
+                        className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
                         {GEBAEUDETYPEN.map((t) => <option key={t} value={t}>{t}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Baujahr</label>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Baujahr</label>
                       <input type="text" inputMode="numeric" value={currentObjekt.baujahr} onChange={(e) => updateObjekt('baujahr', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="1985" />
+                        className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="1985" />
                     </div>
                   </div>
 
                   {/* Anzahl Einheiten - Push to bottom */}
-                  <div className="mt-auto pt-3 sm:pt-4 col-span-2 p-3 sm:p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                  <div className="mt-auto pt-4 p-3 sm:p-4 rounded-xl" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                     <div className="grid grid-cols-3 gap-3 sm:gap-4">
                       <div>
-                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Wohnen</label>
+                        <label className="block text-xs text-slate-500 mb-1">Wohnen</label>
                         <input type="number" min="0" value={currentObjekt.anzahl_wohneinheiten}
                           onChange={(e) => updateObjektAnzahl('anzahl_wohneinheiten', Math.max(0, parseInt(e.target.value) || 0))}
-                          className="glass-input w-full px-1.5 sm:px-3 py-2 sm:py-2.5 rounded-lg text-center text-xs sm:text-sm" />
+                          className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
                       </div>
                       <div>
-                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Gewerbe</label>
+                        <label className="block text-xs text-slate-500 mb-1">Gewerbe</label>
                         <input type="number" min="0" value={currentObjekt.anzahl_gewerbeeinheiten}
                           onChange={(e) => updateObjektAnzahl('anzahl_gewerbeeinheiten', Math.max(0, parseInt(e.target.value) || 0))}
-                          className="glass-input w-full px-1.5 sm:px-3 py-2 sm:py-2.5 rounded-lg text-center text-xs sm:text-sm" />
+                          className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
                       </div>
                       <div>
-                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Stellpl.</label>
+                        <label className="block text-xs text-slate-500 mb-1">Stellpl.</label>
                         <input type="number" min="0" value={currentObjekt.anzahl_stellplaetze}
                           onChange={(e) => updateObjektAnzahl('anzahl_stellplaetze', Math.max(0, parseInt(e.target.value) || 0))}
-                          className="glass-input w-full px-1.5 sm:px-3 py-2 sm:py-2.5 rounded-lg text-center text-xs sm:text-sm" />
+                          className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
                       </div>
                     </div>
                   </div>
@@ -841,174 +852,197 @@ export default function OnboardingPage() {
               )}
 
               {objektSubStep === 2 && (
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufpreis *</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kaufpreis *</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.kaufpreis} onChange={(e) => updateObjekt('kaufpreis', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="2500000" />
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="2500000" />
                   </div>
                   <div>
-                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufdatum</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kaufdatum</label>
                     <input type="date" value={currentObjekt.kaufdatum} onChange={(e) => updateObjekt('kaufdatum', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer" />
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer" />
                   </div>
                   <div>
-                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">EK %</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">EK %</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.eigenkapital_prozent}
                       onChange={(e) => updateObjekt('eigenkapital_prozent', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="30" />
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="30" />
                   </div>
                   <div>
-                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Zins %</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Zins %</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.zinssatz}
                       onChange={(e) => updateObjekt('zinssatz', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="3.8" />
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="3.8" />
                   </div>
                   <div>
-                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Tilgung %</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Tilgung %</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.tilgung}
                       onChange={(e) => updateObjekt('tilgung', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="2" />
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="2" />
                   </div>
                   <div>
-                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Verwaltung/J</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Verwaltung/J</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.verwaltung}
                       onChange={(e) => updateObjekt('verwaltung', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="4800" />
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="4800" />
                   </div>
                 </div>
               )}
 
               {objektSubStep === 3 && (
                 <div className="flex-1 flex flex-col min-h-0">
-                  <div className="flex justify-between items-center mb-1 sm:mb-2 flex-shrink-0">
-                    <span className="text-[10px] sm:text-sm" style={{ color: COLORS.growthBlue.dark }}>
+                  <div className="flex justify-between items-center mb-2 sm:mb-3 flex-shrink-0">
+                    <span className="text-xs sm:text-sm font-medium" style={{ color: COLORS.growthBlue.dark }}>
                       {currentObjekt.anzahl_wohneinheiten}W + {currentObjekt.anzahl_gewerbeeinheiten}G + {currentObjekt.anzahl_stellplaetze}S
                     </span>
                   </div>
-                  <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-4 min-h-0">
-                    {currentObjekt.einheiten.map((einheit, idx) => (
-                      <div key={idx} className="p-2 sm:p-4 rounded-lg border-l-4"
-                        style={{
-                          backgroundColor: COLORS.blueBone.lightest,
-                          borderLeftColor: einheit.nutzung === 'Wohnen' ? '#3B82F6' : einheit.nutzung === 'Gewerbe' ? '#F59E0B' : '#6B7280'
-                        }}>
-                        {/* Header */}
-                        <div className="flex justify-between items-center mb-2 sm:mb-3">
-                          <span className="text-xs sm:text-sm font-semibold" style={{ color: COLORS.royalNavy.dark }}>
-                            {einheit.nutzung === 'Wohnen' ? 'Wohneinheit' : einheit.nutzung === 'Gewerbe' ? 'Gewerbeeinheit' : 'Stellplatz'} {idx + 1}
-                          </span>
-                          <span className="text-[8px] sm:text-xs px-2 py-0.5 rounded-full font-medium"
-                            style={{
-                              backgroundColor: einheit.nutzung === 'Wohnen' ? '#DBEAFE' : einheit.nutzung === 'Gewerbe' ? '#FEF3C7' : '#F3F4F6',
-                              color: einheit.nutzung === 'Wohnen' ? '#1D4ED8' : einheit.nutzung === 'Gewerbe' ? '#B45309' : '#4B5563'
-                            }}>
-                            {einheit.nutzung}
-                          </span>
-                        </div>
+                  <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 min-h-0">
+                    {currentObjekt.einheiten.map((einheit, idx) => {
+                      const bgbKey = `${currentObjektIndex}-${idx}`;
+                      const isBGBExpanded = expandedBGB.has(bgbKey);
+                      const hasBGBFields = einheit.nutzung === 'Wohnen' && einheit.mietvertragsart !== 'Index';
 
-                        {/* Basis-Felder */}
-                        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                          <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Fläche m² *</label>
-                            <input type="text" inputMode="decimal" value={einheit.flaeche}
-                              onChange={(e) => updateEinheit(idx, 'flaeche', e.target.value)}
-                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="75" />
+                      return (
+                        <div key={idx} className="p-3 sm:p-4 rounded-xl border-l-4"
+                          style={{
+                            backgroundColor: COLORS.blueBone.lightest,
+                            borderLeftColor: einheit.nutzung === 'Wohnen' ? '#3B82F6' : einheit.nutzung === 'Gewerbe' ? '#F59E0B' : '#6B7280'
+                          }}>
+                          {/* Header */}
+                          <div className="flex justify-between items-center mb-3">
+                            <span className="text-sm sm:text-base font-semibold" style={{ color: COLORS.royalNavy.dark }}>
+                              {einheit.nutzung === 'Wohnen' ? 'Wohnung' : einheit.nutzung === 'Gewerbe' ? 'Gewerbe' : 'Stellplatz'} {idx + 1}
+                            </span>
+                            <span className="text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-medium"
+                              style={{
+                                backgroundColor: einheit.nutzung === 'Wohnen' ? '#DBEAFE' : einheit.nutzung === 'Gewerbe' ? '#FEF3C7' : '#F3F4F6',
+                                color: einheit.nutzung === 'Wohnen' ? '#1D4ED8' : einheit.nutzung === 'Gewerbe' ? '#B45309' : '#4B5563'
+                              }}>
+                              {einheit.nutzung}
+                            </span>
                           </div>
-                          <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Miete €/M *</label>
-                            <input type="text" inputMode="decimal" value={einheit.kaltmiete}
-                              onChange={(e) => updateEinheit(idx, 'kaltmiete', e.target.value)}
-                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="850" />
-                          </div>
-                          <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Markt €/m²</label>
-                            <input type="text" inputMode="decimal" value={einheit.vergleichsmiete}
-                              onChange={(e) => updateEinheit(idx, 'vergleichsmiete', e.target.value)}
-                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="14" />
-                          </div>
-                          <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Vertragsart *</label>
-                            <select value={einheit.mietvertragsart} onChange={(e) => updateEinheit(idx, 'mietvertragsart', e.target.value)}
-                              className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm">
-                              <option value="Standard">Standard</option>
-                              <option value="Index">Index</option>
-                              <option value="Staffel">Staffel</option>
-                            </select>
-                          </div>
-                        </div>
 
-                        {/* Vertragsdaten */}
-                        <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-2 sm:mb-3 pt-2 border-t border-slate-200">
-                          <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Vertragsbeginn *</label>
-                            <input type="date" value={einheit.vertragsbeginn}
-                              onChange={(e) => updateEinheit(idx, 'vertragsbeginn', e.target.value)}
-                              className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" />
+                          {/* Basis-Felder - 2 Spalten auf Mobile, 4 auf Desktop */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-3">
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Fläche m² *</label>
+                              <input type="text" inputMode="decimal" value={einheit.flaeche}
+                                onChange={(e) => updateEinheit(idx, 'flaeche', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" placeholder="75" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Miete €/M *</label>
+                              <input type="text" inputMode="decimal" value={einheit.kaltmiete}
+                                onChange={(e) => updateEinheit(idx, 'kaltmiete', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" placeholder="850" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Markt €/m²</label>
+                              <input type="text" inputMode="decimal" value={einheit.vergleichsmiete}
+                                onChange={(e) => updateEinheit(idx, 'vergleichsmiete', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" placeholder="14" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vertragsart *</label>
+                              <select value={einheit.mietvertragsart} onChange={(e) => updateEinheit(idx, 'mietvertragsart', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm">
+                                <option value="Standard">Standard</option>
+                                <option value="Index">Index</option>
+                                <option value="Staffel">Staffel</option>
+                              </select>
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Letzte Erhöhung</label>
-                            <input type="date" value={einheit.letzte_mieterhoehung}
-                              onChange={(e) => updateEinheit(idx, 'letzte_mieterhoehung', e.target.value)}
-                              className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" />
-                          </div>
-                          <div className="col-span-2">
-                            <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Höhe Erhöhung (€)</label>
-                            <input type="text" inputMode="decimal" value={einheit.hoehe_mieterhoehung}
-                              onChange={(e) => updateEinheit(idx, 'hoehe_mieterhoehung', e.target.value)}
-                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="50" />
-                          </div>
-                        </div>
 
-                        {/* §558 BGB - nur für Wohnen mit Standard-Vertrag */}
-                        {einheit.nutzung === 'Wohnen' && einheit.mietvertragsart === 'Standard' && (
-                          <div className="grid grid-cols-2 gap-1.5 sm:gap-2 mb-2 sm:mb-3 pt-2 border-t border-slate-200">
+                          {/* Vertragsdaten - 2 Spalten auf Mobile */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-3 pt-3 border-t border-slate-200">
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vertragsbeginn *</label>
+                              <input type="date" value={einheit.vertragsbeginn}
+                                onChange={(e) => updateEinheit(idx, 'vertragsbeginn', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Letzte Erhöhung</label>
+                              <input type="date" value={einheit.letzte_mieterhoehung}
+                                onChange={(e) => updateEinheit(idx, 'letzte_mieterhoehung', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" />
+                            </div>
                             <div className="col-span-2">
-                              <span className="text-[8px] sm:text-xs font-medium text-blue-700">§558 BGB - Vergleichsmiete</span>
-                            </div>
-                            <div>
-                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Datum §558</label>
-                              <input type="date" value={einheit.datum_558}
-                                onChange={(e) => updateEinheit(idx, 'datum_558', e.target.value)}
-                                className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" />
-                            </div>
-                            <div>
-                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Höhe §558 (€)</label>
-                              <input type="text" inputMode="decimal" value={einheit.hoehe_558}
-                                onChange={(e) => updateEinheit(idx, 'hoehe_558', e.target.value)}
-                                className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="30" />
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe Erhöhung (€)</label>
+                              <input type="text" inputMode="decimal" value={einheit.hoehe_mieterhoehung}
+                                onChange={(e) => updateEinheit(idx, 'hoehe_mieterhoehung', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" placeholder="50" />
                             </div>
                           </div>
-                        )}
 
-                        {/* §559 BGB - für Wohnen mit Standard oder Staffel (nicht Index!) */}
-                        {einheit.nutzung === 'Wohnen' && einheit.mietvertragsart !== 'Index' && (
-                          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-2 border-t border-slate-200">
-                            <div className="col-span-3">
-                              <span className="text-[8px] sm:text-xs font-medium text-amber-700">§559 BGB - Modernisierung</span>
+                          {/* Collapsible BGB Section */}
+                          {hasBGBFields && (
+                            <div className="pt-2 border-t border-slate-200">
+                              <button type="button" onClick={() => toggleBGB(bgbKey)}
+                                className="w-full flex items-center justify-between py-2 text-left active:scale-[0.99] transition-transform">
+                                <span className="text-[10px] sm:text-xs font-medium text-slate-600">
+                                  §558/§559 BGB Details {isBGBExpanded ? '▲' : '▼'}
+                                </span>
+                                <span className="text-[10px] sm:text-xs text-slate-400">
+                                  {isBGBExpanded ? 'Einklappen' : 'Ausklappen'}
+                                </span>
+                              </button>
+
+                              {isBGBExpanded && (
+                                <div className="space-y-3 pt-2">
+                                  {/* §558 BGB - nur für Standard-Vertrag */}
+                                  {einheit.mietvertragsart === 'Standard' && (
+                                    <div className="p-2.5 sm:p-3 rounded-lg bg-blue-50/50">
+                                      <span className="block text-[10px] sm:text-xs font-medium text-blue-700 mb-2">§558 BGB - Vergleichsmiete</span>
+                                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                                        <div>
+                                          <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Datum</label>
+                                          <input type="date" value={einheit.datum_558}
+                                            onChange={(e) => updateEinheit(idx, 'datum_558', e.target.value)}
+                                            className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" />
+                                        </div>
+                                        <div>
+                                          <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe (€)</label>
+                                          <input type="text" inputMode="decimal" value={einheit.hoehe_558}
+                                            onChange={(e) => updateEinheit(idx, 'hoehe_558', e.target.value)}
+                                            className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" placeholder="30" />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* §559 BGB - Modernisierung */}
+                                  <div className="p-2.5 sm:p-3 rounded-lg bg-amber-50/50">
+                                    <span className="block text-[10px] sm:text-xs font-medium text-amber-700 mb-2">§559 BGB - Modernisierung</span>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                                      <div>
+                                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Datum</label>
+                                        <input type="date" value={einheit.datum_559}
+                                          onChange={(e) => updateEinheit(idx, 'datum_559', e.target.value)}
+                                          className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" />
+                                      </div>
+                                      <div>
+                                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Art</label>
+                                        <input type="text" value={einheit.art_modernisierung_559}
+                                          onChange={(e) => updateEinheit(idx, 'art_modernisierung_559', e.target.value)}
+                                          className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Dämmung" />
+                                      </div>
+                                      <div>
+                                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe (€/M)</label>
+                                        <input type="text" inputMode="decimal" value={einheit.hoehe_559}
+                                          onChange={(e) => updateEinheit(idx, 'hoehe_559', e.target.value)}
+                                          className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm" placeholder="25" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                            <div>
-                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Datum §559</label>
-                              <input type="date" value={einheit.datum_559}
-                                onChange={(e) => updateEinheit(idx, 'datum_559', e.target.value)}
-                                className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" />
-                            </div>
-                            <div>
-                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Art</label>
-                              <input type="text" value={einheit.art_modernisierung_559}
-                                onChange={(e) => updateEinheit(idx, 'art_modernisierung_559', e.target.value)}
-                                className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="Dämmung" />
-                            </div>
-                            <div>
-                              <label className="block text-[8px] sm:text-xs text-slate-500 mb-0.5">Höhe (€/M)</label>
-                              <input type="text" inputMode="decimal" value={einheit.hoehe_559}
-                                onChange={(e) => updateEinheit(idx, 'hoehe_559', e.target.value)}
-                                className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-sm" placeholder="25" />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
