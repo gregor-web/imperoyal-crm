@@ -141,10 +141,10 @@ function MultiSelectChips({ options, selected, onChange }: { options: string[]; 
     onChange(selected.includes(option) ? selected.filter((s) => s !== option) : [...selected, option]);
   };
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-1.5 sm:gap-2">
       {options.map((option) => (
         <button key={option} type="button" onClick={() => toggle(option)}
-          className="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+          className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors active:scale-95"
           style={selected.includes(option) ? { backgroundColor: COLORS.growthBlue.base, color: 'white' } : { backgroundColor: COLORS.blueBone.lightest, color: COLORS.royalNavy.dark }}>
           {option}
         </button>
@@ -155,15 +155,15 @@ function MultiSelectChips({ options, selected, onChange }: { options: string[]; 
 
 function SubStepIndicator({ current, total, labels }: { current: number; total: number; labels: string[] }) {
   return (
-    <div className="flex items-center gap-1 mb-4">
+    <div className="flex items-center justify-center sm:justify-start gap-0.5 sm:gap-1 mb-4 overflow-x-auto pb-1">
       {labels.map((label, idx) => (
-        <div key={idx} className="flex items-center">
-          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${idx + 1 <= current ? 'text-white' : 'text-slate-400'}`}
+        <div key={idx} className="flex items-center flex-shrink-0">
+          <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-medium ${idx + 1 <= current ? 'text-white' : 'text-slate-400'}`}
             style={{ backgroundColor: idx + 1 <= current ? COLORS.growthBlue.base : COLORS.blueBone.light }}>
             {idx + 1}
           </div>
-          <span className={`ml-1 text-xs hidden sm:inline ${idx + 1 === current ? 'font-medium text-slate-700' : 'text-slate-400'}`}>{label}</span>
-          {idx < total - 1 && <div className="w-4 h-0.5 mx-1" style={{ backgroundColor: idx + 1 < current ? COLORS.growthBlue.base : COLORS.blueBone.light }} />}
+          <span className={`ml-1 text-[10px] sm:text-xs hidden xs:inline ${idx + 1 === current ? 'font-medium text-slate-700' : 'text-slate-400'}`}>{label}</span>
+          {idx < total - 1 && <div className="w-2 sm:w-4 h-0.5 mx-0.5 sm:mx-1" style={{ backgroundColor: idx + 1 < current ? COLORS.growthBlue.base : COLORS.blueBone.light }} />}
         </div>
       ))}
     </div>
@@ -422,16 +422,16 @@ export default function OnboardingPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #1E2A3A 0%, #2A3F54 50%, #3D5167 100%)' }}>
-        <div className="glass-card rounded-2xl p-8 max-w-lg text-center">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: COLORS.growthBlue.base }}>
-            <CheckCircle className="w-10 h-10 text-white" />
+      <div className="min-h-screen flex items-center justify-center p-3 sm:p-4" style={{ background: 'linear-gradient(135deg, #1E2A3A 0%, #2A3F54 50%, #3D5167 100%)' }}>
+        <div className="glass-card rounded-xl sm:rounded-2xl p-6 sm:p-8 max-w-lg w-full text-center">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6" style={{ backgroundColor: COLORS.growthBlue.base }}>
+            <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
-          <h1 className="text-2xl font-bold mb-4" style={{ color: COLORS.royalNavy.dark }}>Vielen Dank!</h1>
-          <p className="text-slate-600 mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4" style={{ color: COLORS.royalNavy.dark }}>Vielen Dank!</h1>
+          <p className="text-slate-600 mb-4 sm:mb-6 text-sm sm:text-base">
             Ihre Daten wurden erfolgreich übermittelt. Wir werden Ihre {stats.totalObjekte} Objekte analysieren.
           </p>
-          <a href="/" className="inline-block px-6 py-3 text-white rounded-lg" style={{ backgroundColor: COLORS.growthBlue.base }}>
+          <a href="/" className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 text-white rounded-lg text-sm sm:text-base active:scale-95 transition-transform" style={{ backgroundColor: COLORS.growthBlue.base }}>
             Zur Startseite
           </a>
         </div>
@@ -446,21 +446,23 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #1E2A3A 0%, #2A3F54 50%, #3D5167 100%)' }}>
       {/* Header */}
-      <div className="py-4 px-4">
+      <div className="py-3 sm:py-4 px-3 sm:px-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Image src="/logo_imperoyal.png" alt="Imperoyal" width={160} height={48} className="h-8 sm:h-10 w-auto brightness-0 invert" priority />
-          <span className="text-white/70 text-sm">Schritt {currentStepNumber} von {totalSteps}</span>
+          <Image src="/logo_imperoyal.png" alt="Imperoyal" width={160} height={48} className="h-6 sm:h-8 md:h-10 w-auto brightness-0 invert" priority />
+          <span className="text-white/70 text-xs sm:text-sm bg-white/10 px-2 sm:px-3 py-1 rounded-full">
+            {currentStepNumber}/{totalSteps}
+          </span>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="max-w-4xl mx-auto px-4 mb-4">
-        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 mb-3 sm:mb-4">
+        <div className="h-1.5 sm:h-2 bg-white/20 rounded-full overflow-hidden">
           <div className="h-full transition-all duration-300" style={{ width: `${(currentStepNumber / totalSteps) * 100}%`, backgroundColor: COLORS.growthBlue.base }} />
         </div>
-        <div className="flex justify-between mt-2">
+        <div className="flex justify-between mt-1.5 sm:mt-2">
           {MAIN_STEPS.map((s) => (
-            <span key={s.id} className={`text-xs ${mainStep >= s.id || (s.id === 3 && mainStep >= 3) ? 'text-white' : 'text-white/40'}`}>
+            <span key={s.id} className={`text-[10px] sm:text-xs ${mainStep >= s.id || (s.id === 3 && mainStep >= 3) ? 'text-white' : 'text-white/40'}`}>
               {s.title}
             </span>
           ))}
@@ -468,23 +470,23 @@ export default function OnboardingPage() {
       </div>
 
       {/* Form Card */}
-      <div className="max-w-4xl mx-auto px-4 pb-6">
-        <div className="glass-card rounded-2xl p-4 sm:p-6">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 pb-4 sm:pb-6">
+        <div className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6">
 
           {/* ===== STEP 1: KONTAKT ===== */}
           {mainStep === 1 && (
             <div>
-              <h2 className="text-lg font-bold mb-4" style={{ color: COLORS.royalNavy.dark }}>Ihre Kontaktdaten</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Firmenname / Name *</label>
+              <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4" style={{ color: COLORS.royalNavy.dark }}>Ihre Kontaktdaten</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Firmenname / Name *</label>
                   <input type="text" value={formData.name} onChange={(e) => updateMandant('name', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 rounded-lg" required />
+                    className="glass-input w-full px-3 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Anrede *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Anrede *</label>
                   <select value={formData.anrede} onChange={(e) => updateMandant('anrede', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 rounded-lg" required>
+                    className="glass-input w-full px-3 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base" required>
                     <option value="">Bitte wählen...</option>
                     <option value="Herr">Herr</option>
                     <option value="Frau">Frau</option>
@@ -497,63 +499,63 @@ export default function OnboardingPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Vorname *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Vorname *</label>
                   <input type="text" value={formData.vorname} onChange={(e) => updateMandant('vorname', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 rounded-lg" required />
+                    className="glass-input w-full px-3 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Nachname *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Nachname *</label>
                   <input type="text" value={formData.nachname} onChange={(e) => updateMandant('nachname', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 rounded-lg" required />
+                    className="glass-input w-full px-3 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">E-Mail *</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">E-Mail *</label>
                   <input type="email" value={formData.email} onChange={(e) => updateMandant('email', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 rounded-lg" required />
+                    className="glass-input w-full px-3 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Telefon</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Telefon</label>
                   <input type="tel" value={formData.telefon} onChange={(e) => updateMandant('telefon', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 rounded-lg" />
+                    className="glass-input w-full px-3 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base" />
                 </div>
               </div>
 
               {/* Anzahl Objekte */}
-              <div className="mt-6 pt-6 border-t border-slate-200">
-                <div className="p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
-                  <label className="block text-sm font-medium mb-2" style={{ color: COLORS.royalNavy.dark }}>
-                    <Home className="inline w-4 h-4 mr-1" /> Wie viele Objekte möchten Sie erfassen?
+              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-slate-200">
+                <div className="p-3 sm:p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                  <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: COLORS.royalNavy.dark }}>
+                    <Home className="inline w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" /> Wie viele Objekte möchten Sie erfassen?
                   </label>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center sm:justify-start gap-3 sm:gap-4">
                     <button type="button" onClick={() => updateAnzahlObjekte(formData.anzahl_objekte - 1)}
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold"
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold active:scale-95 transition-transform"
                       style={{ backgroundColor: COLORS.blueBone.light, color: COLORS.royalNavy.dark }}
                       disabled={formData.anzahl_objekte <= 1}>
                       −
                     </button>
                     <input type="number" min="1" value={formData.anzahl_objekte}
                       onChange={(e) => updateAnzahlObjekte(parseInt(e.target.value) || 1)}
-                      className="glass-input w-20 px-3 py-2 rounded-lg text-center text-xl font-bold" />
+                      className="glass-input w-16 sm:w-20 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-center text-lg sm:text-xl font-bold" />
                     <button type="button" onClick={() => updateAnzahlObjekte(formData.anzahl_objekte + 1)}
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold"
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold active:scale-95 transition-transform"
                       style={{ backgroundColor: COLORS.growthBlue.base, color: 'white' }}>
                       +
                     </button>
                   </div>
-                  <p className="text-xs mt-2" style={{ color: COLORS.growthBlue.dark }}>
-                    → {formData.anzahl_objekte} Objekt{formData.anzahl_objekte !== 1 ? 'e' : ''} werden erfasst (je 3 Schritte: Adresse, Finanzierung, Einheiten)
+                  <p className="text-[10px] sm:text-xs mt-2 text-center sm:text-left" style={{ color: COLORS.growthBlue.dark }}>
+                    → {formData.anzahl_objekte} Objekt{formData.anzahl_objekte !== 1 ? 'e' : ''} <span className="hidden sm:inline">werden erfasst (je 3 Schritte: Adresse, Finanzierung, Einheiten)</span>
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 pt-6 border-t border-slate-200">
-                <label className="flex items-center gap-3 cursor-pointer p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-slate-200">
+                <label className="flex items-start sm:items-center gap-3 cursor-pointer p-3 sm:p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                   <input type="checkbox" checked={formData.createAnkaufsprofil}
                     onChange={(e) => setFormData((prev) => ({ ...prev, createAnkaufsprofil: e.target.checked }))}
-                    className="w-5 h-5 rounded" style={{ accentColor: COLORS.growthBlue.base }} />
+                    className="w-5 h-5 rounded mt-0.5 sm:mt-0 flex-shrink-0" style={{ accentColor: COLORS.growthBlue.base }} />
                   <div>
-                    <span className="font-medium" style={{ color: COLORS.royalNavy.dark }}>Ankaufsprofil erstellen</span>
-                    <p className="text-sm text-slate-600">Erhalten Sie passende Objekt-Angebote von uns</p>
+                    <span className="font-medium text-sm sm:text-base" style={{ color: COLORS.royalNavy.dark }}>Ankaufsprofil erstellen</span>
+                    <p className="text-xs sm:text-sm text-slate-600">Erhalten Sie passende Objekt-Angebote von uns</p>
                   </div>
                 </label>
               </div>
@@ -563,33 +565,35 @@ export default function OnboardingPage() {
           {/* ===== STEP 2: ANKAUFSPROFIL ===== */}
           {mainStep === 2 && formData.createAnkaufsprofil && (
             <div>
-              <h2 className="text-lg font-bold mb-2" style={{ color: COLORS.royalNavy.dark }}>Ihr Ankaufsprofil</h2>
+              <h2 className="text-base sm:text-lg font-bold mb-2" style={{ color: COLORS.royalNavy.dark }}>Ihr Ankaufsprofil</h2>
               <SubStepIndicator current={ankaufSubStep} total={5} labels={['Basics', 'Standort', 'Finanzen', 'Objekt', 'Sonstiges']} />
 
               {ankaufSubStep === 1 && (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Profilname</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Profilname</label>
                     <input type="text" value={formData.ankaufsprofil.name} onChange={(e) => updateAnkauf('name', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="z.B. Core-Portfolio" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="z.B. Core-Portfolio" />
                   </div>
-                  <div className="flex items-center gap-4">
-                    <label className="text-sm font-medium text-slate-700">Kaufinteresse aktiv?</label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" checked={formData.ankaufsprofil.kaufinteresse_aktiv === true}
-                        onChange={() => updateAnkauf('kaufinteresse_aktiv', true)}
-                        className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }} />
-                      <span className="text-sm">Ja</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" checked={formData.ankaufsprofil.kaufinteresse_aktiv === false}
-                        onChange={() => updateAnkauf('kaufinteresse_aktiv', false)}
-                        className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }} />
-                      <span className="text-sm">Nein</span>
-                    </label>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <label className="text-xs sm:text-sm font-medium text-slate-700">Kaufinteresse aktiv?</label>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" checked={formData.ankaufsprofil.kaufinteresse_aktiv === true}
+                          onChange={() => updateAnkauf('kaufinteresse_aktiv', true)}
+                          className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }} />
+                        <span className="text-sm">Ja</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" checked={formData.ankaufsprofil.kaufinteresse_aktiv === false}
+                          onChange={() => updateAnkauf('kaufinteresse_aktiv', false)}
+                          className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }} />
+                        <span className="text-sm">Nein</span>
+                      </label>
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Bevorzugte Assetklassen</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-2">Bevorzugte Assetklassen</label>
                     <MultiSelectChips options={ASSETKLASSEN} selected={formData.ankaufsprofil.assetklassen}
                       onChange={(s) => updateAnkauf('assetklassen', s)} />
                   </div>
@@ -597,14 +601,14 @@ export default function OnboardingPage() {
               )}
 
               {ankaufSubStep === 2 && (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Bevorzugte Städte/Regionen</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Bevorzugte Städte/Regionen</label>
                     <textarea value={formData.ankaufsprofil.regionen} onChange={(e) => updateAnkauf('regionen', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" rows={3} placeholder="z.B. München, Berlin, Hamburg..." />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" rows={3} placeholder="z.B. München, Berlin, Hamburg..." />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Lagepräferenz</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-2">Lagepräferenz</label>
                     <MultiSelectChips options={LAGEPRAEFERENZEN} selected={formData.ankaufsprofil.lagepraeferenz}
                       onChange={(s) => updateAnkauf('lagepraeferenz', s)} />
                   </div>
@@ -612,29 +616,29 @@ export default function OnboardingPage() {
               )}
 
               {ankaufSubStep === 3 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Min. Volumen (EUR)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Min. Volumen (EUR)</label>
                     <input type="text" inputMode="numeric" value={formData.ankaufsprofil.min_volumen}
                       onChange={(e) => updateAnkauf('min_volumen', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="1000000" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="1000000" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Max. Volumen (EUR)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Max. Volumen (EUR)</label>
                     <input type="text" inputMode="numeric" value={formData.ankaufsprofil.max_volumen}
                       onChange={(e) => updateAnkauf('max_volumen', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="10000000" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="10000000" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Zielrendite IST (%)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Zielrendite IST (%)</label>
                     <input type="text" inputMode="decimal" value={formData.ankaufsprofil.rendite_min}
                       onChange={(e) => updateAnkauf('rendite_min', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="4.5" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="4.5" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Finanzierungsform</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Finanzierungsform</label>
                     <select value={formData.ankaufsprofil.finanzierungsform} onChange={(e) => updateAnkauf('finanzierungsform', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg">
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base">
                       <option value="">Bitte wählen...</option>
                       {FINANZIERUNGSFORMEN.map((f) => <option key={f} value={f}>{f}</option>)}
                     </select>
@@ -643,67 +647,69 @@ export default function OnboardingPage() {
               )}
 
               {ankaufSubStep === 4 && (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Zustand</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-2">Zustand</label>
                     <MultiSelectChips options={ZUSTAENDE} selected={formData.ankaufsprofil.zustand}
                       onChange={(s) => updateAnkauf('zustand', s)} />
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Baujahr von</label>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Baujahr von</label>
                       <input type="text" inputMode="numeric" value={formData.ankaufsprofil.baujahr_von}
                         onChange={(e) => updateAnkauf('baujahr_von', e.target.value)}
-                        className="glass-input w-full px-3 py-2 rounded-lg" placeholder="1950" />
+                        className="glass-input w-full px-2 sm:px-3 py-2 rounded-lg text-sm" placeholder="1950" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Baujahr bis</label>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Baujahr bis</label>
                       <input type="text" inputMode="numeric" value={formData.ankaufsprofil.baujahr_bis}
                         onChange={(e) => updateAnkauf('baujahr_bis', e.target.value)}
-                        className="glass-input w-full px-3 py-2 rounded-lg" placeholder="2020" />
+                        className="glass-input w-full px-2 sm:px-3 py-2 rounded-lg text-sm" placeholder="2020" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Min. Wohnfläche</label>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Min. Wohnfl.</label>
                       <input type="text" inputMode="numeric" value={formData.ankaufsprofil.min_wohnflaeche}
                         onChange={(e) => updateAnkauf('min_wohnflaeche', e.target.value)}
-                        className="glass-input w-full px-3 py-2 rounded-lg" placeholder="500 m²" />
+                        className="glass-input w-full px-2 sm:px-3 py-2 rounded-lg text-sm" placeholder="500 m²" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Min. Einheiten</label>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Min. Einh.</label>
                       <input type="text" inputMode="numeric" value={formData.ankaufsprofil.min_wohneinheiten}
                         onChange={(e) => updateAnkauf('min_wohneinheiten', e.target.value)}
-                        className="glass-input w-full px-3 py-2 rounded-lg" placeholder="6" />
+                        className="glass-input w-full px-2 sm:px-3 py-2 rounded-lg text-sm" placeholder="6" />
                     </div>
                   </div>
                 </div>
               )}
 
               {ankaufSubStep === 5 && (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <label className="text-sm font-medium text-slate-700">Ausgeschlossene Partner?</label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" checked={formData.ankaufsprofil.ausgeschlossene_partner === true}
-                        onChange={() => updateAnkauf('ausgeschlossene_partner', true)}
-                        className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }} />
-                      <span className="text-sm">Ja</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" checked={formData.ankaufsprofil.ausgeschlossene_partner === false}
-                        onChange={() => updateAnkauf('ausgeschlossene_partner', false)}
-                        className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }} />
-                      <span className="text-sm">Nein</span>
-                    </label>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <label className="text-xs sm:text-sm font-medium text-slate-700">Ausgeschlossene Partner?</label>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" checked={formData.ankaufsprofil.ausgeschlossene_partner === true}
+                          onChange={() => updateAnkauf('ausgeschlossene_partner', true)}
+                          className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }} />
+                        <span className="text-sm">Ja</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" checked={formData.ankaufsprofil.ausgeschlossene_partner === false}
+                          onChange={() => updateAnkauf('ausgeschlossene_partner', false)}
+                          className="w-4 h-4" style={{ accentColor: COLORS.growthBlue.base }} />
+                        <span className="text-sm">Nein</span>
+                      </label>
+                    </div>
                   </div>
                   {formData.ankaufsprofil.ausgeschlossene_partner && (
                     <textarea value={formData.ankaufsprofil.ausgeschlossene_partner_liste}
                       onChange={(e) => updateAnkauf('ausgeschlossene_partner_liste', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" rows={2} placeholder="Namen..." />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" rows={2} placeholder="Namen..." />
                   )}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Sonstiges / Anmerkungen</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Sonstiges / Anmerkungen</label>
                     <textarea value={formData.ankaufsprofil.sonstiges} onChange={(e) => updateAnkauf('sonstiges', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" rows={3} placeholder="Weitere Kriterien..." />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" rows={3} placeholder="Weitere Kriterien..." />
                   </div>
                 </div>
               )}
@@ -713,12 +719,12 @@ export default function OnboardingPage() {
           {/* ===== STEP 3: OBJEKTE ===== */}
           {mainStep === 3 && (
             <div>
-              <div className="flex justify-between items-center mb-2">
-                <h2 className="text-lg font-bold" style={{ color: COLORS.royalNavy.dark }}>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0 mb-2">
+                <h2 className="text-base sm:text-lg font-bold" style={{ color: COLORS.royalNavy.dark }}>
                   Objekt {currentObjektIndex + 1} von {formData.objekte.length}
                 </h2>
                 {formData.objekte.length > 1 && (
-                  <button onClick={() => removeObjekt(currentObjektIndex)} className="text-red-500 text-sm hover:underline">
+                  <button onClick={() => removeObjekt(currentObjektIndex)} className="text-red-500 text-xs sm:text-sm hover:underline self-start sm:self-auto">
                     Objekt löschen
                   </button>
                 )}
@@ -726,160 +732,160 @@ export default function OnboardingPage() {
               <SubStepIndicator current={objektSubStep} total={3} labels={['Adresse', 'Finanzierung', 'Einheiten']} />
 
               {objektSubStep === 1 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Straße *</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Straße *</label>
                     <input type="text" value={currentObjekt.strasse} onChange={(e) => updateObjekt('strasse', e.target.value)}
-                      className={`glass-input w-full px-3 py-2 rounded-lg ${duplicateObjektNr ? 'border-amber-400 border-2' : ''}`}
+                      className={`glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base ${duplicateObjektNr ? 'border-amber-400 border-2' : ''}`}
                       placeholder="Musterstraße 1" />
                     {duplicateObjektNr && (
-                      <div className="flex items-center gap-2 mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
-                        <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                      <div className="flex items-center gap-2 mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-xs sm:text-sm">
+                        <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                         <span>Diese Adresse wurde bereits bei Objekt {duplicateObjektNr} eingegeben.</span>
                       </div>
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">PLZ *</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">PLZ *</label>
                     <input type="text" value={currentObjekt.plz} onChange={(e) => updateObjekt('plz', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="80000" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="80000" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Ort *</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Ort *</label>
                     <input type="text" value={currentObjekt.ort} onChange={(e) => updateObjekt('ort', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="München" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="München" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Gebäudetyp</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gebäudetyp</label>
                     <select value={currentObjekt.gebaeudetyp} onChange={(e) => updateObjekt('gebaeudetyp', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg">
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base">
                       {GEBAEUDETYPEN.map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Baujahr</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Baujahr</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.baujahr} onChange={(e) => updateObjekt('baujahr', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="1985" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="1985" />
                   </div>
 
                   {/* Anzahl Einheiten - automatische Generierung */}
-                  <div className="md:col-span-2 mt-4 p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
-                    <label className="block text-sm font-medium mb-3" style={{ color: COLORS.royalNavy.dark }}>
-                      Anzahl Einheiten (bestimmt Formulare im Einheiten-Schritt)
+                  <div className="sm:col-span-2 mt-2 sm:mt-4 p-3 sm:p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                    <label className="block text-xs sm:text-sm font-medium mb-2 sm:mb-3" style={{ color: COLORS.royalNavy.dark }}>
+                      Anzahl Einheiten
                     </label>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4">
                       <div>
-                        <label className="block text-xs text-slate-500 mb-1">Wohneinheiten</label>
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Wohnen</label>
                         <input type="number" min="0" value={currentObjekt.anzahl_wohneinheiten}
                           onChange={(e) => updateObjektAnzahl('anzahl_wohneinheiten', Math.max(0, parseInt(e.target.value) || 0))}
-                          className="glass-input w-full px-3 py-2 rounded-lg text-center" />
+                          className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-center text-sm" />
                       </div>
                       <div>
-                        <label className="block text-xs text-slate-500 mb-1">Gewerbeeinheiten</label>
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Gewerbe</label>
                         <input type="number" min="0" value={currentObjekt.anzahl_gewerbeeinheiten}
                           onChange={(e) => updateObjektAnzahl('anzahl_gewerbeeinheiten', Math.max(0, parseInt(e.target.value) || 0))}
-                          className="glass-input w-full px-3 py-2 rounded-lg text-center" />
+                          className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-center text-sm" />
                       </div>
                       <div>
-                        <label className="block text-xs text-slate-500 mb-1">Stellplätze</label>
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Stellplätze</label>
                         <input type="number" min="0" value={currentObjekt.anzahl_stellplaetze}
                           onChange={(e) => updateObjektAnzahl('anzahl_stellplaetze', Math.max(0, parseInt(e.target.value) || 0))}
-                          className="glass-input w-full px-3 py-2 rounded-lg text-center" />
+                          className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-center text-sm" />
                       </div>
                     </div>
-                    <p className="text-xs mt-2" style={{ color: COLORS.growthBlue.dark }}>
-                      → {currentObjekt.anzahl_wohneinheiten + currentObjekt.anzahl_gewerbeeinheiten + currentObjekt.anzahl_stellplaetze} Einheit(en) werden im nächsten Schritt zum Ausfüllen generiert
+                    <p className="text-[10px] sm:text-xs mt-2" style={{ color: COLORS.growthBlue.dark }}>
+                      → {currentObjekt.anzahl_wohneinheiten + currentObjekt.anzahl_gewerbeeinheiten + currentObjekt.anzahl_stellplaetze} Einheit(en)
                     </p>
                   </div>
                 </div>
               )}
 
               {objektSubStep === 2 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Kaufpreis (EUR) *</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kaufpreis (EUR) *</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.kaufpreis} onChange={(e) => updateObjekt('kaufpreis', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="2500000" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="2500000" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Kaufdatum</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kaufdatum</label>
                     <input type="date" value={currentObjekt.kaufdatum} onChange={(e) => updateObjekt('kaufdatum', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Eigenkapital (%)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Eigenkapital (%)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.eigenkapital_prozent}
                       onChange={(e) => updateObjekt('eigenkapital_prozent', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="30" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="30" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Zinssatz (%)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Zinssatz (%)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.zinssatz}
                       onChange={(e) => updateObjekt('zinssatz', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="3.8" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="3.8" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Tilgung (%)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Tilgung (%)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.tilgung}
                       onChange={(e) => updateObjekt('tilgung', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="2" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="2" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Verwaltung (EUR/Jahr)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Verwaltung (EUR/Jahr)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.verwaltung}
                       onChange={(e) => updateObjekt('verwaltung', e.target.value)}
-                      className="glass-input w-full px-3 py-2 rounded-lg" placeholder="4800" />
+                      className="glass-input w-full px-3 py-2 rounded-lg text-sm sm:text-base" placeholder="4800" />
                   </div>
                 </div>
               )}
 
               {objektSubStep === 3 && (
                 <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm" style={{ color: COLORS.growthBlue.dark }}>
-                      {currentObjekt.anzahl_wohneinheiten} Wohnen + {currentObjekt.anzahl_gewerbeeinheiten} Gewerbe + {currentObjekt.anzahl_stellplaetze} Stellplätze = {currentObjekt.einheiten.length} Einheit(en)
+                  <div className="flex flex-wrap justify-between items-center mb-2 sm:mb-3 gap-1">
+                    <span className="text-xs sm:text-sm" style={{ color: COLORS.growthBlue.dark }}>
+                      {currentObjekt.anzahl_wohneinheiten}W + {currentObjekt.anzahl_gewerbeeinheiten}G + {currentObjekt.anzahl_stellplaetze}S = {currentObjekt.einheiten.length}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 mb-3">
-                    Einheiten wurden automatisch basierend auf Ihrer Eingabe generiert. Bitte füllen Sie die Details aus.
+                  <p className="text-[10px] sm:text-xs text-slate-500 mb-2 sm:mb-3">
+                    Einheiten wurden automatisch generiert. Bitte füllen Sie die Details aus.
                   </p>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3 max-h-[50vh] overflow-y-auto pr-1">
                     {currentObjekt.einheiten.map((einheit, idx) => (
-                      <div key={idx} className="p-3 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium" style={{ color: COLORS.royalNavy.dark }}>
-                            {einheit.nutzung === 'Wohnen' ? 'Wohnung' : einheit.nutzung === 'Gewerbe' ? 'Gewerbe' : 'Stellplatz'} {idx + 1}
+                      <div key={idx} className="p-2 sm:p-3 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                        <div className="flex justify-between items-center mb-1.5 sm:mb-2">
+                          <span className="text-xs sm:text-sm font-medium" style={{ color: COLORS.royalNavy.dark }}>
+                            {einheit.nutzung === 'Wohnen' ? 'WE' : einheit.nutzung === 'Gewerbe' ? 'GE' : 'SP'} {idx + 1}
                           </span>
-                          <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: COLORS.growthBlue.base, color: 'white' }}>
+                          <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full" style={{ backgroundColor: COLORS.growthBlue.base, color: 'white' }}>
                             {einheit.nutzung}
                           </span>
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                           <div>
-                            <label className="block text-xs text-slate-500 mb-1">m²</label>
+                            <label className="block text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">m²</label>
                             <input type="text" inputMode="decimal" value={einheit.flaeche}
                               onChange={(e) => updateEinheit(idx, 'flaeche', e.target.value)}
-                              className="glass-input w-full px-2 py-1.5 rounded text-sm" placeholder="75" />
+                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-xs sm:text-sm" placeholder="75" />
                           </div>
                           <div>
-                            <label className="block text-xs text-slate-500 mb-1">Miete €/Mon</label>
+                            <label className="block text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">€/Mon</label>
                             <input type="text" inputMode="decimal" value={einheit.kaltmiete}
                               onChange={(e) => updateEinheit(idx, 'kaltmiete', e.target.value)}
-                              className="glass-input w-full px-2 py-1.5 rounded text-sm" placeholder="850" />
+                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-xs sm:text-sm" placeholder="850" />
                           </div>
                           <div>
-                            <label className="block text-xs text-slate-500 mb-1">Markt €/m²</label>
+                            <label className="block text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">€/m²</label>
                             <input type="text" inputMode="decimal" value={einheit.vergleichsmiete}
                               onChange={(e) => updateEinheit(idx, 'vergleichsmiete', e.target.value)}
-                              className="glass-input w-full px-2 py-1.5 rounded text-sm" placeholder="14" />
+                              className="glass-input w-full px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-xs sm:text-sm" placeholder="14" />
                           </div>
                           <div>
-                            <label className="block text-xs text-slate-500 mb-1">Vertrag</label>
+                            <label className="block text-[10px] sm:text-xs text-slate-500 mb-0.5 sm:mb-1">Vertrag</label>
                             <select value={einheit.mietvertragsart} onChange={(e) => updateEinheit(idx, 'mietvertragsart', e.target.value)}
-                              className="glass-input w-full px-2 py-1.5 rounded text-sm">
-                              <option value="Standard">Standard</option>
-                              <option value="Index">Index</option>
-                              <option value="Staffel">Staffel</option>
+                              className="glass-input w-full px-1 sm:px-2 py-1 sm:py-1.5 rounded text-xs sm:text-sm">
+                              <option value="Standard">Std</option>
+                              <option value="Index">Idx</option>
+                              <option value="Staffel">Stf</option>
                             </select>
                           </div>
                         </div>
@@ -889,10 +895,10 @@ export default function OnboardingPage() {
 
                   {/* Info: Weitere Objekte können im Kontakt-Schritt hinzugefügt werden */}
                   {currentObjektIndex === formData.objekte.length - 1 && (
-                    <div className="mt-4 pt-4 border-t border-slate-200 text-center">
-                      <p className="text-xs text-slate-500">
-                        Sie erfassen {formData.objekte.length} Objekt{formData.objekte.length !== 1 ? 'e' : ''}.
-                        {' '}Mehr Objekte können Sie im ersten Schritt (Kontakt) hinzufügen.
+                    <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-slate-200 text-center">
+                      <p className="text-[10px] sm:text-xs text-slate-500">
+                        {formData.objekte.length} Objekt{formData.objekte.length !== 1 ? 'e' : ''}.
+                        <span className="hidden sm:inline"> Mehr Objekte können Sie im ersten Schritt hinzufügen.</span>
                       </p>
                     </div>
                   )}
@@ -904,53 +910,53 @@ export default function OnboardingPage() {
           {/* ===== STEP 4: ÜBERSICHT ===== */}
           {mainStep === 4 && (
             <div>
-              <h2 className="text-lg font-bold mb-4" style={{ color: COLORS.royalNavy.dark }}>Übersicht</h2>
+              <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4" style={{ color: COLORS.royalNavy.dark }}>Übersicht</h2>
 
-              <div className="p-4 rounded-lg mb-4" style={{ backgroundColor: COLORS.blueBone.lightest }}>
-                <h3 className="font-semibold mb-2" style={{ color: COLORS.royalNavy.dark }}>Kontakt</h3>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="p-3 sm:p-4 rounded-lg mb-3 sm:mb-4" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                <h3 className="font-semibold mb-2 text-sm sm:text-base" style={{ color: COLORS.royalNavy.dark }}>Kontakt</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 text-xs sm:text-sm">
                   <div><span className="text-slate-500">Firma:</span> {formData.name}</div>
                   <div><span className="text-slate-500">Ansprechpartner:</span> {formData.anrede} {formData.vorname} {formData.nachname}</div>
-                  <div><span className="text-slate-500">E-Mail:</span> {formData.email}</div>
+                  <div className="truncate"><span className="text-slate-500">E-Mail:</span> {formData.email}</div>
                   <div><span className="text-slate-500">Telefon:</span> {formData.telefon || '-'}</div>
                 </div>
               </div>
 
               {formData.createAnkaufsprofil && (
-                <div className="p-4 rounded-lg mb-4" style={{ backgroundColor: COLORS.blueBone.light }}>
-                  <h3 className="font-semibold mb-2" style={{ color: COLORS.royalNavy.dark }}>Ankaufsprofil</h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div><span className="text-slate-500">Assetklassen:</span> {formData.ankaufsprofil.assetklassen.join(', ') || '-'}</div>
-                    <div><span className="text-slate-500">Regionen:</span> {formData.ankaufsprofil.regionen || '-'}</div>
+                <div className="p-3 sm:p-4 rounded-lg mb-3 sm:mb-4" style={{ backgroundColor: COLORS.blueBone.light }}>
+                  <h3 className="font-semibold mb-2 text-sm sm:text-base" style={{ color: COLORS.royalNavy.dark }}>Ankaufsprofil</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 text-xs sm:text-sm">
+                    <div className="truncate"><span className="text-slate-500">Assetklassen:</span> {formData.ankaufsprofil.assetklassen.join(', ') || '-'}</div>
+                    <div className="truncate"><span className="text-slate-500">Regionen:</span> {formData.ankaufsprofil.regionen || '-'}</div>
                   </div>
                 </div>
               )}
 
-              <div className="p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
-                <h3 className="font-semibold mb-3" style={{ color: COLORS.royalNavy.dark }}>Portfolio</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm mb-4">
+              <div className="p-3 sm:p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                <h3 className="font-semibold mb-2 sm:mb-3 text-sm sm:text-base" style={{ color: COLORS.royalNavy.dark }}>Portfolio</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm mb-3 sm:mb-4">
                   <div>
-                    <div className="text-slate-500">Objekte</div>
-                    <div className="text-2xl font-bold" style={{ color: COLORS.royalNavy.dark }}>{stats.totalObjekte}</div>
+                    <div className="text-slate-500 text-[10px] sm:text-xs">Objekte</div>
+                    <div className="text-lg sm:text-2xl font-bold" style={{ color: COLORS.royalNavy.dark }}>{stats.totalObjekte}</div>
                   </div>
                   <div>
-                    <div className="text-slate-500">Einheiten</div>
-                    <div className="text-2xl font-bold" style={{ color: COLORS.royalNavy.dark }}>{stats.totalEinheiten}</div>
+                    <div className="text-slate-500 text-[10px] sm:text-xs">Einheiten</div>
+                    <div className="text-lg sm:text-2xl font-bold" style={{ color: COLORS.royalNavy.dark }}>{stats.totalEinheiten}</div>
                   </div>
                   <div>
-                    <div className="text-slate-500">Fläche</div>
-                    <div className="text-2xl font-bold" style={{ color: COLORS.royalNavy.dark }}>{stats.totalFlaeche.toLocaleString('de-DE')} m²</div>
+                    <div className="text-slate-500 text-[10px] sm:text-xs">Fläche</div>
+                    <div className="text-lg sm:text-2xl font-bold" style={{ color: COLORS.royalNavy.dark }}>{stats.totalFlaeche.toLocaleString('de-DE')}<span className="text-xs sm:text-sm"> m²</span></div>
                   </div>
                   <div>
-                    <div className="text-slate-500">Jahresmiete</div>
-                    <div className="text-2xl font-bold text-green-600">{(stats.totalMiete * 12).toLocaleString('de-DE')} €</div>
+                    <div className="text-slate-500 text-[10px] sm:text-xs">Jahresmiete</div>
+                    <div className="text-lg sm:text-2xl font-bold text-green-600">{(stats.totalMiete * 12).toLocaleString('de-DE')}<span className="text-xs sm:text-sm"> €</span></div>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5 sm:space-y-2 max-h-[30vh] overflow-y-auto">
                   {formData.objekte.map((obj, idx) => (
-                    <div key={idx} className="flex justify-between p-2 bg-white rounded text-sm">
-                      <span>{obj.strasse || `Objekt ${idx + 1}`}, {obj.ort}</span>
-                      <span className="text-green-600">{obj.einheiten.reduce((sum, e) => sum + (parseFloat(e.kaltmiete) || 0), 0).toLocaleString('de-DE')} €/Mon</span>
+                    <div key={idx} className="flex justify-between items-center p-2 bg-white rounded text-xs sm:text-sm gap-2">
+                      <span className="truncate">{obj.strasse || `Objekt ${idx + 1}`}, {obj.ort}</span>
+                      <span className="text-green-600 whitespace-nowrap">{obj.einheiten.reduce((sum, e) => sum + (parseFloat(e.kaltmiete) || 0), 0).toLocaleString('de-DE')} €</span>
                     </div>
                   ))}
                 </div>
@@ -959,25 +965,26 @@ export default function OnboardingPage() {
           )}
 
           {/* Error */}
-          {error && <div className="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">{error}</div>}
+          {error && <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs sm:text-sm">{error}</div>}
 
           {/* Navigation */}
-          <div className="flex justify-between gap-3 mt-6 pt-6 border-t border-slate-200">
+          <div className="flex justify-between gap-2 sm:gap-3 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-slate-200">
             <button onClick={goBack} disabled={isFirstStep}
-              className="flex items-center gap-2 px-6 py-3 text-slate-600 hover:bg-slate-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-              <ArrowLeft className="w-4 h-4" /> Zurück
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 text-slate-600 hover:bg-slate-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base active:scale-95 transition-transform">
+              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> <span className="hidden xs:inline">Zurück</span>
             </button>
             {isLastStep ? (
               <button onClick={handleSubmit} disabled={loading}
-                className="flex items-center gap-2 px-8 py-3 text-white rounded-lg disabled:opacity-50"
+                className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-8 py-2 sm:py-3 text-white rounded-lg disabled:opacity-50 text-sm sm:text-base active:scale-95 transition-transform"
                 style={{ backgroundColor: COLORS.growthBlue.base }}>
-                {loading ? 'Wird gesendet...' : 'Absenden'} <CheckCircle className="w-4 h-4" />
+                {loading ? <span className="hidden sm:inline">Wird gesendet...</span> : 'Absenden'}
+                {loading ? null : <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               </button>
             ) : (
               <button onClick={goNext}
-                className="flex items-center gap-2 px-6 py-3 text-white rounded-lg"
+                className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 text-white rounded-lg text-sm sm:text-base active:scale-95 transition-transform"
                 style={{ backgroundColor: COLORS.growthBlue.base }}>
-                Weiter <ArrowRight className="w-4 h-4" />
+                Weiter <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             )}
           </div>
