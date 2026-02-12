@@ -87,6 +87,13 @@ select {
   padding: 0.625rem 0.875rem;
   font-size: 0.875rem;
   transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+/* Fix date input on mobile - prevent overflow */
+input[type="date"] {
+  min-width: 0;
+  max-width: 100%;
 }
 
 input[type="text"]:focus,

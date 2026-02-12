@@ -794,31 +794,31 @@ export default function OnboardingPage() {
               )}
 
               {objektSubStep === 2 && (
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 flex-1">
+                <div className="grid grid-cols-2 gap-2 sm:gap-4 flex-1 overflow-hidden">
                   <div>
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufpreis *</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.kaufpreis} onChange={(e) => updateObjekt('kaufpreis', e.target.value)}
                       className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" placeholder="2500000" />
                   </div>
-                  <div>
+                  <div className="overflow-hidden">
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Kaufdatum</label>
                     <input type="date" value={currentObjekt.kaufdatum} onChange={(e) => updateObjekt('kaufdatum', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" />
+                      className="glass-input w-full max-w-full px-1 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base box-border" />
                   </div>
                   <div>
-                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">EK (%)</label>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">EK %</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.eigenkapital_prozent}
                       onChange={(e) => updateObjekt('eigenkapital_prozent', e.target.value)}
                       className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" placeholder="30" />
                   </div>
                   <div>
-                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Zins (%)</label>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Zins %</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.zinssatz}
                       onChange={(e) => updateObjekt('zinssatz', e.target.value)}
                       className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" placeholder="3.8" />
                   </div>
                   <div>
-                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Tilgung (%)</label>
+                    <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Tilgung %</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.tilgung}
                       onChange={(e) => updateObjekt('tilgung', e.target.value)}
                       className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" placeholder="2" />
