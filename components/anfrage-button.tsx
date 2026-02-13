@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { Send, Loader2, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AnfrageButtonProps {
   objektId: string;
@@ -31,6 +32,7 @@ export function AnfrageButton({ objektId, mandantId }: AnfrageButtonProps) {
         .single();
 
       if (existing) {
+        toast.warning('Es existiert bereits eine offene Anfrage für dieses Objekt');
         setError('Es existiert bereits eine offene Anfrage für dieses Objekt');
         setLoading(false);
         return;
@@ -50,8 +52,10 @@ export function AnfrageButton({ objektId, mandantId }: AnfrageButtonProps) {
       }
 
       setSuccess(true);
+      toast.success('Auswertungsanfrage erfolgreich gesendet!');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
+      toast.error('Fehler beim Senden der Anfrage');
     } finally {
       setLoading(false);
     }

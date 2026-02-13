@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { FileBarChart, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AuswertenButtonProps {
   objektId: string;
@@ -34,9 +35,11 @@ export function AuswertenButton({ objektId }: AuswertenButtonProps) {
       }
 
       // Redirect to auswertung detail page
+      toast.success('Auswertung erfolgreich erstellt!');
       router.push(`/auswertungen/${data.auswertung_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
+      toast.error('Fehler bei der Auswertung');
       setLoading(false);
     }
   };

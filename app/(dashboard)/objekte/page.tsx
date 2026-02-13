@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
 import { Plus, Building2, User } from 'lucide-react';
+import { SearchFilterBar } from '@/components/ui/search-filter-bar';
+import { Pagination } from '@/components/ui/pagination';
 
 interface Objekt {
   id: string;
@@ -28,21 +30,58 @@ interface GroupedObjekte {
   };
 }
 
-export default async function ObjektePage() {
+const PAGE_SIZE = 20;
+
+interface PageProps {
+  searchParams: Promise<{ q?: string; typ?: string; page?: string }>;
+}
+
+export default async function ObjektePage({ searchParams }: PageProps) {
+  const params = await searchParams;
   const supabase = await createClient();
 
   // Check user role
   const { data: profile } = await supabase.from('profiles').select('role, mandant_id').single();
   const isAdmin = profile?.role === 'admin';
 
+  const searchQuery = params.q?.trim() || '';
+  const filterTyp = params.typ || '';
+  const currentPage = Math.max(1, Number(params.page) || 1);
+  const offset = (currentPage - 1) * PAGE_SIZE;
+
+  // Count total for pagination
+  let countQuery = supabase
+    .from('objekte')
+    .select('*', { count: 'exact', head: true });
+
+  if (searchQuery) {
+    countQuery = countQuery.or(`strasse.ilike.%${searchQuery}%,ort.ilike.%${searchQuery}%,plz.ilike.%${searchQuery}%`);
+  }
+  if (filterTyp) {
+    countQuery = countQuery.eq('gebaeudetyp', filterTyp);
+  }
+
+  const { count } = await countQuery;
+  const totalItems = count || 0;
+
   // Fetch objekte (RLS handles filtering for mandanten)
-  const { data: objekte } = await supabase
+  let query = supabase
     .from('objekte')
     .select(`
       *,
       mandanten (id, name)
     `)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(offset, offset + PAGE_SIZE - 1);
+
+  if (searchQuery) {
+    query = query.or(`strasse.ilike.%${searchQuery}%,ort.ilike.%${searchQuery}%,plz.ilike.%${searchQuery}%`);
+  }
+  if (filterTyp) {
+    query = query.eq('gebaeudetyp', filterTyp);
+  }
+
+  const { data: objekte } = await query;
 
   // Group objekte by mandant for admin view
   const groupedObjekte: GroupedObjekte = {};
@@ -62,7 +101,6 @@ export default async function ObjektePage() {
   }
 
   const mandantIds = Object.keys(groupedObjekte);
-  const totalObjekte = objekte?.length || 0;
   const totalMandanten = mandantIds.length;
 
   return (
@@ -73,8 +111,8 @@ export default async function ObjektePage() {
           <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Objekte</h1>
           <p className="text-sm sm:text-base text-[#4A6A8D] mt-1">
             {isAdmin
-              ? `${totalObjekte} Objekte von ${totalMandanten} Mandanten`
-              : 'Ihre Immobilien'}
+              ? `${totalItems} Objekte von ${totalMandanten} Mandanten`
+              : `${totalItems} Objekte`}
           </p>
         </div>
         <Link href="/objekte/neu" className="self-start sm:self-auto">
@@ -84,6 +122,24 @@ export default async function ObjektePage() {
           </Button>
         </Link>
       </div>
+
+      {/* Search & Filter */}
+      <SearchFilterBar
+        placeholder="Adresse oder Ort suchen..."
+        filters={[
+          {
+            key: 'typ',
+            label: 'Alle Gebäudetypen',
+            options: [
+              { value: 'Mehrfamilienhaus', label: 'Mehrfamilienhaus' },
+              { value: 'Einfamilienhaus', label: 'Einfamilienhaus' },
+              { value: 'Wohn- und Geschäftshaus', label: 'Wohn- und Geschäftshaus' },
+              { value: 'Gewerbe', label: 'Gewerbe' },
+              { value: 'Bürogebäude', label: 'Bürogebäude' },
+            ],
+          },
+        ]}
+      />
 
       {/* Grouped View for Admin */}
       {isAdmin ? (
@@ -168,9 +224,10 @@ export default async function ObjektePage() {
             })
           ) : (
             <Card className="p-6 sm:p-8 text-center text-[#5B7A9D]">
-              Keine Objekte vorhanden
+              {searchQuery || filterTyp ? 'Keine Objekte mit diesen Filtern gefunden' : 'Keine Objekte vorhanden'}
             </Card>
           )}
+          <Pagination totalItems={totalItems} pageSize={PAGE_SIZE} />
         </div>
       ) : (
         /* Simple Table for Mandant View */
@@ -215,10 +272,11 @@ export default async function ObjektePage() {
                   </TableRow>
                 ))
               ) : (
-                <TableEmpty message="Keine Objekte vorhanden" colSpan={6} />
+                <TableEmpty message={searchQuery || filterTyp ? 'Keine Objekte mit diesen Filtern gefunden' : 'Keine Objekte vorhanden'} colSpan={6} />
               )}
             </TableBody>
           </Table>
+          <Pagination totalItems={totalItems} pageSize={PAGE_SIZE} />
         </Card>
       )}
     </div>

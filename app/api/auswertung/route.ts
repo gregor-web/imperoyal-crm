@@ -139,7 +139,7 @@ function generateBuyerMatchEmailHtml(
           <tr>
             <td style="padding: 25px 40px; text-align: center; border-top: 1px solid rgba(212, 175, 55, 0.3);">
               <p style="margin: 0 0 8px; color: #5a5549; font-size: 12px;">
-                © 2025 Imperoyal Immobilien. Alle Rechte vorbehalten.
+                © 2026 Imperoyal Immobilien. Alle Rechte vorbehalten.
               </p>
               <p style="margin: 0; color: #4a453f; font-size: 11px;">
                 Für Family Offices, UHNWIs & Institutionelle Vermögensverwalter

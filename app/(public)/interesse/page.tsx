@@ -165,7 +165,7 @@ export default function InteressePage() {
 
         {/* Copyright */}
         <p className="text-center text-[#9EAFC0] text-xs mt-6">
-          © 2025 Imperoyal Immobilien. Alle Rechte vorbehalten.
+          © 2026 Imperoyal Immobilien. Alle Rechte vorbehalten.
         </p>
       </div>
     </div>

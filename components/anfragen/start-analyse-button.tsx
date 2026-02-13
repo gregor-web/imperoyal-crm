@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Play, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface StartAnalyseButtonProps {
   objektId: string;
@@ -34,6 +35,8 @@ export function StartAnalyseButton({ objektId, anfrageId }: StartAnalyseButtonPr
 
       const { auswertung_id } = await response.json();
 
+      toast.success('Analyse erfolgreich erstellt!');
+
       // Set status to "fertig"
       await fetch('/api/anfragen/status', {
         method: 'POST',
@@ -45,6 +48,7 @@ export function StartAnalyseButton({ objektId, anfrageId }: StartAnalyseButtonPr
       router.push(`/auswertungen/${auswertung_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten');
+      toast.error('Analyse konnte nicht gestartet werden');
       setIsLoading(false);
     }
   };

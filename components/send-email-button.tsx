@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Send, Loader2, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface SendEmailButtonProps {
   auswertungId: string;
@@ -46,10 +47,12 @@ export function SendEmailButton({ auswertungId, status }: SendEmailButtonProps) 
       }
 
       setSuccess(true);
+      toast.success('Auswertung erfolgreich per E-Mail versendet!');
       // Refresh the page to update status
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
+      toast.error('Fehler beim Versenden der E-Mail');
     } finally {
       setLoading(false);
     }

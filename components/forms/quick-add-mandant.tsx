@@ -6,6 +6,7 @@ import { Modal } from '@/components/ui/modal';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { UserPlus, Mail, Check, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface QuickAddMandantProps {
   isOpen: boolean;
@@ -42,8 +43,10 @@ export function QuickAddMandant({ isOpen, onClose }: QuickAddMandantProps) {
         password: result.password,
         emailSent: result.emailSent,
       });
+      toast.success('Mandant erfolgreich erstellt!');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten');
+      toast.error('Fehler beim Erstellen des Mandanten');
     } finally {
       setIsLoading(false);
     }

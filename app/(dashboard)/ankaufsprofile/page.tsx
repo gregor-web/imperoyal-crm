@@ -6,8 +6,17 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmp
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/formatters';
 import { Plus, Eye } from 'lucide-react';
+import { SearchFilterBar } from '@/components/ui/search-filter-bar';
+import { Pagination } from '@/components/ui/pagination';
 
-export default async function AnkaufsprofilePage() {
+const PAGE_SIZE = 20;
+
+interface PageProps {
+  searchParams: Promise<{ q?: string; page?: string }>;
+}
+
+export default async function AnkaufsprofilePage({ searchParams }: PageProps) {
+  const params = await searchParams;
   const supabase = await createClient();
 
   // Check if user is admin
@@ -38,6 +47,25 @@ export default async function AnkaufsprofilePage() {
     console.error('Error fetching ankaufsprofile:', error);
   }
 
+  const searchQuery = params.q?.trim() || '';
+  const currentPage = Math.max(1, Number(params.page) || 1);
+
+  // Client-side text filter
+  const filtered = searchQuery
+    ? profile_list?.filter((p) => {
+        const mandant = p.mandanten as { name: string } | null;
+        const q = searchQuery.toLowerCase();
+        return (
+          p.name?.toLowerCase().includes(q) ||
+          mandant?.name?.toLowerCase().includes(q)
+        );
+      })
+    : profile_list;
+
+  const totalItems = filtered?.length || 0;
+  const offset = (currentPage - 1) * PAGE_SIZE;
+  const paginated = filtered?.slice(offset, offset + PAGE_SIZE);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -45,7 +73,7 @@ export default async function AnkaufsprofilePage() {
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Ankaufsprofile</h1>
           <p className="text-sm sm:text-base text-slate-600 mt-1">
-            {isAdmin ? 'Alle Ankaufsprofile im System' : 'Ihre Ankaufsprofile'}
+            {isAdmin ? `${totalItems} Ankaufsprofile im System` : 'Ihre Ankaufsprofile'}
           </p>
         </div>
         <Link href="/ankaufsprofile/neu" className="self-start sm:self-auto">
@@ -55,6 +83,9 @@ export default async function AnkaufsprofilePage() {
           </Button>
         </Link>
       </div>
+
+      {/* Search */}
+      <SearchFilterBar placeholder="Ankaufsprofile suchen..." />
 
       {/* Table */}
       <Card>
@@ -70,8 +101,8 @@ export default async function AnkaufsprofilePage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {profile_list && profile_list.length > 0 ? (
-              profile_list.map((profil) => {
+            {paginated && paginated.length > 0 ? (
+              paginated.map((profil) => {
                 const mandant = profil.mandanten as { name: string } | null;
                 const assetklassen = profil.assetklassen as string[] | null;
 
@@ -112,10 +143,11 @@ export default async function AnkaufsprofilePage() {
                 );
               })
             ) : (
-              <TableEmpty colSpan={isAdmin ? 6 : 5} message="Keine Ankaufsprofile vorhanden. Klicken Sie auf 'Neues Profil' um eines zu erstellen." />
+              <TableEmpty colSpan={isAdmin ? 6 : 5} message={searchQuery ? `Keine Ankaufsprofile für "${searchQuery}" gefunden` : 'Keine Ankaufsprofile vorhanden. Klicken Sie auf \'Neues Profil\' um eines zu erstellen.'} />
             )}
           </TableBody>
         </Table>
+        <Pagination totalItems={totalItems} pageSize={PAGE_SIZE} />
       </Card>
     </div>
   );
