@@ -240,12 +240,6 @@ export default function OnboardingPage() {
     });
   };
 
-  // State for collapsible Einheit cards on mobile (null = all collapsed, number = expanded index)
-  const [expandedEinheit, setExpandedEinheit] = useState<number | null>(0);
-  const toggleEinheit = (idx: number) => {
-    setExpandedEinheit(prev => prev === idx ? null : idx);
-  };
-
   // Calculate total steps and current position
   const getTotalSteps = () => {
     let total = 2; // Kontakt + Übersicht
@@ -300,7 +294,6 @@ export default function OnboardingPage() {
       setAnkaufSubStep(1);
       setObjektSubStep(1);
       setCurrentObjektIndex(0);
-      setExpandedEinheit(0);
     } else if (mainStep === 2) {
       if (ankaufSubStep < 5) {
         setAnkaufSubStep(ankaufSubStep + 1);
@@ -308,7 +301,6 @@ export default function OnboardingPage() {
         setMainStep(3);
         setObjektSubStep(1);
         setCurrentObjektIndex(0);
-        setExpandedEinheit(0);
       }
     } else if (mainStep === 3) {
       if (objektSubStep < 3) {
@@ -316,7 +308,6 @@ export default function OnboardingPage() {
       } else if (currentObjektIndex < formData.objekte.length - 1) {
         setCurrentObjektIndex(currentObjektIndex + 1);
         setObjektSubStep(1);
-        setExpandedEinheit(0);
       } else {
         setMainStep(4);
       }
@@ -328,14 +319,12 @@ export default function OnboardingPage() {
       setMainStep(3);
       setCurrentObjektIndex(formData.objekte.length - 1);
       setObjektSubStep(3);
-      setExpandedEinheit(0);
     } else if (mainStep === 3) {
       if (objektSubStep > 1) {
         setObjektSubStep(objektSubStep - 1);
       } else if (currentObjektIndex > 0) {
         setCurrentObjektIndex(currentObjektIndex - 1);
         setObjektSubStep(3);
-        setExpandedEinheit(0);
       } else {
         setMainStep(formData.createAnkaufsprofil ? 2 : 1);
         setAnkaufSubStep(5);
@@ -907,181 +896,153 @@ export default function OnboardingPage() {
                     <span className="text-xs sm:text-sm font-medium" style={{ color: COLORS.growthBlue.dark }}>
                       {currentObjekt.anzahl_wohneinheiten}W + {currentObjekt.anzahl_gewerbeeinheiten}G + {currentObjekt.anzahl_stellplaetze}S
                     </span>
-                    <span className="text-[10px] sm:text-xs text-slate-400 sm:hidden">
-                      Tippe zum Öffnen
-                    </span>
                   </div>
-                  <div className="flex-1 overflow-y-auto space-y-2 sm:space-y-4 min-h-0">
+                  <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 min-h-0">
                     {currentObjekt.einheiten.map((einheit, idx) => {
                       const bgbKey = `${currentObjektIndex}-${idx}`;
                       const isBGBExpanded = expandedBGB.has(bgbKey);
                       const hasBGBFields = einheit.nutzung === 'Wohnen' && einheit.mietvertragsart !== 'Index';
-                      const isExpanded = expandedEinheit === idx;
-                      const hasData = !!(einheit.flaeche || einheit.kaltmiete);
 
                       return (
-                        <div key={idx} className="rounded-xl border-l-4 overflow-hidden transition-all duration-200"
+                        <div key={idx} className="p-3 sm:p-4 rounded-xl border-l-4"
                           style={{
                             backgroundColor: COLORS.blueBone.lightest,
                             borderLeftColor: einheit.nutzung === 'Wohnen' ? '#3B82F6' : einheit.nutzung === 'Gewerbe' ? '#F59E0B' : '#6B7280'
                           }}>
-                          {/* Accordion Header - always visible */}
-                          <button
-                            type="button"
-                            onClick={() => toggleEinheit(idx)}
-                            className="w-full flex items-center justify-between p-3 sm:p-4 text-left active:scale-[0.99] transition-transform min-h-[44px]"
-                          >
-                            <div className="flex items-center gap-2 min-w-0">
-                              <span className="text-sm sm:text-base font-semibold flex-shrink-0" style={{ color: COLORS.royalNavy.dark }}>
-                                {einheit.nutzung === 'Wohnen' ? 'Wohnung' : einheit.nutzung === 'Gewerbe' ? 'Gewerbe' : 'Stellplatz'} {idx + 1}
-                              </span>
-                              {/* Summary when collapsed on mobile */}
-                              {!isExpanded && hasData && (
-                                <span className="text-[10px] sm:text-xs text-slate-400 truncate sm:hidden">
-                                  {einheit.flaeche ? `${einheit.flaeche}m²` : ''}{einheit.flaeche && einheit.kaltmiete ? ' · ' : ''}{einheit.kaltmiete ? `${einheit.kaltmiete}€` : ''}
+                          {/* Header */}
+                          <div className="flex justify-between items-center mb-3">
+                            <span className="text-sm sm:text-base font-semibold" style={{ color: COLORS.royalNavy.dark }}>
+                              {einheit.nutzung === 'Wohnen' ? 'Wohnung' : einheit.nutzung === 'Gewerbe' ? 'Gewerbe' : 'Stellplatz'} {idx + 1}
+                            </span>
+                            <span className="text-[10px] sm:text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full font-medium"
+                              style={{
+                                backgroundColor: einheit.nutzung === 'Wohnen' ? '#DBEAFE' : einheit.nutzung === 'Gewerbe' ? '#FEF3C7' : '#F3F4F6',
+                                color: einheit.nutzung === 'Wohnen' ? '#1D4ED8' : einheit.nutzung === 'Gewerbe' ? '#B45309' : '#4B5563'
+                              }}>
+                              {einheit.nutzung}
+                            </span>
+                          </div>
+
+                          {/* Basis-Felder - 2 Spalten auf Mobile, 4 auf Desktop */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-3">
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Fläche m² *</label>
+                              <input type="text" inputMode="decimal" value={einheit.flaeche}
+                                onChange={(e) => updateEinheit(idx, 'flaeche', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="75" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Miete €/M *</label>
+                              <input type="text" inputMode="decimal" value={einheit.kaltmiete}
+                                onChange={(e) => updateEinheit(idx, 'kaltmiete', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="850" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Markt €/m²</label>
+                              <input type="text" inputMode="decimal" value={einheit.vergleichsmiete}
+                                onChange={(e) => updateEinheit(idx, 'vergleichsmiete', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="14" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vertragsart *</label>
+                              <select value={einheit.mietvertragsart} onChange={(e) => updateEinheit(idx, 'mietvertragsart', e.target.value)}
+                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm">
+                                <option value="Standard">Standard</option>
+                                <option value="Index">Index</option>
+                                <option value="Staffel">Staffel</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Vertragsdaten */}
+                          <div className="pt-3 border-t border-slate-200 mb-3">
+                            <span className="block text-[10px] sm:text-xs font-medium text-slate-500 mb-2">Vertragsdaten</span>
+                            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                              <div>
+                                <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vertragsbeginn *</label>
+                                <input type="date" value={einheit.vertragsbeginn}
+                                  onChange={(e) => updateEinheit(idx, 'vertragsbeginn', e.target.value)}
+                                  className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
+                              </div>
+                              <div>
+                                <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Letzte Erhöhung</label>
+                                <input type="date" value={einheit.letzte_mieterhoehung}
+                                  onChange={(e) => updateEinheit(idx, 'letzte_mieterhoehung', e.target.value)}
+                                  className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
+                              </div>
+                              <div className="xs:col-span-2 sm:col-span-2">
+                                <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe Erhöhung (€)</label>
+                                <input type="text" inputMode="decimal" value={einheit.hoehe_mieterhoehung}
+                                  onChange={(e) => updateEinheit(idx, 'hoehe_mieterhoehung', e.target.value)}
+                                  className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="50" />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Collapsible BGB Section */}
+                          {hasBGBFields && (
+                            <div className="pt-2 border-t border-slate-200">
+                              <button type="button" onClick={() => toggleBGB(bgbKey)}
+                                className="w-full flex items-center justify-between py-2 text-left active:scale-[0.99] transition-transform min-h-[44px]">
+                                <span className="text-[10px] sm:text-xs font-medium text-slate-600">
+                                  §558/§559 BGB Details
                                 </span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              <span className="text-[10px] sm:text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full font-medium"
-                                style={{
-                                  backgroundColor: einheit.nutzung === 'Wohnen' ? '#DBEAFE' : einheit.nutzung === 'Gewerbe' ? '#FEF3C7' : '#F3F4F6',
-                                  color: einheit.nutzung === 'Wohnen' ? '#1D4ED8' : einheit.nutzung === 'Gewerbe' ? '#B45309' : '#4B5563'
-                                }}>
-                                {einheit.nutzung}
-                              </span>
-                              <span className="text-slate-400 text-xs sm:hidden transition-transform duration-200" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                                ▼
-                              </span>
-                            </div>
-                          </button>
+                                <span className="text-[10px] sm:text-xs text-slate-400">
+                                  {isBGBExpanded ? '▲ Einklappen' : '▼ Ausklappen'}
+                                </span>
+                              </button>
 
-                          {/* Expandable content - always visible on desktop, collapsible on mobile */}
-                          <div className={`${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 sm:max-h-[2000px] sm:opacity-100'} overflow-hidden transition-all duration-300 ease-in-out`}>
-                            <div className="px-3 pb-3 sm:px-4 sm:pb-4 space-y-3">
-
-                              {/* Basis-Felder - 2 Spalten auf Mobile, 4 auf Desktop */}
-                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                                <div>
-                                  <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Fläche m² *</label>
-                                  <input type="text" inputMode="decimal" value={einheit.flaeche}
-                                    onChange={(e) => updateEinheit(idx, 'flaeche', e.target.value)}
-                                    className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="75" />
-                                </div>
-                                <div>
-                                  <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Miete €/M *</label>
-                                  <input type="text" inputMode="decimal" value={einheit.kaltmiete}
-                                    onChange={(e) => updateEinheit(idx, 'kaltmiete', e.target.value)}
-                                    className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="850" />
-                                </div>
-                                <div>
-                                  <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Markt €/m²</label>
-                                  <input type="text" inputMode="decimal" value={einheit.vergleichsmiete}
-                                    onChange={(e) => updateEinheit(idx, 'vergleichsmiete', e.target.value)}
-                                    className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="14" />
-                                </div>
-                                <div>
-                                  <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vertragsart *</label>
-                                  <select value={einheit.mietvertragsart} onChange={(e) => updateEinheit(idx, 'mietvertragsart', e.target.value)}
-                                    className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm">
-                                    <option value="Standard">Standard</option>
-                                    <option value="Index">Index</option>
-                                    <option value="Staffel">Staffel</option>
-                                  </select>
-                                </div>
-                              </div>
-
-                              {/* Vertragsdaten */}
-                              <div className="pt-3 border-t border-slate-200">
-                                <span className="block text-[10px] sm:text-xs font-medium text-slate-500 mb-2">Vertragsdaten</span>
-                                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                                  <div>
-                                    <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vertragsbeginn *</label>
-                                    <input type="date" value={einheit.vertragsbeginn}
-                                      onChange={(e) => updateEinheit(idx, 'vertragsbeginn', e.target.value)}
-                                      className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
-                                  </div>
-                                  <div>
-                                    <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Letzte Erhöhung</label>
-                                    <input type="date" value={einheit.letzte_mieterhoehung}
-                                      onChange={(e) => updateEinheit(idx, 'letzte_mieterhoehung', e.target.value)}
-                                      className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
-                                  </div>
-                                  <div className="xs:col-span-2 sm:col-span-2">
-                                    <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe Erhöhung (€)</label>
-                                    <input type="text" inputMode="decimal" value={einheit.hoehe_mieterhoehung}
-                                      onChange={(e) => updateEinheit(idx, 'hoehe_mieterhoehung', e.target.value)}
-                                      className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="50" />
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Collapsible BGB Section */}
-                              {hasBGBFields && (
-                                <div className="pt-2 border-t border-slate-200">
-                                  <button type="button" onClick={(e) => { e.stopPropagation(); toggleBGB(bgbKey); }}
-                                    className="w-full flex items-center justify-between py-2 text-left active:scale-[0.99] transition-transform min-h-[44px]">
-                                    <span className="text-[10px] sm:text-xs font-medium text-slate-600">
-                                      §558/§559 BGB Details
-                                    </span>
-                                    <span className="text-[10px] sm:text-xs text-slate-400">
-                                      {isBGBExpanded ? '▲ Einklappen' : '▼ Ausklappen'}
-                                    </span>
-                                  </button>
-
-                                  {isBGBExpanded && (
-                                    <div className="space-y-3 pt-2">
-                                      {/* §558 BGB - nur für Standard-Vertrag */}
-                                      {einheit.mietvertragsart === 'Standard' && (
-                                        <div className="p-2.5 sm:p-3 rounded-lg bg-blue-50/50">
-                                          <span className="block text-[10px] sm:text-xs font-medium text-blue-700 mb-2">§558 BGB - Vergleichsmiete</span>
-                                          <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3">
-                                            <div>
-                                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Datum</label>
-                                              <input type="date" value={einheit.datum_558}
-                                                onChange={(e) => updateEinheit(idx, 'datum_558', e.target.value)}
-                                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
-                                            </div>
-                                            <div>
-                                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe (€)</label>
-                                              <input type="text" inputMode="decimal" value={einheit.hoehe_558}
-                                                onChange={(e) => updateEinheit(idx, 'hoehe_558', e.target.value)}
-                                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="30" />
-                                            </div>
-                                          </div>
+                              {isBGBExpanded && (
+                                <div className="space-y-3 pt-2">
+                                  {/* §558 BGB - nur für Standard-Vertrag */}
+                                  {einheit.mietvertragsart === 'Standard' && (
+                                    <div className="p-2.5 sm:p-3 rounded-lg bg-blue-50/50">
+                                      <span className="block text-[10px] sm:text-xs font-medium text-blue-700 mb-2">§558 BGB - Vergleichsmiete</span>
+                                      <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3">
+                                        <div>
+                                          <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Datum</label>
+                                          <input type="date" value={einheit.datum_558}
+                                            onChange={(e) => updateEinheit(idx, 'datum_558', e.target.value)}
+                                            className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
                                         </div>
-                                      )}
-
-                                      {/* §559 BGB - Modernisierung */}
-                                      <div className="p-2.5 sm:p-3 rounded-lg bg-amber-50/50">
-                                        <span className="block text-[10px] sm:text-xs font-medium text-amber-700 mb-2">§559 BGB - Modernisierung</span>
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-                                          <div>
-                                            <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Datum</label>
-                                            <input type="date" value={einheit.datum_559}
-                                              onChange={(e) => updateEinheit(idx, 'datum_559', e.target.value)}
-                                              className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
-                                          </div>
-                                          <div>
-                                            <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Art</label>
-                                            <input type="text" value={einheit.art_modernisierung_559}
-                                              onChange={(e) => updateEinheit(idx, 'art_modernisierung_559', e.target.value)}
-                                              className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Dämmung" />
-                                          </div>
-                                          <div>
-                                            <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe (€/M)</label>
-                                            <input type="text" inputMode="decimal" value={einheit.hoehe_559}
-                                              onChange={(e) => updateEinheit(idx, 'hoehe_559', e.target.value)}
-                                              className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="25" />
-                                          </div>
+                                        <div>
+                                          <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe (€)</label>
+                                          <input type="text" inputMode="decimal" value={einheit.hoehe_558}
+                                            onChange={(e) => updateEinheit(idx, 'hoehe_558', e.target.value)}
+                                            className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="30" />
                                         </div>
                                       </div>
                                     </div>
                                   )}
+
+                                  {/* §559 BGB - Modernisierung */}
+                                  <div className="p-2.5 sm:p-3 rounded-lg bg-amber-50/50">
+                                    <span className="block text-[10px] sm:text-xs font-medium text-amber-700 mb-2">§559 BGB - Modernisierung</span>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+                                      <div>
+                                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Datum</label>
+                                        <input type="date" value={einheit.datum_559}
+                                          onChange={(e) => updateEinheit(idx, 'datum_559', e.target.value)}
+                                          className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
+                                      </div>
+                                      <div>
+                                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Art</label>
+                                        <input type="text" value={einheit.art_modernisierung_559}
+                                          onChange={(e) => updateEinheit(idx, 'art_modernisierung_559', e.target.value)}
+                                          className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Dämmung" />
+                                      </div>
+                                      <div>
+                                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe (€/M)</label>
+                                        <input type="text" inputMode="decimal" value={einheit.hoehe_559}
+                                          onChange={(e) => updateEinheit(idx, 'hoehe_559', e.target.value)}
+                                          className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="25" />
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               )}
                             </div>
-                          </div>
+                          )}
                         </div>
                       );
                     })}
