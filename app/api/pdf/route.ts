@@ -22,6 +22,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
     }
 
+    // SECURITY: Verify user is admin or owns the auswertung
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('role, mandant_id')
+      .eq('id', user.id)
+      .single();
+
     // Fetch auswertung with objekt and mandant
     const { data: auswertung, error: fetchError } = await supabase
       .from('auswertungen')
@@ -35,6 +42,11 @@ export async function POST(request: Request) {
 
     if (fetchError || !auswertung) {
       return NextResponse.json({ error: 'Auswertung nicht gefunden' }, { status: 404 });
+    }
+
+    // SECURITY: Verify user has access to this specific auswertung
+    if (userProfile?.role !== 'admin' && auswertung.mandant_id !== userProfile?.mandant_id) {
+      return NextResponse.json({ error: 'Kein Zugriff auf diese Auswertung' }, { status: 403 });
     }
 
     const objekt = auswertung.objekte as {

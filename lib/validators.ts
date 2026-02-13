@@ -155,7 +155,7 @@ export type AnkaufsprofilInput = z.infer<typeof ankaufsprofilSchema>;
 
 export const loginSchema = z.object({
   email: z.string().email('Ungültige E-Mail-Adresse'),
-  password: z.string().min(6, 'Passwort muss mindestens 6 Zeichen haben'),
+  password: z.string().min(8, 'Passwort muss mindestens 8 Zeichen haben'),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

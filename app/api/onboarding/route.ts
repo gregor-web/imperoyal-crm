@@ -1,9 +1,23 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient, generatePassword } from '@/lib/supabase/admin';
 
-const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
+const MAKE_WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL || '';
+
+/** Escape HTML special characters to prevent XSS in email templates */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 function generateWelcomeEmailHtml(name: string, email: string, password: string, loginUrl: string): string {
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safePassword = escapeHtml(password);
+  const safeLoginUrl = encodeURI(loginUrl);
   return `<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -30,7 +44,7 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
           <tr>
             <td style="padding: 40px; background-color: #1e3a5f;">
               <p style="margin: 0 0 25px; color: #ffffff; font-size: 16px; line-height: 1.8;">
-                Sehr geehrte(r) <span style="color: #b8c5d4;">${name}</span>,
+                Sehr geehrte(r) <span style="color: #b8c5d4;">${safeName}</span>,
               </p>
 
               <p style="margin: 0 0 30px; color: #b8c5d4; font-size: 15px; line-height: 1.8;">
@@ -48,7 +62,7 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
                     <table width="100%" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="padding: 12px 0; color: #8a9bb0; font-size: 14px; width: 100px;">E-Mail:</td>
-                        <td style="padding: 12px 0; color: #ffffff; font-size: 15px; font-weight: 500;">${email}</td>
+                        <td style="padding: 12px 0; color: #ffffff; font-size: 15px; font-weight: 500;">${safeEmail}</td>
                       </tr>
                       <tr>
                         <td colspan="2" style="padding: 8px 0;">
@@ -58,7 +72,7 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
                       <tr>
                         <td style="padding: 12px 0; color: #8a9bb0; font-size: 14px;">Passwort:</td>
                         <td style="padding: 12px 0;">
-                          <code style="background: rgba(93, 122, 153, 0.3); padding: 8px 16px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 18px; color: #ffffff; font-weight: 700; letter-spacing: 1px;">${password}</code>
+                          <code style="background: rgba(93, 122, 153, 0.3); padding: 8px 16px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 18px; color: #ffffff; font-weight: 700; letter-spacing: 1px;">${safePassword}</code>
                         </td>
                       </tr>
                     </table>
@@ -73,7 +87,7 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #5d7a99 0%, #4a6580 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 4px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+                    <a href="${safeLoginUrl}" style="display: inline-block; background: linear-gradient(135deg, #5d7a99 0%, #4a6580 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 4px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
                       Zum Portal
                     </a>
                   </td>
@@ -186,11 +200,42 @@ interface OnboardingData {
 
 export async function POST(request: Request) {
   try {
+    // SECURITY: Verify Content-Type to prevent CSRF via form submission
+    const contentType = request.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
+      return NextResponse.json(
+        { error: 'Content-Type must be application/json' },
+        { status: 415 }
+      );
+    }
+
     const data: OnboardingData = await request.json();
 
     // Build ansprechpartner from vorname/nachname if not provided
     const ansprechpartner = data.ansprechpartner ||
       (data.vorname && data.nachname ? `${data.vorname} ${data.nachname}` : data.vorname || data.nachname || '');
+
+    // SECURITY: Validate email format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(data.email)) {
+      return NextResponse.json(
+        { error: 'Ungültige E-Mail-Adresse' },
+        { status: 400 }
+      );
+    }
+
+    // SECURITY: Limit number of objects to prevent abuse
+    if (data.objekte && data.objekte.length > 20) {
+      return NextResponse.json(
+        { error: 'Maximal 20 Objekte pro Onboarding erlaubt' },
+        { status: 400 }
+      );
+    }
+
+    // SECURITY: Sanitize text inputs
+    data.name = data.name.trim().slice(0, 200);
+    data.email = data.email.trim().toLowerCase();
+    if (data.telefon) data.telefon = data.telefon.trim().slice(0, 30);
 
     // Validate required fields
     if (!data.name || !data.email || !ansprechpartner) {
@@ -482,7 +527,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Onboarding error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Fehler beim Onboarding' },
+      { error: 'Fehler beim Onboarding' },
       { status: 500 }
     );
   }

@@ -2,7 +2,17 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
-const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
+const MAKE_WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL || '';
+
+/** Escape HTML special characters to prevent XSS in email templates */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 interface AuswertungEmailParams {
   anrede: string;
@@ -14,6 +24,11 @@ interface AuswertungEmailParams {
 
 function generateAuswertungEmailHtml(params: AuswertungEmailParams): string {
   const { anrede, name, objektAdresse, empfehlung, viewUrl } = params;
+  const safeName = escapeHtml(name);
+  const safeAnrede = escapeHtml(anrede);
+  const safeAdresse = escapeHtml(objektAdresse);
+  const safeEmpfehlung = escapeHtml(empfehlung);
+  const safeViewUrl = encodeURI(viewUrl);
 
   const empfehlungColors: Record<string, { bg: string; text: string }> = {
     HALTEN: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22c55e' },
@@ -50,11 +65,11 @@ function generateAuswertungEmailHtml(params: AuswertungEmailParams): string {
           <tr>
             <td style="padding: 40px; background-color: #1e3a5f;">
               <p style="margin: 0 0 25px; color: #ffffff; font-size: 16px; line-height: 1.8;">
-                ${anrede} <span style="color: #b8c5d4;">${name}</span>,
+                ${safeAnrede} <span style="color: #b8c5d4;">${safeName}</span>,
               </p>
 
               <p style="margin: 0 0 30px; color: #b8c5d4; font-size: 15px; line-height: 1.8;">
-                Ihre Immobilienauswertung für <strong style="color: #ffffff;">${objektAdresse}</strong> wurde erfolgreich erstellt und steht Ihnen ab sofort zur Verfügung.
+                Ihre Immobilienauswertung für <strong style="color: #ffffff;">${safeAdresse}</strong> wurde erfolgreich erstellt und steht Ihnen ab sofort zur Verfügung.
               </p>
 
               <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0; background: linear-gradient(135deg, #2a4a6e 0%, #1e3a5f 100%); border: 1px solid rgba(184, 197, 212, 0.3); border-radius: 8px;">
@@ -64,7 +79,7 @@ function generateAuswertungEmailHtml(params: AuswertungEmailParams): string {
                       Unsere Empfehlung
                     </p>
                     <p style="margin: 0; display: inline-block; background: ${colors.bg}; color: ${colors.text}; font-size: 24px; font-weight: 700; padding: 12px 30px; border-radius: 6px; letter-spacing: 3px;">
-                      ${empfehlung}
+                      ${safeEmpfehlung}
                     </p>
                   </td>
                 </tr>
@@ -77,7 +92,7 @@ function generateAuswertungEmailHtml(params: AuswertungEmailParams): string {
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="${viewUrl}" style="display: inline-block; background: linear-gradient(135deg, #5d7a99 0%, #4a6580 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 4px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+                    <a href="${safeViewUrl}" style="display: inline-block; background: linear-gradient(135deg, #5d7a99 0%, #4a6580 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 4px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
                       Auswertung ansehen
                     </a>
                   </td>
@@ -251,7 +266,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Auswertung email error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Fehler beim Versenden der Auswertungs-E-Mail' },
+      { error: 'Fehler beim Versenden der Auswertungs-E-Mail' },
       { status: 500 }
     );
   }

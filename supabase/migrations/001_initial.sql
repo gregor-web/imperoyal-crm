@@ -21,6 +21,7 @@ CREATE TABLE profiles (
 CREATE TABLE mandanten (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
+  anrede TEXT CHECK (anrede IN ('Herr', 'Frau')),
   ansprechpartner TEXT,
   position TEXT,
   email TEXT NOT NULL,
@@ -154,8 +155,22 @@ CREATE TABLE anfragen (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   objekt_id UUID NOT NULL REFERENCES objekte(id) ON DELETE CASCADE,
   mandant_id UUID NOT NULL REFERENCES mandanten(id) ON DELETE CASCADE,
-  status TEXT DEFAULT 'offen' CHECK (status IN ('offen', 'bearbeitet')),
+  status TEXT DEFAULT 'offen' CHECK (status IN ('offen', 'in_bearbeitung', 'fertig', 'versendet')),
   created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- ============================================
+-- INTERESSEN
+-- ============================================
+CREATE TABLE interessen (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  objekt_id UUID NOT NULL REFERENCES objekte(id) ON DELETE CASCADE,
+  kaeufer_mandant_id UUID NOT NULL REFERENCES mandanten(id) ON DELETE CASCADE,
+  ankaufsprofil_id UUID REFERENCES ankaufsprofile(id) ON DELETE SET NULL,
+  status TEXT NOT NULL DEFAULT 'neu' CHECK (status IN ('neu', 'kontaktiert', 'abgeschlossen', 'abgelehnt')),
+  notizen TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 -- ============================================
@@ -189,6 +204,7 @@ ALTER TABLE einheiten ENABLE ROW LEVEL SECURITY;
 ALTER TABLE auswertungen ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ankaufsprofile ENABLE ROW LEVEL SECURITY;
 ALTER TABLE anfragen ENABLE ROW LEVEL SECURITY;
+ALTER TABLE interessen ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
 -- RLS POLICIES: PROFILES
@@ -299,6 +315,15 @@ CREATE POLICY "Mandant can insert own anfragen" ON anfragen
   FOR INSERT WITH CHECK (mandant_id = user_mandant_id());
 
 -- ============================================
+-- RLS POLICIES: INTERESSEN
+-- ============================================
+CREATE POLICY "Admin full access interessen" ON interessen
+  FOR ALL USING (is_admin());
+
+CREATE POLICY "Mandant can view own interessen" ON interessen
+  FOR SELECT USING (kaeufer_mandant_id = user_mandant_id());
+
+-- ============================================
 -- UPDATED_AT TRIGGER
 -- ============================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -330,4 +355,8 @@ CREATE TRIGGER update_einheiten_updated_at
 
 CREATE TRIGGER update_ankaufsprofile_updated_at
   BEFORE UPDATE ON ankaufsprofile
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_interessen_updated_at
+  BEFORE UPDATE ON interessen
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

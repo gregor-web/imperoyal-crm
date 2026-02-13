@@ -18,8 +18,17 @@ export default function UpdatePasswordPage() {
     e.preventDefault();
     setError(null);
 
-    if (password.length < 6) {
-      setError('Das Passwort muss mindestens 6 Zeichen haben.');
+    if (password.length < 8) {
+      setError('Das Passwort muss mindestens 8 Zeichen haben.');
+      return;
+    }
+
+    // SECURITY: Require password complexity
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /[0-9]/.test(password);
+    if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
+      setError('Das Passwort muss Großbuchstaben, Kleinbuchstaben und Zahlen enthalten.');
       return;
     }
 
@@ -106,9 +115,9 @@ export default function UpdatePasswordPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={6}
+              minLength={8}
               className="glass-input w-full px-4 py-3 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]"
-              placeholder="Mindestens 6 Zeichen"
+              placeholder="Mindestens 8 Zeichen (Groß-/Kleinbuchstaben + Zahlen)"
             />
           </div>
 
@@ -125,7 +134,7 @@ export default function UpdatePasswordPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              minLength={6}
+              minLength={8}
               className="glass-input w-full px-4 py-3 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]"
               placeholder="Passwort wiederholen"
             />

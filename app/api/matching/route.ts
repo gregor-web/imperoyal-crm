@@ -11,12 +11,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'objekt_id ist erforderlich' }, { status: 400 });
     }
 
+    // SECURITY: Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(objekt_id)) {
+      return NextResponse.json({ error: 'Ungültige Objekt-ID' }, { status: 400 });
+    }
+
     const supabase = await createClient();
 
     // Verify user is authenticated
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
+    }
+
+    // SECURITY: Only admins can run matching (prevents IDOR - leaking buyer contact data)
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (userProfile?.role !== 'admin') {
+      return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 403 });
     }
 
     // Fetch the object
@@ -31,20 +48,9 @@ export async function POST(request: Request) {
     }
 
     // Fetch all ankaufsprofile (excluding the object owner's profile)
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    let ankaufsprofileQuery = supabase
+    const ankaufsprofileQuery = supabase
       .from('ankaufsprofile')
       .select('*');
-
-    // Non-admin users can only see other profiles matched
-    if (profile?.role !== 'admin') {
-      ankaufsprofileQuery = ankaufsprofileQuery.neq('mandant_id', objekt.mandant_id);
-    }
 
     const { data: ankaufsprofile, error: profileError } = await ankaufsprofileQuery;
 

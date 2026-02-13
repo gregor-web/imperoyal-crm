@@ -1,17 +1,31 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
+import { z } from 'zod';
+
+// UUID validation schema
+const interesseSchema = z.object({
+  objekt_id: z.string().uuid('Ungültige Objekt-ID'),
+  mandant_id: z.string().uuid('Ungültige Mandant-ID'),
+  ankaufsprofil_id: z.string().uuid('Ungültige Ankaufsprofil-ID').optional().nullable(),
+});
 
 export async function POST(request: Request) {
   try {
-    const { objekt_id, mandant_id, ankaufsprofil_id } = await request.json();
+    const body = await request.json();
 
-    if (!objekt_id || !mandant_id) {
+    // SECURITY: Validate input with Zod
+    const parseResult = interesseSchema.safeParse(body);
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'objekt_id und mandant_id sind erforderlich' },
+        { error: 'Ungültige Eingabedaten', details: parseResult.error.flatten() },
         { status: 400 }
       );
     }
 
+    const { objekt_id, mandant_id, ankaufsprofil_id } = parseResult.data;
+
+    // Use admin client for public interest registration (no auth required for this endpoint)
     const supabase = createAdminClient();
 
     // Check if objekt exists
@@ -94,7 +108,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Interesse error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Fehler bei der Interessensbekundung' },
+      { error: 'Fehler bei der Interessensbekundung' },
       { status: 500 }
     );
   }
@@ -103,6 +117,21 @@ export async function POST(request: Request) {
 // GET: Fetch interests (for admin dashboard)
 export async function GET(request: Request) {
   try {
+    // SECURITY: Require admin authentication
+    const authClient = await createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
+    }
+    const { data: profile } = await authClient
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+    if (profile?.role !== 'admin') {
+      return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 403 });
+    }
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const objekt_id = searchParams.get('objekt_id');
@@ -149,11 +178,41 @@ export async function GET(request: Request) {
 // PATCH: Update interest status
 export async function PATCH(request: Request) {
   try {
+    // SECURITY: Require admin authentication
+    const authClient = await createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
+    }
+    const { data: authProfile } = await authClient
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+    if (authProfile?.role !== 'admin') {
+      return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 403 });
+    }
+
     const { interesse_id, status, notizen } = await request.json();
 
     if (!interesse_id) {
       return NextResponse.json(
         { error: 'interesse_id ist erforderlich' },
+        { status: 400 }
+      );
+    }
+
+    // SECURITY: Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(interesse_id)) {
+      return NextResponse.json({ error: 'Ungültige Interesse-ID' }, { status: 400 });
+    }
+
+    // SECURITY: Whitelist allowed status values
+    const VALID_STATUSES = ['neu', 'kontaktiert', 'in_verhandlung', 'abgeschlossen', 'abgelehnt'];
+    if (status && !VALID_STATUSES.includes(status)) {
+      return NextResponse.json(
+        { error: `Ungültiger Status. Erlaubt: ${VALID_STATUSES.join(', ')}` },
         { status: 400 }
       );
     }

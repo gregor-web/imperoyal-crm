@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error updating anfrage status:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Fehler beim Aktualisieren' },
+      { error: 'Fehler beim Aktualisieren' },
       { status: 500 }
     );
   }

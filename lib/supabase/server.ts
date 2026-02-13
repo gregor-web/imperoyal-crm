@@ -44,14 +44,6 @@ export async function getUser() {
   return user;
 }
 
-/**
- * Get the current session.
- * Returns null if no session exists.
- */
-export async function getSession() {
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  return session;
-}
+// NOTE: getSession() was removed for security reasons.
+// Always use getUser() which validates the session server-side.
+// getSession() only reads from cookies without verification and is unsafe.

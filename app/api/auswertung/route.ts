@@ -12,7 +12,17 @@ import { AuswertungPDF } from '@/components/pdf/auswertung-pdf';
 import fs from 'fs';
 import path from 'path';
 
-const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
+const MAKE_WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL || '';
+
+/** Escape HTML special characters to prevent XSS in email templates */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 function generateBuyerMatchEmailHtml(
   buyerName: string,
@@ -24,8 +34,15 @@ function generateBuyerMatchEmailHtml(
   matchDetails: string[],
   kontaktUrl: string
 ): string {
+  const safeBuyerName = escapeHtml(buyerName);
+  const safeAdresse = escapeHtml(objektAdresse);
+  const safeTyp = escapeHtml(objektTyp);
+  const safeKaufpreis = escapeHtml(kaufpreis);
+  const safeRendite = escapeHtml(rendite);
+  const safeWohnflaeche = escapeHtml(wohnflaeche);
+  const safeKontaktUrl = encodeURI(kontaktUrl);
   const matchBadges = matchDetails
-    .map(detail => `<span style="display: inline-block; background: rgba(212, 175, 55, 0.2); color: #d4af37; padding: 4px 12px; border-radius: 4px; font-size: 13px; margin-right: 8px; margin-bottom: 8px;">${detail}</span>`)
+    .map(detail => `<span style="display: inline-block; background: rgba(212, 175, 55, 0.2); color: #d4af37; padding: 4px 12px; border-radius: 4px; font-size: 13px; margin-right: 8px; margin-bottom: 8px;">${escapeHtml(detail)}</span>`)
     .join('');
 
   return `<!DOCTYPE html>
@@ -54,7 +71,7 @@ function generateBuyerMatchEmailHtml(
           <tr>
             <td style="padding: 35px 40px; background-color: #0d1421;">
               <p style="margin: 0 0 25px; color: #e8e0d0; font-size: 16px; line-height: 1.8;">
-                Sehr geehrte(r) <span style="color: #d4af37;">${buyerName}</span>,
+                Sehr geehrte(r) <span style="color: #d4af37;">${safeBuyerName}</span>,
               </p>
 
               <p style="margin: 0 0 25px; color: #a89f8f; font-size: 15px; line-height: 1.8;">
@@ -72,23 +89,23 @@ function generateBuyerMatchEmailHtml(
                     <table width="100%" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="padding: 10px 0; color: #8a8275; font-size: 14px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Adresse:</td>
-                        <td style="padding: 10px 0; color: #e8e0d0; font-size: 15px; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${objektAdresse}</td>
+                        <td style="padding: 10px 0; color: #e8e0d0; font-size: 15px; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${safeAdresse}</td>
                       </tr>
                       <tr>
                         <td style="padding: 10px 0; color: #8a8275; font-size: 14px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Objekttyp:</td>
-                        <td style="padding: 10px 0; color: #e8e0d0; font-size: 15px; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${objektTyp}</td>
+                        <td style="padding: 10px 0; color: #e8e0d0; font-size: 15px; font-weight: 500; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${safeTyp}</td>
                       </tr>
                       <tr>
                         <td style="padding: 10px 0; color: #8a8275; font-size: 14px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Kaufpreis:</td>
-                        <td style="padding: 10px 0; color: #d4af37; font-size: 18px; font-weight: 700; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${kaufpreis}</td>
+                        <td style="padding: 10px 0; color: #d4af37; font-size: 18px; font-weight: 700; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${safeKaufpreis}</td>
                       </tr>
                       <tr>
                         <td style="padding: 10px 0; color: #8a8275; font-size: 14px; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">Rendite IST:</td>
-                        <td style="padding: 10px 0; color: #22c55e; font-size: 16px; font-weight: 600; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${rendite}</td>
+                        <td style="padding: 10px 0; color: #22c55e; font-size: 16px; font-weight: 600; text-align: right; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">${safeRendite}</td>
                       </tr>
                       <tr>
                         <td style="padding: 10px 0; color: #8a8275; font-size: 14px;">Wohnfläche:</td>
-                        <td style="padding: 10px 0; color: #e8e0d0; font-size: 15px; font-weight: 500; text-align: right;">${wohnflaeche}</td>
+                        <td style="padding: 10px 0; color: #e8e0d0; font-size: 15px; font-weight: 500; text-align: right;">${safeWohnflaeche}</td>
                       </tr>
                     </table>
                   </td>
@@ -110,7 +127,7 @@ function generateBuyerMatchEmailHtml(
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="${kontaktUrl}" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #0a0f1a; text-decoration: none; padding: 14px 35px; border-radius: 4px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+                    <a href="${safeKontaktUrl}" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8942e 100%); color: #0a0f1a; text-decoration: none; padding: 14px 35px; border-radius: 4px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
                       Interesse bekunden
                     </a>
                   </td>
@@ -163,6 +180,12 @@ export async function POST(request: NextRequest) {
 
     if (!objekt_id) {
       return NextResponse.json({ error: 'objekt_id erforderlich' }, { status: 400 });
+    }
+
+    // SECURITY: Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(objekt_id)) {
+      return NextResponse.json({ error: 'Ungültige Objekt-ID' }, { status: 400 });
     }
 
     // Load objekt with einheiten
@@ -525,7 +548,7 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
   } catch (error) {
     console.error('Auswertung error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Fehler bei der Auswertung' },
+      { error: 'Fehler bei der Auswertung' },
       { status: 500 }
     );
   }

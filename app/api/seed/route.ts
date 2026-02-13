@@ -1,8 +1,32 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAdminClient, generatePassword } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 
 // Development only: Create test users with objects and units
 export async function POST() {
+  // SECURITY: Block in production
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Seed-Route ist in Produktion deaktiviert' },
+      { status: 403 }
+    );
+  }
+
+  // SECURITY: Require admin authentication
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
+  }
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+  if (profile?.role !== 'admin') {
+    return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 403 });
+  }
+
   const adminClient = createAdminClient();
   const results: string[] = [];
 
@@ -50,10 +74,11 @@ export async function POST() {
       mandantId = newMandant.id;
       results.push(`Mandant erstellt: ${newMandant.name}`);
 
-      // Create auth user
+      // Create auth user with secure generated password
+      const testPassword = generatePassword(16);
       const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
         email: 'kunde@test.de',
-        password: 'kunde123',
+        password: testPassword,
         email_confirm: true,
         user_metadata: { name: 'Max Mustermann' },
       });
@@ -72,7 +97,7 @@ export async function POST() {
             role: 'mandant',
           });
 
-        results.push('Test-Kunde erstellt: kunde@test.de / kunde123');
+        results.push(`Test-Kunde erstellt: kunde@test.de / ${testPassword}`);
       }
     }
 

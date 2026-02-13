@@ -3,9 +3,23 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient, generatePassword } from '@/lib/supabase/admin';
 import { mandantSchema } from '@/lib/validators';
 
-const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/toy335e81vu4s5sxdlq5p6gf2ou1r3k5';
+const MAKE_WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL || '';
+
+/** Escape HTML special characters to prevent XSS in email templates */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 function generateWelcomeEmailHtml(name: string, email: string, password: string, loginUrl: string): string {
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safePassword = escapeHtml(password);
+  const safeLoginUrl = encodeURI(loginUrl);
   return `<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -32,7 +46,7 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
           <tr>
             <td style="padding: 40px; background-color: #1e3a5f;">
               <p style="margin: 0 0 25px; color: #ffffff; font-size: 16px; line-height: 1.8;">
-                Sehr geehrte(r) <span style="color: #b8c5d4;">${name}</span>,
+                Sehr geehrte(r) <span style="color: #b8c5d4;">${safeName}</span>,
               </p>
 
               <p style="margin: 0 0 30px; color: #b8c5d4; font-size: 15px; line-height: 1.8;">
@@ -51,7 +65,7 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
                     <table width="100%" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="padding: 12px 0; color: #8a9bb0; font-size: 14px; width: 100px;">E-Mail:</td>
-                        <td style="padding: 12px 0; color: #ffffff; font-size: 15px; font-weight: 500;">${email}</td>
+                        <td style="padding: 12px 0; color: #ffffff; font-size: 15px; font-weight: 500;">${safeEmail}</td>
                       </tr>
                       <tr>
                         <td colspan="2" style="padding: 8px 0;">
@@ -61,7 +75,7 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
                       <tr>
                         <td style="padding: 12px 0; color: #8a9bb0; font-size: 14px;">Passwort:</td>
                         <td style="padding: 12px 0;">
-                          <code style="background: rgba(93, 122, 153, 0.3); padding: 8px 16px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 18px; color: #ffffff; font-weight: 700; letter-spacing: 1px;">${password}</code>
+                          <code style="background: rgba(93, 122, 153, 0.3); padding: 8px 16px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 18px; color: #ffffff; font-weight: 700; letter-spacing: 1px;">${safePassword}</code>
                         </td>
                       </tr>
                     </table>
@@ -76,7 +90,7 @@ function generateWelcomeEmailHtml(name: string, email: string, password: string,
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #5d7a99 0%, #4a6580 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 4px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
+                    <a href="${safeLoginUrl}" style="display: inline-block; background: linear-gradient(135deg, #5d7a99 0%, #4a6580 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 4px; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
                       Zum Portal
                     </a>
                   </td>
@@ -174,10 +188,11 @@ export async function POST(request: NextRequest) {
 
     // Send welcome email with credentials via Make.com webhook
     let emailSent = false;
-    try {
-      const recipientName = validatedData.ansprechpartner || validatedData.name;
-      const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/login`;
-      const htmlContent = generateWelcomeEmailHtml(recipientName, validatedData.email, password, loginUrl);
+    if (MAKE_WEBHOOK_URL) {
+      try {
+        const recipientName = validatedData.ansprechpartner || validatedData.name;
+        const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/login`;
+        const htmlContent = generateWelcomeEmailHtml(recipientName, validatedData.email, password, loginUrl);
 
       const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {
         method: 'POST',
@@ -190,9 +205,10 @@ export async function POST(request: NextRequest) {
         }),
       });
       emailSent = webhookResponse.ok;
-    } catch (emailError) {
-      console.error('Welcome email webhook error:', emailError);
-      // Don't fail the whole request if email fails
+      } catch (emailError) {
+        console.error('Welcome email webhook error:', emailError);
+        // Don't fail the whole request if email fails
+      }
     }
 
     return NextResponse.json({
@@ -206,7 +222,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Mandant creation error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Fehler beim Erstellen des Mandanten' },
+      { error: 'Fehler beim Erstellen des Mandanten' },
       { status: 500 }
     );
   }
@@ -226,7 +242,7 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Fehler beim Laden' },
+      { error: 'Fehler beim Laden' },
       { status: 500 }
     );
   }

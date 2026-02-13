@@ -26,6 +26,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Nicht authentifiziert' }, { status: 401 });
     }
 
+    // SECURITY: Check user role for authorization
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('role, mandant_id')
+      .eq('id', user.id)
+      .single();
+
     // Fetch auswertung with objekt and mandant
     const { data: auswertung, error: fetchError } = await supabase
       .from('auswertungen')
@@ -39,6 +46,11 @@ export async function POST(request: Request) {
 
     if (fetchError || !auswertung) {
       return NextResponse.json({ error: 'Auswertung nicht gefunden' }, { status: 404 });
+    }
+
+    // SECURITY: Verify user has access to this auswertung
+    if (userProfile?.role !== 'admin' && auswertung.mandant_id !== userProfile?.mandant_id) {
+      return NextResponse.json({ error: 'Kein Zugriff auf diese Auswertung' }, { status: 403 });
     }
 
     const objekt = auswertung.objekte as {
@@ -215,7 +227,7 @@ export async function POST(request: Request) {
     console.error('[PDF-OPTIMIZER] CRITICAL ERROR:', error);
     console.error('[PDF-OPTIMIZER] Stack:', error instanceof Error ? error.stack : 'no stack');
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Fehler bei der PDF-Optimierung' },
+      { error: 'Fehler bei der PDF-Optimierung' },
       { status: 500 }
     );
   }
