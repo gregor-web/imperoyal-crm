@@ -171,7 +171,7 @@ export default function NeuesAnkaufsprofilPage() {
       case 1:
         return (
           <div className="space-y-6">
-            <div className="text-center mb-8">
+            <div className="text-center mb-6 sm:mb-8">
               <h2 className="text-xl font-semibold text-slate-800">Wie soll Ihr Ankaufsprofil heißen?</h2>
               <p className="text-slate-600 mt-2">Geben Sie einen aussagekräftigen Namen für Ihr Profil ein</p>
             </div>
@@ -199,12 +199,12 @@ export default function NeuesAnkaufsprofilPage() {
       case 2:
         return (
           <div className="space-y-6">
-            <div className="text-center mb-8">
+            <div className="text-center mb-6 sm:mb-8">
               <h2 className="text-xl font-semibold text-slate-800">Welches Investitionsvolumen?</h2>
               <p className="text-slate-600 mt-2">Definieren Sie Ihre Preisspanne für Ankäufe</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <Input
                   label="Mindestvolumen"
@@ -249,7 +249,7 @@ export default function NeuesAnkaufsprofilPage() {
                       updateFormData('min_volumen', range.min);
                       updateFormData('max_volumen', range.max);
                     }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors min-h-[40px] ${
                       formData.min_volumen === range.min && formData.max_volumen === range.max
                         ? 'bg-blue-600 text-white'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -266,7 +266,7 @@ export default function NeuesAnkaufsprofilPage() {
       case 3:
         return (
           <div className="space-y-6">
-            <div className="text-center mb-8">
+            <div className="text-center mb-6 sm:mb-8">
               <h2 className="text-xl font-semibold text-slate-800">Welche Assetklassen?</h2>
               <p className="text-slate-600 mt-2">Wählen Sie alle relevanten Immobilientypen aus</p>
             </div>
@@ -303,7 +303,7 @@ export default function NeuesAnkaufsprofilPage() {
       case 4:
         return (
           <div className="space-y-6">
-            <div className="text-center mb-8">
+            <div className="text-center mb-6 sm:mb-8">
               <h2 className="text-xl font-semibold text-slate-800">Standort & Renditeerwartung</h2>
               <p className="text-slate-600 mt-2">Definieren Sie Ihre geografischen und finanziellen Kriterien</p>
             </div>
@@ -342,13 +342,13 @@ export default function NeuesAnkaufsprofilPage() {
             <div className="mt-8 p-4 bg-slate-50 rounded-xl">
               <h3 className="text-sm font-semibold text-slate-800 mb-3">Zusammenfassung</h3>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
+                <div className="flex flex-wrap justify-between gap-1">
                   <span className="text-slate-600">Profilname:</span>
-                  <span className="font-medium text-slate-800">{formData.name}</span>
+                  <span className="font-medium text-slate-800 truncate max-w-[180px] sm:max-w-[250px]">{formData.name}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Volumen:</span>
-                  <span className="font-medium text-slate-800">
+                <div className="flex flex-wrap justify-between gap-1">
+                  <span className="text-slate-600 flex-shrink-0">Volumen:</span>
+                  <span className="font-medium text-slate-800 text-right">
                     {formData.min_volumen || formData.max_volumen
                       ? `${formData.min_volumen ? formatCurrency(formData.min_volumen) : '∞'} - ${formData.max_volumen ? formatCurrency(formData.max_volumen) : '∞'}`
                       : 'Keine Einschränkung'}
@@ -394,18 +394,18 @@ export default function NeuesAnkaufsprofilPage() {
       </div>
 
       {/* Progress Steps */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+      <div className="mb-8 overflow-x-auto pb-2">
+        <div className="flex items-center justify-between min-w-0">
           {STEPS.map((step, index) => {
             const Icon = step.icon;
             const isCompleted = currentStep > step.id;
             const isCurrent = currentStep === step.id;
 
             return (
-              <div key={step.id} className="flex items-center">
+              <div key={step.id} className="flex items-center flex-shrink-0">
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors ${
                       isCompleted
                         ? 'bg-green-500 text-white'
                         : isCurrent
@@ -413,18 +413,18 @@ export default function NeuesAnkaufsprofilPage() {
                         : 'bg-slate-200 text-slate-500'
                     }`}
                   >
-                    {isCompleted ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                    {isCompleted ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
                   </div>
-                  <span className={`text-xs mt-1 ${isCurrent ? 'text-blue-600 font-medium' : 'text-slate-500'}`}>
+                  <span className={`text-[10px] sm:text-xs mt-1 max-w-[60px] sm:max-w-none text-center truncate ${isCurrent ? 'text-blue-600 font-medium' : 'text-slate-500'}`}>
                     {step.title}
                   </span>
                 </div>
                 {index < STEPS.length - 1 && (
                   <div
-                    className={`w-full h-1 mx-2 rounded ${
+                    className={`h-1 mx-1 sm:mx-2 rounded flex-shrink-0 ${
                       currentStep > step.id ? 'bg-green-500' : 'bg-slate-200'
                     }`}
-                    style={{ minWidth: '40px' }}
+                    style={{ minWidth: '20px', width: '100%', maxWidth: '40px' }}
                   />
                 )}
               </div>

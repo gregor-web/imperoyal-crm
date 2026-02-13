@@ -47,7 +47,7 @@ export function ObjektForm({ defaultValues, onSubmit, onCancel, isLoading, manda
   ];
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
       {/* Adresse */}
       <section>
         <h3 className="text-lg font-semibold text-slate-800 mb-4">Adresse</h3>
@@ -124,7 +124,7 @@ export function ObjektForm({ defaultValues, onSubmit, onCancel, isLoading, manda
       {/* Rechtliches */}
       <section>
         <h3 className="text-lg font-semibold text-slate-800 mb-4">Rechtliche Rahmenbedingungen</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           <Select label="WEG aufgeteilt" options={booleanOptions} {...register('weg_aufgeteilt')} />
           <Select label="WEG geplant" options={booleanOptions} {...register('weg_geplant')} />
           <Select label="Milieuschutz" options={booleanOptions} {...register('milieuschutz')} />

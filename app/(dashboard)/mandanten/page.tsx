@@ -65,7 +65,7 @@ export default async function MandantenPage() {
                 <TableRow key={mandant.id}>
                   <TableCell className="font-medium">{mandant.name}</TableCell>
                   <TableCell>{mandant.ansprechpartner || '-'}</TableCell>
-                  <TableCell>{mandant.email}</TableCell>
+                  <TableCell className="break-all">{mandant.email}</TableCell>
                   <TableCell>{mandant.ort || '-'}</TableCell>
                   <TableCell>{formatDate(mandant.created_at)}</TableCell>
                   <TableCell>

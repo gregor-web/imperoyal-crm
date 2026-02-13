@@ -11,13 +11,13 @@ export function MandantenActions() {
 
   return (
     <>
-      <div className="flex gap-3">
-        <Button onClick={() => setShowQuickAdd(true)}>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Button onClick={() => setShowQuickAdd(true)} className="w-full sm:w-auto">
           <UserPlus className="w-4 h-4 mr-2" />
           Mandant hinzufügen
         </Button>
-        <Link href="/mandanten/neu">
-          <Button variant="secondary">
+        <Link href="/mandanten/neu" className="w-full sm:w-auto">
+          <Button variant="secondary" className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Erweitert
           </Button>

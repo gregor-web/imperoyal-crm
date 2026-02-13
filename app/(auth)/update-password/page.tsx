@@ -74,7 +74,7 @@ export default function UpdatePasswordPage() {
   return (
     <div className="w-full max-w-md">
       <div className="glass-card rounded-2xl p-6 sm:p-8">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="w-16 h-16 bg-[#1E2A3A] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>

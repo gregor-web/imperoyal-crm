@@ -167,7 +167,7 @@ export default async function ObjektePage() {
               );
             })
           ) : (
-            <Card className="p-8 text-center text-[#5B7A9D]">
+            <Card className="p-6 sm:p-8 text-center text-[#5B7A9D]">
               Keine Objekte vorhanden
             </Card>
           )}

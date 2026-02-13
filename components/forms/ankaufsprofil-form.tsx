@@ -424,13 +424,13 @@ export function AnkaufsprofilForm({
       </Section>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-[#D5DEE6]">
+      <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-[#D5DEE6]">
         {onCancel && (
-          <Button type="button" variant="secondary" onClick={onCancel}>
+          <Button type="button" variant="secondary" onClick={onCancel} className="w-full sm:w-auto">
             Abbrechen
           </Button>
         )}
-        <Button type="submit" loading={isLoading}>
+        <Button type="submit" loading={isLoading} className="w-full sm:w-auto">
           Speichern
         </Button>
       </div>

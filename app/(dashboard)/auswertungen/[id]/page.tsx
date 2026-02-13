@@ -150,26 +150,26 @@ export default async function AuswertungDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Finanzierungsprofil */}
         <Card title="Finanzierungsprofil">
-          <div className="space-y-3">
-            <div className="flex justify-between">
+          <div className="space-y-3 text-sm sm:text-base">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Eigenkapital</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.finanzierung?.eigenkapital)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.finanzierung?.eigenkapital)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Fremdkapital</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.finanzierung?.fremdkapital)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.finanzierung?.fremdkapital)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Zinssatz</span>
-              <span className="font-medium">{formatPercent(berechnungen?.finanzierung?.zinssatz)}</span>
+              <span className="font-medium flex-shrink-0">{formatPercent(berechnungen?.finanzierung?.zinssatz)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Tilgung</span>
-              <span className="font-medium">{formatPercent(berechnungen?.finanzierung?.tilgung)}</span>
+              <span className="font-medium flex-shrink-0">{formatPercent(berechnungen?.finanzierung?.tilgung)}</span>
             </div>
-            <div className="flex justify-between pt-2 border-t">
+            <div className="flex justify-between gap-2 pt-2 border-t">
               <span className="text-slate-600 font-medium">Kapitaldienst p.a.</span>
-              <span className="font-bold text-red-600">{formatCurrency(berechnungen?.finanzierung?.kapitaldienst)}</span>
+              <span className="font-bold text-red-600 flex-shrink-0">{formatCurrency(berechnungen?.finanzierung?.kapitaldienst)}</span>
             </div>
           </div>
           {erlaeuterungen?.finanzierungsprofil && (
@@ -179,28 +179,28 @@ export default async function AuswertungDetailPage({ params }: Props) {
 
         {/* Kostenstruktur */}
         <Card title="Kostenstruktur">
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-slate-600">Betriebskosten (nicht umlagef.)</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.kostenstruktur?.betriebskosten_nicht_umlage)}</span>
+          <div className="space-y-3 text-sm sm:text-base">
+            <div className="flex justify-between gap-2">
+              <span className="text-slate-600 truncate">Betriebskosten (nicht umlagef.)</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.betriebskosten_nicht_umlage)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Instandhaltung</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.kostenstruktur?.instandhaltung)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.instandhaltung)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Verwaltung</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.kostenstruktur?.verwaltung)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.verwaltung)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Rücklagen</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.kostenstruktur?.ruecklagen)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.ruecklagen)}</span>
             </div>
-            <div className="flex justify-between pt-2 border-t">
+            <div className="flex justify-between gap-2 pt-2 border-t">
               <span className="text-slate-600 font-medium">Kosten gesamt</span>
-              <span className="font-bold">{formatCurrency(berechnungen?.kostenstruktur?.kosten_gesamt)}</span>
+              <span className="font-bold flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.kosten_gesamt)}</span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap justify-between items-center gap-1">
               <span className="text-slate-600">Kostenquote</span>
               <Badge variant={
                 berechnungen?.kostenstruktur?.bewertung === 'gesund' ? 'success' :
@@ -215,16 +215,16 @@ export default async function AuswertungDetailPage({ params }: Props) {
         {/* Cashflow */}
         <Card title="Cashflow-Analyse">
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <div className="p-3 sm:p-4 bg-slate-50 rounded-lg">
                 <p className="text-xs sm:text-sm text-slate-500 mb-1">IST (jährlich)</p>
-                <p className={`text-lg sm:text-2xl font-bold ${berechnungen?.cashflow?.cashflow_ist_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-base sm:text-2xl font-bold ${berechnungen?.cashflow?.cashflow_ist_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {formatCurrency(berechnungen?.cashflow?.cashflow_ist_jahr)}
                 </p>
               </div>
               <div className="p-3 sm:p-4 bg-blue-50 rounded-lg">
                 <p className="text-xs sm:text-sm text-slate-500 mb-1">Optimiert (jährlich)</p>
-                <p className={`text-lg sm:text-2xl font-bold ${berechnungen?.cashflow?.cashflow_opt_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-base sm:text-2xl font-bold ${berechnungen?.cashflow?.cashflow_opt_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {formatCurrency(berechnungen?.cashflow?.cashflow_opt_jahr)}
                 </p>
               </div>
@@ -234,18 +234,18 @@ export default async function AuswertungDetailPage({ params }: Props) {
 
         {/* WEG-Potenzial */}
         <Card title="WEG-Potenzial">
-          <div className="space-y-3">
-            <div className="flex justify-between">
+          <div className="space-y-3 text-sm sm:text-base">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Wert heute</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.weg_potenzial?.wert_heute)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.weg_potenzial?.wert_heute)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Wert aufgeteilt (+15%)</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.weg_potenzial?.wert_aufgeteilt)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.weg_potenzial?.wert_aufgeteilt)}</span>
             </div>
-            <div className="flex justify-between pt-2 border-t">
+            <div className="flex justify-between gap-2 pt-2 border-t">
               <span className="text-slate-600 font-medium">Potenzial</span>
-              <span className="font-bold text-green-600">{formatCurrency(berechnungen?.weg_potenzial?.weg_gewinn)}</span>
+              <span className="font-bold text-green-600 flex-shrink-0">{formatCurrency(berechnungen?.weg_potenzial?.weg_gewinn)}</span>
             </div>
             {berechnungen?.weg_potenzial?.bereits_aufgeteilt && (
               <Badge variant="info">Bereits aufgeteilt</Badge>
@@ -258,56 +258,56 @@ export default async function AuswertungDetailPage({ params }: Props) {
 
         {/* AfA / RND */}
         <Card title="AfA / Restnutzungsdauer">
-          <div className="space-y-3">
-            <div className="flex justify-between">
+          <div className="space-y-3 text-sm sm:text-base">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Baujahr</span>
               <span className="font-medium">{berechnungen?.afa_rnd?.baujahr}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Alter</span>
               <span className="font-medium">{berechnungen?.afa_rnd?.alter} Jahre</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Restnutzungsdauer</span>
               <span className="font-medium">{berechnungen?.afa_rnd?.rnd} Jahre</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Gebäudewert (80%)</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.afa_rnd?.gebaeude_wert)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.afa_rnd?.gebaeude_wert)}</span>
             </div>
-            <div className="flex justify-between pt-2 border-t">
+            <div className="flex justify-between gap-2 pt-2 border-t">
               <span className="text-slate-600 font-medium">AfA p.a.</span>
-              <span className="font-bold">{formatCurrency(berechnungen?.afa_rnd?.afa_jahr)}</span>
+              <span className="font-bold flex-shrink-0">{formatCurrency(berechnungen?.afa_rnd?.afa_jahr)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Steuerersparnis (42%)</span>
-              <span className="font-medium text-green-600">{formatCurrency(berechnungen?.afa_rnd?.steuerersparnis_42)}</span>
+              <span className="font-medium text-green-600 flex-shrink-0">{formatCurrency(berechnungen?.afa_rnd?.steuerersparnis_42)}</span>
             </div>
           </div>
         </Card>
 
         {/* Wertentwicklung */}
         <Card title="Wertentwicklung (2,5% p.a.)">
-          <div className="space-y-3">
-            <div className="flex justify-between">
+          <div className="space-y-3 text-sm sm:text-base">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">Heute</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.wertentwicklung?.heute)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.heute)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">+ 3 Jahre</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.wertentwicklung?.jahr_3)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.jahr_3)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">+ 5 Jahre</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.wertentwicklung?.jahr_5)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.jahr_5)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-600">+ 7 Jahre</span>
-              <span className="font-medium">{formatCurrency(berechnungen?.wertentwicklung?.jahr_7)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.jahr_7)}</span>
             </div>
-            <div className="flex justify-between pt-2 border-t">
+            <div className="flex justify-between gap-2 pt-2 border-t">
               <span className="text-slate-600 font-medium">+ 10 Jahre</span>
-              <span className="font-bold text-green-600">{formatCurrency(berechnungen?.wertentwicklung?.jahr_10)}</span>
+              <span className="font-bold text-green-600 flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.jahr_10)}</span>
             </div>
           </div>
         </Card>

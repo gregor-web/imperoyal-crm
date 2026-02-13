@@ -38,7 +38,7 @@ export default function LoginPage() {
     <div className="w-full max-w-md">
       <div className="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl">
         {/* Logo & Title */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <Image
             src="/logo_imperoyal.png"
             alt="Imperoyal Immobilien"

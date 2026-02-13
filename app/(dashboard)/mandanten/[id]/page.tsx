@@ -75,7 +75,7 @@ export default async function MandantDetailPage({ params }: Props) {
               <Mail className="w-5 h-5 text-slate-400 mt-0.5" />
               <div>
                 <p className="text-sm text-slate-500">E-Mail</p>
-                <a href={`mailto:${mandant.email}`} className="text-blue-600 hover:underline">
+                <a href={`mailto:${mandant.email}`} className="text-blue-600 hover:underline break-all">
                   {mandant.email}
                 </a>
               </div>

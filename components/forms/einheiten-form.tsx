@@ -139,7 +139,7 @@ export function EinheitenForm({ objektId, defaultValues = [], onSubmit, isLoadin
                   <button
                     type="button"
                     onClick={() => remove(index)}
-                    className="p-1 text-red-500 hover:bg-red-50 rounded"
+                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

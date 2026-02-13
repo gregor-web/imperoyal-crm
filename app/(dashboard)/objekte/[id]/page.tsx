@@ -163,26 +163,26 @@ export default async function ObjektDetailPage({ params }: Props) {
         {/* Finanzierung */}
         <Card title="Finanzierung">
           <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-500">Kaufpreis</span>
-              <span className="font-medium">{formatCurrency(objekt.kaufpreis)}</span>
+              <span className="font-medium flex-shrink-0">{formatCurrency(objekt.kaufpreis)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-500">Eigenkapital</span>
-              <span className="font-medium">{formatPercent(objekt.eigenkapital_prozent)}</span>
+              <span className="font-medium flex-shrink-0">{formatPercent(objekt.eigenkapital_prozent)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-500">Zinssatz</span>
-              <span className="font-medium">{formatPercent(objekt.zinssatz)}</span>
+              <span className="font-medium flex-shrink-0">{formatPercent(objekt.zinssatz)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <span className="text-slate-500">Tilgung</span>
-              <span className="font-medium">{formatPercent(objekt.tilgung)}</span>
+              <span className="font-medium flex-shrink-0">{formatPercent(objekt.tilgung)}</span>
             </div>
             {objekt.darlehensstand && (
-              <div className="flex justify-between pt-2 border-t">
+              <div className="flex justify-between gap-2 pt-2 border-t">
                 <span className="text-slate-500">Darlehensstand</span>
-                <span className="font-medium">{formatCurrency(objekt.darlehensstand)}</span>
+                <span className="font-medium flex-shrink-0">{formatCurrency(objekt.darlehensstand)}</span>
               </div>
             )}
           </div>
