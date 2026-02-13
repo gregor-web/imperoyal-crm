@@ -46,14 +46,25 @@ export function SearchFilterBar({ placeholder = 'Suchen...', filters = [] }: Sea
   return (
     <div className={`flex flex-col sm:flex-row gap-3 ${isPending ? 'opacity-70' : ''}`}>
       {/* Search Input */}
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9EAFC0]" />
+      <div className="relative flex-1" style={{ position: 'relative' }}>
+        <Search
+          className="w-4 h-4 text-[#9EAFC0]"
+          style={{
+            position: 'absolute',
+            left: '12px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        />
         <input
           type="text"
           placeholder={placeholder}
           defaultValue={currentSearch}
           onChange={(e) => updateParams('q', e.target.value)}
-          className="glass-input w-full pl-10 pr-4 py-2.5 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] text-sm"
+          className="glass-input w-full rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] text-sm"
+          style={{ paddingLeft: '36px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px' }}
         />
       </div>
 
