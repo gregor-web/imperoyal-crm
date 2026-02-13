@@ -94,9 +94,9 @@ export function EinheitenForm({ objektId, defaultValues = [], onSubmit, isLoadin
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <h3 className="text-lg font-semibold text-slate-800">Einheiten ({fields.length})</h3>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {fields.length > 0 && (
             <>
               <Button type="button" variant="secondary" size="sm" onClick={expandAll}>

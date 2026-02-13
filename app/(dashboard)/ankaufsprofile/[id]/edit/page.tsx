@@ -125,7 +125,7 @@ export default function EditAnkaufsprofilPage() {
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Ankaufsprofil bearbeiten</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Ankaufsprofil bearbeiten</h1>
           <p className="text-slate-600 mt-1">{profil.name}</p>
         </div>
       </div>

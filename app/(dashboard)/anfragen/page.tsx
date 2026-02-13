@@ -71,14 +71,14 @@ export default async function AnfragenPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Auswertungsanfragen</h1>
-        <p className="text-slate-600 mt-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Auswertungsanfragen</h1>
+        <p className="text-sm sm:text-base text-slate-600 mt-1">
           Anfragen von Mandanten zur Objektauswertung
         </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">

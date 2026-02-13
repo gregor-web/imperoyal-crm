@@ -31,8 +31,8 @@ export default async function AuswertungenPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Auswertungen</h1>
-        <p className="text-slate-600 mt-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Auswertungen</h1>
+        <p className="text-sm sm:text-base text-slate-600 mt-1">
           {isAdmin ? 'Alle Analysen im System' : 'Ihre Immobilien-Analysen'}
         </p>
       </div>

@@ -325,7 +325,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
               {/* Einheiten-Anzahlen - Wichtig für Step 9 */}
               <div className="bg-[#EDF1F5] border border-[#B8C5D1] rounded-lg p-4">
                 <h4 className="text-sm font-semibold text-[#1E2A3A] mb-3">Anzahl Einheiten (bestimmt Felder in Step 9)</h4>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <Input
                     label="Wohneinheiten"
                     type="number"
@@ -354,7 +354,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                 </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Input
                   label="Geschosse"
                   type="number"
@@ -421,7 +421,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                 placeholder="Aktueller Darlehensstand"
                 {...register('darlehensstand')}
               />
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Input
                   label="Zinssatz (%)"
                   type="number"
@@ -582,8 +582,8 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
               ) : (
                 <>
                   {/* Header mit Buttons */}
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-[#1E2A3A]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <h3 className="text-base sm:text-lg font-semibold text-[#1E2A3A]">
                       {einheiten.length} Einheit(en)
                     </h3>
                     <div className="flex gap-2">
@@ -749,7 +749,7 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
                               {/* §559 BGB */}
                               <div className="mt-3 pt-3 border-t border-[#D5DEE6]">
                                 <h5 className="text-xs font-semibold text-[#5B7A9D] mb-2">§559 BGB - Modernisierung</h5>
-                                <div className="grid grid-cols-3 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                   <div>
                                     <label className="block text-xs font-medium text-[#4A6A8D] mb-1">Datum §559</label>
                                     <input
@@ -794,12 +794,12 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between items-center pt-6 mt-6 border-t border-[#D5DEE6]">
-          <div>
+        <div className="flex justify-between items-center pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-[#D5DEE6] gap-2">
+          <div className="flex-shrink-0">
             {currentStep > 1 ? (
               <Button type="button" variant="secondary" onClick={prevStep}>
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                Zurück
+                <ChevronLeft className="w-4 h-4 sm:mr-1" />
+                <span className="hidden sm:inline">Zurück</span>
               </Button>
             ) : onCancel ? (
               <Button type="button" variant="secondary" onClick={onCancel}>
@@ -810,20 +810,21 @@ export function ObjektWizard({ defaultValues, onSubmit, onCancel, isLoading, man
             )}
           </div>
 
-          <div className="text-sm text-[#5B7A9D]">
-            Schritt {currentStep} von {STEPS.length}
+          <div className="text-xs sm:text-sm text-[#5B7A9D] text-center">
+            {currentStep} / {STEPS.length}
           </div>
 
-          <div>
+          <div className="flex-shrink-0">
             {currentStep < STEPS.length ? (
               <Button type="button" onClick={nextStep}>
-                Weiter
-                <ChevronRight className="w-4 h-4 ml-1" />
+                <span className="hidden sm:inline">Weiter</span>
+                <ChevronRight className="w-4 h-4 sm:ml-1" />
               </Button>
             ) : (
               <Button type="submit" loading={isLoading}>
                 <Check className="w-4 h-4 mr-1" />
-                Objekt erstellen
+                <span className="hidden sm:inline">Objekt erstellen</span>
+                <span className="sm:hidden">Erstellen</span>
               </Button>
             )}
           </div>

@@ -68,16 +68,16 @@ export default async function ObjektePage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#1E2A3A]">Objekte</h1>
-          <p className="text-[#4A6A8D] mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Objekte</h1>
+          <p className="text-sm sm:text-base text-[#4A6A8D] mt-1">
             {isAdmin
               ? `${totalObjekte} Objekte von ${totalMandanten} Mandanten`
               : 'Ihre Immobilien'}
           </p>
         </div>
-        <Link href="/objekte/neu">
+        <Link href="/objekte/neu" className="self-start sm:self-auto">
           <Button>
             <Plus className="w-4 h-4 mr-2" />
             Neues Objekt
@@ -94,8 +94,8 @@ export default async function ObjektePage() {
               return (
                 <Card key={mandantId} className="overflow-hidden">
                   {/* Mandant Header */}
-                  <div className="bg-gradient-to-r from-[#1E2A3A] to-[#2A3F54] px-6 py-4">
-                    <div className="flex items-center justify-between">
+                  <div className="bg-gradient-to-r from-[#1E2A3A] to-[#2A3F54] px-4 sm:px-6 py-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
                         <div className="bg-white/10 p-2 rounded-lg">
                           <User className="w-5 h-5 text-white" />
@@ -103,7 +103,7 @@ export default async function ObjektePage() {
                         <div>
                           <Link
                             href={`/mandanten/${mandantId}`}
-                            className="text-lg font-semibold text-white hover:text-[#D5DEE6] transition-colors"
+                            className="text-base sm:text-lg font-semibold text-white hover:text-[#D5DEE6] transition-colors"
                           >
                             {group.mandantName}
                           </Link>
@@ -112,9 +112,9 @@ export default async function ObjektePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-5 h-5 text-[#9EAFC0]" />
-                        <span className="text-white font-medium">
+                      <div className="flex items-center gap-2 ml-11 sm:ml-0">
+                        <Building2 className="w-5 h-5 text-[#9EAFC0] hidden sm:block" />
+                        <span className="text-white font-medium text-sm sm:text-base">
                           {formatCurrency(group.objekte.reduce((sum, o) => sum + (o.kaufpreis || 0), 0))}
                         </span>
                         <span className="text-[#9EAFC0] text-sm">Gesamtwert</span>

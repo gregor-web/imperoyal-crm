@@ -28,7 +28,7 @@ export function ErtragsBarChart({ data }: ErtragsBarChartProps) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+      <BarChart data={chartData} margin={{ top: 10, right: 10, left: 5, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
         <XAxis dataKey="name" tick={{ fill: '#64748b' }} />
         <YAxis

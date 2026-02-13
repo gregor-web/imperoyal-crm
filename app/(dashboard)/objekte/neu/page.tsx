@@ -117,7 +117,7 @@ function NeuObjektContent() {
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Neues Objekt</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Neues Objekt</h1>
           <p className="text-slate-600 mt-1">Schritt für Schritt zum neuen Objekt</p>
         </div>
       </div>

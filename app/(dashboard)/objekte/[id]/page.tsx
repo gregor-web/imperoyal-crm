@@ -54,17 +54,17 @@ export default async function ObjektDetailPage({ params }: Props) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/objekte" className="p-2 hover:bg-slate-100 rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Link href="/objekte" className="p-2 hover:bg-slate-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">{objekt.strasse}</h1>
-            <p className="text-slate-600">{objekt.plz} {objekt.ort}</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{objekt.strasse}</h1>
+            <p className="text-sm sm:text-base text-slate-600">{objekt.plz} {objekt.ort}</p>
           </div>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-wrap gap-2 items-center ml-11 sm:ml-0">
           {isAdmin ? (
             <AuswertenButton objektId={id} />
           ) : offeneAnfrage ? (
@@ -88,7 +88,7 @@ export default async function ObjektDetailPage({ params }: Props) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           title="Kaufpreis"
           value={formatCurrency(objekt.kaufpreis)}
@@ -117,10 +117,10 @@ export default async function ObjektDetailPage({ params }: Props) {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Objektdaten */}
         <Card title="Objektdaten" className="lg:col-span-2">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 text-sm">
             <div>
               <p className="text-slate-500">Gebäudetyp</p>
               <p className="font-medium">{objekt.gebaeudetyp || '-'}</p>
@@ -240,12 +240,12 @@ export default async function ObjektDetailPage({ params }: Props) {
       </Card>
 
       {/* Metadaten */}
-      <div className="flex items-center justify-between text-sm text-slate-500">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-sm text-slate-500">
         <span>
           Mandant: {(objekt.mandanten as { name: string })?.name || '-'}
         </span>
         <span>
-          Erstellt am {formatDate(objekt.created_at)} | Zuletzt aktualisiert am {formatDate(objekt.updated_at)}
+          Erstellt am {formatDate(objekt.created_at)} | Aktualisiert {formatDate(objekt.updated_at)}
         </span>
       </div>
     </div>

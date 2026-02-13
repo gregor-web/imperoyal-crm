@@ -56,7 +56,7 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-[#1E2A3A]">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#1E2A3A]">
           Willkommen{profile?.name ? `, ${profile.name}` : ''}
         </h1>
         <p className="text-[#4A6A8D] mt-1">
@@ -70,14 +70,14 @@ export default async function DashboardPage() {
       <DashboardStats isAdmin={isAdmin} initialStats={initialStats} />
 
       {/* Quick Actions */}
-      <div className="glass-card rounded-xl p-6">
+      <div className="glass-card rounded-xl p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-[#1E2A3A] mb-4">
           Schnellaktionen
         </h2>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3">
           <Link
             href="/objekte/neu"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium"
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium min-h-[44px]"
           >
             <Plus className="w-4 h-4" />
             Neues Objekt anlegen
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
           {isAdmin && (
             <Link
               href="/mandanten/neu"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium"
+              className="inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium min-h-[44px]"
             >
               <Plus className="w-4 h-4" />
               Neuen Mandanten anlegen
@@ -93,7 +93,7 @@ export default async function DashboardPage() {
           )}
           <Link
             href="/ankaufsprofile/neu"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium"
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium min-h-[44px]"
           >
             <Plus className="w-4 h-4" />
             Ankaufsprofil erstellen
@@ -127,18 +127,18 @@ async function RecentActivity() {
   }
 
   return (
-    <div className="glass-card rounded-xl p-6">
+    <div className="glass-card rounded-xl p-4 sm:p-6">
       <h2 className="text-lg font-semibold text-[#1E2A3A] mb-4">
         Letzte Auswertungen
       </h2>
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {recentAuswertungen.map((a) => {
           const objekt = a.objekte as unknown as { strasse: string; plz: string; ort: string } | null;
           return (
             <Link
               key={a.id}
               href={`/auswertungen/${a.id}`}
-              className="flex items-center justify-between p-3 rounded-lg hover:bg-[#EDF1F5] transition-colors"
+              className="flex items-center justify-between p-3 rounded-lg hover:bg-[#EDF1F5] transition-colors min-h-[44px]"
             >
               <div>
                 <p className="font-medium text-[#1E2A3A]">

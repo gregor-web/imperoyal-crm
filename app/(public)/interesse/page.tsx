@@ -138,13 +138,13 @@ export default function InteressePage() {
   return (
     <div className="min-h-screen login-bg flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="glass-card rounded-2xl p-8 text-center">
+        <div className="glass-card rounded-2xl p-6 sm:p-8 text-center">
           {/* Logo/Brand */}
           <div className="mb-6">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 mb-4">
               <Building2 className="w-8 h-8 text-[#1E2A3A]" />
             </div>
-            <h1 className="text-2xl font-semibold text-[#1E2A3A]">Imperoyal Immobilien</h1>
+            <h1 className="text-xl sm:text-2xl font-semibold text-[#1E2A3A]">Imperoyal Immobilien</h1>
           </div>
 
           <Suspense fallback={<LoadingState />}>

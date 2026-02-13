@@ -35,17 +35,17 @@ export default async function AnkaufsprofilDetailPage({ params }: Props) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/ankaufsprofile" className="p-2 hover:bg-slate-100 rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Link href="/ankaufsprofile" className="p-2 hover:bg-slate-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">{profil.name}</h1>
-            <p className="text-slate-600">{mandant?.name || 'Unbekannter Mandant'}</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{profil.name}</h1>
+            <p className="text-sm sm:text-base text-slate-600">{mandant?.name || 'Unbekannter Mandant'}</p>
           </div>
         </div>
-        <Link href={`/ankaufsprofile/${id}/edit`}>
+        <Link href={`/ankaufsprofile/${id}/edit`} className="self-start sm:self-auto ml-11 sm:ml-0">
           <Button variant="secondary">
             <Edit className="w-4 h-4 mr-2" />
             Bearbeiten
@@ -53,7 +53,7 @@ export default async function AnkaufsprofilDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Volumen */}
         <Card title="Investitionsvolumen">
           <div className="flex items-center gap-4">

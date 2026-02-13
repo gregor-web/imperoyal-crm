@@ -271,7 +271,7 @@ export default function NeuesAnkaufsprofilPage() {
               <p className="text-slate-600 mt-2">Wählen Sie alle relevanten Immobilientypen aus</p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3">
               {OPTIONS.assetklassen.map((assetklasse) => {
                 const isSelected = formData.assetklassen.includes(assetklasse);
                 return (
@@ -361,7 +361,7 @@ export default function NeuesAnkaufsprofilPage() {
                 {formData.regionen && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Regionen:</span>
-                    <span className="font-medium text-slate-800 truncate max-w-[200px]">{formData.regionen}</span>
+                    <span className="font-medium text-slate-800 truncate max-w-[140px] sm:max-w-[200px]">{formData.regionen}</span>
                   </div>
                 )}
                 {formData.rendite_min && (
@@ -388,7 +388,7 @@ export default function NeuesAnkaufsprofilPage() {
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Neues Ankaufsprofil</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Neues Ankaufsprofil</h1>
           <p className="text-slate-600 mt-1">Schritt {currentStep} von {STEPS.length}</p>
         </div>
       </div>
@@ -442,7 +442,7 @@ export default function NeuesAnkaufsprofilPage() {
 
       {/* Step Content */}
       <Card className="mb-6">
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {renderStepContent()}
         </div>
       </Card>

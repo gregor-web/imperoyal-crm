@@ -38,7 +38,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -46,14 +46,14 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       />
 
       {/* Modal */}
-      <div className={`relative w-full ${sizes[size]} glass-card rounded-2xl shadow-2xl`}>
+      <div className={`relative w-full ${sizes[size]} glass-card rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[90vh] flex flex-col`}>
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between p-6 border-b border-white/20">
-            <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/20 flex-shrink-0">
+            <h2 className="text-lg sm:text-xl font-semibold text-slate-800">{title}</h2>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
+              className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
               <X className="w-5 h-5" />
             </button>
@@ -61,7 +61,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         )}
 
         {/* Body */}
-        <div className="p-6">{children}</div>
+        <div className="p-4 sm:p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );
@@ -93,18 +93,18 @@ export function ConfirmModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
       <p className="text-slate-600 mb-6">{message}</p>
-      <div className="flex gap-3 justify-end">
+      <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 sm:justify-end">
         <button
           onClick={onClose}
           disabled={loading}
-          className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+          className="px-4 py-3 sm:py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors min-h-[44px] text-center"
         >
           {cancelText}
         </button>
         <button
           onClick={onConfirm}
           disabled={loading}
-          className={`px-4 py-2 text-white rounded-lg transition-colors ${
+          className={`px-4 py-3 sm:py-2 text-white rounded-lg transition-colors min-h-[44px] ${
             variant === 'danger'
               ? 'bg-red-600 hover:bg-red-700'
               : 'bg-amber-600 hover:bg-amber-700'

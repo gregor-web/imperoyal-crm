@@ -36,7 +36,7 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md">
-      <div className="glass-card rounded-2xl p-8 shadow-2xl">
+      <div className="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl">
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <Image
@@ -99,7 +99,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-primary py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-[#5B7A9D] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-primary py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-[#5B7A9D] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
           >
             {loading ? 'Anmelden...' : 'Anmelden'}
           </button>

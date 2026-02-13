@@ -79,7 +79,7 @@ export default function NeuMandantPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Neuer Mandant</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Neuer Mandant</h1>
         <p className="text-slate-600 mt-1">Erstellen Sie einen neuen Mandanten</p>
       </div>
 

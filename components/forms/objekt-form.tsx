@@ -124,7 +124,7 @@ export function ObjektForm({ defaultValues, onSubmit, onCancel, isLoading, manda
       {/* Rechtliches */}
       <section>
         <h3 className="text-lg font-semibold text-slate-800 mb-4">Rechtliche Rahmenbedingungen</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           <Select label="WEG aufgeteilt" options={booleanOptions} {...register('weg_aufgeteilt')} />
           <Select label="WEG geplant" options={booleanOptions} {...register('weg_geplant')} />
           <Select label="Milieuschutz" options={booleanOptions} {...register('milieuschutz')} />
@@ -148,13 +148,13 @@ export function ObjektForm({ defaultValues, onSubmit, onCancel, isLoading, manda
       </section>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+      <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-4 border-t border-slate-200">
         {onCancel && (
-          <Button type="button" variant="secondary" onClick={onCancel}>
+          <Button type="button" variant="secondary" onClick={onCancel} className="w-full sm:w-auto">
             Abbrechen
           </Button>
         )}
-        <Button type="submit" loading={isLoading}>
+        <Button type="submit" loading={isLoading} className="w-full sm:w-auto">
           Speichern
         </Button>
       </div>

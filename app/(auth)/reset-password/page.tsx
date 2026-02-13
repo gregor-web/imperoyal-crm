@@ -46,11 +46,11 @@ export default function ResetPasswordPage() {
   if (success) {
     return (
       <div className="min-h-screen login-bg flex items-center justify-center p-4">
-        <div className="glass-card rounded-2xl p-8 w-full max-w-md text-center">
+        <div className="glass-card rounded-2xl p-6 sm:p-8 w-full max-w-md text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1E2A3A] mb-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A] mb-2">
             E-Mail gesendet
           </h1>
           <p className="text-[#4A6A8D] mb-6">
@@ -71,12 +71,12 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen login-bg flex items-center justify-center p-4">
-      <div className="glass-card rounded-2xl p-8 w-full max-w-md">
+      <div className="glass-card rounded-2xl p-6 sm:p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-[#1E2A3A] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Mail className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1E2A3A]">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">
             Passwort zurücksetzen
           </h1>
           <p className="text-[#4A6A8D] mt-2">

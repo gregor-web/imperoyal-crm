@@ -49,21 +49,21 @@ export default async function AuswertungDetailPage({ params }: Props) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/auswertungen" className="p-2 hover:bg-slate-100 rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Link href="/auswertungen" className="p-2 hover:bg-slate-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">
+            <h1 className="text-lg sm:text-2xl font-bold text-slate-800">
               Auswertung: {objekt?.strasse as string}
             </h1>
-            <p className="text-slate-600">
+            <p className="text-sm sm:text-base text-slate-600">
               {objekt?.plz as string} {objekt?.ort as string} | {mandant?.name || 'Unbekannter Mandant'}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 ml-11 sm:ml-0">
           {/* Status Badge */}
           <Badge variant={auswertung.status === 'versendet' ? 'success' : 'warning'} className="gap-1">
             {auswertung.status === 'versendet' ? (
@@ -117,7 +117,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
       )}
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           title="Kaufpreis"
           value={formatCurrency(berechnungen?.finanzierung?.kaufpreis)}
@@ -147,7 +147,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Finanzierungsprofil */}
         <Card title="Finanzierungsprofil">
           <div className="space-y-3">
@@ -216,15 +216,15 @@ export default async function AuswertungDetailPage({ params }: Props) {
         <Card title="Cashflow-Analyse">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="text-sm text-slate-500 mb-1">IST (jährlich)</p>
-                <p className={`text-2xl font-bold ${berechnungen?.cashflow?.cashflow_ist_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className="p-3 sm:p-4 bg-slate-50 rounded-lg">
+                <p className="text-xs sm:text-sm text-slate-500 mb-1">IST (jährlich)</p>
+                <p className={`text-lg sm:text-2xl font-bold ${berechnungen?.cashflow?.cashflow_ist_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {formatCurrency(berechnungen?.cashflow?.cashflow_ist_jahr)}
                 </p>
               </div>
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-slate-500 mb-1">Optimiert (jährlich)</p>
-                <p className={`text-2xl font-bold ${berechnungen?.cashflow?.cashflow_opt_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className="p-3 sm:p-4 bg-blue-50 rounded-lg">
+                <p className="text-xs sm:text-sm text-slate-500 mb-1">Optimiert (jährlich)</p>
+                <p className={`text-lg sm:text-2xl font-bold ${berechnungen?.cashflow?.cashflow_opt_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {formatCurrency(berechnungen?.cashflow?.cashflow_opt_jahr)}
                 </p>
               </div>
@@ -315,7 +315,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
 
       {/* Handlungsempfehlungen */}
       {(auswertung.empfehlung_handlungsschritte || auswertung.empfehlung_chancen || auswertung.empfehlung_risiken) && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {auswertung.empfehlung_handlungsschritte && (
             <Card title="Handlungsschritte">
               <ul className="space-y-2">

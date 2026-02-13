@@ -112,7 +112,7 @@ export function DashboardStats({ isAdmin, initialStats }: DashboardStatsProps) {
   }, [isAdmin]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       <StatCard
         title="Objekte"
         value={stats.objekteCount.toString()}
@@ -168,15 +168,15 @@ function StatCard({
   };
 
   return (
-    <div className="glass-card rounded-xl p-6">
+    <div className="glass-card rounded-xl p-4 sm:p-6">
       <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-[#4A6A8D]">{title}</p>
-          <p className="text-3xl font-bold text-[#1E2A3A] mt-1">{value}</p>
-          <p className="text-sm text-[#5B7A9D] mt-1">{subtitle}</p>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs sm:text-sm font-medium text-[#4A6A8D]">{title}</p>
+          <p className="text-xl sm:text-2xl md:text-3xl font-bold text-[#1E2A3A] mt-1 truncate">{value}</p>
+          <p className="text-xs sm:text-sm text-[#5B7A9D] mt-1">{subtitle}</p>
         </div>
         <div
-          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center`}
+          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center flex-shrink-0 ml-3`}
         >
           {icon}
         </div>

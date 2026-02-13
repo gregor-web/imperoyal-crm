@@ -5,8 +5,8 @@ interface TableProps {
 
 export function Table({ children, className = '' }: TableProps) {
   return (
-    <div className="overflow-x-auto">
-      <table className={`w-full ${className}`}>
+    <div className="overflow-x-auto -mx-4 sm:mx-0">
+      <table className={`w-full min-w-[600px] sm:min-w-0 ${className}`}>
         {children}
       </table>
     </div>
@@ -38,7 +38,7 @@ export function TableRow({ children, className = '', onClick }: { children: Reac
 
 export function TableHead({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <th className={`px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider ${className}`}>
+    <th className={`px-3 py-2 sm:px-4 sm:py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider ${className}`}>
       {children}
     </th>
   );
@@ -46,7 +46,7 @@ export function TableHead({ children, className = '' }: { children: React.ReactN
 
 export function TableCell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <td className={`px-4 py-4 text-sm text-slate-700 ${className}`}>
+    <td className={`px-3 py-3 sm:px-4 sm:py-4 text-sm text-slate-700 ${className}`}>
       {children}
     </td>
   );
