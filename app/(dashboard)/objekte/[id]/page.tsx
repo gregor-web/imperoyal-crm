@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { formatDate, formatCurrency, formatPercent, formatBoolean, formatArea } from '@/lib/formatters';
-import { ArrowLeft, Edit, Banknote, Home, TrendingUp, Clock } from 'lucide-react';
+import { ArrowLeft, Edit, Banknote, Home, TrendingUp, Clock, CheckCircle } from 'lucide-react';
 import { AuswertenButton } from '@/components/auswerten-button';
 import { AnfrageButton } from '@/components/anfrage-button';
 
@@ -45,6 +45,15 @@ export default async function ObjektDetailPage({ params }: Props) {
     .eq('status', 'offen')
     .single();
 
+  // Check if an Auswertung already exists for this object
+  const { data: bestehendeAuswertung } = await supabase
+    .from('auswertungen')
+    .select('id, created_at, empfehlung')
+    .eq('objekt_id', id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
   // Calculate some basic stats
   const einheiten = objekt.einheiten || [];
   const totalMiete = einheiten.reduce((sum: number, e: { kaltmiete?: number }) => sum + (e.kaltmiete || 0), 0);
@@ -67,6 +76,13 @@ export default async function ObjektDetailPage({ params }: Props) {
         <div className="flex flex-wrap gap-2 items-center ml-11 sm:ml-0">
           {isAdmin ? (
             <AuswertenButton objektId={id} />
+          ) : bestehendeAuswertung ? (
+            <Link href={`/auswertungen/${bestehendeAuswertung.id}`}>
+              <Button variant="primary">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Auswertung ansehen
+              </Button>
+            </Link>
           ) : offeneAnfrage ? (
             <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
               <Clock className="w-4 h-4" />

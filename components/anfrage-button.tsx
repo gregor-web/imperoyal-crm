@@ -23,6 +23,21 @@ export function AnfrageButton({ objektId, mandantId }: AnfrageButtonProps) {
     try {
       const supabase = createClient();
 
+      // Check if Auswertung already exists
+      const { data: auswertung } = await supabase
+        .from('auswertungen')
+        .select('id')
+        .eq('objekt_id', objektId)
+        .limit(1)
+        .single();
+
+      if (auswertung) {
+        toast.warning('Für dieses Objekt existiert bereits eine Auswertung');
+        setError('Für dieses Objekt existiert bereits eine Auswertung');
+        setLoading(false);
+        return;
+      }
+
       // Check if anfrage already exists
       const { data: existing } = await supabase
         .from('anfragen')
