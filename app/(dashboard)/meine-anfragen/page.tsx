@@ -147,28 +147,28 @@ export default async function MeineAnfragenPage() {
 
             return (
               <Card key={anfrage.id} className="hover:shadow-md transition-shadow">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  {/* Objekt Info */}
-                  <div className="flex-1">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
-                        <FileBarChart className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-slate-800">{objekt?.strasse}</h3>
-                        <p className="text-sm text-slate-500">
-                          {objekt?.plz} {objekt?.ort} • {objekt?.gebaeudetyp}
-                        </p>
-                        <p className="text-sm text-slate-500">
-                          Kaufpreis: {formatCurrency(objekt?.kaufpreis)}
-                        </p>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    {/* Objekt Info */}
+                    <div className="flex-1">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                          <FileBarChart className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-800">{objekt?.strasse}</h3>
+                          <p className="text-sm text-slate-500">
+                            {objekt?.plz} {objekt?.ort} • {objekt?.gebaeudetyp}
+                          </p>
+                          <p className="text-sm text-slate-500">
+                            Kaufpreis: {formatCurrency(objekt?.kaufpreis)}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Status */}
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
+                    {/* Status */}
+                    <div className="text-right sm:text-right">
                       <Badge variant={statusConfig.variant} className="gap-1 mb-1">
                         <StatusIcon className="w-3 h-3" />
                         {statusConfig.label}
@@ -177,25 +177,27 @@ export default async function MeineAnfragenPage() {
                         Angefragt am {formatDate(anfrage.created_at)}
                       </p>
                     </div>
+                  </div>
 
-                    {/* Actions */}
-                    <div className="flex gap-2">
-                      {(status === 'fertig' || status === 'bearbeitet') && auswertungInfo && (
-                        <Link href={`/auswertungen/${auswertungInfo.id}`}>
-                          <Button size="sm" title="Auswertung ansehen">
-                            <FileBarChart className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                      )}
-                      {status === 'bearbeitet' && auswertungInfo?.pdf_url && (
-                        <a href={auswertungInfo.pdf_url} target="_blank" rel="noopener noreferrer">
-                          <Button variant="secondary" size="sm" title="PDF herunterladen">
+                  {/* Actions - full width buttons for completed items */}
+                  {(status === 'fertig' || status === 'bearbeitet') && auswertungInfo && (
+                    <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-100">
+                      <Link href={`/auswertungen/${auswertungInfo.id}`} className="flex-1">
+                        <Button className="w-full gap-2">
+                          <FileBarChart className="w-4 h-4" />
+                          Auswertung ansehen
+                        </Button>
+                      </Link>
+                      {auswertungInfo.pdf_url && (
+                        <a href={auswertungInfo.pdf_url} target="_blank" rel="noopener noreferrer" className="flex-1">
+                          <Button variant="secondary" className="w-full gap-2">
                             <Download className="w-4 h-4" />
+                            PDF herunterladen
                           </Button>
                         </a>
                       )}
                     </div>
-                  </div>
+                  )}
                 </div>
               </Card>
             );
