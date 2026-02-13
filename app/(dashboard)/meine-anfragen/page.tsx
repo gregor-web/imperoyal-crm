@@ -180,14 +180,14 @@ export default async function MeineAnfragenPage() {
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                      {(status === 'fertig' || status === 'versendet') && auswertungInfo && (
+                      {(status === 'fertig' || status === 'bearbeitet') && auswertungInfo && (
                         <Link href={`/auswertungen/${auswertungInfo.id}`}>
                           <Button size="sm" title="Auswertung ansehen">
                             <FileBarChart className="w-4 h-4" />
                           </Button>
                         </Link>
                       )}
-                      {status === 'versendet' && auswertungInfo?.pdf_url && (
+                      {status === 'bearbeitet' && auswertungInfo?.pdf_url && (
                         <a href={auswertungInfo.pdf_url} target="_blank" rel="noopener noreferrer">
                           <Button variant="secondary" size="sm" title="PDF herunterladen">
                             <Download className="w-4 h-4" />
