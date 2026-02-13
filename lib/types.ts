@@ -9,7 +9,7 @@
 export type UserRole = 'admin' | 'mandant';
 export type Nutzungsart = 'Wohnen' | 'Gewerbe' | 'Stellplatz';
 export type Mietvertragsart = 'Standard' | 'Index' | 'Staffel';
-export type AuswertungStatus = 'erstellt' | 'versendet';
+export type AuswertungStatus = 'erstellt' | 'abgeschlossen';
 export type AnfrageStatus = 'offen' | 'bearbeitet';
 export type Empfehlung = 'HALTEN' | 'OPTIMIEREN' | 'RESTRUKTURIEREN' | 'VERKAUFEN';
 

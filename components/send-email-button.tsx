@@ -17,12 +17,12 @@ export function SendEmailButton({ auswertungId, status }: SendEmailButtonProps) 
   const [success, setSuccess] = useState(false);
   const router = useRouter();
 
-  // Already sent
-  if (status === 'versendet') {
+  // Already completed
+  if (status === 'abgeschlossen') {
     return (
       <Button variant="secondary" disabled className="gap-2">
         <CheckCircle className="w-4 h-4" />
-        Bereits versendet
+        Abgeschlossen
       </Button>
     );
   }

@@ -101,9 +101,8 @@ export default async function AuswertungenPage({ searchParams }: PageProps) {
             key: 'status',
             label: 'Alle Status',
             options: [
-              { value: 'erstellt', label: 'Erstellt' },
-              { value: 'bearbeitet', label: 'Bearbeitet' },
-              { value: 'versendet', label: 'Versendet' },
+              { value: 'erstellt', label: 'Eingereicht' },
+              { value: 'abgeschlossen', label: 'Abgeschlossen' },
             ],
           },
         ]}

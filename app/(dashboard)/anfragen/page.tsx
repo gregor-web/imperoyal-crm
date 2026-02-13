@@ -273,8 +273,8 @@ export default async function AnfragenPage() {
                     </TableCell>
                     <TableCell>{mandant?.name || '-'}</TableCell>
                     <TableCell>
-                      <Badge variant={anfrage.status === 'versendet' ? 'default' : 'success'}>
-                        {anfrage.status === 'versendet' ? 'Versendet' : 'Fertig'}
+                      <Badge variant="success">
+                        {anfrage.status === 'bearbeitet' ? 'Abgeschlossen' : 'Fertig'}
                       </Badge>
                     </TableCell>
                     <TableCell>{formatDate(anfrage.created_at)}</TableCell>

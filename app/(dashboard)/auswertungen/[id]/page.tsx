@@ -6,7 +6,7 @@ import { EmpfehlungBadge, Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercent, formatDate } from '@/lib/formatters';
 import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
-import { ArrowLeft, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle, Download, Clock, Send } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle, CheckCircle2, Download, Clock } from 'lucide-react';
 import { SendEmailButton } from '@/components/send-email-button';
 
 interface Props {
@@ -65,16 +65,16 @@ export default async function AuswertungDetailPage({ params }: Props) {
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 ml-11 sm:ml-0">
           {/* Status Badge */}
-          <Badge variant={auswertung.status === 'versendet' ? 'success' : 'warning'} className="gap-1">
-            {auswertung.status === 'versendet' ? (
+          <Badge variant={auswertung.status === 'abgeschlossen' ? 'success' : 'info'} className="gap-1">
+            {auswertung.status === 'abgeschlossen' ? (
               <>
-                <Send className="w-3 h-3" />
-                Versendet
+                <CheckCircle2 className="w-3 h-3" />
+                Abgeschlossen
               </>
             ) : (
               <>
                 <Clock className="w-3 h-3" />
-                Erstellt
+                Eingereicht
               </>
             )}
           </Badge>

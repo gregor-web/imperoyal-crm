@@ -246,16 +246,16 @@ export async function POST(request: Request) {
       throw new Error(`Webhook returned ${response.status}`);
     }
 
-    // Update auswertung status to 'versendet'
+    // Update auswertung status to 'abgeschlossen'
     await adminSupabase
       .from('auswertungen')
-      .update({ status: 'versendet' })
+      .update({ status: 'abgeschlossen' })
       .eq('id', auswertung_id);
 
-    // Update anfrage status to 'versendet'
+    // Update anfrage status to 'bearbeitet'
     await adminSupabase
       .from('anfragen')
-      .update({ status: 'versendet' })
+      .update({ status: 'bearbeitet' })
       .eq('objekt_id', objekt.id);
 
     return NextResponse.json({

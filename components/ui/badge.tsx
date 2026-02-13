@@ -43,14 +43,14 @@ export function EmpfehlungBadge({ empfehlung }: { empfehlung: string }) {
 }
 
 // Status Badges
-export function StatusBadge({ status }: { status: 'offen' | 'in_bearbeitung' | 'fertig' | 'bearbeitet' | 'erstellt' | 'versendet' }) {
+export function StatusBadge({ status }: { status: 'offen' | 'in_bearbeitung' | 'fertig' | 'bearbeitet' | 'erstellt' | 'abgeschlossen' }) {
   const variants: Record<string, 'success' | 'warning' | 'info' | 'default'> = {
     offen: 'warning',
     in_bearbeitung: 'info',
     fertig: 'success',
     bearbeitet: 'success',
     erstellt: 'info',
-    versendet: 'default',
+    abgeschlossen: 'success',
   };
 
   const labels: Record<string, string> = {
@@ -58,8 +58,8 @@ export function StatusBadge({ status }: { status: 'offen' | 'in_bearbeitung' | '
     in_bearbeitung: 'In Bearbeitung',
     fertig: 'Fertig',
     bearbeitet: 'Bearbeitet',
-    erstellt: 'Erstellt',
-    versendet: 'Versendet',
+    erstellt: 'Eingereicht',
+    abgeschlossen: 'Abgeschlossen',
   };
 
   return (
