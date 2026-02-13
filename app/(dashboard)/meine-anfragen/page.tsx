@@ -5,9 +5,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { FileBarChart, Clock, CheckCircle, Send, Plus, Download } from 'lucide-react';
+import { FileBarChart, Clock, CheckCircle, Plus, Download } from 'lucide-react';
 
-// Status config for display - in_bearbeitung maps to fertig for backwards compatibility
+// Status config for display
 const STATUS_CONFIG = {
   offen: {
     label: 'Eingereicht',
@@ -17,24 +17,24 @@ const STATUS_CONFIG = {
     showInLegend: true,
   },
   in_bearbeitung: {
-    label: 'Abgeschlossen',
-    variant: 'success' as const,
-    icon: CheckCircle,
-    description: 'Die Auswertung ist fertig.',
-    showInLegend: false, // Hide from legend, maps to fertig
+    label: 'In Bearbeitung',
+    variant: 'info' as const,
+    icon: Clock,
+    description: 'Ihre Anfrage wird bearbeitet.',
+    showInLegend: false,
   },
   fertig: {
     label: 'Abgeschlossen',
     variant: 'success' as const,
     icon: CheckCircle,
     description: 'Die Auswertung ist fertig.',
-    showInLegend: true,
+    showInLegend: false,
   },
-  versendet: {
-    label: 'Zugestellt',
-    variant: 'default' as const,
-    icon: Send,
-    description: 'Per E-Mail zugesendet.',
+  bearbeitet: {
+    label: 'Abgeschlossen',
+    variant: 'success' as const,
+    icon: CheckCircle,
+    description: 'Die Auswertung ist abgeschlossen.',
     showInLegend: true,
   },
 };
