@@ -830,20 +830,26 @@ export default function OnboardingPage() {
                     <div className="grid grid-cols-3 gap-3 sm:gap-4">
                       <div>
                         <label className="block text-xs text-slate-500 mb-1">Wohnen</label>
-                        <input type="number" min="0" value={currentObjekt.anzahl_wohneinheiten}
-                          onChange={(e) => updateObjektAnzahl('anzahl_wohneinheiten', Math.max(0, parseInt(e.target.value) || 0))}
+                        <input type="number" min="0" value={currentObjekt.anzahl_wohneinheiten || ''}
+                          onChange={(e) => updateObjektAnzahl('anzahl_wohneinheiten', e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value) || 0))}
+                          onFocus={(e) => { if (currentObjekt.anzahl_wohneinheiten === 0) e.target.value = ''; }}
+                          onBlur={(e) => { if (e.target.value === '') updateObjektAnzahl('anzahl_wohneinheiten', 0); }}
                           className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
                       </div>
                       <div>
                         <label className="block text-xs text-slate-500 mb-1">Gewerbe</label>
-                        <input type="number" min="0" value={currentObjekt.anzahl_gewerbeeinheiten}
-                          onChange={(e) => updateObjektAnzahl('anzahl_gewerbeeinheiten', Math.max(0, parseInt(e.target.value) || 0))}
+                        <input type="number" min="0" value={currentObjekt.anzahl_gewerbeeinheiten || ''}
+                          onChange={(e) => updateObjektAnzahl('anzahl_gewerbeeinheiten', e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value) || 0))}
+                          onFocus={(e) => { if (currentObjekt.anzahl_gewerbeeinheiten === 0) e.target.value = ''; }}
+                          onBlur={(e) => { if (e.target.value === '') updateObjektAnzahl('anzahl_gewerbeeinheiten', 0); }}
                           className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
                       </div>
                       <div>
                         <label className="block text-xs text-slate-500 mb-1">Stellpl.</label>
-                        <input type="number" min="0" value={currentObjekt.anzahl_stellplaetze}
-                          onChange={(e) => updateObjektAnzahl('anzahl_stellplaetze', Math.max(0, parseInt(e.target.value) || 0))}
+                        <input type="number" min="0" value={currentObjekt.anzahl_stellplaetze || ''}
+                          onChange={(e) => updateObjektAnzahl('anzahl_stellplaetze', e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value) || 0))}
+                          onFocus={(e) => { if (currentObjekt.anzahl_stellplaetze === 0) e.target.value = ''; }}
+                          onBlur={(e) => { if (e.target.value === '') updateObjektAnzahl('anzahl_stellplaetze', 0); }}
                           className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
                       </div>
                     </div>
