@@ -154,8 +154,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Stripe Checkout Error:', error);
+    const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
     return NextResponse.json(
-      { error: 'Fehler beim Erstellen der Checkout-Session' },
+      { error: 'Fehler beim Erstellen der Checkout-Session', details: message },
       { status: 500 }
     );
   }
