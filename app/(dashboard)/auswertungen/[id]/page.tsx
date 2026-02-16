@@ -869,10 +869,16 @@ export default async function AuswertungDetailPage({ params }: Props) {
             <h3 className="text-sm font-bold text-[#1E2A3A]">Ergänzende Erläuterungen</h3>
           </div>
           <div className="p-4 space-y-4 text-sm text-slate-700">
-            {erlaeuterungen.finanzierung && (
+            {erlaeuterungen.finanzierungsprofil && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Finanzierung</h4>
-                <p className="text-xs leading-relaxed">{erlaeuterungen.finanzierung}</p>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Finanzierungsprofil</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.finanzierungsprofil}</p>
+              </div>
+            )}
+            {erlaeuterungen.ertragsprofil && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Ertragsprofil</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.ertragsprofil}</p>
               </div>
             )}
             {erlaeuterungen.mietanalyse && (
@@ -893,28 +899,46 @@ export default async function AuswertungDetailPage({ params }: Props) {
                 <p className="text-xs leading-relaxed">{erlaeuterungen.cashflow}</p>
               </div>
             )}
-            {erlaeuterungen.rendite && (
+            {erlaeuterungen.roi && (
               <div>
                 <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Rendite</h4>
-                <p className="text-xs leading-relaxed">{erlaeuterungen.rendite}</p>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.roi}</p>
               </div>
             )}
-            {erlaeuterungen.weg && (
+            {erlaeuterungen.weg_potenzial && (
               <div>
                 <h4 className="text-xs font-bold text-[#2A3F54] mb-1">WEG-Potenzial</h4>
-                <p className="text-xs leading-relaxed">{erlaeuterungen.weg}</p>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.weg_potenzial}</p>
               </div>
             )}
-            {erlaeuterungen.afa && (
+            {erlaeuterungen.rnd_afa && (
               <div>
                 <h4 className="text-xs font-bold text-[#2A3F54] mb-1">AfA & Steuervorteile</h4>
-                <p className="text-xs leading-relaxed">{erlaeuterungen.afa}</p>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.rnd_afa}</p>
+              </div>
+            )}
+            {erlaeuterungen.capex_559 && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">CAPEX & §559</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.capex_559}</p>
               </div>
             )}
             {erlaeuterungen.wertentwicklung && (
               <div>
                 <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Wertentwicklung</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.wertentwicklung}</p>
+              </div>
+            )}
+            {erlaeuterungen.exit && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Exit-Szenarien</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.exit}</p>
+              </div>
+            )}
+            {erlaeuterungen.handlungsempfehlung && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Handlungsempfehlung</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.handlungsempfehlung}</p>
               </div>
             )}
           </div>
