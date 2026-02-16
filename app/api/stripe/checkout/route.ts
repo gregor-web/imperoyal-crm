@@ -128,6 +128,10 @@ export async function POST(request: NextRequest) {
       success_url: `${origin}/meine-anfragen?payment=success&anfrage=${anfrage_id}`,
       cancel_url: `${origin}/meine-anfragen?payment=cancelled&anfrage=${anfrage_id}`,
       locale: 'de',
+      customer_update: {
+        name: 'auto',
+        address: 'auto',
+      },
       tax_id_collection: { enabled: true },
       invoice_creation: {
         enabled: true,
