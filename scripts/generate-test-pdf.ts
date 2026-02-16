@@ -46,43 +46,47 @@ async function main() {
     console.warn('⚠️ Logo not found');
   }
 
-  // BKG topographic map (Sprengnetter-style)
+  // Mapbox Static Map (sauber, ohne Transit-Linien)
   let mapUrl: string | undefined;
-  console.log('🗺️ Fetching BKG topographic map...');
+  console.log('🗺️ Fetching Mapbox static map...');
   try {
-    const address = `${objekt.strasse}, ${objekt.plz} ${objekt.ort}`;
-    const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`;
-    const geoRes = await fetch(geocodeUrl, { headers: { 'User-Agent': 'Imperoyal-System/1.0' } });
-    const geoResults = await geoRes.json();
+    const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
+    if (!mapboxToken) {
+      console.warn('⚠️ MAPBOX_ACCESS_TOKEN not set in .env.local');
+    } else {
+      const address = `${objekt.strasse}, ${objekt.plz} ${objekt.ort}, Deutschland`;
+      const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`;
+      const geoRes = await fetch(geocodeUrl, { headers: { 'User-Agent': 'Imperoyal-System/1.0' } });
+      const geoResults = await geoRes.json();
 
-    if (geoResults && geoResults.length > 0) {
-      const lat = parseFloat(geoResults[0].lat);
-      const lon = parseFloat(geoResults[0].lon);
-      console.log(`📍 Geocoded: ${lat}, ${lon}`);
+      if (geoResults && geoResults.length > 0) {
+        const lat = parseFloat(geoResults[0].lat);
+        const lon = parseFloat(geoResults[0].lon);
+        console.log(`📍 Geocoded: ${lat}, ${lon}`);
 
-      const latOffset = 180 / 111320;
-      const lonOffset = 350 / (111320 * Math.cos(lat * Math.PI / 180));
-      const bbox = `${lat - latOffset},${lon - lonOffset},${lat + latOffset},${lon + lonOffset}`;
+        // Zoom 18 = sehr nah (Gebäude + Hausnummern)
+        const staticUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${lon},${lat},18,0,0/1280x900@2x?access_token=${mapboxToken}&attribution=false&logo=false`;
+        console.log('🌐 Fetching Mapbox...');
+        const mapRes = await fetch(staticUrl);
 
-      const wmsUrl = `https://sgx.geodatenzentrum.de/wms_basemapde?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&STYLES=&LAYERS=de_basemapde_web_raster_farbe&CRS=EPSG:4326&BBOX=${bbox}&WIDTH=1600&HEIGHT=600`;
-      console.log('🌐 Fetching BasemapDE WMS (BKG)...');
-      const mapRes = await fetch(wmsUrl, { headers: { 'User-Agent': 'Imperoyal-System/1.0' } });
-
-      if (mapRes.ok) {
-        const contentType = mapRes.headers.get('content-type') || '';
-        if (contentType.includes('image')) {
-          const buf = Buffer.from(await mapRes.arrayBuffer());
-          mapUrl = `data:image/png;base64,${buf.toString('base64')}`;
-          console.log('✅ BKG map loaded:', buf.length, 'bytes');
+        if (mapRes.ok) {
+          const contentType = mapRes.headers.get('content-type') || '';
+          if (contentType.includes('image')) {
+            const buf = Buffer.from(await mapRes.arrayBuffer());
+            const format = contentType.includes('jpeg') ? 'jpeg' : 'png';
+            mapUrl = `data:image/${format};base64,${buf.toString('base64')}`;
+            console.log('✅ Mapbox map loaded:', buf.length, 'bytes');
+          } else {
+            const text = await mapRes.text();
+            console.warn('⚠️ Mapbox returned non-image:', contentType, text.slice(0, 200));
+          }
         } else {
-          const text = await mapRes.text();
-          console.warn('⚠️ WMS returned non-image:', contentType, text.slice(0, 200));
+          const errText = await mapRes.text();
+          console.warn('⚠️ Mapbox failed:', mapRes.status, errText.slice(0, 200));
         }
       } else {
-        console.warn('⚠️ WMS failed:', mapRes.status);
+        console.warn('⚠️ Geocoding returned no results');
       }
-    } else {
-      console.warn('⚠️ Geocoding returned no results');
     }
   } catch (err) {
     console.warn('⚠️ Map error:', err);

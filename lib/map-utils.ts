@@ -1,7 +1,7 @@
 /**
- * Generates a static map image using BasemapDE WMS from the
- * Bundesamt für Kartographie und Geodäsie (BKG).
- * Produces a Sprengnetter-style topographic Lageplan.
+ * Generates a static map image using Mapbox Static Images API.
+ * Clean style with buildings, streets, house numbers – no transit clutter.
+ * Free tier: 50,000 requests/month.
  *
  * The crosshair marker (⊕) is rendered in React-PDF on top of this image.
  */
@@ -26,32 +26,24 @@ async function geocodeAddress(address: string): Promise<{ lat: number; lon: numb
 }
 
 /**
- * Calculate bounding box around a point for WMS requests.
- * Returns [south, west, north, east] in EPSG:4326.
- */
-function calculateBbox(
-  lat: number,
-  lon: number,
-  widthMeters = 350,
-  heightMeters = 180,
-): [number, number, number, number] {
-  const latOffset = heightMeters / 111320;
-  const lonOffset = widthMeters / (111320 * Math.cos((lat * Math.PI) / 180));
-  return [lat - latOffset, lon - lonOffset, lat + latOffset, lon + lonOffset];
-}
-
-/**
- * Fetch a static BKG topographic map image.
+ * Fetch a static map image via Mapbox Static Images API.
+ * Uses 'streets-v12' style – clean buildings, streets, house numbers.
  * Returns a base64 data URL or null on failure.
  */
 export async function fetchTopographicMap(
   strasse: string,
   plz: string,
   ort: string,
-  width = 1600,
-  height = 600,
+  width = 1280,
+  height = 900,
 ): Promise<string | null> {
-  const address = `${strasse}, ${plz} ${ort}`;
+  const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
+  if (!mapboxToken) {
+    console.warn('[MAP] MAPBOX_ACCESS_TOKEN not set');
+    return null;
+  }
+
+  const address = `${strasse}, ${plz} ${ort}, Deutschland`;
 
   // Step 1: Geocode
   const coords = await geocodeAddress(address);
@@ -61,44 +53,36 @@ export async function fetchTopographicMap(
   }
 
   const { lat, lon } = coords;
-  const [south, west, north, east] = calculateBbox(lat, lon);
+  console.log(`[MAP] 📍 Geocoded: ${lat}, ${lon}`);
 
-  // Step 2: BasemapDE WMS (BKG) – STYLES= is required but can be empty
-  const wmsUrl = [
-    'https://sgx.geodatenzentrum.de/wms_basemapde',
-    '?SERVICE=WMS',
-    '&VERSION=1.3.0',
-    '&REQUEST=GetMap',
-    '&FORMAT=image/png',
-    '&STYLES=',
-    '&LAYERS=de_basemapde_web_raster_farbe',
-    '&CRS=EPSG:4326',
-    `&BBOX=${south},${west},${north},${east}`,
-    `&WIDTH=${width}`,
-    `&HEIGHT=${height}`,
-  ].join('');
+  // Step 2: Mapbox Static Images API
+  // Zoom 18 = sehr nah (Gebäude + Hausnummern sichtbar)
+  // Style: streets-v12 (sauber, Gebäude, Straßen, keine prominenten Transitlinien)
+  // @2x für hohe Auflösung
+  const zoom = 18;
+  const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${lon},${lat},${zoom},0,0/${width}x${height}@2x?access_token=${mapboxToken}&attribution=false&logo=false`;
 
   try {
-    console.log('[MAP] Fetching BasemapDE (BKG) map...');
-    const res = await fetch(wmsUrl, {
-      headers: { 'User-Agent': 'Imperoyal-System/1.0' },
-    });
+    console.log('[MAP] 🌐 Fetching Mapbox static map...');
+    const res = await fetch(mapUrl);
 
     if (res.ok) {
       const contentType = res.headers.get('content-type') || '';
       if (contentType.includes('image')) {
         const buf = Buffer.from(await res.arrayBuffer());
-        console.log(`[MAP] ✅ BKG map loaded: ${buf.length} bytes`);
-        return `data:image/png;base64,${buf.toString('base64')}`;
+        const format = contentType.includes('jpeg') ? 'jpeg' : 'png';
+        console.log(`[MAP] ✅ Mapbox map loaded: ${buf.length} bytes`);
+        return `data:image/${format};base64,${buf.toString('base64')}`;
       } else {
         const text = await res.text();
-        console.warn('[MAP] BKG returned non-image:', contentType, text.slice(0, 300));
+        console.warn('[MAP] Mapbox returned non-image:', contentType, text.slice(0, 300));
       }
     } else {
-      console.warn(`[MAP] BKG WMS returned status ${res.status}`);
+      const errText = await res.text();
+      console.warn(`[MAP] Mapbox returned status ${res.status}:`, errText.slice(0, 300));
     }
   } catch (err) {
-    console.warn('[MAP] BKG WMS request failed:', err);
+    console.warn('[MAP] Mapbox request failed:', err);
   }
 
   return null;

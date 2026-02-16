@@ -8,6 +8,7 @@ import {
   Svg,
   Path,
   Circle,
+  Line,
   G,
 } from '@react-pdf/renderer';
 import type { Berechnungen } from '@/lib/types';
@@ -736,92 +737,78 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Objektkarte - Lageplan */}
+        {/* Objektkarte - Lageplan (Sprengnetter-Style) */}
         {mapUrl && (
           <View style={{
             marginBottom: 10 * sm.spacingMultiplier,
-            borderRadius: 8,
-            overflow: 'hidden',
-            borderWidth: 1,
-            borderColor: colors.border,
           }}>
-            <View style={{
-              backgroundColor: colors.glassInner,
-              paddingHorizontal: 8,
-              paddingVertical: 5,
-              borderBottomWidth: 1,
-              borderBottomColor: colors.border,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary }}>Lageplan</Text>
-              <Text style={{ fontSize: 7, color: colors.textLight }}>{objekt.strasse}, {objekt.plz} {objekt.ort}</Text>
-            </View>
-            {/* Map with crosshair marker overlay (Sprengnetter-style) */}
-            <View style={{ position: 'relative', width: '100%', height: 160 }}>
+            <View style={{ position: 'relative', width: '100%', height: 280 }}>
+              {/* Kartenbild */}
               <Image
                 src={mapUrl}
                 style={{
                   width: '100%',
-                  height: 160,
+                  height: 280,
                   objectFit: 'cover',
                 }}
               />
-              {/* Fadenkreuz (⊕) marker - centered on the map */}
+
+              {/* Fadenkreuz (⊕) – SVG zentriert */}
+              <Svg
+                viewBox="0 0 500 280"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 280 }}
+              >
+                <Circle cx="250" cy="140" r="5" fill="none" stroke="#cc0000" strokeWidth="0.7" />
+                <Line x1="240" y1="140" x2="260" y2="140" stroke="#cc0000" strokeWidth="0.7" />
+                <Line x1="250" y1="130" x2="250" y2="150" stroke="#cc0000" strokeWidth="0.7" />
+              </Svg>
+
+              {/* Nordpfeil – oben rechts */}
               <View style={{
                 position: 'absolute',
-                top: 80 - 12,
-                left: '50%',
-                marginLeft: -12,
-                width: 24,
-                height: 24,
+                top: 6,
+                right: 8,
+                alignItems: 'center',
+                width: 18,
               }}>
-                {/* Outer circle */}
-                <View style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 12,
-                  borderWidth: 2,
-                  borderColor: '#cc0000',
-                  backgroundColor: 'transparent',
-                }} />
-                {/* Horizontal crosshair line */}
-                <View style={{
-                  position: 'absolute',
-                  top: 11,
-                  left: -4,
-                  width: 32,
-                  height: 2,
-                  backgroundColor: '#cc0000',
-                }} />
-                {/* Vertical crosshair line */}
-                <View style={{
-                  position: 'absolute',
-                  top: -4,
-                  left: 11,
-                  width: 2,
-                  height: 32,
-                  backgroundColor: '#cc0000',
-                }} />
+                <Text style={{ fontSize: 10, color: '#333', marginBottom: -2 }}>↑</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#333' }}>N</Text>
               </View>
-            </View>
-            <View style={{
-              backgroundColor: colors.glassInner,
-              paddingHorizontal: 8,
-              paddingVertical: 3,
-              borderTopWidth: 1,
-              borderTopColor: colors.border,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic' }}>
-                © Bundesamt für Kartographie und Geodäsie {new Date().getFullYear()}
-              </Text>
-              <Text style={{ fontSize: 6, color: colors.textLight }}>
-                Maßstab: ca. 1:2.500
-              </Text>
+
+              {/* Maßstabsbalken – unten rechts */}
+              <View style={{
+                position: 'absolute',
+                bottom: 8,
+                right: 8,
+                backgroundColor: '#ffffff',
+                paddingHorizontal: 6,
+                paddingVertical: 3,
+                borderWidth: 0.5,
+                borderColor: '#bbb',
+              }}>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 0 }}>
+                  <Text style={{ fontSize: 5.5, color: '#333', marginRight: 3 }}>0</Text>
+                  <View style={{ flexDirection: 'row', marginBottom: 1 }}>
+                    <View style={{ width: 36, height: 4, backgroundColor: '#333' }} />
+                    <View style={{ width: 36, height: 4, backgroundColor: '#fff', borderWidth: 0.5, borderColor: '#333' }} />
+                  </View>
+                  <Text style={{ fontSize: 5.5, color: '#333', marginLeft: 3 }}>50 m</Text>
+                </View>
+              </View>
+
+              {/* Copyright – unten links */}
+              <View style={{
+                position: 'absolute',
+                bottom: 3,
+                left: 3,
+                backgroundColor: '#ffffffcc',
+                paddingHorizontal: 4,
+                paddingVertical: 1.5,
+              }}>
+                <Text style={{ fontSize: 5, color: '#555' }}>
+                  © Bundesamt für Kartographie und Geodäsie {new Date().getFullYear()}
+                </Text>
+              </View>
             </View>
           </View>
         )}

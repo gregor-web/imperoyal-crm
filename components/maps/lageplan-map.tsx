@@ -57,9 +57,9 @@ export function LageplanMap({ address, height = 300 }: LageplanMapProps) {
           attributionControl: true,
         });
 
-        // BasemapDE WMS (Bundesamt für Kartographie und Geodäsie)
-        L.tileLayer.wms('https://sgx.geodatenzentrum.de/wms_basemapde', {
-          layers: 'de_basemapde_web_raster_farbe',
+        // TopPlusOpen WMS (BKG) – farbige topografische Karte wie Sprengnetter
+        L.tileLayer.wms('https://sgx.geodatenzentrum.de/wms_topplus_open', {
+          layers: 'web',
           format: 'image/png',
           transparent: false,
           styles: '',
@@ -67,42 +67,42 @@ export function LageplanMap({ address, height = 300 }: LageplanMapProps) {
           maxZoom: 19,
         } as any).addTo(map);
 
-        // Crosshair marker (⊕) - Sprengnetter-style
+        // Crosshair marker (⊕) – fein, wie bei Sprengnetter
         const crosshairIcon = L.divIcon({
           className: 'crosshair-marker',
           html: `
             <div style="
               position: relative;
-              width: 32px;
-              height: 32px;
+              width: 24px;
+              height: 24px;
             ">
               <!-- Outer circle -->
               <div style="
                 position: absolute;
                 top: 4px; left: 4px;
-                width: 24px; height: 24px;
-                border: 2.5px solid #cc0000;
+                width: 16px; height: 16px;
+                border: 1.5px solid #cc0000;
                 border-radius: 50%;
                 background: transparent;
               "></div>
               <!-- Horizontal line -->
               <div style="
                 position: absolute;
-                top: 15px; left: -2px;
-                width: 36px; height: 2.5px;
+                top: 11.5px; left: 0;
+                width: 24px; height: 1.5px;
                 background: #cc0000;
               "></div>
               <!-- Vertical line -->
               <div style="
                 position: absolute;
-                top: -2px; left: 15px;
-                width: 2.5px; height: 36px;
+                top: 0; left: 11.5px;
+                width: 1.5px; height: 24px;
                 background: #cc0000;
               "></div>
             </div>
           `,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16],
+          iconSize: [24, 24],
+          iconAnchor: [12, 12],
         });
 
         // Add crosshair marker
