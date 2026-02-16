@@ -141,13 +141,42 @@ interface Objekt {
   ort: string;
   gebaeudetyp: string;
   baujahr: string;
+  kernsanierung_jahr: string;
+  geschosse: string;
+  denkmalschutz: string;
+  aufzug: string;
+  heizungsart: string;
+  wohnflaeche: string;
+  gewerbeflaeche: string;
+  grundstueck: string;
   kaufpreis: string;
   kaufdatum: string;
+  darlehensstand: string;
   eigenkapital_prozent: string;
   zinssatz: string;
   tilgung: string;
+  grundstueck_wert: string;
+  gebaeude_wert: string;
+  leerstandsquote: string;
+  betriebskosten_nicht_umlage: string;
   instandhaltung: string;
   verwaltung: string;
+  ruecklagen: string;
+  capex_vergangen: string;
+  capex_geplant: string;
+  capex_geplant_betrag: string;
+  weg_aufgeteilt: string;
+  weg_geplant: string;
+  milieuschutz: string;
+  umwandlungsverbot: string;
+  mietpreisbindung: string;
+  sozialbindung: string;
+  modernisierungsstopp: string;
+  gewerbe_sonderklauseln: string;
+  haltedauer: string;
+  primaeres_ziel: string;
+  risikoprofil: string;
+  investitionsbereitschaft: string;
   einheiten: Einheit[];
 }
 
@@ -423,17 +452,44 @@ export async function POST(request: Request) {
           ort: objektData.ort || null,
           gebaeudetyp: objektData.gebaeudetyp || null,
           baujahr: objektData.baujahr ? parseInt(objektData.baujahr) : null,
+          kernsanierung_jahr: objektData.kernsanierung_jahr ? parseInt(objektData.kernsanierung_jahr) : null,
+          geschosse: objektData.geschosse ? parseInt(objektData.geschosse) : null,
+          denkmalschutz: objektData.denkmalschutz === 'true',
+          aufzug: objektData.aufzug === 'true',
+          heizungsart: objektData.heizungsart || null,
+          grundstueck: objektData.grundstueck ? parseFloat(objektData.grundstueck) : null,
           kaufpreis: parseFloat(objektData.kaufpreis),
           kaufdatum: objektData.kaufdatum || null,
+          darlehensstand: objektData.darlehensstand ? parseFloat(objektData.darlehensstand) : null,
           eigenkapital_prozent: objektData.eigenkapital_prozent ? parseFloat(objektData.eigenkapital_prozent) : 30,
           zinssatz: objektData.zinssatz ? parseFloat(objektData.zinssatz) : 3.8,
           tilgung: objektData.tilgung ? parseFloat(objektData.tilgung) : 2,
+          grundstueck_wert: objektData.grundstueck_wert ? parseFloat(objektData.grundstueck_wert) : null,
+          gebaeude_wert: objektData.gebaeude_wert ? parseFloat(objektData.gebaeude_wert) : null,
+          leerstandsquote: objektData.leerstandsquote ? parseFloat(objektData.leerstandsquote) : null,
+          betriebskosten_nicht_umlage: objektData.betriebskosten_nicht_umlage ? parseFloat(objektData.betriebskosten_nicht_umlage) : null,
           instandhaltung: objektData.instandhaltung ? parseFloat(objektData.instandhaltung) : null,
           verwaltung: objektData.verwaltung ? parseFloat(objektData.verwaltung) : null,
+          ruecklagen: objektData.ruecklagen ? parseFloat(objektData.ruecklagen) : null,
+          capex_vergangen: objektData.capex_vergangen || null,
+          capex_geplant: objektData.capex_geplant || null,
+          capex_geplant_betrag: objektData.capex_geplant_betrag ? parseFloat(objektData.capex_geplant_betrag) : null,
+          weg_aufgeteilt: objektData.weg_aufgeteilt === 'true',
+          weg_geplant: objektData.weg_geplant === 'true',
+          milieuschutz: objektData.milieuschutz === 'true',
+          umwandlungsverbot: objektData.umwandlungsverbot === 'true',
+          mietpreisbindung: objektData.mietpreisbindung === 'true',
+          sozialbindung: objektData.sozialbindung === 'true',
+          modernisierungsstopp: objektData.modernisierungsstopp === 'true',
+          gewerbe_sonderklauseln: objektData.gewerbe_sonderklauseln === 'true',
+          haltedauer: objektData.haltedauer || null,
+          primaeres_ziel: objektData.primaeres_ziel || null,
+          risikoprofil: objektData.risikoprofil || null,
+          investitionsbereitschaft: objektData.investitionsbereitschaft || null,
           wohneinheiten,
           gewerbeeinheiten,
-          wohnflaeche: wohnflaeche || null,
-          gewerbeflaeche: gewerbeflaeche || null,
+          wohnflaeche: objektData.wohnflaeche ? parseFloat(objektData.wohnflaeche) : (wohnflaeche || null),
+          gewerbeflaeche: objektData.gewerbeflaeche ? parseFloat(objektData.gewerbeflaeche) : (gewerbeflaeche || null),
         })
         .select()
         .single();

@@ -33,13 +33,42 @@ type Objekt = {
   ort: string;
   gebaeudetyp: string;
   baujahr: string;
+  kernsanierung_jahr: string;
   kaufpreis: string;
   kaufdatum: string;
   eigenkapital_prozent: string;
   zinssatz: string;
   tilgung: string;
+  darlehensstand: string;
+  grundstueck_wert: string;
+  gebaeude_wert: string;
+  wohnflaeche: string;
+  gewerbeflaeche: string;
+  grundstueck: string;
+  geschosse: string;
+  denkmalschutz: string;
+  aufzug: string;
+  heizungsart: string;
+  leerstandsquote: string;
+  betriebskosten_nicht_umlage: string;
   instandhaltung: string;
   verwaltung: string;
+  ruecklagen: string;
+  capex_vergangen: string;
+  capex_geplant: string;
+  capex_geplant_betrag: string;
+  weg_aufgeteilt: string;
+  weg_geplant: string;
+  milieuschutz: string;
+  umwandlungsverbot: string;
+  mietpreisbindung: string;
+  sozialbindung: string;
+  modernisierungsstopp: string;
+  gewerbe_sonderklauseln: string;
+  haltedauer: string;
+  primaeres_ziel: string;
+  risikoprofil: string;
+  investitionsbereitschaft: string;
   // Anzahl-Felder für automatische Einheiten-Generierung
   anzahl_wohneinheiten: number;
   anzahl_gewerbeeinheiten: number;
@@ -100,6 +129,11 @@ const COLORS = {
 // =====================================================
 
 const GEBAEUDETYPEN = ['MFH', 'Wohn- & Geschäftshaus', 'Büro', 'Retail', 'Logistik', 'Spezialimmobilie'];
+const HEIZUNGSARTEN = ['Gas', 'Öl', 'Wärmepumpe', 'Fernwärme', 'Elektro', 'Sonstige'];
+const HALTEDAUER = ['0-3 Jahre', '3-7 Jahre', '7+ Jahre'];
+const PRIMAERE_ZIELE = ['Cashflow', 'Rendite', 'AfA/RND', 'Exit', 'Repositionierung', 'Portfolio-Umschichtung'];
+const RISIKOPROFILE = ['Konservativ', 'Core', 'Core+', 'Value-Add', 'Opportunistisch'];
+const BOOLEAN_OPTIONS = [{ value: 'true', label: 'Ja' }, { value: 'false', label: 'Nein' }];
 const ASSETKLASSEN = ['MFH', 'Wohn- & Geschäftshaus', 'Büro', 'Retail', 'Logistik', 'Light Industrial', 'Betreiberimmobilien', 'Grundstücke', 'Development'];
 const LAGEPRAEFERENZEN = ['A-Lage', 'B-Lage', 'C-Lage', 'Metropolregion', 'Universitätsstadt', 'Wachstumsregion'];
 const FINANZIERUNGSFORMEN = ['Voll-EK', 'EK-dominant', 'Standard-Finanzierung', 'Offen'];
@@ -122,8 +156,16 @@ const createEmptyEinheit = (nutzung: 'Wohnen' | 'Gewerbe' | 'Stellplatz' = 'Wohn
 });
 
 const createEmptyObjekt = (): Objekt => ({
-  strasse: '', plz: '', ort: '', gebaeudetyp: 'MFH', baujahr: '', kaufpreis: '', kaufdatum: '',
-  eigenkapital_prozent: '30', zinssatz: '3.8', tilgung: '2', instandhaltung: '', verwaltung: '',
+  strasse: '', plz: '', ort: '', gebaeudetyp: 'MFH', baujahr: '', kernsanierung_jahr: '',
+  kaufpreis: '', kaufdatum: '', eigenkapital_prozent: '30', zinssatz: '3.8', tilgung: '2',
+  darlehensstand: '', grundstueck_wert: '', gebaeude_wert: '',
+  wohnflaeche: '', gewerbeflaeche: '', grundstueck: '', geschosse: '',
+  denkmalschutz: 'false', aufzug: 'false', heizungsart: '',
+  leerstandsquote: '', betriebskosten_nicht_umlage: '', instandhaltung: '', verwaltung: '', ruecklagen: '',
+  capex_vergangen: '', capex_geplant: '', capex_geplant_betrag: '',
+  weg_aufgeteilt: 'false', weg_geplant: 'false', milieuschutz: 'false', umwandlungsverbot: 'false',
+  mietpreisbindung: 'false', sozialbindung: 'false', modernisierungsstopp: 'false', gewerbe_sonderklauseln: 'false',
+  haltedauer: '', primaeres_ziel: '', risikoprofil: '', investitionsbereitschaft: '',
   anzahl_wohneinheiten: 1, anzahl_gewerbeeinheiten: 0, anzahl_stellplaetze: 0,
   einheiten: [createEmptyEinheit('Wohnen')],
 });
@@ -196,7 +238,7 @@ function SubStepIndicator({ current, total, labels }: { current: number; total: 
 export default function OnboardingPage() {
   const [mainStep, setMainStep] = useState(1); // 1=Kontakt, 2=Ankaufsprofil, 3=Objekte, 4=Übersicht
   const [ankaufSubStep, setAnkaufSubStep] = useState(1); // 1-5
-  const [objektSubStep, setObjektSubStep] = useState(1); // 1=Adresse, 2=Finanzierung, 3=Einheiten
+  const [objektSubStep, setObjektSubStep] = useState(1); // 1=Adresse, 2=Gebäude, 3=Flächen&Finanz, 4=Bewirtschaftung, 5=Rechtl.&Strategie, 6=Einheiten
   const [currentObjektIndex, setCurrentObjektIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -259,9 +301,9 @@ export default function OnboardingPage() {
     }
 
     if (mainStep === 3) {
-      return pos + (currentObjektIndex * 3) + objektSubStep - 1;
+      return pos + (currentObjektIndex * 6) + objektSubStep - 1;
     }
-    pos += formData.objekte.length * 3;
+    pos += formData.objekte.length * 6;
 
     return pos; // Übersicht
   };
@@ -303,7 +345,7 @@ export default function OnboardingPage() {
         setCurrentObjektIndex(0);
       }
     } else if (mainStep === 3) {
-      if (objektSubStep < 3) {
+      if (objektSubStep < 6) {
         setObjektSubStep(objektSubStep + 1);
       } else if (currentObjektIndex < formData.objekte.length - 1) {
         setCurrentObjektIndex(currentObjektIndex + 1);
@@ -318,13 +360,13 @@ export default function OnboardingPage() {
     if (mainStep === 4) {
       setMainStep(3);
       setCurrentObjektIndex(formData.objekte.length - 1);
-      setObjektSubStep(3);
+      setObjektSubStep(6);
     } else if (mainStep === 3) {
       if (objektSubStep > 1) {
         setObjektSubStep(objektSubStep - 1);
       } else if (currentObjektIndex > 0) {
         setCurrentObjektIndex(currentObjektIndex - 1);
-        setObjektSubStep(3);
+        setObjektSubStep(6);
       } else {
         setMainStep(formData.createAnkaufsprofil ? 2 : 1);
         setAnkaufSubStep(5);
@@ -783,7 +825,7 @@ export default function OnboardingPage() {
                 )}
               </div>
               <div className="flex-shrink-0">
-                <SubStepIndicator current={objektSubStep} total={3} labels={['Adresse', 'Finanzierung', 'Einheiten']} />
+                <SubStepIndicator current={objektSubStep} total={6} labels={['Adresse', 'Gebäude', 'Finanzen', 'Kosten', 'Recht', 'Einheiten']} />
               </div>
 
               {objektSubStep === 1 && (
@@ -830,26 +872,20 @@ export default function OnboardingPage() {
                     <div className="grid grid-cols-3 gap-3 sm:gap-4">
                       <div>
                         <label className="block text-xs text-slate-500 mb-1">Wohnen</label>
-                        <input type="number" min="0" value={currentObjekt.anzahl_wohneinheiten || ''}
-                          onChange={(e) => updateObjektAnzahl('anzahl_wohneinheiten', e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value) || 0))}
-                          onFocus={(e) => { if (currentObjekt.anzahl_wohneinheiten === 0) e.target.value = ''; }}
-                          onBlur={(e) => { if (e.target.value === '') updateObjektAnzahl('anzahl_wohneinheiten', 0); }}
+                        <input type="number" min="0" value={currentObjekt.anzahl_wohneinheiten}
+                          onChange={(e) => updateObjektAnzahl('anzahl_wohneinheiten', Math.max(0, parseInt(e.target.value) || 0))}
                           className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
                       </div>
                       <div>
                         <label className="block text-xs text-slate-500 mb-1">Gewerbe</label>
-                        <input type="number" min="0" value={currentObjekt.anzahl_gewerbeeinheiten || ''}
-                          onChange={(e) => updateObjektAnzahl('anzahl_gewerbeeinheiten', e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value) || 0))}
-                          onFocus={(e) => { if (currentObjekt.anzahl_gewerbeeinheiten === 0) e.target.value = ''; }}
-                          onBlur={(e) => { if (e.target.value === '') updateObjektAnzahl('anzahl_gewerbeeinheiten', 0); }}
+                        <input type="number" min="0" value={currentObjekt.anzahl_gewerbeeinheiten}
+                          onChange={(e) => updateObjektAnzahl('anzahl_gewerbeeinheiten', Math.max(0, parseInt(e.target.value) || 0))}
                           className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
                       </div>
                       <div>
                         <label className="block text-xs text-slate-500 mb-1">Stellpl.</label>
-                        <input type="number" min="0" value={currentObjekt.anzahl_stellplaetze || ''}
-                          onChange={(e) => updateObjektAnzahl('anzahl_stellplaetze', e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value) || 0))}
-                          onFocus={(e) => { if (currentObjekt.anzahl_stellplaetze === 0) e.target.value = ''; }}
-                          onBlur={(e) => { if (e.target.value === '') updateObjektAnzahl('anzahl_stellplaetze', 0); }}
+                        <input type="number" min="0" value={currentObjekt.anzahl_stellplaetze}
+                          onChange={(e) => updateObjektAnzahl('anzahl_stellplaetze', Math.max(0, parseInt(e.target.value) || 0))}
                           className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
                       </div>
                     </div>
@@ -860,6 +896,58 @@ export default function OnboardingPage() {
               {objektSubStep === 2 && (
                 <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
                   <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kernsanierung (Jahr)</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.kernsanierung_jahr} onChange={(e) => updateObjekt('kernsanierung_jahr', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="2015" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Geschosse</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.geschosse} onChange={(e) => updateObjekt('geschosse', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="5" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Denkmalschutz</label>
+                    <select value={currentObjekt.denkmalschutz} onChange={(e) => updateObjekt('denkmalschutz', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Aufzug</label>
+                    <select value={currentObjekt.aufzug} onChange={(e) => updateObjekt('aufzug', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div className="col-span-1 xs:col-span-2">
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Heizungsart</label>
+                    <select value={currentObjekt.heizungsart} onChange={(e) => updateObjekt('heizungsart', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      <option value="">Auswählen...</option>
+                      {HEIZUNGSARTEN.map((h) => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Wohnfläche (m²)</label>
+                    <input type="text" inputMode="decimal" value={currentObjekt.wohnflaeche} onChange={(e) => updateObjekt('wohnflaeche', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="850" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gewerbefläche (m²)</label>
+                    <input type="text" inputMode="decimal" value={currentObjekt.gewerbeflaeche} onChange={(e) => updateObjekt('gewerbeflaeche', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="200" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Grundstück (m²)</label>
+                    <input type="text" inputMode="decimal" value={currentObjekt.grundstueck} onChange={(e) => updateObjekt('grundstueck', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="500" />
+                  </div>
+                </div>
+              )}
+
+              {objektSubStep === 3 && (
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
+                  <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kaufpreis *</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.kaufpreis} onChange={(e) => updateObjekt('kaufpreis', e.target.value)}
                       className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="2500000" />
@@ -868,6 +956,11 @@ export default function OnboardingPage() {
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kaufdatum</label>
                     <input type="date" value={currentObjekt.kaufdatum} onChange={(e) => updateObjekt('kaufdatum', e.target.value)}
                       className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Darlehensstand (€)</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.darlehensstand} onChange={(e) => updateObjekt('darlehensstand', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="1500000" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">EK %</label>
@@ -888,15 +981,164 @@ export default function OnboardingPage() {
                       className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="2" />
                   </div>
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Verwaltung/J</label>
-                    <input type="text" inputMode="numeric" value={currentObjekt.verwaltung}
-                      onChange={(e) => updateObjekt('verwaltung', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="4800" />
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Grundstückswert (€)</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.grundstueck_wert} onChange={(e) => updateObjekt('grundstueck_wert', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="Für AfA" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gebäudewert (€)</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.gebaeude_wert} onChange={(e) => updateObjekt('gebaeude_wert', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="Für AfA" />
                   </div>
                 </div>
               )}
 
-              {objektSubStep === 3 && (
+              {objektSubStep === 4 && (
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Leerstandsquote (%)</label>
+                    <input type="text" inputMode="decimal" value={currentObjekt.leerstandsquote} onChange={(e) => updateObjekt('leerstandsquote', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="5" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">BK nicht umlagef. (€/J)</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.betriebskosten_nicht_umlage} onChange={(e) => updateObjekt('betriebskosten_nicht_umlage', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="5000" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Instandhaltung (€/J)</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.instandhaltung} onChange={(e) => updateObjekt('instandhaltung', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="15000" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Verwaltung (€/J)</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.verwaltung} onChange={(e) => updateObjekt('verwaltung', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="4800" />
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Rücklagen (€/J)</label>
+                    <input type="text" inputMode="numeric" value={currentObjekt.ruecklagen} onChange={(e) => updateObjekt('ruecklagen', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="10000" />
+                  </div>
+                  <div className="col-span-1 xs:col-span-2 mt-2 p-3 rounded-xl" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                    <span className="block text-xs sm:text-sm font-medium text-slate-700 mb-2">CAPEX / Investitionen</span>
+                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vergangene Investitionen</label>
+                        <input type="text" value={currentObjekt.capex_vergangen} onChange={(e) => updateObjekt('capex_vergangen', e.target.value)}
+                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Dachsanierung 2020" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Geplante Investitionen</label>
+                        <input type="text" value={currentObjekt.capex_geplant} onChange={(e) => updateObjekt('capex_geplant', e.target.value)}
+                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Fassadendämmung" />
+                      </div>
+                      <div className="xs:col-span-2">
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">CAPEX-Budget (€)</label>
+                        <input type="text" inputMode="numeric" value={currentObjekt.capex_geplant_betrag} onChange={(e) => updateObjekt('capex_geplant_betrag', e.target.value)}
+                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="150000" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {objektSubStep === 5 && (
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">WEG aufgeteilt</label>
+                    <select value={currentObjekt.weg_aufgeteilt} onChange={(e) => updateObjekt('weg_aufgeteilt', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">WEG geplant</label>
+                    <select value={currentObjekt.weg_geplant} onChange={(e) => updateObjekt('weg_geplant', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Milieuschutz</label>
+                    <select value={currentObjekt.milieuschutz} onChange={(e) => updateObjekt('milieuschutz', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Umwandlungsverbot</label>
+                    <select value={currentObjekt.umwandlungsverbot} onChange={(e) => updateObjekt('umwandlungsverbot', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Mietpreisbindung</label>
+                    <select value={currentObjekt.mietpreisbindung} onChange={(e) => updateObjekt('mietpreisbindung', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Sozialbindung</label>
+                    <select value={currentObjekt.sozialbindung} onChange={(e) => updateObjekt('sozialbindung', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Modernisierungsstopp</label>
+                    <select value={currentObjekt.modernisierungsstopp} onChange={(e) => updateObjekt('modernisierungsstopp', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gewerbe-Sonderklauseln</label>
+                    <select value={currentObjekt.gewerbe_sonderklauseln} onChange={(e) => updateObjekt('gewerbe_sonderklauseln', e.target.value)}
+                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div className="col-span-1 xs:col-span-2 mt-2 p-3 rounded-xl" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                    <span className="block text-xs sm:text-sm font-medium text-slate-700 mb-2">Strategie</span>
+                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Haltedauer</label>
+                        <select value={currentObjekt.haltedauer} onChange={(e) => updateObjekt('haltedauer', e.target.value)}
+                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm">
+                          <option value="">Auswählen...</option>
+                          {HALTEDAUER.map((h) => <option key={h} value={h}>{h}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Primäres Ziel</label>
+                        <select value={currentObjekt.primaeres_ziel} onChange={(e) => updateObjekt('primaeres_ziel', e.target.value)}
+                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm">
+                          <option value="">Auswählen...</option>
+                          {PRIMAERE_ZIELE.map((z) => <option key={z} value={z}>{z}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Risikoprofil</label>
+                        <select value={currentObjekt.risikoprofil} onChange={(e) => updateObjekt('risikoprofil', e.target.value)}
+                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm">
+                          <option value="">Auswählen...</option>
+                          {RISIKOPROFILE.map((r) => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Investitionsbereitschaft</label>
+                        <input type="text" value={currentObjekt.investitionsbereitschaft} onChange={(e) => updateObjekt('investitionsbereitschaft', e.target.value)}
+                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Bis 200.000€" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {objektSubStep === 6 && (
                 <div className="flex-1 flex flex-col min-h-0">
                   <div className="flex justify-between items-center mb-2 sm:mb-3 flex-shrink-0">
                     <span className="text-xs sm:text-sm font-medium" style={{ color: COLORS.growthBlue.dark }}>
