@@ -380,7 +380,7 @@ export async function POST(request: Request) {
           .eq('id', authData.user.id);
 
         // Send welcome email via Make.com webhook
-        const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/login`;
+        const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-system.vercel.app'}/login`;
         const htmlContent = generateWelcomeEmailHtml(ansprechpartner || data.name, data.email, password, loginUrl);
 
         const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {

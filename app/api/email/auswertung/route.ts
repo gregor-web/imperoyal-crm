@@ -197,7 +197,7 @@ export async function POST(request: Request) {
     // Generate HTML email content
     const recipientName = mandant.ansprechpartner || mandant.name;
     const anrede = mandant.anrede === 'Frau' ? 'Sehr geehrte Frau' : mandant.anrede === 'Herr' ? 'Sehr geehrter Herr' : 'Sehr geehrte(r)';
-    const viewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/auswertungen/${auswertung_id}`;
+    const viewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-system.vercel.app'}/auswertungen/${auswertung_id}`;
 
     const htmlContent = generateAuswertungEmailHtml({
       anrede,

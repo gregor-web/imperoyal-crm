@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
     if (MAKE_WEBHOOK_URL) {
       try {
         const recipientName = validatedData.ansprechpartner || validatedData.name;
-        const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app'}/login`;
+        const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-system.vercel.app'}/login`;
         const htmlContent = generateWelcomeEmailHtml(recipientName, validatedData.email, password, loginUrl);
 
       const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {

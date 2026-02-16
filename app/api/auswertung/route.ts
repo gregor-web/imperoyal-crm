@@ -496,7 +496,7 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
 
           // Send emails to matching buyers via Make.com webhook
           let emailsSent = 0;
-          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-app.vercel.app';
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-system.vercel.app';
 
           for (const match of matches) {
             if (match.score >= 40 && match.mandant?.email) { // Minimum score threshold
