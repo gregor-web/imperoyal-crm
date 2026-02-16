@@ -398,38 +398,20 @@ export async function POST(request: Request) {
       if (authError) {
         console.error('Auth user creation error:', authError);
       } else {
-        // Update profile with mandant_id (retry because trigger may not have created it yet)
-        let profileUpdated = false;
-        for (let attempt = 0; attempt < 5; attempt++) {
-          const { error: profileError, count } = await supabase
-            .from('profiles')
-            .update({
-              mandant_id: mandant.id,
-              name: ansprechpartner || data.name,
-              role: 'mandant',
-            })
-            .eq('id', authData.user.id);
+        // Create or update profile with mandant_id
+        // The handle_new_user trigger should create the profile, but we upsert to be safe
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: authData.user.id,
+            mandant_id: mandant.id,
+            name: ansprechpartner || data.name,
+            email: data.email,
+            role: 'mandant',
+          }, { onConflict: 'id' });
 
-          if (!profileError && (count === null || count > 0)) {
-            profileUpdated = true;
-            break;
-          }
-          // Wait 500ms for trigger to create the profile row
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
-
-        if (!profileUpdated) {
-          // Fallback: try upsert
-          await supabase
-            .from('profiles')
-            .upsert({
-              id: authData.user.id,
-              mandant_id: mandant.id,
-              name: ansprechpartner || data.name,
-              role: 'mandant',
-              email: data.email,
-            });
-          console.warn('Profile update required upsert fallback');
+        if (profileError) {
+          console.error('Profile upsert error:', profileError);
         }
 
         // Send welcome email via Make.com webhook
@@ -628,6 +610,7 @@ export async function POST(request: Request) {
       objekte_count: createdObjektIds.length,
       ankaufsprofil_id: ankaufsprofilId,
       emailSent,
+      webhookConfigured: !!MAKE_WEBHOOK_URL,
       message: successMessage,
     });
   } catch (error) {
