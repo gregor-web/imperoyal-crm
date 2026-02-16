@@ -6,9 +6,10 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Stripe webhook must bypass auth (uses its own signature verification)
+  // Stripe webhook and public marktdaten must bypass auth
   const isStripeWebhook = pathname === '/api/stripe/webhook';
-  if (isStripeWebhook) {
+  const isPublicMarktdaten = pathname === '/api/marktdaten/public';
+  if (isStripeWebhook || isPublicMarktdaten) {
     return NextResponse.next();
   }
 

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { generateWelcomeEmailHtml } from '@/lib/email-templates';
 
 export async function POST(request: Request) {
   try {
@@ -41,20 +42,20 @@ export async function POST(request: Request) {
       });
     }
 
-    // Send to Make.com webhook
+    // Generate HTML and send to Make.com webhook
+    const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-system.vercel.app'}/login`;
+    const htmlContent = generateWelcomeEmailHtml(
+      name,
+      email,
+      password || '[Passwort wurde manuell mitgeteilt]',
+      loginUrl
+    );
+
     const webhookPayload = {
-      actionId: 1, // Welcome email
-      type: 'welcome',
-      to_email: email,
-      to_name: name,
-      subject: 'Willkommen bei Imperoyal Immobilien',
-      data: {
-        mandant_id,
-        name,
-        email,
-        password: password || '[Passwort wurde manuell mitgeteilt]',
-        login_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login`,
-      },
+      actionId: 1,
+      to: email,
+      subject: 'Willkommen bei Imperoyal Immobilien - Ihre Zugangsdaten',
+      html: htmlContent,
     };
 
     const response = await fetch(webhookUrl, {

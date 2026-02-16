@@ -222,7 +222,6 @@ export async function POST(request: Request) {
     // Send to Make.com webhook - PDF URL instead of base64
     const webhookPayload = {
       actionId: 2,
-      type: 'auswertung',
       to: mandant.email,
       subject: `Ihre Immobilienauswertung: ${objekt.strasse}`,
       html: htmlContent,

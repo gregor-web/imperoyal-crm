@@ -106,8 +106,13 @@ type FormData = {
   anrede: string;
   vorname: string;
   nachname: string;
+  strasse: string;
+  plz: string;
+  ort: string;
+  land: string;
   email: string;
   telefon: string;
+  position: string;
   anzahl_objekte: number;
   createAnkaufsprofil: boolean;
   ankaufsprofil: Ankaufsprofil;
@@ -139,11 +144,23 @@ const LAGEPRAEFERENZEN = ['A-Lage', 'B-Lage', 'C-Lage', 'Metropolregion', 'Unive
 const FINANZIERUNGSFORMEN = ['Voll-EK', 'EK-dominant', 'Standard-Finanzierung', 'Offen'];
 const ZUSTAENDE = ['Sanierungsbedürftig', 'Teilsaniert', 'Vollsaniert', 'Denkmal', 'Revitalisierung möglich'];
 
+// Marktmiete-Fallback (wird sofort angezeigt, bis API-Daten da sind)
+const getMarktmieteFallback = (plz: string, nutzung: 'Wohnen' | 'Gewerbe' | 'Stellplatz'): string => {
+  if (nutzung === 'Stellplatz') return '0';
+  const prefix = plz.substring(0, 2);
+  const isWien = prefix === '10' && plz.length === 4;
+  const isMuenchen = prefix === '80' || prefix === '81';
+  const aStaedte = ['10', '12', '13', '14', '20', '22', '60', '80', '81', '70', '50', '40'];
+  const isAStadt = aStaedte.includes(prefix);
+  if (nutzung === 'Gewerbe') return isWien ? '16' : isMuenchen ? '25' : isAStadt ? '18' : '12';
+  return isWien ? '13' : isMuenchen ? '18' : isAStadt ? '14' : '10';
+};
+
 const createEmptyEinheit = (nutzung: 'Wohnen' | 'Gewerbe' | 'Stellplatz' = 'Wohnen'): Einheit => ({
   nutzung,
   flaeche: '',
   kaltmiete: '',
-  vergleichsmiete: nutzung === 'Stellplatz' ? '0' : '12',
+  vergleichsmiete: nutzung === 'Stellplatz' ? '0' : '',
   mietvertragsart: 'Standard',
   vertragsbeginn: '',
   letzte_mieterhoehung: '',
@@ -170,19 +187,28 @@ const createEmptyObjekt = (): Objekt => ({
   einheiten: [createEmptyEinheit('Wohnen')],
 });
 
-// Generiert Einheiten basierend auf Anzahl pro Nutzungsart
-const generateEinheiten = (wohn: number, gewerbe: number, stellplaetze: number): Einheit[] => {
+// Generiert Einheiten basierend auf Anzahl pro Nutzungsart, mit automatischer Marktmiete
+const generateEinheiten = (wohn: number, gewerbe: number, stellplaetze: number, plz: string = ''): Einheit[] => {
   const einheiten: Einheit[] = [];
   for (let i = 0; i < wohn; i++) {
-    einheiten.push(createEmptyEinheit('Wohnen'));
+    const e = createEmptyEinheit('Wohnen');
+    if (plz) e.vergleichsmiete = getMarktmieteFallback(plz, 'Wohnen');
+    einheiten.push(e);
   }
   for (let i = 0; i < gewerbe; i++) {
-    einheiten.push(createEmptyEinheit('Gewerbe'));
+    const e = createEmptyEinheit('Gewerbe');
+    if (plz) e.vergleichsmiete = getMarktmieteFallback(plz, 'Gewerbe');
+    einheiten.push(e);
   }
   for (let i = 0; i < stellplaetze; i++) {
     einheiten.push(createEmptyEinheit('Stellplatz'));
   }
-  return einheiten.length > 0 ? einheiten : [createEmptyEinheit('Wohnen')];
+  if (einheiten.length === 0) {
+    const e = createEmptyEinheit('Wohnen');
+    if (plz) e.vergleichsmiete = getMarktmieteFallback(plz, 'Wohnen');
+    einheiten.push(e);
+  }
+  return einheiten;
 };
 
 const createEmptyAnkaufsprofil = (): Ankaufsprofil => ({
@@ -243,6 +269,8 @@ export default function OnboardingPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [marktdatenLoading, setMarktdatenLoading] = useState<Record<number, boolean>>({});
+  const [marktdatenQuelle, setMarktdatenQuelle] = useState<Record<number, string>>({});
 
   // Auto-Save: Load from localStorage on mount
   const [formData, setFormData] = useState<FormData>(() => {
@@ -255,7 +283,7 @@ export default function OnboardingPage() {
       }
     }
     return {
-      name: '', anrede: '', vorname: '', nachname: '', email: '', telefon: '',
+      name: '', anrede: '', vorname: '', nachname: '', strasse: '', plz: '', ort: '', land: 'Deutschland', email: '', telefon: '', position: '',
       anzahl_objekte: 1,
       createAnkaufsprofil: false, ankaufsprofil: createEmptyAnkaufsprofil(), objekte: [createEmptyObjekt()],
     };
@@ -384,7 +412,7 @@ export default function OnboardingPage() {
   const isLastStep = mainStep === 4;
 
   // Update functions
-  const updateMandant = (field: keyof Pick<FormData, 'name' | 'anrede' | 'vorname' | 'nachname' | 'email' | 'telefon'>, value: string) => {
+  const updateMandant = (field: keyof Pick<FormData, 'name' | 'anrede' | 'vorname' | 'nachname' | 'strasse' | 'plz' | 'ort' | 'land' | 'email' | 'telefon' | 'position'>, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -414,11 +442,85 @@ export default function OnboardingPage() {
     setFormData((prev) => ({ ...prev, ankaufsprofil: { ...prev.ankaufsprofil, [field]: value } }));
   };
 
+  // Holt echte Marktdaten via Perplexity API
+  const fetchMarktdatenForObjekt = async (objektIdx: number, strasse: string, plz: string, ort: string, gebaeudetyp: string, wohnflaeche: string, baujahr: string) => {
+    if (!plz || !ort) return;
+    setMarktdatenLoading((prev) => ({ ...prev, [objektIdx]: true }));
+    try {
+      const res = await fetch('/api/marktdaten/public', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strasse, plz, ort, gebaeudetyp, wohnflaeche: wohnflaeche ? Number(wohnflaeche) : null, baujahr: baujahr ? Number(baujahr) : null }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFormData((prev) => ({
+          ...prev,
+          objekte: prev.objekte.map((o, i) => {
+            if (i !== objektIdx) return o;
+            return {
+              ...o,
+              einheiten: o.einheiten.map((e) => ({
+                ...e,
+                vergleichsmiete: e.nutzung === 'Stellplatz' ? '0' : e.nutzung === 'Gewerbe'
+                  ? String(data.vergleichsmiete_gewerbe)
+                  : String(data.vergleichsmiete_wohnen),
+              })),
+            };
+          }),
+        }));
+        setMarktdatenQuelle((prev) => ({ ...prev, [objektIdx]: data.quelle_wohnen || 'Marktrecherche' }));
+      }
+    } catch {
+      // Fallback: statische Schätzung verwenden
+      setFormData((prev) => ({
+        ...prev,
+        objekte: prev.objekte.map((o, i) => {
+          if (i !== objektIdx) return o;
+          return {
+            ...o,
+            einheiten: o.einheiten.map((e) => ({
+              ...e,
+              vergleichsmiete: getMarktmieteFallback(plz, e.nutzung),
+            })),
+          };
+        }),
+      }));
+      setMarktdatenQuelle((prev) => ({ ...prev, [objektIdx]: 'Schätzung (Fallback)' }));
+    } finally {
+      setMarktdatenLoading((prev) => ({ ...prev, [objektIdx]: false }));
+    }
+  };
+
   const updateObjekt = (field: keyof Omit<Objekt, 'einheiten' | 'anzahl_wohneinheiten' | 'anzahl_gewerbeeinheiten' | 'anzahl_stellplaetze'>, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      objekte: prev.objekte.map((o, i) => (i === currentObjektIndex ? { ...o, [field]: value } : o)),
+      objekte: prev.objekte.map((o, i) => {
+        if (i !== currentObjektIndex) return o;
+        const updated = { ...o, [field]: value };
+        // Bei PLZ-Änderung: sofort Fallback setzen, dann API-Daten holen
+        if (field === 'plz' && value.length >= 4) {
+          updated.einheiten = updated.einheiten.map((e) => ({
+            ...e,
+            vergleichsmiete: getMarktmieteFallback(value, e.nutzung),
+          }));
+        }
+        return updated;
+      }),
     }));
+    // Wenn PLZ lang genug ist und Ort vorhanden: echte Marktdaten holen
+    if (field === 'plz' && value.length >= 4) {
+      const obj = formData.objekte[currentObjektIndex];
+      if (obj?.ort) {
+        fetchMarktdatenForObjekt(currentObjektIndex, obj.strasse, value, obj.ort, obj.gebaeudetyp, obj.wohnflaeche, obj.baujahr);
+      }
+    }
+    if (field === 'ort' && value.length >= 2) {
+      const obj = formData.objekte[currentObjektIndex];
+      if (obj?.plz?.length >= 4) {
+        fetchMarktdatenForObjekt(currentObjektIndex, obj.strasse, obj.plz, value, obj.gebaeudetyp, obj.wohnflaeche, obj.baujahr);
+      }
+    }
   };
 
   // Aktualisiert Anzahl-Felder und regeneriert Einheiten automatisch
@@ -431,7 +533,8 @@ export default function OnboardingPage() {
         const newEinheiten = generateEinheiten(
           newAnzahl.anzahl_wohneinheiten,
           newAnzahl.anzahl_gewerbeeinheiten,
-          newAnzahl.anzahl_stellplaetze
+          newAnzahl.anzahl_stellplaetze,
+          o.plz
         );
         return { ...newAnzahl, einheiten: newEinheiten };
       }),
@@ -607,6 +710,40 @@ export default function OnboardingPage() {
                   <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Telefon</label>
                   <input type="tel" value={formData.telefon} onChange={(e) => updateMandant('telefon', e.target.value)}
                     className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" />
+                </div>
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Position</label>
+                  <input type="text" value={formData.position} onChange={(e) => updateMandant('position', e.target.value)}
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="z.B. Geschäftsführer" />
+                </div>
+
+                {/* Firmenadresse */}
+                <div className="col-span-1 xs:col-span-2 mt-2">
+                  <h3 className="text-xs sm:text-sm font-semibold text-slate-700 mb-2">Firmenadresse *</h3>
+                </div>
+                <div className="col-span-1 xs:col-span-2">
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Straße & Hausnr. *</label>
+                  <input type="text" value={formData.strasse} onChange={(e) => updateMandant('strasse', e.target.value)}
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="Musterstraße 1" required />
+                </div>
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">PLZ *</label>
+                  <input type="text" value={formData.plz} onChange={(e) => updateMandant('plz', e.target.value)}
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="10115" required />
+                </div>
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Ort *</label>
+                  <input type="text" value={formData.ort} onChange={(e) => updateMandant('ort', e.target.value)}
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="Berlin" required />
+                </div>
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Land</label>
+                  <select value={formData.land} onChange={(e) => updateMandant('land', e.target.value)}
+                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                    <option value="Deutschland">Deutschland</option>
+                    <option value="Österreich">Österreich</option>
+                    <option value="Schweiz">Schweiz</option>
+                  </select>
                 </div>
               </div>
 
@@ -969,7 +1106,7 @@ export default function OnboardingPage() {
                       className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="30" />
                   </div>
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Zins %</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Zins % (p.a.)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.zinssatz}
                       onChange={(e) => updateObjekt('zinssatz', e.target.value)}
                       className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="3.8" />
@@ -1011,7 +1148,7 @@ export default function OnboardingPage() {
                       className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="15000" />
                   </div>
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Verwaltung (€/J)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Verwaltungskosten (€/J)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.verwaltung} onChange={(e) => updateObjekt('verwaltung', e.target.value)}
                       className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="4800" />
                   </div>
@@ -1186,10 +1323,20 @@ export default function OnboardingPage() {
                                 className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="850" />
                             </div>
                             <div>
-                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Markt €/m²</label>
+                              <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">
+                                Markt €/m²
+                                {marktdatenLoading[currentObjektIndex] && (
+                                  <span className="ml-1 inline-block animate-pulse text-blue-500">⟳</span>
+                                )}
+                              </label>
                               <input type="text" inputMode="decimal" value={einheit.vergleichsmiete}
                                 onChange={(e) => updateEinheit(idx, 'vergleichsmiete', e.target.value)}
-                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="14" />
+                                className={`glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm ${marktdatenLoading[currentObjektIndex] ? 'animate-pulse' : ''}`} placeholder="14" />
+                              {idx === 0 && marktdatenQuelle[currentObjektIndex] && !marktdatenLoading[currentObjektIndex] && (
+                                <span className="block text-[8px] sm:text-[10px] text-blue-500 mt-0.5 truncate" title={marktdatenQuelle[currentObjektIndex]}>
+                                  📊 {marktdatenQuelle[currentObjektIndex]}
+                                </span>
+                              )}
                             </div>
                             <div>
                               <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vertragsart *</label>
@@ -1311,6 +1458,7 @@ export default function OnboardingPage() {
                   <div className="grid grid-cols-2 gap-1 sm:gap-2 text-[10px] sm:text-sm">
                     <div className="truncate"><span className="text-slate-500">Firma:</span> {formData.name}</div>
                     <div className="truncate"><span className="text-slate-500">Name:</span> {formData.vorname} {formData.nachname}</div>
+                    <div className="truncate col-span-2"><span className="text-slate-500">Adresse:</span> {formData.strasse}, {formData.plz} {formData.ort}{formData.land && formData.land !== 'Deutschland' ? `, ${formData.land}` : ''}</div>
                     <div className="truncate col-span-2"><span className="text-slate-500">E-Mail:</span> {formData.email}</div>
                   </div>
                 </div>

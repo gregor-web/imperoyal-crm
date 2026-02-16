@@ -251,9 +251,13 @@ POST-Handler:
 
 ### Make.com Webhook (app/api/email/)
 
-POST an `MAKE_WEBHOOK_URL` mit `{ actionId, type, to_email, to_name, subject, html_content, ... }`.
-- actionId 1 = Welcome-Mail
-- actionId 2 = Auswertungs-Mail mit PDF
+POST an `MAKE_WEBHOOK_URL` mit `{ actionId, to, subject, html }`.
+- `actionId` = Routing in Make.com (1=Welcome, 2=Auswertung, 3=Onboarding-Notification)
+- `to` = Empfänger E-Mail
+- `subject` = Betreff
+- `html` = Fertiger HTML-Code für die E-Mail
+- Optional: `attachment_url`, `attachment_filename` (bei Auswertungs-Mail mit PDF)
+- HTML-Templates in `lib/email-templates.ts`
 
 ## UI-Design
 
