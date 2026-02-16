@@ -38,13 +38,17 @@ export default async function ObjektDetailPage({ params }: Props) {
   const { data: profile } = await supabase.from('profiles').select('role, mandant_id').eq('id', user!.id).single();
   const isAdmin = profile?.role === 'admin';
 
-  // Check if there's an open anfrage for this object
-  const { data: offeneAnfrage } = await supabase
+  // Check for any active anfrage for this object (all non-terminal statuses)
+  const { data: aktiveAnfrage } = await supabase
     .from('anfragen')
-    .select('id, status')
+    .select('id, status, payment_status')
     .eq('objekt_id', id)
-    .eq('status', 'offen')
+    .in('status', ['offen', 'bezahlt', 'in_bearbeitung', 'fertig'])
+    .order('created_at', { ascending: false })
+    .limit(1)
     .single();
+
+  const istBezahlt = aktiveAnfrage?.payment_status === 'paid';
 
   // Check if an Auswertung already exists for this object
   const { data: bestehendeAuswertung } = await supabase
@@ -75,20 +79,41 @@ export default async function ObjektDetailPage({ params }: Props) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2 items-center ml-11 sm:ml-0">
-          {isAdmin ? (
-            <AuswertenButton objektId={id} />
-          ) : bestehendeAuswertung ? (
+          {bestehendeAuswertung ? (
             <Link href={`/auswertungen/${bestehendeAuswertung.id}`}>
               <Button variant="primary">
                 <CheckCircle className="w-4 h-4 mr-2" />
                 Auswertung ansehen
               </Button>
             </Link>
-          ) : offeneAnfrage ? (
-            <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
-              <Clock className="w-4 h-4" />
-              <span className="text-sm font-medium">Anfrage ausstehend</span>
-            </div>
+          ) : isAdmin ? (
+            // Admin: nur auswerten wenn bezahlt
+            istBezahlt ? (
+              <AuswertenButton objektId={id} />
+            ) : aktiveAnfrage ? (
+              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm font-medium">Noch nicht bezahlt</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-slate-500 bg-slate-50 px-3 py-2 rounded-lg">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm font-medium">Keine Anfrage</span>
+              </div>
+            )
+          ) : aktiveAnfrage ? (
+            // Mandant: Anfrage existiert
+            aktiveAnfrage.payment_status === 'pending' ? (
+              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm font-medium">Zahlung ausstehend</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm font-medium">Wird bearbeitet</span>
+              </div>
+            )
           ) : (
             <AnfrageButton
               objektId={id}

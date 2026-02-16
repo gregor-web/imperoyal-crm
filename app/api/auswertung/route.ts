@@ -188,6 +188,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Ungültige Objekt-ID' }, { status: 400 });
     }
 
+    // PAYMENT CHECK: Verify there is a paid anfrage for this object
+    const adminSupabase = createAdminClient();
+    const { data: bezahlteAnfrage } = await adminSupabase
+      .from('anfragen')
+      .select('id, payment_status')
+      .eq('objekt_id', objekt_id)
+      .eq('payment_status', 'paid')
+      .limit(1)
+      .single();
+
+    if (!bezahlteAnfrage) {
+      return NextResponse.json(
+        { error: 'Keine bezahlte Anfrage vorhanden. Bitte zuerst die Auswertung bezahlen.' },
+        { status: 402 }
+      );
+    }
+
     // Load objekt with einheiten
     const { data: objekt, error: objektError } = await supabase
       .from('objekte')
