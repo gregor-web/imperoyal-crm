@@ -34,7 +34,8 @@ export default async function ObjektDetailPage({ params }: Props) {
   }
 
   // Check if user is admin and get mandant_id
-  const { data: profile } = await supabase.from('profiles').select('role, mandant_id').single();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = await supabase.from('profiles').select('role, mandant_id').eq('id', user!.id).single();
   const isAdmin = profile?.role === 'admin';
 
   // Check if there's an open anfrage for this object

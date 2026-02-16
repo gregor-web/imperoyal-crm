@@ -21,9 +21,14 @@ import {
 export default async function DashboardPage() {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { data: profile } = await supabase
     .from('profiles')
     .select('role, name, mandant_id')
+    .eq('id', user!.id)
     .single();
 
   const isAdmin = profile?.role === 'admin';
@@ -38,32 +43,42 @@ export default async function DashboardPage() {
     .select('*', { count: 'exact', head: true });
 
   let mandantenCount = 0;
+  let anfragenOffenCount = 0;
   if (isAdmin) {
     const { count } = await supabase
       .from('mandanten')
       .select('*', { count: 'exact', head: true });
     mandantenCount = count || 0;
+
+    const { count: offenCount } = await supabase
+      .from('anfragen')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'offen');
+    anfragenOffenCount = offenCount || 0;
   }
 
-  // Calculate total mietpotenzial
-  const { data: auswertungen } = await supabase
-    .from('auswertungen')
-    .select('berechnungen');
-
+  // Calculate total mietpotenzial (for mandant view)
   let mietpotenzialTotal = 0;
-  if (auswertungen) {
-    auswertungen.forEach((a) => {
-      const berechnungen = a.berechnungen as { mietanalyse?: { potenzial_jahr?: number } } | null;
-      if (berechnungen?.mietanalyse?.potenzial_jahr) {
-        mietpotenzialTotal += berechnungen.mietanalyse.potenzial_jahr;
-      }
-    });
+  if (!isAdmin) {
+    const { data: auswertungen } = await supabase
+      .from('auswertungen')
+      .select('berechnungen');
+
+    if (auswertungen) {
+      auswertungen.forEach((a) => {
+        const berechnungen = a.berechnungen as { mietanalyse?: { potenzial_jahr?: number } } | null;
+        if (berechnungen?.mietanalyse?.potenzial_jahr) {
+          mietpotenzialTotal += berechnungen.mietanalyse.potenzial_jahr;
+        }
+      });
+    }
   }
 
   const initialStats = {
     objekteCount: objekteCount || 0,
     auswertungenCount: auswertungenCount || 0,
     mandantenCount,
+    anfragenOffenCount,
     mietpotenzialTotal,
   };
 

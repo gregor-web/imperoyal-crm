@@ -41,7 +41,8 @@ export default async function ObjektePage({ searchParams }: PageProps) {
   const supabase = await createClient();
 
   // Check user role
-  const { data: profile } = await supabase.from('profiles').select('role, mandant_id').single();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = await supabase.from('profiles').select('role, mandant_id').eq('id', user!.id).single();
   const isAdmin = profile?.role === 'admin';
 
   const searchQuery = params.q?.trim() || '';
