@@ -42,3 +42,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+scripts/test-stripe.js
+scripts/test-checkout.js
+imperoyal_auswertung_test.pdf
+*.bak

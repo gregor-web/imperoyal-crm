@@ -371,21 +371,13 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
         console.warn('[AUSWERTUNG] Logo nicht gefunden');
       }
 
-      // Generate Google Maps Static API image
+      // Generate topographic map image (BKG/basemap.at style like Sprengnetter)
       let mapUrl: string | undefined;
-      const googleMapsKey = process.env.GOOGLE_MAPS_API_KEY;
-      if (googleMapsKey) {
-        try {
-          const address = encodeURIComponent(`${objekt.strasse}, ${objekt.plz} ${objekt.ort}, Deutschland`);
-          const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${address}&zoom=17&size=800x300&scale=2&maptype=roadmap&markers=color:red%7Csize:mid%7C${address}&style=feature:poi%7Cvisibility:simplified&key=${googleMapsKey}`;
-          const mapResponse = await fetch(staticMapUrl);
-          if (mapResponse.ok) {
-            const mapBuffer = Buffer.from(await mapResponse.arrayBuffer());
-            mapUrl = `data:image/png;base64,${mapBuffer.toString('base64')}`;
-          }
-        } catch (mapError) {
-          console.warn('[AUSWERTUNG] Map image could not be loaded:', mapError);
-        }
+      try {
+        const { fetchTopographicMap } = await import('@/lib/map-utils');
+        mapUrl = await fetchTopographicMap(objekt.strasse, objekt.plz, objekt.ort) || undefined;
+      } catch (mapError) {
+        console.warn('[AUSWERTUNG] Map image could not be loaded:', mapError);
       }
 
       // Generate PDF

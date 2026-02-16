@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Card } from '@/components/ui/card';
@@ -10,8 +11,24 @@ import {
   ArrowLeft, TrendingUp, TrendingDown, Banknote, Home, AlertTriangle,
   CheckCircle, CheckCircle2, Download, Clock, Building2, Shield,
   PieChart, BarChart3, ArrowUpRight, ArrowDownRight, Minus, Info,
+  MapPin,
 } from 'lucide-react';
 import { SendEmailButton } from '@/components/send-email-button';
+
+const LageplanMap = dynamic(
+  () => import('@/components/maps/lageplan-map').then(mod => mod.LageplanMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[300px] bg-slate-100 rounded-lg flex items-center justify-center">
+        <div className="flex items-center gap-2 text-slate-500">
+          <div className="w-4 h-4 border-2 border-slate-300 border-t-[#1E2A3A] rounded-full animate-spin" />
+          <span className="text-sm">Karte wird geladen…</span>
+        </div>
+      </div>
+    ),
+  }
+);
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -203,6 +220,20 @@ export default async function AuswertungDetailPage({ params }: Props) {
             </a>
           )}
           {isAdmin && <SendEmailButton auswertungId={id} status={auswertung.status} />}
+        </div>
+      </div>
+
+      {/* ===== LAGEPLAN ===== */}
+      <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/80 border-b border-slate-200">
+          <MapPin className="w-5 h-5 text-[#2A3F54]" />
+          <div>
+            <h3 className="text-sm font-bold text-[#1E2A3A]">Lageplan</h3>
+            <p className="text-xs text-slate-500">{objekt?.strasse as string}, {objekt?.plz as string} {objekt?.ort as string}</p>
+          </div>
+        </div>
+        <div className="p-3">
+          <LageplanMap address={`${objekt?.strasse as string}, ${objekt?.plz as string} ${objekt?.ort as string}`} height={300} />
         </div>
       </div>
 

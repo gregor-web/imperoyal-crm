@@ -758,23 +758,69 @@ export function AuswertungPDF({
               <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary }}>Lageplan</Text>
               <Text style={{ fontSize: 7, color: colors.textLight }}>{objekt.strasse}, {objekt.plz} {objekt.ort}</Text>
             </View>
-            <Image
-              src={mapUrl}
-              style={{
-                width: '100%',
-                height: 160,
-                objectFit: 'cover',
-              }}
-            />
+            {/* Map with crosshair marker overlay (Sprengnetter-style) */}
+            <View style={{ position: 'relative', width: '100%', height: 160 }}>
+              <Image
+                src={mapUrl}
+                style={{
+                  width: '100%',
+                  height: 160,
+                  objectFit: 'cover',
+                }}
+              />
+              {/* Fadenkreuz (⊕) marker - centered on the map */}
+              <View style={{
+                position: 'absolute',
+                top: 80 - 12,
+                left: '50%',
+                marginLeft: -12,
+                width: 24,
+                height: 24,
+              }}>
+                {/* Outer circle */}
+                <View style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  borderWidth: 2,
+                  borderColor: '#cc0000',
+                  backgroundColor: 'transparent',
+                }} />
+                {/* Horizontal crosshair line */}
+                <View style={{
+                  position: 'absolute',
+                  top: 11,
+                  left: -4,
+                  width: 32,
+                  height: 2,
+                  backgroundColor: '#cc0000',
+                }} />
+                {/* Vertical crosshair line */}
+                <View style={{
+                  position: 'absolute',
+                  top: -4,
+                  left: 11,
+                  width: 2,
+                  height: 32,
+                  backgroundColor: '#cc0000',
+                }} />
+              </View>
+            </View>
             <View style={{
               backgroundColor: colors.glassInner,
               paddingHorizontal: 8,
               paddingVertical: 3,
               borderTopWidth: 1,
               borderTopColor: colors.border,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}>
               <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic' }}>
-                © Google Maps · Kartendaten © {new Date().getFullYear()} Google
+                © Bundesamt für Kartographie und Geodäsie {new Date().getFullYear()}
+              </Text>
+              <Text style={{ fontSize: 6, color: colors.textLight }}>
+                Maßstab: ca. 1:2.500
               </Text>
             </View>
           </View>
