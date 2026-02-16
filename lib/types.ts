@@ -10,7 +10,7 @@ export type UserRole = 'admin' | 'mandant';
 export type Nutzungsart = 'Wohnen' | 'Gewerbe' | 'Stellplatz';
 export type Mietvertragsart = 'Standard' | 'Index' | 'Staffel';
 export type AuswertungStatus = 'erstellt' | 'abgeschlossen';
-export type AnfrageStatus = 'offen' | 'bearbeitet';
+export type AnfrageStatus = 'offen' | 'bezahlt' | 'in_bearbeitung' | 'fertig' | 'versendet';
 export type Empfehlung = 'HALTEN' | 'OPTIMIEREN' | 'RESTRUKTURIEREN' | 'VERKAUFEN';
 
 export const OPTIONS = {

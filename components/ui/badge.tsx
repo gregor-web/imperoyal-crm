@@ -43,21 +43,23 @@ export function EmpfehlungBadge({ empfehlung }: { empfehlung: string }) {
 }
 
 // Status Badges
-export function StatusBadge({ status }: { status: 'offen' | 'in_bearbeitung' | 'fertig' | 'bearbeitet' | 'erstellt' | 'abgeschlossen' }) {
+export function StatusBadge({ status }: { status: 'offen' | 'bezahlt' | 'in_bearbeitung' | 'fertig' | 'versendet' | 'erstellt' | 'abgeschlossen' }) {
   const variants: Record<string, 'success' | 'warning' | 'info' | 'default'> = {
     offen: 'warning',
+    bezahlt: 'info',
     in_bearbeitung: 'info',
     fertig: 'success',
-    bearbeitet: 'success',
+    versendet: 'success',
     erstellt: 'info',
     abgeschlossen: 'success',
   };
 
   const labels: Record<string, string> = {
-    offen: 'Angefragt',
+    offen: 'Zahlung ausstehend',
+    bezahlt: 'Bezahlt',
     in_bearbeitung: 'In Bearbeitung',
     fertig: 'Fertig',
-    bearbeitet: 'Bearbeitet',
+    versendet: 'Versendet',
     erstellt: 'Eingereicht',
     abgeschlossen: 'Abgeschlossen',
   };

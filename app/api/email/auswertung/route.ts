@@ -252,10 +252,10 @@ export async function POST(request: Request) {
       .update({ status: 'abgeschlossen' })
       .eq('id', auswertung_id);
 
-    // Update anfrage status to 'bearbeitet'
+    // Update anfrage status to 'versendet' (email sent to mandant)
     await adminSupabase
       .from('anfragen')
-      .update({ status: 'bearbeitet' })
+      .update({ status: 'versendet' })
       .eq('objekt_id', objekt.id);
 
     return NextResponse.json({

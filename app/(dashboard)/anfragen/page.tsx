@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { Eye, CheckCircle, Clock, Heart, Phone, Mail } from 'lucide-react';
+import { Eye, CheckCircle, Clock, Heart, Phone, Mail, CreditCard } from 'lucide-react';
 import { StartAnalyseButton } from '@/components/anfragen/start-analyse-button';
 
 export default async function AnfragenPage() {
@@ -61,9 +61,10 @@ export default async function AnfragenPage() {
     console.error('Error fetching interessen:', interessenError);
   }
 
-  const offeneAnfragen = anfragen?.filter((a) => a.status === 'offen') || [];
+  const offeneAnfragen = anfragen?.filter((a) => a.status === 'offen' && a.payment_status !== 'paid') || [];
+  const bezahlteAnfragen = anfragen?.filter((a) => a.status === 'bezahlt' || (a.status === 'offen' && a.payment_status === 'paid')) || [];
   // Versendet = komplett erledigt, wird nicht mehr angezeigt
-  const fertigeAnfragen = anfragen?.filter((a) => a.status === 'fertig' || a.status === 'in_bearbeitung') || [];
+  const fertigeAnfragen = anfragen?.filter((a) => a.status === 'fertig' || a.status === 'in_bearbeitung' || a.status === 'versendet') || [];
   const neueInteressen = interessen?.filter((i) => i.status === 'neu') || [];
   const bearbeiteteInteressen = interessen?.filter((i) => i.status !== 'neu') || [];
 
@@ -78,15 +79,26 @@ export default async function AnfragenPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <Card>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
               <Clock className="w-6 h-6 text-amber-600" />
             </div>
             <div>
-              <p className="text-sm text-slate-500">Offene Anfragen</p>
+              <p className="text-sm text-slate-500">Unbezahlt</p>
               <p className="text-2xl font-bold text-slate-800">{offeneAnfragen.length}</p>
+            </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <CreditCard className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Bezahlt & bereit</p>
+              <p className="text-2xl font-bold text-slate-800">{bezahlteAnfragen.length}</p>
             </div>
           </div>
         </Card>
@@ -103,8 +115,8 @@ export default async function AnfragenPage() {
         </Card>
         <Card>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-blue-600" />
             </div>
             <div>
               <p className="text-sm text-slate-500">Fertig</p>
@@ -114,21 +126,22 @@ export default async function AnfragenPage() {
         </Card>
       </div>
 
-      {/* Offene Anfragen */}
-      <Card title="Offene Anfragen">
+      {/* Bezahlte Anfragen – bereit zur Auswertung */}
+      <Card title="Bezahlte Anfragen – bereit zur Auswertung" className="border-l-4 border-l-green-500">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Objekt</TableHead>
               <TableHead>Mandant</TableHead>
               <TableHead>Kaufpreis</TableHead>
-              <TableHead>Angefragt am</TableHead>
+              <TableHead>Bezahlt</TableHead>
+              <TableHead>Betrag</TableHead>
               <TableHead className="text-right">Aktionen</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {offeneAnfragen.length > 0 ? (
-              offeneAnfragen.map((anfrage) => {
+            {bezahlteAnfragen.length > 0 ? (
+              bezahlteAnfragen.map((anfrage) => {
                 const objekt = anfrage.objekte as { id: string; strasse: string; plz: string; ort: string; kaufpreis: number } | null;
                 const mandant = anfrage.mandanten as { name: string } | null;
 
@@ -142,7 +155,15 @@ export default async function AnfragenPage() {
                     </TableCell>
                     <TableCell>{mandant?.name || '-'}</TableCell>
                     <TableCell>{formatCurrency(objekt?.kaufpreis)}</TableCell>
-                    <TableCell>{formatDate(anfrage.created_at)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1.5">
+                        <CreditCard className="w-3.5 h-3.5 text-green-600" />
+                        <span className="text-sm text-green-700">{formatDate(anfrage.paid_at)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {anfrage.amount_cents ? formatCurrency(anfrage.amount_cents / 100) : '-'}
+                    </TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
                         <Link href={`/objekte/${objekt?.id}`}>
@@ -162,11 +183,61 @@ export default async function AnfragenPage() {
                 );
               })
             ) : (
-              <TableEmpty colSpan={5} message="Keine offenen Anfragen vorhanden." />
+              <TableEmpty colSpan={6} message="Keine bezahlten Anfragen vorhanden." />
             )}
           </TableBody>
         </Table>
       </Card>
+
+      {/* Offene/Unbezahlte Anfragen */}
+      {offeneAnfragen.length > 0 && (
+      <Card title="Unbezahlte Anfragen">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Objekt</TableHead>
+              <TableHead>Mandant</TableHead>
+              <TableHead>Kaufpreis</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Angefragt am</TableHead>
+              <TableHead className="text-right">Aktionen</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+              {offeneAnfragen.map((anfrage) => {
+                const objekt = anfrage.objekte as { id: string; strasse: string; plz: string; ort: string; kaufpreis: number } | null;
+                const mandant = anfrage.mandanten as { name: string } | null;
+
+                return (
+                  <TableRow key={anfrage.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium">{objekt?.strasse}</p>
+                        <p className="text-sm text-slate-500">{objekt?.plz} {objekt?.ort}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>{mandant?.name || '-'}</TableCell>
+                    <TableCell>{formatCurrency(objekt?.kaufpreis)}</TableCell>
+                    <TableCell>
+                      <Badge variant="warning">Zahlung ausstehend</Badge>
+                    </TableCell>
+                    <TableCell>{formatDate(anfrage.created_at)}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        <Link href={`/objekte/${objekt?.id}`}>
+                          <Button variant="secondary" className="p-2" title="Objekt ansehen">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </Table>
+      </Card>
+      )}
 
       {/* Neue Kaufinteressen */}
       {neueInteressen.length > 0 && (
@@ -274,7 +345,7 @@ export default async function AnfragenPage() {
                     <TableCell>{mandant?.name || '-'}</TableCell>
                     <TableCell>
                       <Badge variant="success">
-                        {anfrage.status === 'bearbeitet' ? 'Abgeschlossen' : 'Fertig'}
+                        {anfrage.status === 'versendet' ? 'Versendet' : 'Fertig'}
                       </Badge>
                     </TableCell>
                     <TableCell>{formatDate(anfrage.created_at)}</TableCell>

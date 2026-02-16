@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-const VALID_STATUSES = ['offen', 'in_bearbeitung', 'fertig', 'versendet'];
+const VALID_STATUSES = ['offen', 'bezahlt', 'in_bearbeitung', 'fertig', 'versendet'];
 
 export async function POST(request: NextRequest) {
   try {

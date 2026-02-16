@@ -6,6 +6,12 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Stripe webhook must bypass auth (uses its own signature verification)
+  const isStripeWebhook = pathname === '/api/stripe/webhook';
+  if (isStripeWebhook) {
+    return NextResponse.next();
+  }
+
   // Define route categories
   const isProtectedRoute =
     pathname.startsWith('/dashboard') ||
@@ -24,7 +30,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/api/marktdaten') ||
     pathname.startsWith('/api/pdf') ||
     pathname.startsWith('/api/email') ||
-    pathname.startsWith('/api/seed');
+    pathname.startsWith('/api/seed') ||
+    pathname.startsWith('/api/stripe/checkout');
 
   const isAuthRoute =
     pathname.startsWith('/login') ||

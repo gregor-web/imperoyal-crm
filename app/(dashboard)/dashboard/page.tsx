@@ -16,6 +16,7 @@ import {
   Heart,
   Download,
   Eye,
+  CreditCard,
 } from 'lucide-react';
 
 export default async function DashboardPage() {
@@ -336,24 +337,26 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
     .limit(5);
 
   const offeneAnfragen = anfragen?.filter((a) => a.status === 'offen') || [];
-  const fertigeAnfragen = anfragen?.filter((a) => a.status === 'fertig' || a.status === 'bearbeitet') || [];
+  const fertigeAnfragen = anfragen?.filter((a) => a.status === 'fertig' || a.status === 'versendet') || [];
 
   const statusIcon = (status: string) => {
     switch (status) {
       case 'offen': return <Clock className="w-4 h-4 text-amber-500" />;
+      case 'bezahlt': return <CreditCard className="w-4 h-4 text-blue-500" />;
       case 'in_bearbeitung': return <Clock className="w-4 h-4 text-blue-500" />;
       case 'fertig': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'bearbeitet': return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'versendet': return <CheckCircle className="w-4 h-4 text-green-500" />;
       default: return <Clock className="w-4 h-4 text-[#9EAFC0]" />;
     }
   };
 
   const statusLabel = (status: string) => {
     switch (status) {
-      case 'offen': return 'Eingereicht';
+      case 'offen': return 'Zahlung ausstehend';
+      case 'bezahlt': return 'Bezahlt';
       case 'in_bearbeitung': return 'In Bearbeitung';
-      case 'fertig': return 'Abgeschlossen';
-      case 'bearbeitet': return 'Abgeschlossen';
+      case 'fertig': return 'Fertig';
+      case 'versendet': return 'Versendet';
       default: return status;
     }
   };
@@ -431,7 +434,8 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
                   <div className="flex items-center gap-3 ml-3">
                     <span className={`text-xs font-medium px-2 py-1 rounded-full ${
                       anfrage.status === 'offen' ? 'bg-amber-100 text-amber-700' :
-                      anfrage.status === 'fertig' || anfrage.status === 'bearbeitet' ? 'bg-green-100 text-green-700' :
+                      anfrage.status === 'fertig' || anfrage.status === 'versendet' ? 'bg-green-100 text-green-700' :
+                      anfrage.status === 'bezahlt' ? 'bg-blue-100 text-blue-700' :
                       'bg-[#D5DEE6] text-[#1E2A3A]'
                     }`}>
                       {statusLabel(anfrage.status)}

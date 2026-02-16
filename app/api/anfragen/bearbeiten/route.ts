@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     // Update Anfrage status
     const { error } = await supabase
       .from('anfragen')
-      .update({ status: 'bearbeitet' })
+      .update({ status: 'versendet' })
       .eq('id', anfrage_id);
 
     if (error) {

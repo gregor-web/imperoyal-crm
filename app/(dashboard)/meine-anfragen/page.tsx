@@ -5,15 +5,23 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { FileBarChart, Clock, CheckCircle, Plus, Download } from 'lucide-react';
+import { FileBarChart, Clock, CheckCircle, Plus, Download, CreditCard, AlertCircle } from 'lucide-react';
+import { PaymentRetryButton } from '@/components/payment-retry-button';
 
 // Status config for display
 const STATUS_CONFIG = {
   offen: {
-    label: 'Eingereicht',
+    label: 'Zahlung ausstehend',
     variant: 'warning' as const,
-    icon: Clock,
-    description: 'Ihre Anfrage wurde eingereicht.',
+    icon: AlertCircle,
+    description: 'Bitte schließen Sie die Zahlung ab.',
+    showInLegend: true,
+  },
+  bezahlt: {
+    label: 'Bezahlt',
+    variant: 'info' as const,
+    icon: CreditCard,
+    description: 'Zahlung eingegangen, Auswertung wird vorbereitet.',
     showInLegend: true,
   },
   in_bearbeitung: {
@@ -30,11 +38,11 @@ const STATUS_CONFIG = {
     description: 'Die Auswertung ist fertig.',
     showInLegend: false,
   },
-  bearbeitet: {
-    label: 'Abgeschlossen',
+  versendet: {
+    label: 'Versendet',
     variant: 'success' as const,
     icon: CheckCircle,
-    description: 'Die Auswertung ist abgeschlossen.',
+    description: 'Die Auswertung wurde Ihnen zugesendet.',
     showInLegend: true,
   },
 };
@@ -179,8 +187,26 @@ export default async function MeineAnfragenPage() {
                     </div>
                   </div>
 
+                  {/* Payment Info for pending payments */}
+                  {anfrage.payment_status === 'pending' && status === 'offen' && (
+                    <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-100">
+                      <PaymentRetryButton anfrageId={anfrage.id} />
+                    </div>
+                  )}
+
+                  {/* Bezahlt info */}
+                  {anfrage.payment_status === 'paid' && anfrage.amount_cents && (
+                    <div className="flex items-center gap-2 pt-3 border-t border-slate-100 text-sm text-green-700">
+                      <CreditCard className="w-4 h-4" />
+                      <span>Bezahlt: {formatCurrency(anfrage.amount_cents / 100)}</span>
+                      {anfrage.paid_at && (
+                        <span className="text-slate-400">am {formatDate(anfrage.paid_at)}</span>
+                      )}
+                    </div>
+                  )}
+
                   {/* Actions - full width buttons for completed items */}
-                  {(status === 'fertig' || status === 'bearbeitet') && auswertungInfo && (
+                  {(status === 'fertig' || status === 'versendet') && auswertungInfo && (
                     <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-100">
                       <Link href={`/auswertungen/${auswertungInfo.id}`} className="flex-1">
                         <Button className="w-full gap-2">

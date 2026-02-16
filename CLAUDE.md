@@ -35,9 +35,11 @@ SUPABASE_SERVICE_ROLE_KEY=        # NUR Server-side! Nie im Client importieren
 ANTHROPIC_API_KEY=                # NUR Server-side! Nie im Client importieren
 MAKE_WEBHOOK_URL=                 # NUR Server-side!
 NEXT_PUBLIC_APP_URL=
+STRIPE_SECRET_KEY=                # NUR Server-side! Nie im Client importieren
+STRIPE_WEBHOOK_SECRET=            # NUR Server-side! Stripe CLI: stripe listen --forward-to localhost:3000/api/stripe/webhook
 ```
 
-**KRITISCH:** `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY` und `MAKE_WEBHOOK_URL` dürfen NIE in Client-Komponenten oder `"use client"` Dateien importiert werden. Nur in `app/api/` Route Handlers und Server Components.
+**KRITISCH:** `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `MAKE_WEBHOOK_URL`, `STRIPE_SECRET_KEY` und `STRIPE_WEBHOOK_SECRET` dürfen NIE in Client-Komponenten oder `"use client"` Dateien importiert werden. Nur in `app/api/` Route Handlers und Server Components.
 
 ## Projektstruktur
 
@@ -124,7 +126,16 @@ Datei: `supabase/migrations/001_initial.sql`
 
 **ankaufsprofile** – Felder: `id` (UUID), `mandant_id` (UUID FK CASCADE), `name`, `min_volumen`, `max_volumen`, `assetklassen` (TEXT[]), `regionen`, `rendite_min`, `sonstiges`, `created_at`, `updated_at`.
 
-**anfragen** – Felder: `id` (UUID), `objekt_id` (UUID FK CASCADE), `mandant_id` (UUID FK), `status` ('offen'|'bearbeitet'), `created_at`.
+**anfragen** – Felder: `id` (UUID), `objekt_id` (UUID FK CASCADE), `mandant_id` (UUID FK), `status` ('offen'|'bezahlt'|'in_bearbeitung'|'fertig'|'versendet'), `payment_status` ('pending'|'paid'|'failed'|'refunded'|'waived'), `stripe_session_id` (TEXT), `amount_cents` (INTEGER), `paid_at` (TIMESTAMPTZ), `created_at`.
+
+**payments** – Felder: `id` (UUID), `anfrage_id` (UUID FK CASCADE), `mandant_id` (UUID FK), `stripe_session_id` (TEXT UNIQUE), `stripe_payment_intent_id` (TEXT), `amount_cents` (INTEGER), `currency` (TEXT), `status` (TEXT), `tier_name` (TEXT), `created_at`.
+
+### Stripe Integration
+
+- Volume-based pricing: Einstieg (1-10: 350€), Portfolio (11-49: 250€), Großbestand (50+: 180€) – netto/exkl. MwSt.
+- Payment via Stripe Checkout Sessions (Card + SEPA)
+- Env vars: `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`
+- `mandanten.stripe_customer_id` stores the Stripe customer ID
 
 ### Row Level Security
 
