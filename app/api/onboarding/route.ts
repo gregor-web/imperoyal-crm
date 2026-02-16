@@ -398,15 +398,39 @@ export async function POST(request: Request) {
       if (authError) {
         console.error('Auth user creation error:', authError);
       } else {
-        // Update profile with mandant_id
-        await supabase
-          .from('profiles')
-          .update({
-            mandant_id: mandant.id,
-            name: ansprechpartner || data.name,
-            role: 'mandant',
-          })
-          .eq('id', authData.user.id);
+        // Update profile with mandant_id (retry because trigger may not have created it yet)
+        let profileUpdated = false;
+        for (let attempt = 0; attempt < 5; attempt++) {
+          const { error: profileError, count } = await supabase
+            .from('profiles')
+            .update({
+              mandant_id: mandant.id,
+              name: ansprechpartner || data.name,
+              role: 'mandant',
+            })
+            .eq('id', authData.user.id);
+
+          if (!profileError && (count === null || count > 0)) {
+            profileUpdated = true;
+            break;
+          }
+          // Wait 500ms for trigger to create the profile row
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        if (!profileUpdated) {
+          // Fallback: try upsert
+          await supabase
+            .from('profiles')
+            .upsert({
+              id: authData.user.id,
+              mandant_id: mandant.id,
+              name: ansprechpartner || data.name,
+              role: 'mandant',
+              email: data.email,
+            });
+          console.warn('Profile update required upsert fallback');
+        }
 
         // Send welcome email via Make.com webhook
         const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-system.vercel.app'}/login`;
