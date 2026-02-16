@@ -412,17 +412,37 @@ export async function POST(request: Request) {
         const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://imperoyal-system.vercel.app'}/login`;
         const htmlContent = generateWelcomeEmailHtml(ansprechpartner || data.name, data.email, password, loginUrl);
 
-        const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'welcome',
-            to: data.email,
-            subject: 'Willkommen bei Imperoyal Immobilien - Ihre Zugangsdaten',
-            html: htmlContent,
-          }),
-        });
-        emailSent = webhookResponse.ok;
+        if (MAKE_WEBHOOK_URL) {
+          try {
+            const webhookResponse = await fetch(MAKE_WEBHOOK_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                actionId: 1,
+                type: 'welcome',
+                to_email: data.email,
+                to_name: ansprechpartner || data.name,
+                subject: 'Willkommen bei Imperoyal Immobilien - Ihre Zugangsdaten',
+                html_content: htmlContent,
+                data: {
+                  mandant_id: mandant.id,
+                  name: ansprechpartner || data.name,
+                  email: data.email,
+                  password,
+                  login_url: loginUrl,
+                },
+              }),
+            });
+            emailSent = webhookResponse.ok;
+            if (!webhookResponse.ok) {
+              console.error('Welcome webhook failed:', webhookResponse.status, await webhookResponse.text().catch(() => ''));
+            }
+          } catch (webhookErr) {
+            console.error('Welcome webhook error:', webhookErr);
+          }
+        } else {
+          console.warn('MAKE_WEBHOOK_URL not configured, skipping welcome email');
+        }
       }
     } catch (authErr) {
       console.error('Auth/Email error:', authErr);
@@ -547,6 +567,8 @@ export async function POST(request: Request) {
             type: 'onboarding',
             mandant_name: data.name,
             mandant_email: data.email,
+            to_email: data.email,
+            to_name: ansprechpartner || data.name,
             ansprechpartner,
             telefon: data.telefon,
             objekte_anzahl: data.objekte.length,
@@ -554,6 +576,10 @@ export async function POST(request: Request) {
             gesamtvolumen: totalKaufpreis,
             objekt_adressen: data.objekte.map(o => `${o.strasse}, ${o.plz} ${o.ort}`).join(' | '),
           }),
+        }).then(res => {
+          if (!res.ok) {
+            console.error('Onboarding webhook failed:', res.status);
+          }
         });
       } catch (webhookError) {
         console.error('Webhook error:', webhookError);
