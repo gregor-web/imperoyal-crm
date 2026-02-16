@@ -1,23 +1,121 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { Card, StatCard } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { EmpfehlungBadge, Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercent, formatDate } from '@/lib/formatters';
 import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
-import { ArrowLeft, TrendingUp, Banknote, Home, AlertTriangle, CheckCircle, CheckCircle2, Download, Clock } from 'lucide-react';
+import {
+  ArrowLeft, TrendingUp, TrendingDown, Banknote, Home, AlertTriangle,
+  CheckCircle, CheckCircle2, Download, Clock, Building2, Shield,
+  PieChart, BarChart3, ArrowUpRight, ArrowDownRight, Minus, Info,
+} from 'lucide-react';
 import { SendEmailButton } from '@/components/send-email-button';
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
+// =====================================================
+// HELPER COMPONENTS (wie im PDF)
+// =====================================================
+
+function SectionBox({ number, title, badge, children }: {
+  number: number;
+  title: string;
+  badge?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/80 border-b border-slate-200">
+        <span className="w-7 h-7 rounded-full bg-[#2A3F54] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+          {number}
+        </span>
+        <h3 className="text-sm font-bold text-[#1E2A3A]">{title}</h3>
+        {badge && <div className="ml-auto">{badge}</div>}
+      </div>
+      <div className="p-4">{children}</div>
+    </div>
+  );
+}
+
+function DataRow({ label, value, bold, valueClass }: {
+  label: string;
+  value: string | React.ReactNode;
+  bold?: boolean;
+  valueClass?: string;
+}) {
+  return (
+    <div className={`flex justify-between items-center py-2 ${bold ? 'border-t border-slate-200 mt-2 pt-3' : 'border-b border-slate-100'}`}>
+      <span className={`text-slate-600 text-sm ${bold ? 'font-semibold' : ''}`}>{label}</span>
+      <span className={`text-sm font-medium flex-shrink-0 ${valueClass || (bold ? 'font-bold' : '')}`}>{value}</span>
+    </div>
+  );
+}
+
+function InfoBox({ children, variant = 'default' }: {
+  children: React.ReactNode;
+  variant?: 'default' | 'success' | 'warning' | 'info';
+}) {
+  const bgMap = { default: 'bg-slate-50', success: 'bg-green-50', warning: 'bg-amber-50', info: 'bg-blue-50' };
+  const borderMap = { default: 'border-slate-200', success: 'border-green-200', warning: 'border-amber-200', info: 'border-blue-200' };
+  return (
+    <div className={`${bgMap[variant]} ${borderMap[variant]} border rounded-lg p-3 mt-3`}>
+      {children}
+    </div>
+  );
+}
+
+function ProgressBar({ value, max = 100, color = 'bg-[#2A3F54]' }: {
+  value: number;
+  max?: number;
+  color?: string;
+}) {
+  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  return (
+    <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+      <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+    </div>
+  );
+}
+
+function TrendArrow({ value }: { value: number }) {
+  if (value > 0.5) {
+    return (
+      <span className="text-green-600 text-xs font-bold flex items-center gap-1">
+        <ArrowUpRight className="w-3 h-3" />+{value.toFixed(1)}%
+      </span>
+    );
+  }
+  if (value < -0.5) {
+    return (
+      <span className="text-red-600 text-xs font-bold flex items-center gap-1">
+        <ArrowDownRight className="w-3 h-3" />{value.toFixed(1)}%
+      </span>
+    );
+  }
+  return (
+    <span className="text-slate-400 text-xs font-bold flex items-center gap-1">
+      <Minus className="w-3 h-3" />{value.toFixed(1)}%
+    </span>
+  );
+}
+
+function TrafficLight({ status }: { status: 'green' | 'yellow' | 'red' }) {
+  const colorMap = { green: 'bg-green-500', yellow: 'bg-yellow-500', red: 'bg-red-500' };
+  return <span className={`inline-block w-3 h-3 rounded-full ${colorMap[status]} ring-2 ring-white`} />;
+}
+
+// =====================================================
+// MAIN PAGE
+// =====================================================
+
 export default async function AuswertungDetailPage({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
 
-  // Check if user is admin
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = await supabase
     .from('profiles')
@@ -26,361 +124,827 @@ export default async function AuswertungDetailPage({ params }: Props) {
     .single();
   const isAdmin = profile?.role === 'admin';
 
-  // Fetch auswertung with objekt and mandant
   const { data: auswertung, error } = await supabase
     .from('auswertungen')
-    .select(`
-      *,
-      objekte (*),
-      mandanten (name)
-    `)
+    .select('*, objekte (*), mandanten (name, anrede, ansprechpartner)')
     .eq('id', id)
     .single();
 
-  if (error || !auswertung) {
-    notFound();
-  }
+  if (error || !auswertung) notFound();
 
   const objekt = auswertung.objekte as Record<string, unknown>;
-  const mandant = auswertung.mandanten as { name: string } | null;
+  const mandant = auswertung.mandanten as { name: string; anrede?: string; ansprechpartner?: string } | null;
   const berechnungen = auswertung.berechnungen as Berechnungen;
   const erlaeuterungen = auswertung.erlaeuterungen as Erlaeuterungen;
 
+  const fin = berechnungen?.finanzierung;
+  const kosten = berechnungen?.kostenstruktur;
+  const cashflow = berechnungen?.cashflow;
+  const rendite = berechnungen?.rendite;
+  const miet = berechnungen?.mietanalyse;
+  const weg = berechnungen?.weg_potenzial;
+  const afa = berechnungen?.afa_rnd;
+  const wert = berechnungen?.wertentwicklung;
+  const mod559 = berechnungen?.modernisierung_559;
+  const marktdaten = berechnungen?.marktdaten;
+
+  // Berechnete Werte (wie im PDF)
+  const kaufpreis = fin?.kaufpreis || (objekt?.kaufpreis as number) || 0;
+  const jahresmiete = miet?.miete_ist_jahr || 0;
+  const kaufpreisfaktor = marktdaten?.kaufpreisfaktor_region?.wert || 20;
+  const verkehrswertErtrag = jahresmiete > 0 ? jahresmiete * kaufpreisfaktor : kaufpreis;
+  const verkehrswertGeschaetzt = wert?.heute || verkehrswertErtrag || kaufpreis;
+  const restschuld = fin?.fremdkapital || 0;
+  const abbezahlteSumme = Math.max(0, verkehrswertGeschaetzt - restschuld);
+  const beleihungswert = abbezahlteSumme * 0.7;
+  const steuerersparnis = afa?.steuerersparnis_42 || 0;
+  const rendite_nach_steuer = kaufpreis > 0
+    ? ((miet?.miete_ist_jahr || 0) + steuerersparnis) / kaufpreis * 100
+    : 0;
+
+  const einheiten = (miet?.einheiten || []) as Array<{
+    position: number; nutzung: string; flaeche: number; kaltmiete_ist: number;
+    kaltmiete_soll: number; potenzial: number; vergleichsmiete?: number;
+  }>;
+  const einheitenMitPotenzial = einheiten.filter(e => e.potenzial > 0).length;
+  const gesamtflaeche = einheiten.reduce((sum, e) => sum + (e.flaeche || 0), 0);
+  const verkehrswertProQm = gesamtflaeche > 0 ? verkehrswertGeschaetzt / gesamtflaeche : 0;
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-6 max-w-6xl mx-auto">
+      {/* ===== HEADER ===== */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <Link href="/auswertungen" className="p-2 hover:bg-slate-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <Link href="/auswertungen" className="p-2 hover:bg-slate-100 rounded-lg">
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </Link>
           <div>
-            <h1 className="text-lg sm:text-2xl font-bold text-slate-800">
-              Auswertung: {objekt?.strasse as string}
+            <h1 className="text-lg sm:text-2xl font-bold text-[#1E2A3A]">
+              {objekt?.strasse as string}, {objekt?.plz as string} {objekt?.ort as string}
             </h1>
-            <p className="text-sm sm:text-base text-slate-600">
-              {objekt?.plz as string} {objekt?.ort as string} | {mandant?.name || 'Unbekannter Mandant'}
+            <p className="text-sm text-slate-500">
+              {mandant?.name || 'Unbekannter Mandant'} · {formatDate(auswertung.created_at)}
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 ml-11 sm:ml-0">
-          {/* Status Badge */}
+        <div className="flex flex-wrap items-center gap-2 ml-11 sm:ml-0">
           <Badge variant={auswertung.status === 'abgeschlossen' ? 'success' : 'info'} className="gap-1">
             {auswertung.status === 'abgeschlossen' ? (
-              <>
-                <CheckCircle2 className="w-3 h-3" />
-                Abgeschlossen
-              </>
+              <><CheckCircle2 className="w-3 h-3" /> Abgeschlossen</>
             ) : (
-              <>
-                <Clock className="w-3 h-3" />
-                Eingereicht
-              </>
+              <><Clock className="w-3 h-3" /> Eingereicht</>
             )}
           </Badge>
-
-          {/* PDF View Button - only if PDF exists */}
           {auswertung.pdf_url && (
             <a href={auswertung.pdf_url} target="_blank" rel="noopener noreferrer">
               <Button variant="secondary" className="gap-2">
-                <Download className="w-4 h-4" />
-                PDF ansehen
+                <Download className="w-4 h-4" />PDF ansehen
               </Button>
             </a>
           )}
+          {isAdmin && <SendEmailButton auswertungId={id} status={auswertung.status} />}
+        </div>
+      </div>
 
-          {/* Send Email Button - only for admin */}
-          {isAdmin && (
-            <SendEmailButton auswertungId={id} status={auswertung.status} />
+      {/* ===== KEY METRICS BAR ===== */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-slate-200 rounded-xl overflow-hidden border border-slate-200">
+        <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
+          <p className="text-xs text-slate-500">Verkehrswert*</p>
+          <p className="text-lg font-bold text-[#1E2A3A]">{formatCurrency(verkehrswertGeschaetzt)}</p>
+          {gesamtflaeche > 0 && (
+            <p className="text-xs text-[#2A3F54] font-semibold">({formatCurrency(verkehrswertProQm)}/m²)</p>
+          )}
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
+          <p className="text-xs text-slate-500">EK-Puffer</p>
+          <p className={`text-lg font-bold ${abbezahlteSumme >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {formatCurrency(abbezahlteSumme)}
+          </p>
+          <p className="text-[10px] text-slate-400">VW − Restschuld</p>
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
+          <p className="text-xs text-slate-500">Rendite</p>
+          <p className="text-lg font-bold text-[#1E2A3A]">{formatPercent(rendite?.rendite_ist)}</p>
+          <p className="text-[10px] text-green-600">
+            +{formatPercent(rendite_nach_steuer - (rendite?.rendite_ist || 0))} n. AfA
+          </p>
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
+          <p className="text-xs text-slate-500">AfA-Ersparnis</p>
+          <p className="text-lg font-bold text-green-600">{formatCurrency(steuerersparnis)}/J.</p>
+          <p className="text-[10px] text-slate-400">bei 42% Grenzsteuersatz</p>
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm p-4 text-center col-span-2 md:col-span-1">
+          <p className="text-xs text-slate-500 mb-1">Empfehlung</p>
+          {auswertung.empfehlung ? (
+            <EmpfehlungBadge empfehlung={auswertung.empfehlung} />
+          ) : (
+            <span className="text-slate-400">-</span>
           )}
         </div>
       </div>
 
-      {/* Empfehlung Header */}
-      {auswertung.empfehlung && (
-        <Card className="border-l-4 border-l-blue-500">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <EmpfehlungBadge empfehlung={auswertung.empfehlung} />
-                <Badge variant={
-                  auswertung.empfehlung_prioritaet === 'hoch' ? 'danger' :
-                  auswertung.empfehlung_prioritaet === 'mittel' ? 'warning' : 'success'
-                }>
-                  Priorität: {auswertung.empfehlung_prioritaet}
-                </Badge>
+      {/* ===== BELEIHUNGSWERT ===== */}
+      <div className="bg-blue-50/80 backdrop-blur-sm rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center border border-blue-200">
+        <div className="flex-shrink-0">
+          <p className="text-xs text-[#2A3F54] font-bold">Beleihungswert (70% d. EK)</p>
+          <p className="text-xl font-bold text-[#1E2A3A]">{formatCurrency(beleihungswert)}</p>
+        </div>
+        <div className="md:border-l md:border-blue-200 md:pl-4 text-xs text-slate-600">
+          <p>
+            Abbezahlte Summe (VW − Restschuld): {formatCurrency(abbezahlteSumme)}.
+            Der Beleihungswert (60–80%, hier 70%) zeigt die verfügbare Sicherheit für Refinanzierungen.
+          </p>
+          <p className="text-[10px] text-slate-400 italic mt-1">Quelle: Berechnung nach Bankenstandard (BelWertV)</p>
+        </div>
+      </div>
+
+      {/* ===== MARKTDATEN ===== */}
+      {marktdaten && (
+        <div className="bg-purple-50/50 backdrop-blur-sm rounded-xl p-4 border border-purple-200">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-[#1E2A3A]">Aktuelle Marktdaten</h3>
+            <span className="text-xs text-slate-500">Standort: {marktdaten.standort}</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            {/* Spalte 1 */}
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-slate-600">Vergleichsmiete Wohnen</span>
+                <span className="font-semibold">{marktdaten.vergleichsmiete_wohnen.wert} €/m²</span>
               </div>
-              <p className="text-slate-700">{auswertung.empfehlung_begruendung}</p>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Vergleichsmiete Gewerbe</span>
+                <span className="font-semibold">{marktdaten.vergleichsmiete_gewerbe.wert} €/m²</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Kaufpreisfaktor</span>
+                <span className="font-semibold">{marktdaten.kaufpreisfaktor_region.wert}x</span>
+              </div>
+            </div>
+            {/* Spalte 2 */}
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-slate-600">Kappungsgrenze</span>
+                <span className={`font-semibold ${marktdaten.kappungsgrenze.vorhanden ? 'text-red-600' : 'text-green-600'}`}>
+                  {marktdaten.kappungsgrenze.prozent}% {marktdaten.kappungsgrenze.vorhanden ? '(angespannt)' : ''}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Milieuschutz</span>
+                <span className={`font-semibold ${marktdaten.milieuschutzgebiet.vorhanden ? 'text-red-600' : 'text-green-600'}`}>
+                  {marktdaten.milieuschutzgebiet.vorhanden ? 'Ja' : 'Nein'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Akt. Bauzinsen</span>
+                <span className="font-semibold">
+                  {marktdaten.aktuelle_bauzinsen.wert}% ({marktdaten.aktuelle_bauzinsen.zinsbindung})
+                </span>
+              </div>
+            </div>
+            {/* Spalte 3: Prognose */}
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-[#1E2A3A]">Preisprognose p.a.</p>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600">0–3 Jahre</span>
+                <TrendArrow value={marktdaten.preisprognose.kurz_0_3_jahre} />
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600">3–7 Jahre</span>
+                <TrendArrow value={marktdaten.preisprognose.mittel_3_7_jahre} />
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600">7+ Jahre</span>
+                <TrendArrow value={marktdaten.preisprognose.lang_7_plus_jahre} />
+              </div>
             </div>
           </div>
-        </Card>
+          <p className="text-[10px] text-slate-400 italic mt-3">
+            Quelle: Aktuelle Marktanalyse, Stand: {new Date(marktdaten.abfrage_datum).toLocaleDateString('de-DE')}
+          </p>
+        </div>
       )}
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-        <StatCard
-          title="Kaufpreis"
-          value={formatCurrency(berechnungen?.finanzierung?.kaufpreis)}
-          icon={<Banknote className="w-6 h-6" />}
-          color="blue"
-        />
-        <StatCard
-          title="Rendite IST"
-          value={formatPercent(berechnungen?.rendite?.rendite_ist)}
-          subtitle={`Optimiert: ${formatPercent(berechnungen?.rendite?.rendite_opt)}`}
-          icon={<TrendingUp className="w-6 h-6" />}
-          color="green"
-        />
-        <StatCard
-          title="Cashflow IST"
-          value={formatCurrency(berechnungen?.cashflow?.cashflow_ist_jahr)}
-          subtitle="pro Jahr"
-          icon={<TrendingUp className="w-6 h-6" />}
-          color="amber"
-        />
-        <StatCard
-          title="Mietpotenzial"
-          value={formatCurrency(berechnungen?.mietanalyse?.potenzial_jahr)}
-          subtitle="pro Jahr"
-          icon={<Home className="w-6 h-6" />}
-          color="purple"
-        />
+      {/* ===== SECTIONS 1–4 (2×2 Grid) ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Section 1: Finanzierungsprofil */}
+        <SectionBox number={1} title="Finanzierungsprofil">
+          <DataRow label="Eigenkapital" value={formatCurrency(fin?.eigenkapital)} />
+          <DataRow label="Fremdkapital" value={formatCurrency(fin?.fremdkapital)} />
+          <DataRow label="Zinssatz / Tilgung" value={`${formatPercent(fin?.zinssatz)} / ${formatPercent(fin?.tilgung)}`} />
+          <DataRow
+            label="Kapitaldienst p.a."
+            value={formatCurrency(fin?.kapitaldienst)}
+            valueClass="text-red-600 font-bold"
+          />
+          <DataRow label="Anfangsrendite" value={formatPercent(rendite?.rendite_ist)} bold />
+          <InfoBox>
+            <p className="text-xs text-slate-600">
+              • EK-Quote: {((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100).toFixed(0)}%{' '}
+              {(fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) >= 0.3 ? '(konservativ)' : '(gehebelt)'}
+            </p>
+            <p className="text-xs text-slate-600">
+              • Zinsniveau: {(fin?.zinssatz || 0) <= 3.5 ? 'günstig' : (fin?.zinssatz || 0) <= 4.5 ? 'marktüblich' : 'erhöht'}
+            </p>
+          </InfoBox>
+        </SectionBox>
+
+        {/* Section 2: Ertragsprofil */}
+        <SectionBox number={2} title="Ertragsprofil">
+          <DataRow label="IST-Miete p.a." value={formatCurrency(miet?.miete_ist_jahr)} />
+          <DataRow label="SOLL-Miete p.a." value={formatCurrency(miet?.miete_soll_jahr)} />
+          <DataRow
+            label="Mietpotenzial"
+            value={`+${formatCurrency(miet?.potenzial_jahr)}`}
+            bold
+            valueClass="text-green-600 font-bold"
+          />
+          {miet?.miete_ist_jahr && miet.potenzial_jahr ? (
+            <p className="text-xs text-slate-500 text-right mt-1">
+              +{((miet.potenzial_jahr / miet.miete_ist_jahr) * 100).toFixed(1)}% Steigerung möglich
+            </p>
+          ) : null}
+          <InfoBox>
+            <p className="text-xs text-slate-600">• IST: Tatsächliche Mieteinnahmen lt. Mandant</p>
+            <p className="text-xs text-slate-600">• SOLL: Marktmiete bei Neuvermietung</p>
+            <p className="text-[10px] text-slate-400 italic mt-1">
+              Quelle: {marktdaten?.vergleichsmiete_wohnen?.quelle || `Mietspiegel ${(objekt?.ort as string) || 'Region'}`}
+            </p>
+          </InfoBox>
+        </SectionBox>
+
+        {/* Section 3: Cashflow-Analyse */}
+        <SectionBox number={3} title="Cashflow-Analyse">
+          <DataRow label="Mieteinnahmen" value={formatCurrency(miet?.miete_ist_jahr)} />
+          <DataRow label="./. Kapitaldienst" value={`-${formatCurrency(fin?.kapitaldienst)}`} valueClass="text-red-600" />
+          <DataRow label="./. Kosten" value={`-${formatCurrency(kosten?.kosten_gesamt)}`} valueClass="text-red-600" />
+          <DataRow
+            label="Cashflow IST"
+            value={formatCurrency(cashflow?.cashflow_ist_jahr)}
+            bold
+            valueClass={`font-bold ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
+          />
+          <DataRow
+            label="Cashflow optimiert"
+            value={formatCurrency(cashflow?.cashflow_opt_jahr)}
+            valueClass={`font-bold ${(cashflow?.cashflow_opt_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
+          />
+          <InfoBox>
+            <p className="text-xs text-slate-600">• Cashflow = Miete − Kapitaldienst − Kosten</p>
+            <p className={`text-xs ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              • Status: {(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'Objekt trägt sich selbst' : 'Unterdeckung – Zuschuss erforderlich'}
+            </p>
+          </InfoBox>
+        </SectionBox>
+
+        {/* Section 4: Kostenstruktur */}
+        <SectionBox
+          number={4}
+          title="Kostenstruktur"
+          badge={
+            <TrafficLight
+              status={kosten?.bewertung === 'gesund' ? 'green' : kosten?.bewertung === 'durchschnittlich' ? 'yellow' : 'red'}
+            />
+          }
+        >
+          <div className="space-y-3 mb-3">
+            {[
+              { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: 'bg-[#2A3F54]' },
+              { label: 'Verwaltung', value: kosten?.verwaltung || 0, color: 'bg-purple-500' },
+              { label: 'Nicht umlf. BK', value: kosten?.betriebskosten_nicht_umlage || 0, color: 'bg-amber-500' },
+              { label: 'Rücklagen', value: kosten?.ruecklagen || 0, color: 'bg-emerald-500' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-xs text-slate-600 w-20 flex-shrink-0">{item.label}</span>
+                <div className="flex-1">
+                  <ProgressBar value={item.value} max={kosten?.kosten_gesamt || 1} color={item.color} />
+                </div>
+                <span className="text-xs font-semibold w-16 text-right flex-shrink-0">
+                  {formatCurrency(item.value)}
+                </span>
+              </div>
+            ))}
+          </div>
+          <DataRow label="Gesamt" value={formatCurrency(kosten?.kosten_gesamt)} bold />
+          <div className="mt-3">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs text-slate-600">Kostenquote</span>
+              <span className={`text-xs font-bold ${kosten?.bewertung === 'gesund' ? 'text-green-600' : kosten?.bewertung === 'durchschnittlich' ? 'text-amber-600' : 'text-red-600'}`}>
+                {formatPercent(kosten?.kostenquote)} – {kosten?.bewertung}
+              </span>
+            </div>
+            <ProgressBar
+              value={kosten?.kostenquote || 0}
+              max={50}
+              color={kosten?.bewertung === 'gesund' ? 'bg-green-500' : kosten?.bewertung === 'durchschnittlich' ? 'bg-amber-500' : 'bg-red-500'}
+            />
+            <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+              <span>0%</span>
+              <span className="text-green-500">25%</span>
+              <span className="text-amber-500">35%</span>
+              <span className="text-red-500">50%</span>
+            </div>
+          </div>
+        </SectionBox>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        {/* Finanzierungsprofil */}
-        <Card title="Finanzierungsprofil">
-          <div className="space-y-3 text-sm sm:text-base">
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Eigenkapital</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.finanzierung?.eigenkapital)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Fremdkapital</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.finanzierung?.fremdkapital)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Zinssatz</span>
-              <span className="font-medium flex-shrink-0">{formatPercent(berechnungen?.finanzierung?.zinssatz)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Tilgung</span>
-              <span className="font-medium flex-shrink-0">{formatPercent(berechnungen?.finanzierung?.tilgung)}</span>
-            </div>
-            <div className="flex justify-between gap-2 pt-2 border-t">
-              <span className="text-slate-600 font-medium">Kapitaldienst p.a.</span>
-              <span className="font-bold text-red-600 flex-shrink-0">{formatCurrency(berechnungen?.finanzierung?.kapitaldienst)}</span>
-            </div>
-          </div>
-          {erlaeuterungen?.finanzierungsprofil && (
-            <p className="mt-4 text-sm text-slate-500 border-t pt-4">{erlaeuterungen.finanzierungsprofil}</p>
-          )}
-        </Card>
+      {/* ===== SECTION 5: Mieterhöhungspotenzial Tabelle ===== */}
+      <SectionBox
+        number={5}
+        title="Mieterhöhungspotenzial (§558 gilt nur für Wohnraum)"
+        badge={
+          <Badge variant="success">
+            {einheitenMitPotenzial} von {einheiten.length} mit Potenzial
+          </Badge>
+        }
+      >
+        <div className="overflow-x-auto -mx-4">
+          <table className="min-w-full text-xs">
+            <thead>
+              <tr className="bg-slate-50 text-slate-500 font-semibold">
+                <th className="px-3 py-2 text-center">#</th>
+                <th className="px-3 py-2 text-left">Nutzung</th>
+                <th className="px-3 py-2 text-right">Fläche</th>
+                <th className="px-3 py-2 text-right">IST-Miete</th>
+                <th className="px-3 py-2 text-right">€/m²</th>
+                <th className="px-3 py-2 text-right">Markt</th>
+                <th className="px-3 py-2 text-right">SOLL-Miete</th>
+                <th className="px-3 py-2 text-right">Potenzial</th>
+              </tr>
+            </thead>
+            <tbody>
+              {einheiten.map((e, i) => {
+                const euroPerSqm = e.flaeche > 0 ? e.kaltmiete_ist / e.flaeche : 0;
+                return (
+                  <tr key={i} className={i % 2 === 1 ? 'bg-slate-50/50' : ''}>
+                    <td className="px-3 py-2 text-center">{e.position}</td>
+                    <td className="px-3 py-2">{e.nutzung}</td>
+                    <td className="px-3 py-2 text-right">{e.flaeche} m²</td>
+                    <td className="px-3 py-2 text-right">{formatCurrency(e.kaltmiete_ist)}</td>
+                    <td className="px-3 py-2 text-right">{euroPerSqm.toFixed(2)} €</td>
+                    <td className="px-3 py-2 text-right">{e.vergleichsmiete || '-'} €</td>
+                    <td className="px-3 py-2 text-right">{formatCurrency(e.kaltmiete_soll)}</td>
+                    <td className={`px-3 py-2 text-right font-semibold ${e.potenzial > 0 ? 'text-green-600' : 'text-slate-400'}`}>
+                      {e.potenzial > 0 ? `+${formatCurrency(e.potenzial)}` : '-'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr className="bg-slate-50 font-bold border-t border-slate-200">
+                <td className="px-3 py-2"></td>
+                <td className="px-3 py-2">GESAMT</td>
+                <td className="px-3 py-2"></td>
+                <td className="px-3 py-2 text-right">{formatCurrency(miet?.miete_ist_monat)}</td>
+                <td className="px-3 py-2"></td>
+                <td className="px-3 py-2"></td>
+                <td className="px-3 py-2 text-right">{formatCurrency(miet?.miete_soll_monat)}</td>
+                <td className="px-3 py-2 text-right text-green-600">+{formatCurrency(miet?.potenzial_monat)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <InfoBox>
+          <p className="text-xs text-slate-600">
+            • §558 BGB: Miete darf innerhalb von 3 Jahren um max. {(objekt?.milieuschutz as boolean) ? '15%' : '20%'} erhöht werden.
+          </p>
+          <p className="text-xs text-slate-600">
+            {`• "Sofort" = Erhöhung jetzt möglich. Sperrfrist: 15 Monate nach letzter Erhöhung.`}
+          </p>
+          <p className="text-xs text-slate-600">
+            • Gewerbe/Stellplatz: Freie Mietvertragsregelungen, keine gesetzliche Kappung.
+          </p>
+        </InfoBox>
+      </SectionBox>
 
-        {/* Kostenstruktur */}
-        <Card title="Kostenstruktur">
-          <div className="space-y-3 text-sm sm:text-base">
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600 truncate">Betriebskosten (nicht umlagef.)</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.betriebskosten_nicht_umlage)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Instandhaltung</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.instandhaltung)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Verwaltung</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.verwaltung)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Rücklagen</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.ruecklagen)}</span>
-            </div>
-            <div className="flex justify-between gap-2 pt-2 border-t">
-              <span className="text-slate-600 font-medium">Kosten gesamt</span>
-              <span className="font-bold flex-shrink-0">{formatCurrency(berechnungen?.kostenstruktur?.kosten_gesamt)}</span>
-            </div>
-            <div className="flex flex-wrap justify-between items-center gap-1">
-              <span className="text-slate-600">Kostenquote</span>
-              <Badge variant={
-                berechnungen?.kostenstruktur?.bewertung === 'gesund' ? 'success' :
-                berechnungen?.kostenstruktur?.bewertung === 'durchschnittlich' ? 'warning' : 'danger'
-              }>
-                {formatPercent(berechnungen?.kostenstruktur?.kostenquote)} - {berechnungen?.kostenstruktur?.bewertung}
-              </Badge>
-            </div>
-          </div>
-        </Card>
-
-        {/* Cashflow */}
-        <Card title="Cashflow-Analyse">
+      {/* ===== SECTIONS 6 & 7 ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Section 6: Cashflow IST vs. Optimiert */}
+        <SectionBox number={6} title="Cashflow IST vs. Optimiert">
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              <div className="p-3 sm:p-4 bg-slate-50 rounded-lg">
-                <p className="text-xs sm:text-sm text-slate-500 mb-1">IST (jährlich)</p>
-                <p className={`text-base sm:text-2xl font-bold ${berechnungen?.cashflow?.cashflow_ist_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {formatCurrency(berechnungen?.cashflow?.cashflow_ist_jahr)}
-                </p>
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs text-slate-500">IST</span>
+                <span className={`text-sm font-bold ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatCurrency(cashflow?.cashflow_ist_jahr)}
+                </span>
               </div>
-              <div className="p-3 sm:p-4 bg-blue-50 rounded-lg">
-                <p className="text-xs sm:text-sm text-slate-500 mb-1">Optimiert (jährlich)</p>
-                <p className={`text-base sm:text-2xl font-bold ${berechnungen?.cashflow?.cashflow_opt_jahr >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {formatCurrency(berechnungen?.cashflow?.cashflow_opt_jahr)}
-                </p>
+              <div className="h-5 bg-slate-100 rounded overflow-hidden">
+                <div
+                  className={`h-full rounded ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                  style={{
+                    width: `${Math.min(100, Math.abs(cashflow?.cashflow_ist_jahr || 0) / Math.max(Math.abs(cashflow?.cashflow_ist_jahr || 1), Math.abs(cashflow?.cashflow_opt_jahr || 1)) * 100)}%`,
+                  }}
+                />
               </div>
             </div>
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs text-green-600 font-bold">OPTIMIERT</span>
+                <span className={`text-sm font-bold ${(cashflow?.cashflow_opt_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatCurrency(cashflow?.cashflow_opt_jahr)}
+                </span>
+              </div>
+              <div className="h-5 bg-slate-100 rounded overflow-hidden">
+                <div
+                  className={`h-full rounded ${(cashflow?.cashflow_opt_jahr || 0) >= 0 ? 'bg-green-600' : 'bg-red-500'}`}
+                  style={{
+                    width: `${Math.min(100, Math.abs(cashflow?.cashflow_opt_jahr || 0) / Math.max(Math.abs(cashflow?.cashflow_ist_jahr || 1), Math.abs(cashflow?.cashflow_opt_jahr || 1)) * 100)}%`,
+                  }}
+                />
+              </div>
+            </div>
+            <div className="bg-green-50 rounded-lg p-3 text-center border border-green-200">
+              <p className="text-lg font-bold text-green-600">
+                Potenzial: +{formatCurrency((cashflow?.cashflow_opt_jahr || 0) - (cashflow?.cashflow_ist_jahr || 0))} p.a.
+              </p>
+            </div>
           </div>
-        </Card>
+        </SectionBox>
 
-        {/* WEG-Potenzial */}
-        <Card title="WEG-Potenzial">
-          <div className="space-y-3 text-sm sm:text-base">
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Wert heute</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.weg_potenzial?.wert_heute)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Wert aufgeteilt (+15%)</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.weg_potenzial?.wert_aufgeteilt)}</span>
-            </div>
-            <div className="flex justify-between gap-2 pt-2 border-t">
-              <span className="text-slate-600 font-medium">Potenzial</span>
-              <span className="font-bold text-green-600 flex-shrink-0">{formatCurrency(berechnungen?.weg_potenzial?.weg_gewinn)}</span>
-            </div>
-            {berechnungen?.weg_potenzial?.bereits_aufgeteilt && (
-              <Badge variant="info">Bereits aufgeteilt</Badge>
-            )}
-            {berechnungen?.weg_potenzial?.genehmigung_erforderlich && (
-              <Badge variant="warning">Genehmigung erforderlich</Badge>
-            )}
+        {/* Section 7: Wertentwicklung */}
+        <SectionBox number={7} title="Wertentwicklung">
+          <div className="flex items-end justify-center gap-3 h-32 mb-4">
+            {[
+              { label: 'Heute', value: wert?.heute || 0, pct: null as number | null },
+              { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
+              { label: '+5J', value: wert?.jahr_5 || 0, pct: wert?.heute ? ((wert.jahr_5 - wert.heute) / wert.heute * 100) : 0 },
+              { label: '+7J', value: wert?.jahr_7 || 0, pct: wert?.heute ? ((wert.jahr_7 - wert.heute) / wert.heute * 100) : 0 },
+              { label: '+10J', value: wert?.jahr_10 || 0, pct: wert?.heute ? ((wert.jahr_10 - wert.heute) / wert.heute * 100) : 0 },
+            ].map((item, i) => {
+              const maxVal = wert?.jahr_10 || wert?.heute || 1;
+              const heightPct = Math.max(40, (item.value / maxVal) * 100);
+              const barColors = ['#94a3b8', '#7a8c9d', '#5a6c7d', '#4a5c6d', '#3a4c5d'];
+              return (
+                <div key={i} className="flex flex-col items-center flex-1 max-w-16">
+                  <span className="text-[10px] font-bold text-[#1E2A3A] mb-1">{formatCurrency(item.value)}</span>
+                  {item.pct !== null && (
+                    <span className="text-[10px] font-bold text-green-600">+{item.pct.toFixed(0)}%</span>
+                  )}
+                  <div
+                    className="w-full rounded-t"
+                    style={{ height: `${heightPct}%`, backgroundColor: barColors[i], minHeight: 24 }}
+                  />
+                  <span className="text-[10px] text-slate-500 mt-1">{item.label}</span>
+                </div>
+              );
+            })}
           </div>
-        </Card>
-
-        {/* AfA / RND */}
-        <Card title="AfA / Restnutzungsdauer">
-          <div className="space-y-3 text-sm sm:text-base">
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Baujahr</span>
-              <span className="font-medium">{berechnungen?.afa_rnd?.baujahr}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Alter</span>
-              <span className="font-medium">{berechnungen?.afa_rnd?.alter} Jahre</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Restnutzungsdauer</span>
-              <span className="font-medium">{berechnungen?.afa_rnd?.rnd} Jahre</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Gebäudewert (80%)</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.afa_rnd?.gebaeude_wert)}</span>
-            </div>
-            <div className="flex justify-between gap-2 pt-2 border-t">
-              <span className="text-slate-600 font-medium">AfA p.a.</span>
-              <span className="font-bold flex-shrink-0">{formatCurrency(berechnungen?.afa_rnd?.afa_jahr)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Steuerersparnis (42%)</span>
-              <span className="font-medium text-green-600 flex-shrink-0">{formatCurrency(berechnungen?.afa_rnd?.steuerersparnis_42)}</span>
-            </div>
-          </div>
-        </Card>
-
-        {/* Wertentwicklung */}
-        <Card title="Wertentwicklung (2,5% p.a.)">
-          <div className="space-y-3 text-sm sm:text-base">
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">Heute</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.heute)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">+ 3 Jahre</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.jahr_3)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">+ 5 Jahre</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.jahr_5)}</span>
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="text-slate-600">+ 7 Jahre</span>
-              <span className="font-medium flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.jahr_7)}</span>
-            </div>
-            <div className="flex justify-between gap-2 pt-2 border-t">
-              <span className="text-slate-600 font-medium">+ 10 Jahre</span>
-              <span className="font-bold text-green-600 flex-shrink-0">{formatCurrency(berechnungen?.wertentwicklung?.jahr_10)}</span>
-            </div>
-          </div>
-        </Card>
+          <p className="text-[10px] text-slate-400 italic text-center">
+            Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Hist. Durchschnitt (2,5% p.a.)'}
+          </p>
+        </SectionBox>
       </div>
 
-      {/* Handlungsempfehlungen */}
-      {(auswertung.empfehlung_handlungsschritte || auswertung.empfehlung_chancen || auswertung.empfehlung_risiken) && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          {auswertung.empfehlung_handlungsschritte && (
-            <Card title="Handlungsschritte">
-              <ul className="space-y-2">
-                {(auswertung.empfehlung_handlungsschritte as Array<string | { schritt: string; zeitrahmen: string }>).map((schritt, i) => {
-                  // Support both old (string) and new (object with zeitrahmen) format
+      {/* ===== SECTIONS 8 & 9 ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Section 8: CAPEX & §559 */}
+        <SectionBox number={8} title="CAPEX & §559 BGB">
+          <DataRow label="CAPEX geplant" value={formatCurrency(mod559?.capex_betrag)} />
+          <div className="bg-blue-50 rounded-lg p-4 mt-3 text-center border border-blue-200">
+            <p className="text-xs text-[#2A3F54] font-bold">§559 Modernisierungsumlage</p>
+            <p className="text-2xl font-bold text-[#1E2A3A] my-1">
+              {formatCurrency(mod559?.umlage_nach_kappung)} p.a.
+            </p>
+            <p className="text-xs text-slate-500">Gekappt nach §559 Abs. 3a BGB</p>
+          </div>
+          <InfoBox>
+            <p className="text-xs font-semibold text-slate-600 mb-1">Kappungsgrenzen §559 Abs. 3a BGB:</p>
+            <p className="text-xs text-slate-600">{'• Kaltmiete < 7€/m²: max. 2€/m² in 6 Jahren'}</p>
+            <p className="text-xs text-slate-600">{'• Kaltmiete ≥ 7€/m²: max. 3€/m² in 6 Jahren'}</p>
+          </InfoBox>
+        </SectionBox>
+
+        {/* Section 9: WEG-Potenzial */}
+        <SectionBox number={9} title="WEG-Potenzial">
+          <DataRow label="Wert heute" value={formatCurrency(weg?.wert_heute)} />
+          <DataRow label="Wert aufgeteilt (+15%)" value={formatCurrency(weg?.wert_aufgeteilt)} />
+          <DataRow
+            label="Potenzial"
+            value={`+${formatCurrency(weg?.weg_gewinn)}`}
+            bold
+            valueClass="text-green-600 font-bold"
+          />
+          {weg?.bereits_aufgeteilt && (
+            <Badge variant="info" className="mt-2">Bereits aufgeteilt</Badge>
+          )}
+          {weg?.genehmigung_erforderlich && (
+            <div className="bg-amber-50 rounded-lg p-2 mt-2 text-center border border-amber-200">
+              <span className="text-xs font-bold text-amber-600">Genehmigung nötig</span>
+            </div>
+          )}
+          <InfoBox>
+            <p className="text-xs text-slate-600">• WEG-Aufteilung: +15% Wertsteigerung durch Einzelverkauf</p>
+            <p className="text-xs text-slate-600">
+              • Status: {weg?.bereits_aufgeteilt ? 'Bereits aufgeteilt' : 'Noch nicht aufgeteilt'}
+            </p>
+          </InfoBox>
+        </SectionBox>
+      </div>
+
+      {/* ===== SECTIONS 10 & 11 ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Section 10: AfA & Steuervorteile */}
+        <SectionBox number={10} title="AfA & Steuervorteile">
+          <div className="bg-green-50 rounded-lg p-4 mb-4 text-center border border-green-200">
+            <p className="text-xs text-green-600 font-bold mb-1">Jährlicher Steuervorteil</p>
+            <p className="text-2xl font-bold text-green-600">{formatCurrency(steuerersparnis)}</p>
+            <p className="text-xs text-slate-500">bei 42% Grenzsteuersatz</p>
+          </div>
+          <div className="mb-3">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs text-slate-600">Restnutzungsdauer</span>
+              <span className="text-xs font-bold">{afa?.rnd} von 80 Jahren</span>
+            </div>
+            <ProgressBar value={afa?.rnd || 0} max={80} color="bg-[#2A3F54]" />
+          </div>
+          <DataRow label="Baujahr / Alter" value={`${afa?.baujahr} / ${afa?.alter}J.`} />
+          <DataRow label="AfA-Satz" value={afa?.rnd ? `${(100 / afa.rnd).toFixed(2)}%` : '-'} />
+          <DataRow label="AfA-Betrag p.a." value={formatCurrency(afa?.afa_jahr)} />
+          <InfoBox>
+            <p className="text-xs text-slate-600">• AfA = Absetzung für Abnutzung (§7 EStG)</p>
+            <p className="text-xs text-slate-600">
+              • Basis: {formatCurrency(afa?.gebaeude_wert)} Gebäudewert (80% KP)
+            </p>
+          </InfoBox>
+        </SectionBox>
+
+        {/* Section 11: Rendite-Szenarien */}
+        <SectionBox number={11} title="Rendite-Szenarien">
+          <div className="space-y-4 mb-4">
+            {[
+              { label: 'Brutto-Rendite IST', value: rendite?.rendite_ist || 0, color: 'bg-slate-400' },
+              { label: 'Brutto-Rendite OPT', value: rendite?.rendite_opt || 0, color: 'bg-green-500' },
+              { label: 'Nach AfA (eff.)', value: rendite_nach_steuer, color: 'bg-[#1E2A3A]' },
+              { label: 'EK-Rendite IST', value: rendite?.eigenkapitalrendite_ist || 0, color: 'bg-[#2A3F54]' },
+            ].map((item, i) => (
+              <div key={i}>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs text-slate-600">{item.label}</span>
+                  <span className="text-xs font-bold">{formatPercent(item.value)}</span>
+                </div>
+                <ProgressBar value={item.value} max={15} color={item.color} />
+              </div>
+            ))}
+          </div>
+          <div className="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+            <p className="text-xs text-[#2A3F54] font-bold">EK-Rendite optimiert</p>
+            <p className="text-xl font-bold text-[#1E2A3A]">{formatPercent(rendite?.eigenkapitalrendite_opt)}</p>
+          </div>
+        </SectionBox>
+      </div>
+
+      {/* ===== SECTION 12: Exit-Szenarien ===== */}
+      <SectionBox number={12} title="Exit-Szenarien">
+        <div className="overflow-x-auto">
+          <div className="flex items-end justify-between gap-2 min-w-[400px] px-4">
+            {[
+              { label: 'Heute', value: wert?.heute || 0 },
+              { label: '+3 Jahre', value: wert?.jahr_3 || 0 },
+              { label: '+5 Jahre', value: wert?.jahr_5 || 0 },
+              { label: '+7 Jahre', value: wert?.jahr_7 || 0 },
+              { label: '+10 Jahre', value: wert?.jahr_10 || 0 },
+            ].map((item, i, arr) => {
+              const maxVal = arr[arr.length - 1].value || 1;
+              const minVal = (arr[0].value || 0) * 0.9;
+              const range = maxVal - minVal || 1;
+              const heightPct = 20 + ((item.value - minVal) / range) * 80;
+              const increment = i > 0 ? item.value - arr[i - 1].value : 0;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center">
+                  <span className="text-xs font-bold text-[#1E2A3A]">{formatCurrency(item.value)}</span>
+                  {i > 0 && increment > 0 && (
+                    <span className="text-[10px] font-bold text-green-600">+{formatCurrency(increment)}</span>
+                  )}
+                  <div className="w-full bg-green-100 rounded-t mt-1" style={{ height: `${heightPct}px` }}>
+                    <div className="w-full h-full bg-gradient-to-t from-green-500 to-green-300 rounded-t" />
+                  </div>
+                  <span className="text-[10px] text-slate-500 mt-1">{item.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4 bg-green-50 rounded-lg p-4 mt-4 border border-green-200">
+          <div className="text-center">
+            <p className="text-xs text-slate-500">Wertzuwachs 10J</p>
+            <p className="text-lg font-bold text-green-600">
+              +{formatCurrency((wert?.jahr_10 || 0) - (wert?.heute || 0))}
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-slate-500">Rendite p.a.</p>
+            <p className="text-lg font-bold text-green-600">
+              +{(wert?.heute && wert?.jahr_10)
+                ? (((wert.jahr_10 / wert.heute) ** (1 / 10) - 1) * 100).toFixed(1)
+                : '2.5'}%
+            </p>
+          </div>
+        </div>
+      </SectionBox>
+
+      {/* ===== WERTSTEIGERNDE MASSNAHMEN ZUSAMMENFASSUNG ===== */}
+      <div className="bg-green-50/50 backdrop-blur-sm rounded-xl p-5 border border-green-200">
+        <h3 className="text-base font-bold text-green-700 mb-4">
+          Zusammenfassung: Wertsteigernde Maßnahmen
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="bg-white rounded-lg p-4">
+            <p className="text-xs text-slate-500 mb-1">Mieterhöhungspotenzial</p>
+            <p className="text-xl font-bold text-green-600">+{formatCurrency(miet?.potenzial_jahr)}/Jahr</p>
+            <p className="text-[10px] text-slate-400 mt-1">durch Anpassung auf Marktmiete</p>
+          </div>
+          <div className="bg-white rounded-lg p-4">
+            <p className="text-xs text-slate-500 mb-1">WEG-Aufteilung</p>
+            <p className={`text-xl font-bold ${weg?.bereits_aufgeteilt ? 'text-slate-400' : 'text-green-600'}`}>
+              {weg?.bereits_aufgeteilt ? 'Bereits aufgeteilt' : `+${formatCurrency(weg?.weg_gewinn)}`}
+            </p>
+            <p className="text-[10px] text-slate-400 mt-1">Einmaliger Wertzuwachs</p>
+          </div>
+          <div className="bg-white rounded-lg p-4">
+            <p className="text-xs text-slate-500 mb-1">AfA-Steuerersparnis</p>
+            <p className="text-xl font-bold text-[#1E2A3A]">+{formatCurrency(steuerersparnis)}/Jahr</p>
+            <p className="text-[10px] text-slate-400 mt-1">bei 42% Grenzsteuersatz</p>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg p-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+          <span className="font-bold text-[#1E2A3A]">Gesamtpotenzial (jährlich wiederkehrend):</span>
+          <span className="text-xl font-bold text-green-600">
+            +{formatCurrency((miet?.potenzial_jahr || 0) + steuerersparnis)}/Jahr
+          </span>
+        </div>
+      </div>
+
+      {/* ===== SECTION 13: Handlungsempfehlung ===== */}
+      <SectionBox number={13} title="Handlungsempfehlung">
+        {/* Empfehlung Badge */}
+        <div className="bg-blue-50 rounded-lg p-6 mb-4 text-center border border-blue-200">
+          <p className="text-xs text-slate-500 mb-1">Unsere Empfehlung</p>
+          <p className="text-3xl font-bold text-[#1E2A3A]">{auswertung.empfehlung || '-'}</p>
+        </div>
+
+        {/* Begründung */}
+        {auswertung.empfehlung_begruendung && (
+          <div className="mb-4">
+            <h4 className="text-sm font-bold text-[#1E2A3A] mb-2">Begründung</h4>
+            <p className="text-sm text-slate-700 leading-relaxed">{auswertung.empfehlung_begruendung}</p>
+          </div>
+        )}
+
+        {/* Handlungsschritte */}
+        {auswertung.empfehlung_handlungsschritte &&
+          (auswertung.empfehlung_handlungsschritte as Array<string | { schritt: string; zeitrahmen: string }>).length > 0 && (
+          <div className="mb-4">
+            <h4 className="text-sm font-bold text-[#1E2A3A] mb-3">Empfohlene Handlungsschritte</h4>
+            <div className="space-y-2">
+              {(auswertung.empfehlung_handlungsschritte as Array<string | { schritt: string; zeitrahmen: string }>).map(
+                (schritt, i) => {
                   const isObject = typeof schritt === 'object' && schritt !== null;
-                  const schrittText = isObject ? schritt.schritt : schritt;
+                  const text = isObject ? schritt.schritt : schritt;
                   const zeitrahmen = isObject ? schritt.zeitrahmen : null;
                   return (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">
+                    <div key={i} className="flex items-start gap-3 bg-slate-50 rounded-lg p-3">
+                      <span className="w-6 h-6 rounded-full bg-[#2A3F54] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
                         {i + 1}
                       </span>
-                      <div className="flex-1">
-                        <span className="text-slate-700">{schrittText}</span>
-                        {zeitrahmen && (
-                          <span className="ml-2 text-xs text-green-600 font-medium">({zeitrahmen})</span>
-                        )}
-                      </div>
-                    </li>
+                      <span className="flex-1 text-sm text-slate-700">{text}</span>
+                      {zeitrahmen && (
+                        <span className="text-xs text-green-600 font-semibold flex-shrink-0">{zeitrahmen}</span>
+                      )}
+                    </div>
                   );
-                })}
-              </ul>
-            </Card>
-          )}
+                }
+              )}
+            </div>
+          </div>
+        )}
 
-          {auswertung.empfehlung_chancen && (
-            <Card title="Chancen">
-              <ul className="space-y-2">
-                {(auswertung.empfehlung_chancen as string[]).map((chance, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    <span className="text-slate-700">{chance}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          )}
+        {/* Chancen & Risiken */}
+        {(auswertung.empfehlung_chancen || auswertung.empfehlung_risiken) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {auswertung.empfehlung_chancen && (
+              <div>
+                <h4 className="text-sm font-bold text-green-700 mb-2">Chancen</h4>
+                <ul className="space-y-2">
+                  {(auswertung.empfehlung_chancen as string[]).map((c, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                      {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {auswertung.empfehlung_risiken && (
+              <div>
+                <h4 className="text-sm font-bold text-amber-700 mb-2">Risiken</h4>
+                <ul className="space-y-2">
+                  {(auswertung.empfehlung_risiken as string[]).map((r, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                      <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
 
-          {auswertung.empfehlung_risiken && (
-            <Card title="Risiken">
-              <ul className="space-y-2">
-                {(auswertung.empfehlung_risiken as string[]).map((risiko, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                    <span className="text-slate-700">{risiko}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          )}
+        {/* Fazit */}
+        {auswertung.empfehlung_fazit && (
+          <div className="bg-slate-50 rounded-lg p-4 border-l-4 border-[#2A3F54]">
+            <h4 className="text-sm font-bold text-[#1E2A3A] mb-1">Fazit</h4>
+            <p className="text-sm text-slate-700 leading-relaxed">{auswertung.empfehlung_fazit}</p>
+          </div>
+        )}
+      </SectionBox>
+
+      {/* ===== ERGÄNZENDE ERLÄUTERUNGEN ===== */}
+      {erlaeuterungen && (
+        <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+          <div className="px-4 py-3 bg-slate-50/80 border-b border-slate-200">
+            <h3 className="text-sm font-bold text-[#1E2A3A]">Ergänzende Erläuterungen</h3>
+          </div>
+          <div className="p-4 space-y-4 text-sm text-slate-700">
+            {erlaeuterungen.finanzierung && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Finanzierung</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.finanzierung}</p>
+              </div>
+            )}
+            {erlaeuterungen.mietanalyse && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Mietanalyse</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.mietanalyse}</p>
+              </div>
+            )}
+            {erlaeuterungen.kostenstruktur && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Kostenstruktur</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.kostenstruktur}</p>
+              </div>
+            )}
+            {erlaeuterungen.cashflow && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Cashflow</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.cashflow}</p>
+              </div>
+            )}
+            {erlaeuterungen.rendite && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Rendite</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.rendite}</p>
+              </div>
+            )}
+            {erlaeuterungen.weg && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">WEG-Potenzial</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.weg}</p>
+              </div>
+            )}
+            {erlaeuterungen.afa && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">AfA & Steuervorteile</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.afa}</p>
+              </div>
+            )}
+            {erlaeuterungen.wertentwicklung && (
+              <div>
+                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Wertentwicklung</h4>
+                <p className="text-xs leading-relaxed">{erlaeuterungen.wertentwicklung}</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Fazit */}
-      {auswertung.empfehlung_fazit && (
-        <Card title="Fazit">
-          <p className="text-slate-700">{auswertung.empfehlung_fazit}</p>
-        </Card>
-      )}
+      {/* ===== HAFTUNGSAUSSCHLUSS ===== */}
+      <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
+        <h3 className="text-sm font-bold text-[#1E2A3A] mb-3">Haftungsausschluss</h3>
+        <div className="text-xs text-slate-600 space-y-2 leading-relaxed">
+          <p>
+            Die vorliegende Analyse dient ausschließlich der Einschätzung des Optimierungspotenzials und
+            stellt kein Gutachten im Sinne des geltenden deutschen Rechts dar. Sie basiert auf den Angaben
+            des Mandanten sowie statistischen und öffentlich verfügbaren Marktdaten.
+          </p>
+          <p>
+            Für etwaige Abweichungen von tatsächlich erzielten Kauf- und/oder Verkaufspreisen und/oder Mieten
+            wird jedwede Haftung ausgeschlossen.
+          </p>
+          <p>
+            Diese Analyse ersetzt keine Rechts-, Steuer- oder Finanzberatung. Vor wichtigen
+            Investitionsentscheidungen empfehlen wir die Konsultation entsprechender Fachberater.
+          </p>
+        </div>
+      </div>
 
       {/* Metadaten */}
-      <div className="text-sm text-slate-500">
-        Auswertung erstellt am {formatDate(auswertung.created_at)}
-      </div>
+      <p className="text-xs text-slate-400 text-center">
+        Auswertung erstellt am {formatDate(auswertung.created_at)} · Imperoyal Immobilien | Vertraulich
+      </p>
     </div>
   );
 }

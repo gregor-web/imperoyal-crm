@@ -105,7 +105,8 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       mode: 'payment',
-      payment_method_types: ['card', 'sepa_debit'],
+      // Automatische Zahlungsmethoden: Card, Apple Pay, Google Pay, SEPA, etc.
+      payment_method_types: ['card', 'sepa_debit', 'link'],
       line_items: [
         {
           price_data: {

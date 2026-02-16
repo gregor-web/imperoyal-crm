@@ -633,6 +633,7 @@ interface AuswertungPDFProps {
   empfehlung_fazit?: string;
   created_at: string;
   logoUrl?: string;
+  mapUrl?: string;
   // Optional AI-driven style adjustments
   styleMultipliers?: StyleMultipliers;
 }
@@ -649,6 +650,7 @@ export function AuswertungPDF({
   empfehlung_fazit,
   created_at,
   logoUrl,
+  mapUrl,
   styleMultipliers,
 }: AuswertungPDFProps) {
   // Apply style multipliers (defaults to 1 if not provided)
@@ -733,6 +735,50 @@ export function AuswertungPDF({
             <Text style={styles.objektAddress}>{objekt.plz} {objekt.ort}</Text>
           </View>
         </View>
+
+        {/* Objektkarte - Lageplan */}
+        {mapUrl && (
+          <View style={{
+            marginBottom: 10 * sm.spacingMultiplier,
+            borderRadius: 8,
+            overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}>
+            <View style={{
+              backgroundColor: colors.glassInner,
+              paddingHorizontal: 8,
+              paddingVertical: 5,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary }}>Lageplan</Text>
+              <Text style={{ fontSize: 7, color: colors.textLight }}>{objekt.strasse}, {objekt.plz} {objekt.ort}</Text>
+            </View>
+            <Image
+              src={mapUrl}
+              style={{
+                width: '100%',
+                height: 160,
+                objectFit: 'cover',
+              }}
+            />
+            <View style={{
+              backgroundColor: colors.glassInner,
+              paddingHorizontal: 8,
+              paddingVertical: 3,
+              borderTopWidth: 1,
+              borderTopColor: colors.border,
+            }}>
+              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic' }}>
+                © Google Maps · Kartendaten © {new Date().getFullYear()} Google
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* Persönliche Begrüßung */}
         <View style={{
