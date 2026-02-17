@@ -5,6 +5,9 @@ import { Plus } from 'lucide-react';
 import { SearchFilterBar } from '@/components/ui/search-filter-bar';
 import { ObjekteView } from '@/components/objekte/objekte-view';
 
+interface GroupedObjekte {
+  [mandantId: string]: { mandantName: string; objekte: Record<string, unknown>[] };
+}
 
 const PAGE_SIZE = 20;
 
