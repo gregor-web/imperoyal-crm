@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { EmpfehlungBadge } from '@/components/ui/badge';

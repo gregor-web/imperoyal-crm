@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
 import { Card } from '@/components/ui/card';
 import { EmpfehlungBadge, Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { SearchFilterBar } from '@/components/ui/search-filter-bar';
+
+export const dynamic = 'force-dynamic';
 import { AuswertungenView } from '@/components/auswertungen/auswertungen-view';
 
 const PAGE_SIZE = 20;

@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 import { MandantenActions } from './mandanten-actions';
 import { SearchFilterBar } from '@/components/ui/search-filter-bar';
 import { MandantenView } from '@/components/mandanten/mandanten-view';

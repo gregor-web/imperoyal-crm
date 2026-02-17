@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { SearchFilterBar } from '@/components/ui/search-filter-bar';
