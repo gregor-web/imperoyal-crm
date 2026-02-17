@@ -52,7 +52,7 @@ export function LageplanMap({ address, height = 300 }: LageplanMapProps) {
         // Create map
         const map = L.map(mapRef.current!, {
           center: [lat, lon],
-          zoom: 17,
+          zoom: 19,
           scrollWheelZoom: false,
           attributionControl: true,
         });
