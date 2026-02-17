@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   title: "Imperoyal Immobilien",
   description: "Immobilien-Optimierungsprotokoll für Vermögensverwalter und Family Offices",
   icons: {
-    icon: '/logo_imperoyal.png',
-    apple: '/logo_imperoyal.png',
+    icon: '/favicon_imp.png',
+    apple: '/favicon_imp.png',
   },
 };
 
