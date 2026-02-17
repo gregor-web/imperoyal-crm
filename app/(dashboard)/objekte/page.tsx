@@ -151,30 +151,30 @@ export default async function ObjektePage({ searchParams }: PageProps) {
               return (
                 <Card key={mandantId} className="overflow-hidden">
                   {/* Mandant Header */}
-                  <div className="bg-gradient-to-r from-[#1E2A3A] to-[#2A3F54] px-4 sm:px-6 py-4">
+                  <div className="px-4 sm:px-5 py-3.5 border-b border-[#D5DEE6] bg-[#EDF1F5]/60">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
-                        <div className="bg-white/10 p-2 rounded-lg">
-                          <User className="w-5 h-5 text-white" />
+                        <div className="w-8 h-8 bg-[#5B7A9D]/12 rounded-xl flex items-center justify-center">
+                          <User className="w-4 h-4 text-[#4A6A8D]" />
                         </div>
                         <div>
                           <Link
                             href={`/mandanten/${mandantId}`}
-                            className="text-base sm:text-lg font-semibold text-white hover:text-[#D5DEE6] transition-colors"
+                            className="text-[15px] font-semibold text-[#1E2A3A] hover:text-[#5B7A9D] transition-colors"
                           >
                             {group.mandantName}
                           </Link>
-                          <p className="text-[#B8C5D1] text-sm">
+                          <p className="text-[#5B7A9D] text-[12px]">
                             {group.objekte.length} {group.objekte.length === 1 ? 'Objekt' : 'Objekte'}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 ml-11 sm:ml-0">
-                        <Building2 className="w-5 h-5 text-[#9EAFC0] hidden sm:block" />
-                        <span className="text-white font-medium text-sm sm:text-base">
+                      <div className="flex items-center gap-1.5 ml-11 sm:ml-0">
+                        <Building2 className="w-4 h-4 text-[#9EAFC0] hidden sm:block" />
+                        <span className="text-[#1E2A3A] font-semibold text-sm">
                           {formatCurrency(group.objekte.reduce((sum, o) => sum + (o.kaufpreis || 0), 0))}
                         </span>
-                        <span className="text-[#9EAFC0] text-sm">Gesamtwert</span>
+                        <span className="text-[#5B7A9D] text-[12px]">Gesamtwert</span>
                       </div>
                     </div>
                   </div>

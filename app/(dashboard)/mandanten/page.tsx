@@ -70,8 +70,8 @@ export default async function MandantenPage({ searchParams }: PageProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Mandanten</h1>
-          <p className="text-sm sm:text-base text-slate-600 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A] tracking-[-0.02em]">Mandanten</h1>
+          <p className="text-sm sm:text-base text-[#4A6A8D] mt-1">
             {totalItems} Mandanten verwalten
           </p>
         </div>
@@ -108,7 +108,7 @@ export default async function MandantenPage({ searchParams }: PageProps) {
                   <TableCell>
                     <Link
                       href={`/mandanten/${mandant.id}`}
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      className="text-[#5B7A9D] hover:text-[#4A6A8D] text-sm font-medium"
                     >
                       Details
                     </Link>

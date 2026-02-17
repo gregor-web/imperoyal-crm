@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Card } from '@/components/ui/card';
@@ -37,12 +37,12 @@ export default async function AnkaufsprofilDetailPage({ params }: Props) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3 sm:gap-4">
-          <Link href="/ankaufsprofile" className="p-2 hover:bg-slate-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          <Link href="/ankaufsprofile" className="p-2 hover:bg-[#EDF1F5] rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-[#4A6A8D]" />
           </Link>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{profil.name}</h1>
-            <p className="text-sm sm:text-base text-slate-600">{mandant?.name || 'Unbekannter Mandant'}</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">{profil.name}</h1>
+            <p className="text-sm sm:text-base text-[#4A6A8D]">{mandant?.name || 'Unbekannter Mandant'}</p>
           </div>
         </div>
         <Link href={`/ankaufsprofile/${id}/edit`} className="self-start sm:self-auto ml-11 sm:ml-0">
@@ -57,12 +57,12 @@ export default async function AnkaufsprofilDetailPage({ params }: Props) {
         {/* Volumen */}
         <Card title="Investitionsvolumen">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Target className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-[#5B7A9D]/12 rounded-xl flex items-center justify-center">
+              <Target className="w-6 h-6 text-[#5B7A9D]" />
             </div>
             <div>
-              <p className="text-sm text-slate-500">Zielvolumen</p>
-              <p className="text-xl font-bold text-slate-800">
+              <p className="text-sm text-[#5B7A9D]">Zielvolumen</p>
+              <p className="text-xl font-bold text-[#1E2A3A]">
                 {formatCurrency(profil.min_volumen)} - {formatCurrency(profil.max_volumen)}
               </p>
             </div>
@@ -76,8 +76,8 @@ export default async function AnkaufsprofilDetailPage({ params }: Props) {
               <TrendingUp className="w-6 h-6 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-slate-500">Erwartete Rendite</p>
-              <p className="text-xl font-bold text-slate-800">
+              <p className="text-sm text-[#5B7A9D]">Erwartete Rendite</p>
+              <p className="text-xl font-bold text-[#1E2A3A]">
                 {profil.rendite_min ? `${profil.rendite_min}%` : 'Keine Angabe'}
               </p>
             </div>
@@ -98,7 +98,7 @@ export default async function AnkaufsprofilDetailPage({ params }: Props) {
                   </Badge>
                 ))
               ) : (
-                <span className="text-slate-500">Keine Assetklassen definiert</span>
+                <span className="text-[#5B7A9D]">Keine Assetklassen definiert</span>
               )}
             </div>
           </div>
@@ -111,7 +111,7 @@ export default async function AnkaufsprofilDetailPage({ params }: Props) {
               <MapPin className="w-6 h-6 text-amber-600" />
             </div>
             <div>
-              <p className="text-slate-700">
+              <p className="text-[#1E2A3A]">
                 {profil.regionen || 'Keine Regionen definiert'}
               </p>
             </div>
@@ -122,12 +122,12 @@ export default async function AnkaufsprofilDetailPage({ params }: Props) {
       {/* Sonstiges */}
       {profil.sonstiges && (
         <Card title="Sonstige Anforderungen">
-          <p className="text-slate-700 whitespace-pre-wrap">{profil.sonstiges}</p>
+          <p className="text-[#1E2A3A] whitespace-pre-wrap">{profil.sonstiges}</p>
         </Card>
       )}
 
       {/* Metadaten */}
-      <div className="text-sm text-slate-500">
+      <div className="text-sm text-[#5B7A9D]">
         Erstellt am {formatDate(profil.created_at)}
         {profil.updated_at && profil.updated_at !== profil.created_at && (
           <span> | Zuletzt bearbeitet am {formatDate(profil.updated_at)}</span>

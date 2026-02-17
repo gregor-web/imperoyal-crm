@@ -102,7 +102,7 @@ export default function EditAnkaufsprofilPage() {
   if (isFetching) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5B7A9D]"></div>
       </div>
     );
   }
@@ -111,7 +111,7 @@ export default function EditAnkaufsprofilPage() {
     return (
       <div className="text-center py-12">
         <p className="text-red-600">{error || 'Ankaufsprofil nicht gefunden'}</p>
-        <Link href="/ankaufsprofile" className="text-blue-600 hover:underline mt-4 inline-block">
+        <Link href="/ankaufsprofile" className="text-[#5B7A9D] hover:underline mt-4 inline-block">
           Zurück zur Liste
         </Link>
       </div>
@@ -121,12 +121,12 @@ export default function EditAnkaufsprofilPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-4 mb-6">
-        <Link href={`/ankaufsprofile/${id}`} className="p-2 hover:bg-slate-100 rounded-lg">
-          <ArrowLeft className="w-5 h-5 text-slate-600" />
+        <Link href={`/ankaufsprofile/${id}`} className="p-2 hover:bg-[#EDF1F5] rounded-lg">
+          <ArrowLeft className="w-5 h-5 text-[#4A6A8D]" />
         </Link>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Ankaufsprofil bearbeiten</h1>
-          <p className="text-slate-600 mt-1">{profil.name}</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Ankaufsprofil bearbeiten</h1>
+          <p className="text-[#4A6A8D] mt-1">{profil.name}</p>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { formatCurrency, formatDate } from '@/lib/formatters';
@@ -342,8 +342,8 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
   const statusIcon = (status: string) => {
     switch (status) {
       case 'offen': return <Clock className="w-4 h-4 text-amber-500" />;
-      case 'bezahlt': return <CreditCard className="w-4 h-4 text-blue-500" />;
-      case 'in_bearbeitung': return <Clock className="w-4 h-4 text-blue-500" />;
+      case 'bezahlt': return <CreditCard className="w-4 h-4 text-[#5B7A9D]" />;
+      case 'in_bearbeitung': return <Clock className="w-4 h-4 text-[#5B7A9D]" />;
       case 'fertig': return <CheckCircle className="w-4 h-4 text-green-500" />;
       case 'versendet': return <CheckCircle className="w-4 h-4 text-green-500" />;
       default: return <Clock className="w-4 h-4 text-[#9EAFC0]" />;
@@ -435,7 +435,7 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
                     <span className={`text-xs font-medium px-2 py-1 rounded-full ${
                       anfrage.status === 'offen' ? 'bg-amber-100 text-amber-700' :
                       anfrage.status === 'fertig' || anfrage.status === 'versendet' ? 'bg-green-100 text-green-700' :
-                      anfrage.status === 'bezahlt' ? 'bg-blue-100 text-blue-700' :
+                      anfrage.status === 'bezahlt' ? 'bg-[#5B7A9D]/12 text-[#4A6A8D]' :
                       'bg-[#D5DEE6] text-[#1E2A3A]'
                     }`}>
                       {statusLabel(anfrage.status)}

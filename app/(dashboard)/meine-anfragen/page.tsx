@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Card } from '@/components/ui/card';
@@ -102,8 +102,8 @@ export default async function MeineAnfragenPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Meine Anfragen</h1>
-          <p className="text-sm sm:text-base text-slate-600 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A] tracking-[-0.02em]">Meine Anfragen</h1>
+          <p className="text-sm sm:text-base text-[#4A6A8D] mt-1">
             Übersicht Ihrer Auswertungsanfragen
           </p>
         </div>
@@ -128,7 +128,7 @@ export default async function MeineAnfragenPage() {
                     <Icon className="w-3 h-3" />
                     {config.label}
                   </Badge>
-                  <span className="text-slate-500 hidden sm:inline">- {config.description}</span>
+                  <span className="text-[#5B7A9D] hidden sm:inline">- {config.description}</span>
                 </div>
               );
             })}
@@ -160,15 +160,15 @@ export default async function MeineAnfragenPage() {
                     {/* Objekt Info */}
                     <div className="flex-1">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
-                          <FileBarChart className="w-5 h-5 text-blue-600" />
+                        <div className="w-10 h-10 bg-[#5B7A9D]/12 rounded-xl flex items-center justify-center shrink-0">
+                          <FileBarChart className="w-5 h-5 text-[#4A6A8D]" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-slate-800">{objekt?.strasse}</h3>
-                          <p className="text-sm text-slate-500">
+                          <h3 className="font-semibold text-[#1E2A3A]">{objekt?.strasse}</h3>
+                          <p className="text-sm text-[#5B7A9D]">
                             {objekt?.plz} {objekt?.ort} • {objekt?.gebaeudetyp}
                           </p>
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-[#5B7A9D]">
                             Kaufpreis: {formatCurrency(objekt?.kaufpreis)}
                           </p>
                         </div>
@@ -181,7 +181,7 @@ export default async function MeineAnfragenPage() {
                         <StatusIcon className="w-3 h-3" />
                         {statusConfig.label}
                       </Badge>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-[#5B7A9D]">
                         Angefragt am {formatDate(anfrage.created_at)}
                       </p>
                     </div>
@@ -189,25 +189,25 @@ export default async function MeineAnfragenPage() {
 
                   {/* Payment Info for pending payments */}
                   {anfrage.payment_status === 'pending' && status === 'offen' && (
-                    <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-100">
+                    <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-[#D5DEE6]">
                       <PaymentRetryButton anfrageId={anfrage.id} />
                     </div>
                   )}
 
                   {/* Bezahlt info */}
                   {anfrage.payment_status === 'paid' && anfrage.amount_cents && (
-                    <div className="flex items-center gap-2 pt-3 border-t border-slate-100 text-sm text-green-700">
+                    <div className="flex items-center gap-2 pt-3 border-t border-[#D5DEE6] text-sm text-[#1A8A3A]">
                       <CreditCard className="w-4 h-4" />
                       <span>Bezahlt: {formatCurrency(anfrage.amount_cents / 100)}</span>
                       {anfrage.paid_at && (
-                        <span className="text-slate-400">am {formatDate(anfrage.paid_at)}</span>
+                        <span className="text-[#9EAFC0]">am {formatDate(anfrage.paid_at)}</span>
                       )}
                     </div>
                   )}
 
                   {/* Actions - full width buttons for completed items */}
                   {(status === 'fertig' || status === 'versendet') && auswertungInfo && (
-                    <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-100">
+                    <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-[#D5DEE6]">
                       <Link href={`/auswertungen/${auswertungInfo.id}`} className="flex-1">
                         <Button className="w-full gap-2">
                           <FileBarChart className="w-4 h-4" />
@@ -232,9 +232,9 @@ export default async function MeineAnfragenPage() {
       ) : (
         <Card>
           <div className="text-center py-12">
-            <FileBarChart className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-slate-800 mb-2">Keine Anfragen vorhanden</h3>
-            <p className="text-slate-500 mb-6">
+            <FileBarChart className="w-12 h-12 text-[#B8C5D1] mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-[#1E2A3A] mb-2">Keine Anfragen vorhanden</h3>
+            <p className="text-[#5B7A9D] mb-6">
               Sie haben noch keine Auswertung angefragt. Gehen Sie zu einem Ihrer Objekte und fordern Sie eine Analyse an.
             </p>
             <Link href="/objekte">

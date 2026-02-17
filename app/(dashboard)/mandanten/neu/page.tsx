@@ -53,11 +53,11 @@ export default function NeuMandantPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-slate-800">Mandant erfolgreich erstellt!</h2>
-            <p className="text-slate-600">
+            <h2 className="text-xl font-semibold text-[#1E2A3A]">Mandant erfolgreich erstellt!</h2>
+            <p className="text-[#4A6A8D]">
               Das temporäre Passwort für den Mandanten lautet:
             </p>
-            <div className="bg-slate-100 rounded-lg p-4 font-mono text-lg">
+            <div className="bg-[#EDF1F5] rounded-lg p-4 font-mono text-lg">
               {createdPassword}
             </div>
             <p className="text-sm text-amber-600">
@@ -66,7 +66,7 @@ export default function NeuMandantPage() {
             </p>
             <button
               onClick={() => router.push('/mandanten')}
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="mt-4 px-6 py-2 bg-[#5B7A9D] text-white rounded-[10px] hover:bg-[#6B8AAD]"
             >
               Zur Mandantenliste
             </button>
@@ -79,8 +79,8 @@ export default function NeuMandantPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Neuer Mandant</h1>
-        <p className="text-slate-600 mt-1">Erstellen Sie einen neuen Mandanten</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Neuer Mandant</h1>
+        <p className="text-[#4A6A8D] mt-1">Erstellen Sie einen neuen Mandanten</p>
       </div>
 
       {error && (

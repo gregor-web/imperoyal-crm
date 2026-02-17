@@ -71,8 +71,8 @@ export default async function AnkaufsprofilePage({ searchParams }: PageProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Ankaufsprofile</h1>
-          <p className="text-sm sm:text-base text-slate-600 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A] tracking-[-0.02em]">Ankaufsprofile</h1>
+          <p className="text-sm sm:text-base text-[#4A6A8D] mt-1">
             {isAdmin ? `${totalItems} Ankaufsprofile im System` : 'Ihre Ankaufsprofile'}
           </p>
         </div>

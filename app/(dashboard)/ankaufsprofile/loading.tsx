@@ -1,4 +1,4 @@
-function SkeletonRow({ cols }: { cols: number }) {
+﻿function SkeletonRow({ cols }: { cols: number }) {
   return (
     <tr>
       {[...Array(cols)].map((_, i) => (
@@ -32,7 +32,7 @@ export default function Loading() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-100">
+              <tr className="border-b border-[#D5DEE6]">
                 {['Name', 'Mandant', 'Volumen', 'Assetklassen', 'Min. Rendite', ''].map((_, i) => (
                   <th key={i} className="px-3 py-2 sm:px-4 sm:py-3 text-left">
                     <div className="h-3 w-20 bg-[#D5DEE6] rounded" />

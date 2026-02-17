@@ -51,12 +51,12 @@ export default async function MandantDetailPage({ params }: Props) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3 sm:gap-4">
-          <Link href="/mandanten" className="p-2 hover:bg-slate-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          <Link href="/mandanten" className="p-2 hover:bg-[#EDF1F5] rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-[#4A6A8D]" />
           </Link>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{mandant.name}</h1>
-            <p className="text-sm sm:text-base text-slate-600">{mandant.ansprechpartner || 'Kein Ansprechpartner'}</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">{mandant.name}</h1>
+            <p className="text-sm sm:text-base text-[#4A6A8D]">{mandant.ansprechpartner || 'Kein Ansprechpartner'}</p>
           </div>
         </div>
         <Link href={`/mandanten/${id}/edit`} className="self-start sm:self-auto ml-11 sm:ml-0">
@@ -72,10 +72,10 @@ export default async function MandantDetailPage({ params }: Props) {
         <Card title="Kontaktdaten" className="lg:col-span-1">
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-slate-400 mt-0.5" />
+              <Mail className="w-5 h-5 text-[#9EAFC0] mt-0.5" />
               <div>
-                <p className="text-sm text-slate-500">E-Mail</p>
-                <a href={`mailto:${mandant.email}`} className="text-blue-600 hover:underline break-all">
+                <p className="text-sm text-[#5B7A9D]">E-Mail</p>
+                <a href={`mailto:${mandant.email}`} className="text-[#5B7A9D] hover:underline break-all">
                   {mandant.email}
                 </a>
               </div>
@@ -83,10 +83,10 @@ export default async function MandantDetailPage({ params }: Props) {
 
             {mandant.telefon && (
               <div className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-slate-400 mt-0.5" />
+                <Phone className="w-5 h-5 text-[#9EAFC0] mt-0.5" />
                 <div>
-                  <p className="text-sm text-slate-500">Telefon</p>
-                  <a href={`tel:${mandant.telefon}`} className="text-slate-800">
+                  <p className="text-sm text-[#5B7A9D]">Telefon</p>
+                  <a href={`tel:${mandant.telefon}`} className="text-[#1E2A3A]">
                     {mandant.telefon}
                   </a>
                 </div>
@@ -95,30 +95,30 @@ export default async function MandantDetailPage({ params }: Props) {
 
             {(mandant.strasse || mandant.ort) && (
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-slate-400 mt-0.5" />
+                <MapPin className="w-5 h-5 text-[#9EAFC0] mt-0.5" />
                 <div>
-                  <p className="text-sm text-slate-500">Adresse</p>
-                  <p className="text-slate-800">
+                  <p className="text-sm text-[#5B7A9D]">Adresse</p>
+                  <p className="text-[#1E2A3A]">
                     {formatAddress(mandant.strasse, mandant.plz, mandant.ort)}
                   </p>
                   {mandant.land && mandant.land !== 'Deutschland' && (
-                    <p className="text-slate-600">{mandant.land}</p>
+                    <p className="text-[#4A6A8D]">{mandant.land}</p>
                   )}
                 </div>
               </div>
             )}
 
             {mandant.kontaktart && (
-              <div className="pt-2 border-t border-slate-100">
-                <p className="text-sm text-slate-500">Bevorzugte Kontaktart</p>
+              <div className="pt-2 border-t border-[#D5DEE6]">
+                <p className="text-sm text-[#5B7A9D]">Bevorzugte Kontaktart</p>
                 <Badge variant="info">{mandant.kontaktart}</Badge>
               </div>
             )}
 
             {mandant.position && (
               <div>
-                <p className="text-sm text-slate-500">Position</p>
-                <p className="text-slate-800">{mandant.position}</p>
+                <p className="text-sm text-[#5B7A9D]">Position</p>
+                <p className="text-[#1E2A3A]">{mandant.position}</p>
               </div>
             )}
           </div>
@@ -158,7 +158,7 @@ export default async function MandantDetailPage({ params }: Props) {
                     <TableCell>
                       <Link
                         href={`/objekte/${objekt.id}`}
-                        className="text-blue-600 hover:text-blue-700 text-sm"
+                        className="text-[#5B7A9D] hover:text-[#4A6A8D] text-sm"
                       >
                         Details
                       </Link>
@@ -174,7 +174,7 @@ export default async function MandantDetailPage({ params }: Props) {
       </div>
 
       {/* Metadaten */}
-      <div className="flex flex-col sm:flex-row gap-1 text-sm text-slate-500">
+      <div className="flex flex-col sm:flex-row gap-1 text-sm text-[#5B7A9D]">
         <span>Erstellt am {formatDate(mandant.created_at)}</span>
         <span className="hidden sm:inline">|</span>
         <span>Aktualisiert {formatDate(mandant.updated_at)}</span>
