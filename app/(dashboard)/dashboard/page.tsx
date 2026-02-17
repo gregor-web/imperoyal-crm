@@ -87,7 +87,7 @@ export default async function DashboardPage() {
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#1E2A3A]">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#1E2A3A] tracking-[-0.02em]">
           Willkommen{profile?.name ? `, ${profile.name}` : ''}
         </h1>
         <p className="text-[#4A6A8D] mt-1">
@@ -144,26 +144,26 @@ async function AdminDashboardContent() {
   return (
     <>
       {/* Quick Actions */}
-      <div className="glass-card rounded-xl p-4 sm:p-6">
-        <h2 className="text-lg font-semibold text-[#1E2A3A] mb-4">Schnellaktionen</h2>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+      <div className="glass-card rounded-2xl p-4 sm:p-5">
+        <h2 className="text-[13px] font-semibold text-[#4A6A8D] uppercase tracking-[0.05em] mb-3">Schnellaktionen</h2>
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2">
           <Link
             href="/mandanten/neu"
-            className="inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium min-h-[44px]"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5B7A9D] text-white rounded-[10px] hover:bg-[#6B8AAD] transition-colors text-[13px] font-medium min-h-[44px] shadow-[0_1px_2px_rgba(30,42,58,0.20)]"
           >
             <Plus className="w-4 h-4" />
-            Neuen Mandanten anlegen
+            Mandanten anlegen
           </Link>
           <Link
             href="/objekte/neu"
-            className="inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium min-h-[44px]"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5B7A9D] text-white rounded-[10px] hover:bg-[#6B8AAD] transition-colors text-[13px] font-medium min-h-[44px] shadow-[0_1px_2px_rgba(30,42,58,0.20)]"
           >
             <Plus className="w-4 h-4" />
-            Neues Objekt anlegen
+            Objekt anlegen
           </Link>
           <Link
             href="/anfragen"
-            className="inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-[#1E2A3A] text-white rounded-lg hover:bg-[#2A3F54] transition-colors text-sm font-medium min-h-[44px]"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-[#B8C5D1] text-[#1E2A3A] rounded-[10px] hover:bg-[#EDF1F5] hover:border-[#5B7A9D] transition-colors text-[13px] font-medium min-h-[44px]"
           >
             <FileBarChart className="w-4 h-4" />
             Anfragen bearbeiten
@@ -364,43 +364,43 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
   return (
     <>
       {/* Quick Actions für Mandant */}
-      <div className="glass-card rounded-xl p-4 sm:p-6">
-        <h2 className="text-lg font-semibold text-[#1E2A3A] mb-4">Was möchten Sie tun?</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="glass-card rounded-2xl p-4 sm:p-5">
+        <h2 className="text-[13px] font-semibold text-[#4A6A8D] uppercase tracking-[0.05em] mb-3">Was möchten Sie tun?</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <Link
             href="/objekte/neu"
-            className="flex items-center gap-3 p-4 rounded-lg border border-[#D5DEE6] hover:border-[#5B7A9D] hover:bg-[#EDF1F5]/50 transition-all min-h-[44px]"
+            className="flex items-center gap-3 p-4 rounded-xl border border-[#D5DEE6] hover:border-[#5B7A9D] hover:bg-white transition-all min-h-[44px] group"
           >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#4A6A8D] to-[#5B7A9D] flex items-center justify-center shrink-0">
-              <Building2 className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-[#5B7A9D]/12 flex items-center justify-center shrink-0 text-[#4A6A8D] group-hover:bg-[#5B7A9D]/20 transition-colors">
+              <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-medium text-[#1E2A3A] text-sm">Objekt hinzufügen</p>
-              <p className="text-xs text-[#5B7A9D]">Neue Immobilie erfassen</p>
+              <p className="font-semibold text-[#1E2A3A] text-[13px]">Objekt hinzufügen</p>
+              <p className="text-[12px] text-[#5B7A9D]">Neue Immobilie erfassen</p>
             </div>
           </Link>
           <Link
             href="/objekte"
-            className="flex items-center gap-3 p-4 rounded-lg border border-[#D5DEE6] hover:border-[#5B7A9D] hover:bg-[#EDF1F5]/50 transition-all min-h-[44px]"
+            className="flex items-center gap-3 p-4 rounded-xl border border-[#D5DEE6] hover:border-[#5B7A9D] hover:bg-white transition-all min-h-[44px] group"
           >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shrink-0">
-              <FileBarChart className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-[#34C759]/10 flex items-center justify-center shrink-0 text-[#1A8A3A] group-hover:bg-[#34C759]/15 transition-colors">
+              <FileBarChart className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-medium text-[#1E2A3A] text-sm">Auswertung anfragen</p>
-              <p className="text-xs text-[#5B7A9D]">Objekt analysieren lassen</p>
+              <p className="font-semibold text-[#1E2A3A] text-[13px]">Auswertung anfragen</p>
+              <p className="text-[12px] text-[#5B7A9D]">Objekt analysieren lassen</p>
             </div>
           </Link>
           <Link
             href="/ankaufsprofile/neu"
-            className="flex items-center gap-3 p-4 rounded-lg border border-[#D5DEE6] hover:border-[#5B7A9D] hover:bg-[#EDF1F5]/50 transition-all min-h-[44px]"
+            className="flex items-center gap-3 p-4 rounded-xl border border-[#D5DEE6] hover:border-[#5B7A9D] hover:bg-white transition-all min-h-[44px] group"
           >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#1E2A3A] to-[#2A3F54] flex items-center justify-center shrink-0">
-              <Plus className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-[#1E2A3A]/08 flex items-center justify-center shrink-0 text-[#2A3F54] group-hover:bg-[#1E2A3A]/12 transition-colors">
+              <Plus className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-medium text-[#1E2A3A] text-sm">Ankaufsprofil</p>
-              <p className="text-xs text-[#5B7A9D]">Kaufkriterien hinterlegen</p>
+              <p className="font-semibold text-[#1E2A3A] text-[13px]">Ankaufsprofil</p>
+              <p className="text-[12px] text-[#5B7A9D]">Kaufkriterien hinterlegen</p>
             </div>
           </Link>
         </div>

@@ -146,28 +146,28 @@ export function DashboardStats({ isAdmin, initialStats }: DashboardStatsProps) {
           value={stats.mandantenCount.toString()}
           subtitle="Aktive Kunden"
           color="purple"
-          icon={<Users className="w-6 h-6 text-white" />}
+          icon={<Users className="w-5 h-5" />}
         />
         <StatCard
           title="Offene Anfragen"
           value={stats.anfragenOffenCount.toString()}
           subtitle={stats.anfragenOffenCount > 0 ? 'Warten auf Bearbeitung' : 'Alles erledigt'}
           color={stats.anfragenOffenCount > 0 ? 'amber' : 'green'}
-          icon={<Clock className="w-6 h-6 text-white" />}
+          icon={<Clock className="w-5 h-5" />}
         />
         <StatCard
           title="Objekte"
           value={stats.objekteCount.toString()}
           subtitle="Immobilien gesamt"
           color="blue"
-          icon={<Building2 className="w-6 h-6 text-white" />}
+          icon={<Building2 className="w-5 h-5" />}
         />
         <StatCard
           title="Auswertungen"
           value={stats.auswertungenCount.toString()}
           subtitle="Analysen erstellt"
           color="green"
-          icon={<FileBarChart className="w-6 h-6 text-white" />}
+          icon={<FileBarChart className="w-5 h-5" />}
         />
       </div>
     );
@@ -180,21 +180,21 @@ export function DashboardStats({ isAdmin, initialStats }: DashboardStatsProps) {
         value={stats.objekteCount.toString()}
         subtitle="Meine Immobilien"
         color="blue"
-        icon={<Building2 className="w-6 h-6 text-white" />}
+        icon={<Building2 className="w-5 h-5" />}
       />
       <StatCard
         title="Auswertungen"
         value={stats.auswertungenCount.toString()}
         subtitle="Analysen erstellt"
         color="green"
-        icon={<FileBarChart className="w-6 h-6 text-white" />}
+        icon={<FileBarChart className="w-5 h-5" />}
       />
       <StatCard
         title="Mietpotenzial"
         value={formatCurrency(stats.mietpotenzialTotal)}
         subtitle="Gesamt pro Jahr"
         color="amber"
-        icon={<TrendingUp className="w-6 h-6 text-white" />}
+        icon={<TrendingUp className="w-5 h-5" />}
       />
     </div>
   );
@@ -214,24 +214,24 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   const colorClasses = {
-    blue: 'from-[#4A6A8D] to-[#5B7A9D]',
-    green: 'from-green-500 to-green-600',
-    amber: 'from-amber-500 to-amber-600',
-    purple: 'from-[#1E2A3A] to-[#2A3F54]',
-    red: 'from-red-500 to-red-600',
+    blue:   { bg: 'bg-[#5B7A9D]/12', icon: 'text-[#4A6A8D]' },
+    green:  { bg: 'bg-[#34C759]/10', icon: 'text-[#1A8A3A]' },
+    amber:  { bg: 'bg-[#FF9500]/10', icon: 'text-[#B36200]' },
+    purple: { bg: 'bg-[#1E2A3A]/10', icon: 'text-[#2A3F54]' },
+    red:    { bg: 'bg-[#FF3B30]/10', icon: 'text-[#C0392B]' },
   };
 
+  const { bg, icon: iconColor } = colorClasses[color];
+
   return (
-    <div className="glass-card rounded-xl p-4 sm:p-6">
+    <div className="glass-card rounded-2xl p-4 sm:p-5">
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-xs sm:text-sm font-medium text-[#4A6A8D]">{title}</p>
-          <p className="text-xl sm:text-2xl md:text-3xl font-bold text-[#1E2A3A] mt-1 truncate">{value}</p>
-          <p className="text-xs sm:text-sm text-[#5B7A9D] mt-1">{subtitle}</p>
+          <p className="text-[11px] font-semibold text-[#4A6A8D] uppercase tracking-[0.05em]">{title}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-[#1E2A3A] mt-1.5 truncate tracking-[-0.02em]">{value}</p>
+          <p className="text-[13px] text-[#5B7A9D] mt-1">{subtitle}</p>
         </div>
-        <div
-          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center flex-shrink-0 ml-3`}
-        >
+        <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center flex-shrink-0 ml-3 ${iconColor}`}>
           {icon}
         </div>
       </div>
