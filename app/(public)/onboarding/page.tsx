@@ -1441,21 +1441,13 @@ export default function OnboardingPage() {
                             </div>
                           </div>
 
-                          {/* Collapsible BGB Section */}
+                          {/* BGB Section - always visible */}
                           {hasBGBFields && (
                             <div className="pt-2 border-t border-slate-200">
-                              <button type="button" onClick={() => toggleBGB(bgbKey)}
-                                className="w-full flex items-center justify-between py-2 text-left active:scale-[0.99] transition-transform min-h-[44px]">
-                                <span className="text-[10px] sm:text-xs font-medium text-slate-600">
-                                  §558/§559 BGB Details
-                                </span>
-                                <span className="text-[10px] sm:text-xs text-slate-400">
-                                  {isBGBExpanded ? '▲ Einklappen' : '▼ Ausklappen'}
-                                </span>
-                              </button>
-
-                              {isBGBExpanded && (
-                                <div className="space-y-3 pt-2">
+                              <span className="block text-[10px] sm:text-xs font-medium text-slate-600 py-2">
+                                §558/§559 BGB Details
+                              </span>
+                              <div className="space-y-3">
                                   {/* §558 BGB - nur für Standard-Vertrag */}
                                   {einheit.mietvertragsart === 'Standard' && (
                                     <div className="p-2.5 sm:p-3 rounded-lg bg-blue-50/50">
@@ -1502,7 +1494,7 @@ export default function OnboardingPage() {
                                     </div>
                                   </div>
                                 </div>
-                              )}
+                              </div>
                             </div>
                           )}
                         </div>
