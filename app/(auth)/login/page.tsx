@@ -99,7 +99,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#0071E3] hover:bg-[#0077ED] active:bg-[#006ACC] text-white py-2.5 px-4 rounded-[10px] text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071E3]/40 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px] transition-colors duration-150 tracking-[-0.01em]"
+            className="w-full bg-[#5B7A9D] hover:bg-[#6B8AAD] active:bg-[#4A6A8D] text-white py-2.5 px-4 rounded-[10px] text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]/40 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px] transition-colors duration-150 tracking-[-0.01em]"
           >
             {loading ? 'Anmelden…' : 'Anmelden'}
           </button>
@@ -126,7 +126,7 @@ export default function LoginPage() {
               router.refresh();
             }}
             disabled={loading}
-            className="w-full bg-[#1C1C1E] hover:bg-[#2C2C2E] text-white py-2 px-4 rounded-[10px] text-[13px] font-medium focus:outline-none disabled:opacity-40 transition-colors duration-150"
+            className="w-full bg-[#1E2A3A] hover:bg-[#2A3F54] text-white py-2 px-4 rounded-[10px] text-[13px] font-medium focus:outline-none disabled:opacity-40 transition-colors duration-150"
           >
             {loading ? 'Anmelden…' : 'Admin Login (Demo)'}
           </button>
@@ -179,7 +179,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <a
             href="/reset-password"
-            className="text-[13px] text-[#0071E3] hover:text-[#0077ED] transition-colors"
+            className="text-[13px] text-[#5B7A9D] hover:text-[#4A6A8D] transition-colors"
           >
             Passwort vergessen?
           </a>

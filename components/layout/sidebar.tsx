@@ -156,13 +156,13 @@ export function Sidebar({ userRole, userName, isOpen, onClose }: SidebarProps) {
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 min-h-[44px] ${
                   isActive
-                    ? 'bg-white/15 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]'
-                    : 'text-white/55 hover:bg-white/07 hover:text-white/90'
+                    ? 'bg-[#3D5167] text-white shadow-[0_2px_8px_rgba(0,0,0,0.20)]'
+                    : 'text-white/50 hover:bg-white/[0.06] hover:text-white/85'
                 }`}
               >
-                <span className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-white/50'}`}>{item.icon}</span>
-                <span className="text-sm font-medium tracking-[-0.01em]">{item.label}</span>
-                {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto text-white/40" />}
+                <span className={`flex-shrink-0 ${isActive ? 'text-[#B8C5D1]' : 'text-white/40'}`}>{item.icon}</span>
+                <span className="text-[13px] font-medium">{item.label}</span>
+                {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto text-white/30" />}
               </Link>
             );
           })}
@@ -181,7 +181,7 @@ export function Sidebar({ userRole, userName, isOpen, onClose }: SidebarProps) {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 text-white/50 hover:bg-white/07 hover:text-white/90 rounded-xl transition-all duration-150 min-h-[44px]"
+            className="flex items-center gap-3 w-full px-3 py-2.5 text-white/40 hover:bg-white/[0.06] hover:text-white/80 rounded-xl transition-all duration-150 min-h-[44px]"
           >
             <LogOut className="w-4 h-4" />
             <span className="text-sm font-medium">Abmelden</span>

@@ -11,10 +11,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = 'inline-flex items-center justify-center font-medium rounded-[10px] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] tracking-[-0.01em]';
 
     const variants = {
-      primary: 'bg-[#0071E3] text-white hover:bg-[#0077ED] focus:ring-[#0071E3]/40 shadow-[0_1px_2px_rgba(0,0,0,0.15)]',
-      secondary: 'bg-white text-[#1D1D1F] border border-black/[0.12] hover:bg-[#F5F5F7] focus:ring-[#0071E3]/30 shadow-[0_1px_2px_rgba(0,0,0,0.06)]',
+      primary: 'bg-[#5B7A9D] text-white hover:bg-[#6B8AAD] focus:ring-[#5B7A9D]/40 shadow-[0_1px_2px_rgba(30,42,58,0.20)]',
+      secondary: 'bg-white text-[#1E2A3A] border border-[#B8C5D1] hover:bg-[#EDF1F5] focus:ring-[#5B7A9D]/30 shadow-[0_1px_2px_rgba(30,42,58,0.08)]',
       danger: 'bg-[#FF3B30] text-white hover:bg-[#E0342A] focus:ring-[#FF3B30]/40 shadow-[0_1px_2px_rgba(0,0,0,0.15)]',
-      ghost: 'text-[#0071E3] hover:bg-[#0071E3]/08 focus:ring-[#0071E3]/30',
+      ghost: 'text-[#5B7A9D] hover:bg-[#5B7A9D]/08 focus:ring-[#5B7A9D]/30',
     };
 
     const sizes = {

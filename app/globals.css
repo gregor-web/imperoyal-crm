@@ -1,51 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  /* ─── Apple Design System ─────────────────────────────── */
+  /* ─── Imperoyal Design System ────────────────────────── */
 
   /* Surfaces */
-  --background:       #F5F5F7;
+  --background:       #EDF1F5;
   --surface:          #FFFFFF;
   --surface-elevated: #FFFFFF;
-  --surface-grouped:  #F5F5F7;
+  --surface-grouped:  #EDF1F5;
 
   /* Text */
-  --foreground:       #1D1D1F;
-  --text-secondary:   #6E6E73;
-  --text-tertiary:    #A1A1A6;
+  --foreground:       #1E2A3A;
+  --text-secondary:   #4A6A8D;
+  --text-tertiary:    #9EAFC0;
 
-  /* Accent */
-  --accent:           #0071E3;
-  --accent-hover:     #0077ED;
-  --accent-light:     rgba(0, 113, 227, 0.10);
+  /* Accent – Growth Blue */
+  --accent:           #5B7A9D;
+  --accent-hover:     #6B8AAD;
+  --accent-light:     rgba(91, 122, 157, 0.10);
 
   /* Borders */
-  --border:           rgba(0, 0, 0, 0.08);
-  --border-strong:    rgba(0, 0, 0, 0.15);
+  --border:           rgba(30, 42, 58, 0.08);
+  --border-strong:    rgba(30, 42, 58, 0.15);
 
-  /* Sidebar */
-  --sidebar-bg:       #1C1C1E;
-  --sidebar-hover:    rgba(255,255,255,0.07);
-  --sidebar-active:   rgba(255,255,255,0.12);
+  /* Sidebar – Royal Navy */
+  --sidebar-bg:       #1E2A3A;
+  --sidebar-hover:    rgba(255,255,255,0.06);
+  --sidebar-active:   #3D5167;
 
-  /* Shadows – Apple-style layered */
-  --shadow-xs:   0 1px 2px rgba(0,0,0,0.04);
-  --shadow-sm:   0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:   0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-  --shadow-lg:   0 8px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
-  --shadow-xl:   0 24px 48px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.06);
+  /* Shadows */
+  --shadow-xs:   0 1px 2px rgba(30,42,58,0.06);
+  --shadow-sm:   0 2px 8px rgba(30,42,58,0.08), 0 1px 2px rgba(30,42,58,0.04);
+  --shadow-md:   0 4px 16px rgba(30,42,58,0.10), 0 2px 4px rgba(30,42,58,0.06);
+  --shadow-lg:   0 8px 32px rgba(30,42,58,0.12), 0 4px 8px rgba(30,42,58,0.06);
+  --shadow-xl:   0 24px 48px rgba(30,42,58,0.14), 0 8px 16px rgba(30,42,58,0.08);
 
-  /* Legacy aliases for backwards compat */
-  --royal-navy-dark:     #1C1C1E;
-  --royal-navy-medium:   #2C2C2E;
-  --royal-navy-light:    #3A3A3C;
-  --growth-blue-dark:    #0071E3;
-  --growth-blue-base:    #0071E3;
-  --growth-blue-light:   #40A9FF;
-  --blue-bone-dark:      #A1A1A6;
-  --blue-bone-base:      #D1D1D6;
-  --blue-bone-light:     #E5E5EA;
-  --blue-bone-lightest:  #F5F5F7;
+  /* Brand Color Aliases */
+  --royal-navy-dark:     #1E2A3A;
+  --royal-navy-medium:   #2A3F54;
+  --royal-navy-light:    #3D5167;
+  --growth-blue-dark:    #4A6A8D;
+  --growth-blue-base:    #5B7A9D;
+  --growth-blue-light:   #6B8AAD;
+  --blue-bone-dark:      #9EAFC0;
+  --blue-bone-base:      #B8C5D1;
+  --blue-bone-light:     #D5DEE6;
+  --blue-bone-lightest:  #EDF1F5;
   --primary:             var(--sidebar-bg);
   --primary-light:       var(--accent);
 }
@@ -92,7 +92,7 @@ body {
   background: var(--surface);
   border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.18);
+  box-shadow: 0 0 0 3px rgba(91, 122, 157, 0.20);
 }
 
 /* ─── Form Input Defaults ─────────────────────────────────── */
@@ -151,7 +151,7 @@ textarea:focus,
 select:focus {
   border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.18);
+  box-shadow: 0 0 0 3px rgba(91, 122, 157, 0.20);
 }
 
 input::placeholder,
@@ -166,7 +166,7 @@ textarea::placeholder {
 
 /* ─── Login Background ────────────────────────────────────── */
 .login-bg {
-  background: #F5F5F7;
+  background: #EDF1F5;
 }
 
 /* ─── Table ───────────────────────────────────────────────── */
@@ -184,7 +184,7 @@ textarea::placeholder {
 }
 
 .glass-table tr:hover {
-  background: rgba(0, 113, 227, 0.04);
+  background: rgba(91, 122, 157, 0.06);
 }
 
 /* ─── Button Variants ─────────────────────────────────────── */
@@ -197,7 +197,7 @@ textarea::placeholder {
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-0.5px);
-  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.30);
+  box-shadow: 0 4px 12px rgba(91, 122, 157, 0.35);
 }
 
 .btn-secondary {
@@ -239,7 +239,7 @@ textarea::placeholder {
 }
 
 .badge-blue {
-  background: rgba(0, 113, 227, 0.10);
+  background: rgba(91, 122, 157, 0.12);
   color: var(--accent);
 }
 
