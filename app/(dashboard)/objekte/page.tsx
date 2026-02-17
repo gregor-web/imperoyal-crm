@@ -76,7 +76,7 @@ export default async function ObjektePage({ searchParams }: PageProps) {
           objekte: [],
         };
       }
-      groupedObjekte[mandantId].objekte.push(objekt as Objekt);
+      groupedObjekte[mandantId].objekte.push(objekt as Record<string, unknown>);
     });
   }
 
