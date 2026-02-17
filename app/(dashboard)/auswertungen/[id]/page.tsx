@@ -30,7 +30,7 @@ function SectionBox({ number, title, badge, children }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
+    <div className="bg-[#1E2A3A] rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
       <div className="flex items-center gap-3 px-4 py-3 bg-[#162636]/80 border-b border-white/[0.08]">
         <span className="w-7 h-7 rounded-full bg-[#2A3F54] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
           {number}
@@ -62,7 +62,7 @@ function InfoBox({ children, variant = 'default' }: {
   variant?: 'default' | 'success' | 'warning' | 'info';
 }) {
   const bgMap = { default: 'bg-[#162636]', success: 'bg-[#34C759]/08', warning: 'bg-[#FF9500]/08', info: 'bg-[#7A9BBD]/10' };
-  const borderMap = { default: 'border-white/[0.08]', success: 'border-green-200', warning: 'border-amber-200', info: 'border-white/[0.08]' };
+  const borderMap = { default: 'border-white/[0.08]', success: 'border-[#34C759]/20', warning: 'border-[#FF9500]/20', info: 'border-white/[0.08]' };
   return (
     <div className={`${bgMap[variant]} ${borderMap[variant]} border rounded-lg p-3 mt-3`}>
       {children}
@@ -107,7 +107,7 @@ function TrendArrow({ value }: { value: number }) {
 
 function TrafficLight({ status }: { status: 'green' | 'yellow' | 'red' }) {
   const colorMap = { green: 'bg-[#34C759]/080', yellow: 'bg-yellow-500', red: 'bg-red-500' };
-  return <span className={`inline-block w-3 h-3 rounded-full ${colorMap[status]} ring-2 ring-white`} />;
+  return <span className={`inline-block w-3 h-3 rounded-full ${colorMap[status]} ring-2 ring-[#1E2A3A]`} />;
 }
 
 // =====================================================
@@ -209,7 +209,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
       </div>
 
       {/* ===== LAGEPLAN ===== */}
-      <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
+      <div className="bg-[#1E2A3A] rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
         <div className="flex items-center gap-3 px-4 py-3 bg-[#162636]/80 border-b border-white/[0.08]">
           <MapPin className="w-5 h-5 text-[#3D5167]" />
           <div>
@@ -223,34 +223,34 @@ export default async function AuswertungDetailPage({ params }: Props) {
       </div>
 
       {/* ===== KEY METRICS BAR ===== */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-[#253546] rounded-xl overflow-hidden border border-white/[0.08]">
-        <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-[#0F1A25] rounded-xl overflow-hidden border border-white/[0.08]">
+        <div className="bg-[#1E2A3A] p-4 text-center">
           <p className="text-xs text-[#7A9BBD]">Verkehrswert*</p>
           <p className="text-lg font-bold text-[#EDF1F5]">{formatCurrency(verkehrswertGeschaetzt)}</p>
           {gesamtflaeche > 0 && (
             <p className="text-xs text-[#3D5167] font-semibold">({formatCurrency(verkehrswertProQm)}/m²)</p>
           )}
         </div>
-        <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
+        <div className="bg-[#1E2A3A] p-4 text-center">
           <p className="text-xs text-[#7A9BBD]">EK-Puffer</p>
           <p className={`text-lg font-bold ${abbezahlteSumme >= 0 ? 'text-[#34C759]' : 'text-red-600'}`}>
             {formatCurrency(abbezahlteSumme)}
           </p>
           <p className="text-[10px] text-[#6B8AAD]">VW − Restschuld</p>
         </div>
-        <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
+        <div className="bg-[#1E2A3A] p-4 text-center">
           <p className="text-xs text-[#7A9BBD]">Rendite</p>
           <p className="text-lg font-bold text-[#EDF1F5]">{formatPercent(rendite?.rendite_ist)}</p>
           <p className="text-[10px] text-[#34C759]">
             +{formatPercent(rendite_nach_steuer - (rendite?.rendite_ist || 0))} n. AfA
           </p>
         </div>
-        <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
+        <div className="bg-[#1E2A3A] p-4 text-center">
           <p className="text-xs text-[#7A9BBD]">AfA-Ersparnis</p>
           <p className="text-lg font-bold text-[#34C759]">{formatCurrency(steuerersparnis)}/J.</p>
           <p className="text-[10px] text-[#6B8AAD]">bei 42% Grenzsteuersatz</p>
         </div>
-        <div className="bg-white/80 backdrop-blur-sm p-4 text-center col-span-2 md:col-span-1">
+        <div className="bg-[#1E2A3A] p-4 text-center col-span-2 md:col-span-1">
           <p className="text-xs text-[#7A9BBD] mb-1">Empfehlung</p>
           {auswertung.empfehlung ? (
             <EmpfehlungBadge empfehlung={auswertung.empfehlung} />
@@ -277,7 +277,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
 
       {/* ===== MARKTDATEN ===== */}
       {marktdaten && (
-        <div className="bg-purple-50/50 backdrop-blur-sm rounded-xl p-4 border border-purple-200">
+        <div className="bg-[#1E2A3A] rounded-xl p-4 border border-[#7A9BBD]/20">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-bold text-[#EDF1F5]">Aktuelle Marktdaten</h3>
             <span className="text-xs text-[#7A9BBD]">Standort: {marktdaten.standort}</span>
@@ -287,15 +287,15 @@ export default async function AuswertungDetailPage({ params }: Props) {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-[#6B8AAD]">Vergleichsmiete Wohnen</span>
-                <span className="font-semibold">{marktdaten.vergleichsmiete_wohnen.wert} €/m²</span>
+                <span className="font-semibold text-[#EDF1F5]">{marktdaten.vergleichsmiete_wohnen.wert} €/m²</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#6B8AAD]">Vergleichsmiete Gewerbe</span>
-                <span className="font-semibold">{marktdaten.vergleichsmiete_gewerbe.wert} €/m²</span>
+                <span className="font-semibold text-[#EDF1F5]">{marktdaten.vergleichsmiete_gewerbe.wert} €/m²</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#6B8AAD]">Kaufpreisfaktor</span>
-                <span className="font-semibold">{marktdaten.kaufpreisfaktor_region.wert}x</span>
+                <span className="font-semibold text-[#EDF1F5]">{marktdaten.kaufpreisfaktor_region.wert}x</span>
               </div>
             </div>
             {/* Spalte 2 */}
@@ -572,7 +572,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
                 />
               </div>
             </div>
-            <div className="bg-[#34C759]/08 rounded-lg p-3 text-center border border-green-200">
+            <div className="bg-[#34C759]/08 rounded-lg p-3 text-center border border-[#34C759]/20">
               <p className="text-lg font-bold text-[#34C759]">
                 Potenzial: +{formatCurrency((cashflow?.cashflow_opt_jahr || 0) - (cashflow?.cashflow_ist_jahr || 0))} p.a.
               </p>
@@ -647,7 +647,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
             <Badge variant="info" className="mt-2">Bereits aufgeteilt</Badge>
           )}
           {weg?.genehmigung_erforderlich && (
-            <div className="bg-[#FF9500]/08 rounded-lg p-2 mt-2 text-center border border-amber-200">
+            <div className="bg-[#FF9500]/08 rounded-lg p-2 mt-2 text-center border border-[#FF9500]/20">
               <span className="text-xs font-bold text-[#FF9500]">Genehmigung nötig</span>
             </div>
           )}
@@ -743,7 +743,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
             })}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4 bg-[#34C759]/08 rounded-lg p-4 mt-4 border border-green-200">
+        <div className="grid grid-cols-2 gap-4 bg-[#34C759]/08 rounded-lg p-4 mt-4 border border-[#34C759]/20">
           <div className="text-center">
             <p className="text-xs text-[#7A9BBD]">Wertzuwachs 10J</p>
             <p className="text-lg font-bold text-[#34C759]">
@@ -762,7 +762,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
       </SectionBox>
 
       {/* ===== WERTSTEIGERNDE MASSNAHMEN ZUSAMMENFASSUNG ===== */}
-      <div className="bg-[#34C759]/08/50 backdrop-blur-sm rounded-xl p-5 border border-green-200">
+      <div className="bg-[#34C759]/08 rounded-xl p-5 border border-[#34C759]/20">
         <h3 className="text-base font-bold text-[#34C759] mb-4">
           Zusammenfassung: Wertsteigernde Maßnahmen
         </h3>
@@ -855,7 +855,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
             )}
             {auswertung.empfehlung_risiken && (
               <div>
-                <h4 className="text-sm font-bold text-amber-700 mb-2">Risiken</h4>
+                <h4 className="text-sm font-bold text-[#FF9500] mb-2">Risiken</h4>
                 <ul className="space-y-2">
                   {(auswertung.empfehlung_risiken as string[]).map((r, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-[#EDF1F5]">
@@ -880,7 +880,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
 
       {/* ===== ERGÄNZENDE ERLÄUTERUNGEN ===== */}
       {erlaeuterungen && (
-        <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
+        <div className="bg-[#1E2A3A] rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
           <div className="px-4 py-3 bg-[#162636]/80 border-b border-white/[0.08]">
             <h3 className="text-sm font-bold text-[#EDF1F5]">Ergänzende Erläuterungen</h3>
           </div>
