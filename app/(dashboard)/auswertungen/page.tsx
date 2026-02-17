@@ -1,11 +1,6 @@
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { Card } from '@/components/ui/card';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
-import { EmpfehlungBadge, StatusBadge } from '@/components/ui/badge';
-import { formatDate, formatCurrency } from '@/lib/formatters';
 import { SearchFilterBar } from '@/components/ui/search-filter-bar';
-import { Pagination } from '@/components/ui/pagination';
+import { AuswertungenView } from '@/components/auswertungen/auswertungen-view';
 
 const PAGE_SIZE = 20;
 
@@ -108,72 +103,15 @@ export default async function AuswertungenPage({ searchParams }: PageProps) {
         ]}
       />
 
-      {/* Table */}
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Objekt</TableHead>
-              {isAdmin && <TableHead>Mandant</TableHead>}
-              <TableHead>Kaufpreis</TableHead>
-              <TableHead>Empfehlung</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Erstellt</TableHead>
-              <TableHead className="w-24">Aktionen</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered && filtered.length > 0 ? (
-              filtered.map((auswertung) => {
-                const objekt = auswertung.objekte as { strasse: string; plz: string; ort: string; kaufpreis: number } | null;
-                const mandant = auswertung.mandanten as { name: string } | null;
-
-                return (
-                  <TableRow key={auswertung.id}>
-                    <TableCell>
-                      {objekt ? (
-                        <div>
-                          <p className="font-medium">{objekt.strasse}</p>
-                          <p className="text-sm text-[#7A9BBD]">{objekt.plz} {objekt.ort}</p>
-                        </div>
-                      ) : (
-                        '-'
-                      )}
-                    </TableCell>
-                    {isAdmin && <TableCell>{mandant?.name || '-'}</TableCell>}
-                    <TableCell>{objekt ? formatCurrency(objekt.kaufpreis) : '-'}</TableCell>
-                    <TableCell>
-                      {auswertung.empfehlung ? (
-                        <EmpfehlungBadge empfehlung={auswertung.empfehlung} />
-                      ) : (
-                        '-'
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge status={auswertung.status} />
-                    </TableCell>
-                    <TableCell>{formatDate(auswertung.created_at)}</TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/auswertungen/${auswertung.id}`}
-                        className="text-[#7A9BBD] hover:text-[#6B8AAD] text-sm font-medium"
-                      >
-                        Ansehen
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            ) : (
-              <TableEmpty
-                message={searchQuery || filterEmpfehlung || filterStatus ? 'Keine Auswertungen mit diesen Filtern gefunden' : 'Keine Auswertungen vorhanden'}
-                colSpan={isAdmin ? 7 : 6}
-              />
-            )}
-          </TableBody>
-        </Table>
-        <Pagination totalItems={totalItems} pageSize={PAGE_SIZE} />
-      </Card>
+      {/* Grid/List View */}
+      <AuswertungenView
+        auswertungen={(filtered as never[]) || []}
+        totalItems={totalItems}
+        searchQuery={searchQuery}
+        filterEmpfehlung={filterEmpfehlung}
+        filterStatus={filterStatus}
+        isAdmin={isAdmin}
+      />
     </div>
   );
 }

@@ -1,12 +1,8 @@
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { Card } from '@/components/ui/card';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
-import { formatDate } from '@/lib/formatters';
 import { MandantenActions } from './mandanten-actions';
 import { SearchFilterBar } from '@/components/ui/search-filter-bar';
-import { Pagination } from '@/components/ui/pagination';
+import { MandantenView } from '@/components/mandanten/mandanten-view';
 
 const PAGE_SIZE = 20;
 
@@ -83,48 +79,12 @@ export default async function MandantenPage({ searchParams }: PageProps) {
       {/* Search */}
       <SearchFilterBar placeholder="Mandanten suchen (Name, E-Mail, Ort...)" />
 
-      {/* Table */}
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Firma</TableHead>
-              <TableHead>Ansprechpartner</TableHead>
-              <TableHead>E-Mail</TableHead>
-              <TableHead>Ort</TableHead>
-              <TableHead>Erstellt</TableHead>
-              <TableHead className="w-20">Aktionen</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {mandanten && mandanten.length > 0 ? (
-              mandanten.map((mandant) => (
-                <TableRow key={mandant.id}>
-                  <TableCell className="font-medium">{mandant.name}</TableCell>
-                  <TableCell>{mandant.ansprechpartner || '-'}</TableCell>
-                  <TableCell className="break-all">{mandant.email}</TableCell>
-                  <TableCell>{mandant.ort || '-'}</TableCell>
-                  <TableCell>{formatDate(mandant.created_at)}</TableCell>
-                  <TableCell>
-                    <Link
-                      href={`/mandanten/${mandant.id}`}
-                      className="text-[#7A9BBD] hover:text-[#6B8AAD] text-sm font-medium"
-                    >
-                      Details
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableEmpty
-                message={searchQuery ? `Keine Mandanten für "${searchQuery}" gefunden` : 'Keine Mandanten vorhanden'}
-                colSpan={6}
-              />
-            )}
-          </TableBody>
-        </Table>
-        <Pagination totalItems={totalItems} pageSize={PAGE_SIZE} />
-      </Card>
+      {/* Grid/List View */}
+      <MandantenView
+        mandanten={(mandanten as never[]) || []}
+        totalItems={totalItems}
+        searchQuery={searchQuery}
+      />
     </div>
   );
 }
