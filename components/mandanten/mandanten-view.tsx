@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { LayoutGrid, List, Mail, MapPin, User, Building2, Phone, Calendar } from 'lucide-react';
+import { LayoutGrid, List, Mail, MapPin, User, Building2, Phone, Calendar, BarChart3 } from 'lucide-react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Pagination } from '@/components/ui/pagination';
 import { formatDate } from '@/lib/formatters';
@@ -17,6 +17,7 @@ interface Mandant {
   plz: string | null;
   land: string | null;
   created_at: string;
+  completed_analysen?: number;
 }
 
 interface MandantenViewProps {
@@ -98,9 +99,17 @@ function MandantCard({ mandant }: { mandant: Mandant }) {
             <Calendar className="w-3 h-3" />
             <span>{formatDate(mandant.created_at)}</span>
           </div>
-          <span className="text-[11px] font-medium text-[#5B7A9D] opacity-0 group-hover:opacity-100 transition-opacity">
-            Details →
-          </span>
+          <div className="flex items-center gap-2">
+            {typeof mandant.completed_analysen === 'number' && mandant.completed_analysen > 0 && (
+              <div className="flex items-center gap-1 text-[11px] text-[#5B7A9D]">
+                <BarChart3 className="w-3 h-3" />
+                <span>{mandant.completed_analysen}</span>
+              </div>
+            )}
+            <span className="text-[11px] font-medium text-[#5B7A9D] opacity-0 group-hover:opacity-100 transition-opacity">
+              Details →
+            </span>
+          </div>
         </div>
       </div>
     </Link>

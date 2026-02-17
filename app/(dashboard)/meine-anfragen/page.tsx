@@ -5,8 +5,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { FileBarChart, Clock, CheckCircle, Plus, Download, CreditCard, AlertCircle } from 'lucide-react';
+import { FileBarChart, Clock, CheckCircle, Plus, Download, CreditCard, AlertCircle, TrendingUp, Zap } from 'lucide-react';
 import { PaymentRetryButton } from '@/components/payment-retry-button';
+import { getTierForMandant, PRICING_TIERS } from '@/lib/stripe';
 
 // Status config for display
 const STATUS_CONFIG = {
@@ -79,6 +80,16 @@ export default async function MeineAnfragenPage() {
     .eq('mandant_id', profile?.mandant_id)
     .order('created_at', { ascending: false });
 
+  // Fetch mandant data for pricing tier info
+  const { data: mandant } = await supabase
+    .from('mandanten')
+    .select('completed_analysen')
+    .eq('id', profile?.mandant_id)
+    .single();
+
+  const completedAnalysen = mandant?.completed_analysen || 0;
+  const currentTier = getTierForMandant(completedAnalysen);
+
   if (error) {
     console.error('Error fetching anfragen:', error);
   }
@@ -134,6 +145,58 @@ export default async function MeineAnfragenPage() {
             })}
         </div>
       </Card>
+
+      {/* Pricing Tier Info */}
+      <div className="bg-gradient-to-r from-[#1E2A3A] to-[#253546] rounded-xl p-4 sm:p-5 border border-white/[0.08]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-[#7A9BBD]/15 rounded-xl flex items-center justify-center shrink-0">
+              <TrendingUp className="w-5 h-5 text-[#7A9BBD]" />
+            </div>
+            <div>
+              <p className="text-xs text-[#7A9BBD]">Ihr aktueller Tarif</p>
+              <p className="text-lg font-bold text-[#EDF1F5]">{currentTier.label}</p>
+              <p className="text-sm text-[#6B8AAD] mt-0.5">
+                {completedAnalysen} {completedAnalysen === 1 ? 'Analyse' : 'Analysen'} abgeschlossen
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-[#EDF1F5]">{currentTier.preisProAnalyse} €</p>
+              <p className="text-[10px] text-[#6B8AAD]">pro Analyse (netto)</p>
+            </div>
+            {currentTier.name !== 'grossbestand' && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-[#34C759]/10 rounded-lg border border-[#34C759]/20">
+                <Zap className="w-4 h-4 text-[#34C759]" />
+                <div>
+                  <p className="text-[10px] text-[#34C759] font-medium">Nächster Tarif</p>
+                  <p className="text-xs text-[#EDF1F5]">
+                    {currentTier.name === 'einstieg'
+                      ? `ab 11 Analysen: 250 €`
+                      : `ab 50 Analysen: 180 €`}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Progress to next tier */}
+        {currentTier.maxAnalysen && (
+          <div className="mt-3 pt-3 border-t border-white/[0.06]">
+            <div className="flex justify-between text-[10px] text-[#6B8AAD] mb-1">
+              <span>{completedAnalysen} / {currentTier.maxAnalysen} im aktuellen Tarif</span>
+              <span>{currentTier.maxAnalysen - completedAnalysen} bis zum nächsten Tarif</span>
+            </div>
+            <div className="w-full h-1.5 bg-[#253546] rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-[#5B7A9D] to-[#34C759] rounded-full transition-all"
+                style={{ width: `${Math.min(100, ((completedAnalysen - currentTier.minAnalysen + 1) / (currentTier.maxAnalysen - currentTier.minAnalysen + 1)) * 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Anfragen Liste */}
       {anfragen && anfragen.length > 0 ? (

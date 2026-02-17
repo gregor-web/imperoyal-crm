@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { formatDate, formatCurrency, formatAddress } from '@/lib/formatters';
-import { ArrowLeft, Edit, Building2, Mail, Phone, MapPin } from 'lucide-react';
+import { ArrowLeft, Edit, Building2, Mail, Phone, MapPin, BarChart3 } from 'lucide-react';
+import { getTierForMandant } from '@/lib/stripe';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -121,6 +122,37 @@ export default async function MandantDetailPage({ params }: Props) {
                 <p className="text-[#EDF1F5]">{mandant.position}</p>
               </div>
             )}
+
+            {/* Pricing Tier */}
+            <div className="pt-3 border-t border-white/[0.08]">
+              <div className="flex items-center gap-2 mb-2">
+                <BarChart3 className="w-4 h-4 text-[#6B8AAD]" />
+                <p className="text-sm text-[#7A9BBD]">Analyse-Tarif</p>
+              </div>
+              {(() => {
+                const count = mandant.completed_analysen || 0;
+                const tier = getTierForMandant(count);
+                return (
+                  <div className="bg-[#162636] rounded-lg p-3 space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-semibold text-[#EDF1F5]">{tier.label}</span>
+                      <span className="text-sm font-bold text-[#EDF1F5]">{tier.preisProAnalyse} €</span>
+                    </div>
+                    <p className="text-xs text-[#6B8AAD]">
+                      {count} {count === 1 ? 'Analyse' : 'Analysen'} abgeschlossen
+                    </p>
+                    {tier.maxAnalysen && (
+                      <div className="w-full h-1 bg-[#253546] rounded-full overflow-hidden mt-1">
+                        <div
+                          className="h-full bg-[#5B7A9D] rounded-full"
+                          style={{ width: `${Math.min(100, ((count - tier.minAnalysen + 1) / (tier.maxAnalysen - tier.minAnalysen + 1)) * 100)}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
           </div>
         </Card>
 

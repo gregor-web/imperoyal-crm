@@ -85,6 +85,13 @@ export async function POST(request: NextRequest) {
           })
           .eq('id', anfrageId);
 
+        // Increment completed_analysen counter on mandant
+        try {
+          await adminSupabase.rpc('increment_completed_analysen', { p_mandant_id: mandantId });
+        } catch (countErr) {
+          console.warn('Konnte completed_analysen nicht inkrementieren:', countErr);
+        }
+
         console.log(`✅ Zahlung erfolgreich: Anfrage ${anfrageId}, ${session.amount_total} Cent`);
         break;
       }

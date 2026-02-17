@@ -344,6 +344,14 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
       throw insertError;
     }
 
+    // Increment completed_analysen counter on mandant
+    try {
+      const adminSupabaseForCount = createAdminClient();
+      await adminSupabaseForCount.rpc('increment_completed_analysen', { p_mandant_id: objekt.mandant_id });
+    } catch (countErr) {
+      console.warn('[AUSWERTUNG] Konnte completed_analysen nicht inkrementieren:', countErr);
+    }
+
     // =====================================================
     // PDF GENERIEREN UND SPEICHERN
     // =====================================================

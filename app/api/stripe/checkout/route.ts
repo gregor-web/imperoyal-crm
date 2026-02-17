@@ -56,24 +56,22 @@ export async function POST(request: NextRequest) {
     const adminSupabase = createAdminClient();
 
     // Count completed auswertungen for this mandant to determine pricing tier
-    const { count: completedCount } = await adminSupabase
-      .from('auswertungen')
-      .select('*', { count: 'exact', head: true })
-      .eq('mandant_id', profile.mandant_id);
-
-    const tier = getTierForMandant(completedCount || 0);
-
-    // Get or create Stripe customer
-    const { data: mandant } = await adminSupabase
+    // Use the persisted counter on mandanten table for performance
+    const { data: mandantData } = await adminSupabase
       .from('mandanten')
-      .select('id, name, email, stripe_customer_id')
+      .select('id, name, email, stripe_customer_id, completed_analysen')
       .eq('id', profile.mandant_id)
       .single();
 
-    if (!mandant) {
+    if (!mandantData) {
       return NextResponse.json({ error: 'Mandant nicht gefunden' }, { status: 404 });
     }
 
+    const completedCount = mandantData.completed_analysen || 0;
+    const tier = getTierForMandant(completedCount);
+
+    // Get or create Stripe customer
+    const mandant = mandantData;
     let stripeCustomerId = mandant.stripe_customer_id;
 
     if (!stripeCustomerId) {
@@ -114,7 +112,7 @@ export async function POST(request: NextRequest) {
             unit_amount: tier.preisProAnalyseCents,
             product_data: {
               name: `Imperoyal Immobilienanalyse`,
-              description: `${objektBeschreibung} — Tier: ${tier.label} (Analyse #${(completedCount || 0) + 1})`,
+              description: `${objektBeschreibung} — Tier: ${tier.label} (Analyse #${completedCount + 1})`,
             },
           },
           quantity: 1,
@@ -124,7 +122,7 @@ export async function POST(request: NextRequest) {
         anfrage_id: anfrage_id,
         mandant_id: profile.mandant_id,
         tier: tier.name,
-        auswertung_nr: String((completedCount || 0) + 1),
+        auswertung_nr: String(completedCount + 1),
       },
       success_url: `${origin}/meine-anfragen?payment=success&anfrage=${anfrage_id}`,
       cancel_url: `${origin}/meine-anfragen?payment=cancelled&anfrage=${anfrage_id}`,
