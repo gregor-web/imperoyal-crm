@@ -21,9 +21,9 @@ export function DashboardShell({ children, userRole, userName }: DashboardShellP
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-      <div className="md:ml-64 h-screen flex flex-col overflow-hidden">
+      <div className="md:ml-64 h-screen flex flex-col overflow-hidden bg-[#F5F5F7]">
         <Header onMenuToggle={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
+        <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-8 overflow-y-auto">
           {children}
         </main>
       </div>

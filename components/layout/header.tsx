@@ -6,15 +6,15 @@ interface HeaderProps {
 
 export function Header({ onMenuToggle }: HeaderProps) {
   return (
-    <header className="h-16 glass-card border-b border-white/20 flex items-center px-4 sm:px-6">
+    <header className="h-14 bg-white/80 backdrop-blur-xl border-b border-black/[0.06] flex items-center px-4 sm:px-6 sticky top-0 z-30">
       <button
         onClick={onMenuToggle}
-        className="md:hidden p-2 -ml-1 mr-2 text-[#1E2A3A] hover:bg-slate-100 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+        className="md:hidden p-2 -ml-1 mr-2 text-[#1D1D1F] hover:bg-black/05 rounded-xl min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
         aria-label="Menü öffnen"
       >
-        <Menu className="w-6 h-6" />
+        <Menu className="w-5 h-5" />
       </button>
-      <h2 className="text-lg font-semibold text-[#1E2A3A]">
+      <h2 className="text-[15px] font-semibold text-[#1D1D1F] tracking-[-0.01em]">
         Imperoyal Immobilien
       </h2>
     </header>

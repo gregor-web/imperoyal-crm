@@ -13,15 +13,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="space-y-1">
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-[#1E2A3A]">
+          <label htmlFor={inputId} className="block text-[13px] font-medium text-[#1D1D1F]">
             {label}
           </label>
         )}
         <input
           ref={ref}
           id={inputId}
-          className={`glass-input w-full px-4 py-2.5 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] ${
-            error ? 'border-red-500 focus:ring-red-500' : ''
+          className={`glass-input w-full px-3.5 py-2.5 rounded-[10px] text-[#1D1D1F] placeholder-[#A1A1A6] text-[14px] ${
+            error ? '!border-[#FF3B30] focus:!shadow-[0_0_0_3px_rgba(255,59,48,0.18)]' : ''
           } ${className}`}
           {...props}
         />

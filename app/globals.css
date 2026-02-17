@@ -1,28 +1,53 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ─── Apple Design System ─────────────────────────────── */
 
-  /* Brand Colors - Royal Navy */
-  --royal-navy-dark: #1E2A3A;
-  --royal-navy-medium: #2A3F54;
-  --royal-navy-light: #3D5167;
+  /* Surfaces */
+  --background:       #F5F5F7;
+  --surface:          #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-grouped:  #F5F5F7;
 
-  /* Brand Colors - Growth Blue */
-  --growth-blue-dark: #4A6A8D;
-  --growth-blue-base: #5B7A9D;
-  --growth-blue-light: #6B8AAD;
+  /* Text */
+  --foreground:       #1D1D1F;
+  --text-secondary:   #6E6E73;
+  --text-tertiary:    #A1A1A6;
 
-  /* Brand Colors - Blue Bone */
-  --blue-bone-dark: #9EAFC0;
-  --blue-bone-base: #B8C5D1;
-  --blue-bone-light: #D5DEE6;
-  --blue-bone-lightest: #EDF1F5;
+  /* Accent */
+  --accent:           #0071E3;
+  --accent-hover:     #0077ED;
+  --accent-light:     rgba(0, 113, 227, 0.10);
 
-  /* Legacy aliases */
-  --primary: var(--royal-navy-dark);
-  --primary-light: var(--growth-blue-base);
+  /* Borders */
+  --border:           rgba(0, 0, 0, 0.08);
+  --border-strong:    rgba(0, 0, 0, 0.15);
+
+  /* Sidebar */
+  --sidebar-bg:       #1C1C1E;
+  --sidebar-hover:    rgba(255,255,255,0.07);
+  --sidebar-active:   rgba(255,255,255,0.12);
+
+  /* Shadows – Apple-style layered */
+  --shadow-xs:   0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+  --shadow-xl:   0 24px 48px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.06);
+
+  /* Legacy aliases for backwards compat */
+  --royal-navy-dark:     #1C1C1E;
+  --royal-navy-medium:   #2C2C2E;
+  --royal-navy-light:    #3A3A3C;
+  --growth-blue-dark:    #0071E3;
+  --growth-blue-base:    #0071E3;
+  --growth-blue-light:   #40A9FF;
+  --blue-bone-dark:      #A1A1A6;
+  --blue-bone-base:      #D1D1D6;
+  --blue-bone-light:     #E5E5EA;
+  --blue-bone-lightest:  #F5F5F7;
+  --primary:             var(--sidebar-bg);
+  --primary-light:       var(--accent);
 }
 
 @theme inline {
@@ -30,49 +55,47 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-
-  /* Custom breakpoint for extra small screens */
   --breakpoint-xs: 475px;
 }
 
+/* ─── Base ────────────────────────────────────────────────── */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glass Design Styles */
+/* ─── Card (Apple Material) ───────────────────────────────── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow:
-    0 8px 32px rgba(31, 38, 135, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
+/* ─── Sidebar ─────────────────────────────────────────────── */
 .glass-sidebar {
-  background: linear-gradient(180deg, var(--royal-navy-dark) 0%, var(--royal-navy-medium) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--sidebar-bg);
+  border-right: 1px solid rgba(255,255,255,0.06);
 }
 
+/* ─── Input Base ──────────────────────────────────────────── */
 .glass-input {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 2px solid #94a3b8;
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .glass-input:focus {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: var(--growth-blue-base);
+  background: var(--surface);
+  border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(91, 122, 157, 0.2);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.18);
 }
 
-/* Form Input Defaults */
+/* ─── Form Input Defaults ─────────────────────────────────── */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -81,16 +104,17 @@ input[type="date"],
 input[type="tel"],
 textarea,
 select {
-  background-color: white;
-  border: 2px solid #94a3b8;
-  border-radius: 0.5rem;
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 10px;
   padding: 0.625rem 0.875rem;
   font-size: 0.875rem;
-  transition: all 0.15s ease;
+  color: var(--foreground);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
   box-sizing: border-box;
+  font-family: inherit;
 }
 
-/* Fix date input on mobile - prevent overflow and match text input sizing */
 input[type="date"] {
   min-width: 0;
   max-width: 100%;
@@ -100,18 +124,10 @@ input[type="date"] {
   line-height: 1.5;
 }
 
-/* Ensure date input has same height as text inputs */
-input[type="date"]::-webkit-date-and-time-value {
-  text-align: left;
-}
-
-/* Remove extra padding in Safari/Chrome date picker */
+input[type="date"]::-webkit-date-and-time-value { text-align: left; }
 input[type="date"]::-webkit-inner-spin-button,
-input[type="date"]::-webkit-clear-button {
-  display: none;
-}
+input[type="date"]::-webkit-clear-button { display: none; }
 
-/* Prevent iOS Safari auto-zoom on input focus (requires min 16px font) */
 @media screen and (max-width: 768px) {
   input[type="text"],
   input[type="email"],
@@ -133,126 +149,126 @@ input[type="date"]:focus,
 input[type="tel"]:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--growth-blue-base);
+  border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(91, 122, 157, 0.2);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.18);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
-/* Dashboard Background */
+/* ─── Dashboard Background ────────────────────────────────── */
 .dashboard-bg {
-  background: linear-gradient(135deg, var(--blue-bone-lightest) 0%, var(--blue-bone-light) 50%, var(--blue-bone-base) 100%);
+  background: var(--background);
 }
 
-/* Login Background */
+/* ─── Login Background ────────────────────────────────────── */
 .login-bg {
-  background: linear-gradient(135deg, var(--royal-navy-dark) 0%, var(--royal-navy-medium) 50%, var(--growth-blue-dark) 100%);
+  background: #F5F5F7;
 }
 
-/* Table Styles */
+/* ─── Table ───────────────────────────────────────────────── */
 .glass-table {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--surface);
 }
 
 .glass-table th {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--surface-grouped);
   font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .glass-table tr:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 113, 227, 0.04);
 }
 
-/* Button Variants */
+/* ─── Button Variants ─────────────────────────────────────── */
 .btn-primary {
-  background: linear-gradient(135deg, var(--royal-navy-dark) 0%, var(--royal-navy-medium) 100%);
+  background: var(--accent);
   color: white;
-  transition: all 0.2s;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--royal-navy-medium) 0%, var(--royal-navy-light) 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(30, 42, 58, 0.3);
+  background: var(--accent-hover);
+  transform: translateY(-0.5px);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.30);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--blue-bone-base);
-  color: var(--royal-navy-dark);
-  transition: all 0.2s;
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  color: var(--foreground);
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.7);
-  border-color: var(--growth-blue-base);
+  background: var(--surface-grouped);
+  border-color: var(--accent);
 }
 
-/* Status Badges */
+/* ─── Status Badges ───────────────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.6875rem;
   font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .badge-green {
-  background: rgba(34, 197, 94, 0.15);
-  color: #15803d;
+  background: rgba(52, 199, 89, 0.12);
+  color: #1A8A3A;
 }
 
 .badge-red {
-  background: rgba(239, 68, 68, 0.15);
-  color: #b91c1c;
+  background: rgba(255, 59, 48, 0.10);
+  color: #C0392B;
 }
 
 .badge-yellow {
-  background: rgba(234, 179, 8, 0.15);
-  color: #a16207;
+  background: rgba(255, 149, 0, 0.10);
+  color: #B36200;
 }
 
 .badge-blue {
-  background: rgba(91, 122, 157, 0.15);
-  color: var(--growth-blue-dark);
+  background: rgba(0, 113, 227, 0.10);
+  color: var(--accent);
 }
 
-/* Scrollbar */
+/* ─── Scrollbar (macOS-style thin) ───────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
+  background: rgba(0,0,0,0.18);
+  border-radius: 100px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0,0,0,0.30);
 }
 
-/* Safe area for notched phones (iPhone X+) */
+/* ─── Safe area / Mobile ──────────────────────────────────── */
 @supports (padding: env(safe-area-inset-bottom)) {
   .dashboard-bg {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
-/* Mobile touch target minimum size */
 @media (pointer: coarse) {
   button,
   a,
@@ -262,9 +278,13 @@ textarea::placeholder {
   }
 }
 
-/* Prevent horizontal overflow on mobile */
 @media (max-width: 768px) {
   body {
     overflow-x: hidden;
   }
+}
+
+/* ─── Transition helpers ──────────────────────────────────── */
+.transition-apple {
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }

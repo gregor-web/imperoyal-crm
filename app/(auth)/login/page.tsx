@@ -35,29 +35,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md">
-      <div className="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl">
+    <div className="w-full max-w-sm">
+      <div className="bg-white rounded-2xl p-7 sm:p-8" style={{boxShadow: '0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.07)'}}>
         {/* Logo & Title */}
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="text-center mb-7">
           <Image
             src="/logo_imperoyal.png"
             alt="Imperoyal Immobilien"
-            width={200}
-            height={60}
-            className="h-16 w-auto mx-auto mb-4"
+            width={160}
+            height={44}
+            className="h-12 w-auto mx-auto mb-3"
             priority
           />
-          <p className="text-[#4A6A8D] mt-1">
+          <p className="text-[13px] text-[#6E6E73]">
             Optimierungsprotokoll-System
           </p>
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-[#1E2A3A] mb-1"
+              className="block text-[13px] font-medium text-[#1D1D1F] mb-1.5"
             >
               E-Mail
             </label>
@@ -67,7 +67,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="glass-input w-full px-4 py-3 rounded-lg text-slate-800"
+              className="w-full px-3.5 py-2.5 rounded-[10px] text-[14px] text-[#1D1D1F]"
               placeholder="name@beispiel.de"
             />
           </div>
@@ -75,7 +75,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-[#1E2A3A] mb-1"
+              className="block text-[13px] font-medium text-[#1D1D1F] mb-1.5"
             >
               Passwort
             </label>
@@ -85,13 +85,13 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="glass-input w-full px-4 py-3 rounded-lg text-slate-800"
+              className="w-full px-3.5 py-2.5 rounded-[10px] text-[14px]"
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-[#FFF2F2] border border-[#FF3B30]/20 text-[#C0392B] px-3.5 py-2.5 rounded-[10px] text-[13px]">
               {error}
             </div>
           )}
@@ -99,9 +99,9 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-primary py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-[#5B7A9D] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+            className="w-full bg-[#0071E3] hover:bg-[#0077ED] active:bg-[#006ACC] text-white py-2.5 px-4 rounded-[10px] text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071E3]/40 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px] transition-colors duration-150 tracking-[-0.01em]"
           >
-            {loading ? 'Anmelden...' : 'Anmelden'}
+            {loading ? 'Anmelden…' : 'Anmelden'}
           </button>
         </form>
 
@@ -126,9 +126,9 @@ export default function LoginPage() {
               router.refresh();
             }}
             disabled={loading}
-            className="w-full bg-[#2A3F54] text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-[#3D5167] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D] disabled:opacity-50 transition-all"
+            className="w-full bg-[#1C1C1E] hover:bg-[#2C2C2E] text-white py-2 px-4 rounded-[10px] text-[13px] font-medium focus:outline-none disabled:opacity-40 transition-colors duration-150"
           >
-            {loading ? 'Anmelden...' : 'Admin Login (Demo)'}
+            {loading ? 'Anmelden…' : 'Admin Login (Demo)'}
           </button>
           <button
             type="button"
@@ -169,9 +169,9 @@ export default function LoginPage() {
               router.refresh();
             }}
             disabled={loading}
-            className="w-full bg-[#4A6A8D] text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-[#5B7A9D] focus:outline-none focus:ring-2 focus:ring-[#6B8AAD] disabled:opacity-50 transition-all"
+            className="w-full bg-white hover:bg-[#F5F5F7] border border-black/10 text-[#1D1D1F] py-2 px-4 rounded-[10px] text-[13px] font-medium focus:outline-none disabled:opacity-40 transition-colors duration-150"
           >
-            {loading ? 'Anmelden...' : 'Kunden Login (Demo)'}
+            {loading ? 'Anmelden…' : 'Kunden Login (Demo)'}
           </button>
         </div>
 
@@ -179,7 +179,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <a
             href="/reset-password"
-            className="text-sm text-[#5B7A9D] hover:text-[#4A6A8D]"
+            className="text-[13px] text-[#0071E3] hover:text-[#0077ED] transition-colors"
           >
             Passwort vergessen?
           </a>

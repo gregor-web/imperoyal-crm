@@ -7,20 +7,20 @@ interface BadgeProps {
 
 export function Badge({ children, variant = 'default', size = 'md', className = '' }: BadgeProps) {
   const variants = {
-    default: 'bg-[#EDF1F5] text-[#2A3F54]',
-    success: 'bg-green-100 text-green-700',
-    warning: 'bg-amber-100 text-amber-700',
-    danger: 'bg-red-100 text-red-700',
-    info: 'bg-[#D5DEE6] text-[#1E2A3A]',
+    default: 'bg-[#F2F2F7] text-[#3A3A3C]',
+    success: 'bg-[#34C759]/12 text-[#1A8A3A]',
+    warning: 'bg-[#FF9500]/10 text-[#B36200]',
+    danger: 'bg-[#FF3B30]/10 text-[#C0392B]',
+    info: 'bg-[#0071E3]/10 text-[#0071E3]',
   };
 
   const sizes = {
-    sm: 'px-2 py-0.5 text-xs',
-    md: 'px-2.5 py-1 text-sm',
+    sm: 'px-2 py-0.5 text-[11px]',
+    md: 'px-2.5 py-1 text-[12px]',
   };
 
   return (
-    <span className={`inline-flex items-center rounded-full font-medium whitespace-nowrap ${variants[variant]} ${sizes[size]} ${className}`}>
+    <span className={`inline-flex items-center rounded-[6px] font-medium whitespace-nowrap tracking-[0.01em] ${variants[variant]} ${sizes[size]} ${className}`}>
       {children}
     </span>
   );

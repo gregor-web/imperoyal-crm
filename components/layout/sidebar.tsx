@@ -125,28 +125,28 @@ export function Sidebar({ userRole, userName, isOpen, onClose }: SidebarProps) {
           md:translate-x-0`}
       >
         {/* Logo + Mobile Close */}
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center justify-center flex-1">
+        <div className="px-5 py-5 flex items-center justify-between border-b border-white/[0.06]">
+          <Link href="/dashboard" className="flex items-center flex-1">
             <Image
               src="/logo_imperoyal.png"
               alt="Imperoyal Immobilien"
-              width={180}
-              height={50}
-              className="h-12 w-auto brightness-0 invert"
+              width={160}
+              height={44}
+              className="h-10 w-auto brightness-0 invert opacity-90"
               priority
             />
           </Link>
           <button
             onClick={onClose}
-            className="md:hidden p-1 text-white/70 hover:text-white rounded-lg"
+            className="md:hidden p-1.5 text-white/50 hover:text-white/90 hover:bg-white/10 rounded-lg transition-colors"
             aria-label="Menü schließen"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {filteredNavItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
@@ -154,37 +154,37 @@ export function Sidebar({ userRole, userName, isOpen, onClose }: SidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all min-h-[44px] ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 min-h-[44px] ${
                   isActive
-                    ? 'bg-white/20 text-white'
-                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    ? 'bg-white/15 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]'
+                    : 'text-white/55 hover:bg-white/07 hover:text-white/90'
                 }`}
               >
-                {item.icon}
-                <span className="font-medium">{item.label}</span>
-                {isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
+                <span className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-white/50'}`}>{item.icon}</span>
+                <span className="text-sm font-medium tracking-[-0.01em]">{item.label}</span>
+                {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto text-white/40" />}
               </Link>
             );
           })}
         </nav>
 
         {/* User & Logout */}
-        <div className="p-4 border-t border-white/10">
-          <div className="flex items-center gap-3 px-4 py-2 mb-2">
-            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-sm font-medium">
+        <div className="px-3 pb-4 pt-3 border-t border-white/[0.06]">
+          <div className="flex items-center gap-3 px-3 py-2 mb-1">
+            <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0">
               {userName?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{userName || 'Benutzer'}</p>
-              <p className="text-xs text-white/60 capitalize">{userRole}</p>
+              <p className="text-sm font-medium truncate text-white/90">{userName || 'Benutzer'}</p>
+              <p className="text-xs text-white/40 capitalize">{userRole}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-3 text-white/70 hover:bg-white/10 hover:text-white rounded-lg transition-all min-h-[44px]"
+            className="flex items-center gap-3 w-full px-3 py-2.5 text-white/50 hover:bg-white/07 hover:text-white/90 rounded-xl transition-all duration-150 min-h-[44px]"
           >
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">Abmelden</span>
+            <LogOut className="w-4 h-4" />
+            <span className="text-sm font-medium">Abmelden</span>
           </button>
         </div>
       </aside>
