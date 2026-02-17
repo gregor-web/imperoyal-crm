@@ -57,15 +57,11 @@ export function LageplanMap({ address, height = 300 }: LageplanMapProps) {
           attributionControl: true,
         });
 
-        // TopPlusOpen WMS (BKG) – farbige topografische Karte wie Sprengnetter
-        L.tileLayer.wms('https://sgx.geodatenzentrum.de/wms_topplus_open', {
-          layers: 'web',
-          format: 'image/png',
-          transparent: false,
-          styles: '',
-          attribution: '&copy; <a href="https://www.bkg.bund.de">GeoBasis-DE / BKG</a> ' + new Date().getFullYear(),
+        // OpenStreetMap tiles (zuverlässig, kein API Key nötig)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           maxZoom: 19,
-        } as any).addTo(map);
+        }).addTo(map);
 
         // Crosshair marker (⊕) – fein, wie bei Sprengnetter
         const crosshairIcon = L.divIcon({
@@ -142,7 +138,7 @@ export function LageplanMap({ address, height = 300 }: LageplanMapProps) {
   if (error) {
     return (
       <div
-        className="bg-slate-100 rounded-lg flex items-center justify-center gap-2 text-slate-500"
+        className="bg-[#162636] rounded-lg flex items-center justify-center gap-2 text-[#6B8AAD]"
         style={{ height }}
       >
         <MapPin className="w-5 h-5" />
@@ -152,11 +148,11 @@ export function LageplanMap({ address, height = 300 }: LageplanMapProps) {
   }
 
   return (
-    <div className="relative rounded-lg overflow-hidden border border-slate-200" style={{ height }}>
+    <div className="relative rounded-lg overflow-hidden border border-white/[0.08]" style={{ height }}>
       {loading && (
-        <div className="absolute inset-0 bg-slate-100 flex items-center justify-center z-10">
-          <div className="flex items-center gap-2 text-slate-500">
-            <div className="w-4 h-4 border-2 border-slate-300 border-t-[#1E2A3A] rounded-full animate-spin" />
+        <div className="absolute inset-0 bg-[#162636] flex items-center justify-center z-10">
+          <div className="flex items-center gap-2 text-[#6B8AAD]">
+            <div className="w-4 h-4 border-2 border-[#253546] border-t-[#7A9BBD] rounded-full animate-spin" />
             <span className="text-sm">Karte wird geladen…</span>
           </div>
         </div>
