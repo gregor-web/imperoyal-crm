@@ -620,7 +620,7 @@ export default function OnboardingPage() {
   if (submitted) {
     return (
       <div className="h-[100dvh] flex items-center justify-center p-3 sm:p-4" style={{ background: 'linear-gradient(135deg, #1E2A3A 0%, #2A3F54 50%, #3D5167 100%)' }}>
-        <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-8 max-w-lg w-full text-center">
+        <div className="ob-card rounded-xl sm:rounded-2xl p-4 sm:p-8 max-w-lg w-full text-center">
           <div className="w-12 h-12 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-6" style={{ backgroundColor: COLORS.growthBlue.base }}>
             <CheckCircle className="w-6 h-6 sm:w-10 sm:h-10 text-white" />
           </div>
@@ -668,22 +668,22 @@ export default function OnboardingPage() {
 
       {/* Form Card - Fills remaining space */}
       <div className="flex-1 flex flex-col max-w-4xl mx-auto px-3 sm:px-4 pb-3 sm:pb-6 w-full min-h-0">
-        <div className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 flex-1 flex flex-col min-h-0">
+        <div className="ob-card rounded-xl sm:rounded-2xl p-3 sm:p-4 flex-1 flex flex-col min-h-0">
 
           {/* ===== STEP 1: KONTAKT ===== */}
           {mainStep === 1 && (
             <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
-              <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 flex-shrink-0" style={{ color: COLORS.royalNavy.dark }}>Ihre Kontaktdaten</h2>
-              <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
-                <div className="col-span-1 xs:col-span-2">
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Firmenname *</label>
+              <h2 className="text-sm sm:text-base font-bold mb-2 flex-shrink-0" style={{ color: COLORS.royalNavy.dark }}>Ihre Kontaktdaten</h2>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="col-span-2">
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Firmenname *</label>
                   <input type="text" value={formData.name} onChange={(e) => updateMandant('name', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required />
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Anrede *</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Anrede *</label>
                   <select value={formData.anrede} onChange={(e) => updateMandant('anrede', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required>
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" required>
                     <option value="">Wählen...</option>
                     <option value="Herr">Herr</option>
                     <option value="Frau">Frau</option>
@@ -692,54 +692,54 @@ export default function OnboardingPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Vorname *</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Vorname *</label>
                   <input type="text" value={formData.vorname} onChange={(e) => updateMandant('vorname', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required />
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Nachname *</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Nachname *</label>
                   <input type="text" value={formData.nachname} onChange={(e) => updateMandant('nachname', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required />
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">E-Mail *</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">E-Mail *</label>
                   <input type="email" value={formData.email} onChange={(e) => updateMandant('email', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" required />
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" required />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Telefon</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Telefon</label>
                   <input type="tel" value={formData.telefon} onChange={(e) => updateMandant('telefon', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" />
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Position</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Position</label>
                   <input type="text" value={formData.position} onChange={(e) => updateMandant('position', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="z.B. Geschäftsführer" />
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="z.B. Geschäftsführer" />
                 </div>
 
                 {/* Firmenadresse */}
-                <div className="col-span-1 xs:col-span-2 mt-2">
-                  <h3 className="text-xs sm:text-sm font-semibold text-slate-700 mb-2">Firmenadresse *</h3>
+                <div className="col-span-2 mt-1">
+                  <h3 className="text-xs font-semibold text-slate-700 mb-1">Firmenadresse *</h3>
                 </div>
-                <div className="col-span-1 xs:col-span-2">
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Straße & Hausnr. *</label>
+                <div className="col-span-2">
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Straße & Hausnr. *</label>
                   <input type="text" value={formData.strasse} onChange={(e) => updateMandant('strasse', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="Musterstraße 1" required />
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="Musterstraße 1" required />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">PLZ *</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">PLZ *</label>
                   <input type="text" value={formData.plz} onChange={(e) => updateMandant('plz', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="10115" required />
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="10115" required />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Ort *</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Ort *</label>
                   <input type="text" value={formData.ort} onChange={(e) => updateMandant('ort', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="Berlin" required />
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="Berlin" required />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Land</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Land</label>
                   <select value={formData.land} onChange={(e) => updateMandant('land', e.target.value)}
-                    className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                     <option value="Deutschland">Deutschland</option>
                     <option value="Österreich">Österreich</option>
                     <option value="Schweiz">Schweiz</option>
@@ -748,9 +748,9 @@ export default function OnboardingPage() {
               </div>
 
               {/* Bottom Section - Push to fill space */}
-              <div className="mt-auto pt-3 sm:pt-6 border-t border-slate-200 space-y-2 sm:space-y-4 flex-shrink-0">
+              <div className="mt-auto pt-2 border-t border-slate-200 space-y-1.5 flex-shrink-0">
                 {/* Anzahl Objekte */}
-                <div className="p-2 sm:p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                <div className="p-2 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] sm:text-sm font-medium" style={{ color: COLORS.royalNavy.dark }}>
                       <Home className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1" /> Objekte
@@ -764,7 +764,7 @@ export default function OnboardingPage() {
                       </button>
                       <input type="number" min="1" value={formData.anzahl_objekte}
                         onChange={(e) => updateAnzahlObjekte(parseInt(e.target.value) || 1)}
-                        className="glass-input w-10 sm:w-20 px-1 sm:px-3 py-1 sm:py-2 rounded-lg text-center text-sm sm:text-xl font-bold" />
+                        className="ob-input w-10 sm:w-20 px-1 sm:px-3 py-1 sm:py-2 rounded-lg text-center text-sm sm:text-xl font-bold" />
                       <button type="button" onClick={() => updateAnzahlObjekte(formData.anzahl_objekte + 1)}
                         className="w-7 h-7 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-xl font-bold active:scale-95 transition-transform"
                         style={{ backgroundColor: COLORS.growthBlue.base, color: 'white' }}>
@@ -775,7 +775,7 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Ankaufsprofil Checkbox */}
-                <label className="flex items-center gap-2 sm:gap-3 cursor-pointer p-2 sm:p-4 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                <label className="flex items-center gap-2 cursor-pointer p-2 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                   <input type="checkbox" checked={formData.createAnkaufsprofil}
                     onChange={(e) => setFormData((prev) => ({ ...prev, createAnkaufsprofil: e.target.checked }))}
                     className="w-4 h-4 sm:w-5 sm:h-5 rounded flex-shrink-0" style={{ accentColor: COLORS.growthBlue.base }} />
@@ -802,7 +802,7 @@ export default function OnboardingPage() {
                     <div>
                       <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Profilname</label>
                       <input type="text" value={formData.ankaufsprofil.name} onChange={(e) => updateAnkauf('name', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" placeholder="z.B. Core-Portfolio" />
+                        className="ob-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" placeholder="z.B. Core-Portfolio" />
                     </div>
                     <div className="flex items-center justify-between gap-2 p-2 sm:p-3 rounded-lg" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                       <label className="text-[10px] sm:text-sm font-medium text-slate-700">Kaufinteresse aktiv?</label>
@@ -835,7 +835,7 @@ export default function OnboardingPage() {
                   <div>
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Städte/Regionen</label>
                     <textarea value={formData.ankaufsprofil.regionen} onChange={(e) => updateAnkauf('regionen', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" rows={3} placeholder="z.B. München, Berlin..." />
+                      className="ob-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base" rows={3} placeholder="z.B. München, Berlin..." />
                   </div>
                   <div className="mt-auto pt-3 sm:pt-4">
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-1 sm:mb-2">Lagepräferenz</label>
@@ -851,24 +851,24 @@ export default function OnboardingPage() {
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Min. Vol. (EUR)</label>
                     <input type="text" inputMode="numeric" value={formData.ankaufsprofil.min_volumen}
                       onChange={(e) => updateAnkauf('min_volumen', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="1000000" />
+                      className="ob-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="1000000" />
                   </div>
                   <div>
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Max. Vol. (EUR)</label>
                     <input type="text" inputMode="numeric" value={formData.ankaufsprofil.max_volumen}
                       onChange={(e) => updateAnkauf('max_volumen', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="10000000" />
+                      className="ob-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="10000000" />
                   </div>
                   <div>
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Rendite (%)</label>
                     <input type="text" inputMode="decimal" value={formData.ankaufsprofil.rendite_min}
                       onChange={(e) => updateAnkauf('rendite_min', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="4.5" />
+                      className="ob-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base" placeholder="4.5" />
                   </div>
                   <div>
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Finanzierung</label>
                     <select value={formData.ankaufsprofil.finanzierungsform} onChange={(e) => updateAnkauf('finanzierungsform', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base">
+                      className="ob-input w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-base">
                       <option value="">Wählen...</option>
                       {FINANZIERUNGSFORMEN.map((f) => <option key={f} value={f}>{f}</option>)}
                     </select>
@@ -888,25 +888,25 @@ export default function OnboardingPage() {
                       <label className="block text-[10px] sm:text-xs font-medium text-slate-700 mb-0.5 sm:mb-1">BJ von</label>
                       <input type="text" inputMode="numeric" value={formData.ankaufsprofil.baujahr_von}
                         onChange={(e) => updateAnkauf('baujahr_von', e.target.value)}
-                        className="glass-input w-full px-1.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm" placeholder="1950" />
+                        className="ob-input w-full px-1.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm" placeholder="1950" />
                     </div>
                     <div>
                       <label className="block text-[10px] sm:text-xs font-medium text-slate-700 mb-0.5 sm:mb-1">BJ bis</label>
                       <input type="text" inputMode="numeric" value={formData.ankaufsprofil.baujahr_bis}
                         onChange={(e) => updateAnkauf('baujahr_bis', e.target.value)}
-                        className="glass-input w-full px-1.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm" placeholder="2020" />
+                        className="ob-input w-full px-1.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm" placeholder="2020" />
                     </div>
                     <div>
                       <label className="block text-[10px] sm:text-xs font-medium text-slate-700 mb-0.5 sm:mb-1">Wohnfl.</label>
                       <input type="text" inputMode="numeric" value={formData.ankaufsprofil.min_wohnflaeche}
                         onChange={(e) => updateAnkauf('min_wohnflaeche', e.target.value)}
-                        className="glass-input w-full px-1.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm" placeholder="500" />
+                        className="ob-input w-full px-1.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm" placeholder="500" />
                     </div>
                     <div>
                       <label className="block text-[10px] sm:text-xs font-medium text-slate-700 mb-0.5 sm:mb-1">Einh.</label>
                       <input type="text" inputMode="numeric" value={formData.ankaufsprofil.min_wohneinheiten}
                         onChange={(e) => updateAnkauf('min_wohneinheiten', e.target.value)}
-                        className="glass-input w-full px-1.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm" placeholder="6" />
+                        className="ob-input w-full px-1.5 sm:px-3 py-2 sm:py-2 rounded-lg text-xs sm:text-sm" placeholder="6" />
                     </div>
                   </div>
                 </div>
@@ -935,13 +935,13 @@ export default function OnboardingPage() {
                     {formData.ankaufsprofil.ausgeschlossene_partner && (
                       <textarea value={formData.ankaufsprofil.ausgeschlossene_partner_liste}
                         onChange={(e) => updateAnkauf('ausgeschlossene_partner_liste', e.target.value)}
-                        className="glass-input w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg text-xs sm:text-base" rows={3} placeholder="Namen..." />
+                        className="ob-input w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg text-xs sm:text-base" rows={3} placeholder="Namen..." />
                     )}
                   </div>
                   <div className="mt-auto pt-3 sm:pt-4">
                     <label className="block text-[10px] sm:text-sm font-medium text-slate-700 mb-0.5 sm:mb-1">Sonstiges</label>
                     <textarea value={formData.ankaufsprofil.sonstiges} onChange={(e) => updateAnkauf('sonstiges', e.target.value)}
-                      className="glass-input w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg text-xs sm:text-base" rows={4} placeholder="Weitere Kriterien..." />
+                      className="ob-input w-full px-2 sm:px-3 py-2 sm:py-3 rounded-lg text-xs sm:text-base" rows={4} placeholder="Weitere Kriterien..." />
                   </div>
                 </div>
               )}
@@ -971,7 +971,7 @@ export default function OnboardingPage() {
                     <div className="col-span-1 xs:col-span-2">
                       <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Straße *</label>
                       <input type="text" value={currentObjekt.strasse} onChange={(e) => updateObjekt('strasse', e.target.value)}
-                        className={`glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base ${duplicateObjektNr ? 'border-amber-400 border-2' : ''}`}
+                        className={`ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base ${duplicateObjektNr ? 'border-amber-400 border-2' : ''}`}
                         placeholder="Musterstraße 1" />
                       {duplicateObjektNr && (
                         <div className="flex items-center gap-1 mt-1.5 text-amber-700 text-xs">
@@ -983,24 +983,24 @@ export default function OnboardingPage() {
                     <div>
                       <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">PLZ *</label>
                       <input type="text" value={currentObjekt.plz} onChange={(e) => updateObjekt('plz', e.target.value)}
-                        className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="80000" />
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="80000" />
                     </div>
                     <div>
                       <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Ort *</label>
                       <input type="text" value={currentObjekt.ort} onChange={(e) => updateObjekt('ort', e.target.value)}
-                        className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="München" />
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="München" />
                     </div>
                     <div>
                       <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Typ</label>
                       <select value={currentObjekt.gebaeudetyp} onChange={(e) => updateObjekt('gebaeudetyp', e.target.value)}
-                        className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                         {GEBAEUDETYPEN.map((t) => <option key={t} value={t}>{t}</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Baujahr</label>
                       <input type="text" inputMode="numeric" value={currentObjekt.baujahr} onChange={(e) => updateObjekt('baujahr', e.target.value)}
-                        className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="1985" />
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="1985" />
                     </div>
                   </div>
 
@@ -1011,19 +1011,19 @@ export default function OnboardingPage() {
                         <label className="block text-xs text-slate-500 mb-1">Wohnen</label>
                         <input type="number" min="0" value={currentObjekt.anzahl_wohneinheiten}
                           onChange={(e) => updateObjektAnzahl('anzahl_wohneinheiten', Math.max(0, parseInt(e.target.value) || 0))}
-                          className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
+                          className="ob-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-center text-sm font-medium" />
                       </div>
                       <div>
                         <label className="block text-xs text-slate-500 mb-1">Gewerbe</label>
                         <input type="number" min="0" value={currentObjekt.anzahl_gewerbeeinheiten}
                           onChange={(e) => updateObjektAnzahl('anzahl_gewerbeeinheiten', Math.max(0, parseInt(e.target.value) || 0))}
-                          className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
+                          className="ob-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-center text-sm font-medium" />
                       </div>
                       <div>
                         <label className="block text-xs text-slate-500 mb-1">Stellpl.</label>
                         <input type="number" min="0" value={currentObjekt.anzahl_stellplaetze}
                           onChange={(e) => updateObjektAnzahl('anzahl_stellplaetze', Math.max(0, parseInt(e.target.value) || 0))}
-                          className="glass-input w-full px-2 sm:px-3 py-2.5 sm:py-3 rounded-lg text-center text-sm font-medium" />
+                          className="ob-input w-full px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-center text-sm font-medium" />
                       </div>
                     </div>
                   </div>
@@ -1035,31 +1035,31 @@ export default function OnboardingPage() {
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kernsanierung (Jahr)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.kernsanierung_jahr} onChange={(e) => updateObjekt('kernsanierung_jahr', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="2015" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="2015" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Geschosse</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.geschosse} onChange={(e) => updateObjekt('geschosse', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="5" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="5" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Denkmalschutz</label>
                     <select value={currentObjekt.denkmalschutz} onChange={(e) => updateObjekt('denkmalschutz', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Aufzug</label>
                     <select value={currentObjekt.aufzug} onChange={(e) => updateObjekt('aufzug', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                   <div className="col-span-1 xs:col-span-2">
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Heizungsart</label>
                     <select value={currentObjekt.heizungsart} onChange={(e) => updateObjekt('heizungsart', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       <option value="">Auswählen...</option>
                       {HEIZUNGSARTEN.map((h) => <option key={h} value={h}>{h}</option>)}
                     </select>
@@ -1067,17 +1067,17 @@ export default function OnboardingPage() {
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Wohnfläche (m²)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.wohnflaeche} onChange={(e) => updateObjekt('wohnflaeche', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="850" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="850" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gewerbefläche (m²)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.gewerbeflaeche} onChange={(e) => updateObjekt('gewerbeflaeche', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="200" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="200" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Grundstück (m²)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.grundstueck} onChange={(e) => updateObjekt('grundstueck', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="500" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="500" />
                   </div>
                 </div>
               )}
@@ -1087,45 +1087,45 @@ export default function OnboardingPage() {
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kaufpreis *</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.kaufpreis} onChange={(e) => updateObjekt('kaufpreis', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="2500000" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="2500000" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kaufdatum</label>
                     <input type="date" value={currentObjekt.kaufdatum} onChange={(e) => updateObjekt('kaufdatum', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:cursor-pointer" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Darlehensstand (€)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.darlehensstand} onChange={(e) => updateObjekt('darlehensstand', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="1500000" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="1500000" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">EK %</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.eigenkapital_prozent}
                       onChange={(e) => updateObjekt('eigenkapital_prozent', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="30" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="30" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Zins % (p.a.)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.zinssatz}
                       onChange={(e) => updateObjekt('zinssatz', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="3.8" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="3.8" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Tilgung %</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.tilgung}
                       onChange={(e) => updateObjekt('tilgung', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="2" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="2" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Grundstückswert (€)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.grundstueck_wert} onChange={(e) => updateObjekt('grundstueck_wert', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="Für AfA" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="Für AfA" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gebäudewert (€)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.gebaeude_wert} onChange={(e) => updateObjekt('gebaeude_wert', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="Für AfA" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="Für AfA" />
                   </div>
                 </div>
               )}
@@ -1135,27 +1135,27 @@ export default function OnboardingPage() {
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Leerstandsquote (%)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.leerstandsquote} onChange={(e) => updateObjekt('leerstandsquote', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="5" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="5" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">BK nicht umlagef. (€/J)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.betriebskosten_nicht_umlage} onChange={(e) => updateObjekt('betriebskosten_nicht_umlage', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="5000" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="5000" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Instandhaltung (€/J)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.instandhaltung} onChange={(e) => updateObjekt('instandhaltung', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="15000" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="15000" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Verwaltungskosten (€/J)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.verwaltung} onChange={(e) => updateObjekt('verwaltung', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="4800" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="4800" />
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Rücklagen (€/J)</label>
                     <input type="text" inputMode="numeric" value={currentObjekt.ruecklagen} onChange={(e) => updateObjekt('ruecklagen', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base" placeholder="10000" />
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="10000" />
                   </div>
                   <div className="col-span-1 xs:col-span-2 mt-2 p-3 rounded-xl" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                     <span className="block text-xs sm:text-sm font-medium text-slate-700 mb-2">CAPEX / Investitionen</span>
@@ -1163,17 +1163,17 @@ export default function OnboardingPage() {
                       <div>
                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vergangene Investitionen</label>
                         <input type="text" value={currentObjekt.capex_vergangen} onChange={(e) => updateObjekt('capex_vergangen', e.target.value)}
-                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Dachsanierung 2020" />
+                          className="ob-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Dachsanierung 2020" />
                       </div>
                       <div>
                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Geplante Investitionen</label>
                         <input type="text" value={currentObjekt.capex_geplant} onChange={(e) => updateObjekt('capex_geplant', e.target.value)}
-                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Fassadendämmung" />
+                          className="ob-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Fassadendämmung" />
                       </div>
                       <div className="xs:col-span-2">
                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">CAPEX-Budget (€)</label>
                         <input type="text" inputMode="numeric" value={currentObjekt.capex_geplant_betrag} onChange={(e) => updateObjekt('capex_geplant_betrag', e.target.value)}
-                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="150000" />
+                          className="ob-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="150000" />
                       </div>
                     </div>
                   </div>
@@ -1185,56 +1185,56 @@ export default function OnboardingPage() {
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">WEG aufgeteilt</label>
                     <select value={currentObjekt.weg_aufgeteilt} onChange={(e) => updateObjekt('weg_aufgeteilt', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">WEG geplant</label>
                     <select value={currentObjekt.weg_geplant} onChange={(e) => updateObjekt('weg_geplant', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Milieuschutz</label>
                     <select value={currentObjekt.milieuschutz} onChange={(e) => updateObjekt('milieuschutz', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Umwandlungsverbot</label>
                     <select value={currentObjekt.umwandlungsverbot} onChange={(e) => updateObjekt('umwandlungsverbot', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Mietpreisbindung</label>
                     <select value={currentObjekt.mietpreisbindung} onChange={(e) => updateObjekt('mietpreisbindung', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Sozialbindung</label>
                     <select value={currentObjekt.sozialbindung} onChange={(e) => updateObjekt('sozialbindung', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Modernisierungsstopp</label>
                     <select value={currentObjekt.modernisierungsstopp} onChange={(e) => updateObjekt('modernisierungsstopp', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gewerbe-Sonderklauseln</label>
                     <select value={currentObjekt.gewerbe_sonderklauseln} onChange={(e) => updateObjekt('gewerbe_sonderklauseln', e.target.value)}
-                      className="glass-input w-full px-3 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base">
+                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                       {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
@@ -1244,7 +1244,7 @@ export default function OnboardingPage() {
                       <div>
                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Haltedauer</label>
                         <select value={currentObjekt.haltedauer} onChange={(e) => updateObjekt('haltedauer', e.target.value)}
-                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm">
+                          className="ob-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm">
                           <option value="">Auswählen...</option>
                           {HALTEDAUER.map((h) => <option key={h} value={h}>{h}</option>)}
                         </select>
@@ -1252,7 +1252,7 @@ export default function OnboardingPage() {
                       <div>
                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Primäres Ziel</label>
                         <select value={currentObjekt.primaeres_ziel} onChange={(e) => updateObjekt('primaeres_ziel', e.target.value)}
-                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm">
+                          className="ob-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm">
                           <option value="">Auswählen...</option>
                           {PRIMAERE_ZIELE.map((z) => <option key={z} value={z}>{z}</option>)}
                         </select>
@@ -1260,7 +1260,7 @@ export default function OnboardingPage() {
                       <div>
                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Risikoprofil</label>
                         <select value={currentObjekt.risikoprofil} onChange={(e) => updateObjekt('risikoprofil', e.target.value)}
-                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm">
+                          className="ob-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm">
                           <option value="">Auswählen...</option>
                           {RISIKOPROFILE.map((r) => <option key={r} value={r}>{r}</option>)}
                         </select>
@@ -1268,7 +1268,7 @@ export default function OnboardingPage() {
                       <div>
                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Investitionsbereitschaft</label>
                         <input type="text" value={currentObjekt.investitionsbereitschaft} onChange={(e) => updateObjekt('investitionsbereitschaft', e.target.value)}
-                          className="glass-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Bis 200.000€" />
+                          className="ob-input w-full px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Bis 200.000€" />
                       </div>
                     </div>
                   </div>
@@ -1314,13 +1314,13 @@ export default function OnboardingPage() {
                               <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Fläche m² *</label>
                               <input type="text" inputMode="decimal" value={einheit.flaeche}
                                 onChange={(e) => updateEinheit(idx, 'flaeche', e.target.value)}
-                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="75" />
+                                className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="75" />
                             </div>
                             <div>
                               <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Miete €/M *</label>
                               <input type="text" inputMode="decimal" value={einheit.kaltmiete}
                                 onChange={(e) => updateEinheit(idx, 'kaltmiete', e.target.value)}
-                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="850" />
+                                className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="850" />
                             </div>
                             <div>
                               <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">
@@ -1331,7 +1331,7 @@ export default function OnboardingPage() {
                               </label>
                               <input type="text" inputMode="decimal" value={einheit.vergleichsmiete}
                                 onChange={(e) => updateEinheit(idx, 'vergleichsmiete', e.target.value)}
-                                className={`glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm ${marktdatenLoading[currentObjektIndex] ? 'animate-pulse' : ''}`} placeholder="14" />
+                                className={`ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm ${marktdatenLoading[currentObjektIndex] ? 'animate-pulse' : ''}`} placeholder="14" />
                               {idx === 0 && marktdatenQuelle[currentObjektIndex] && !marktdatenLoading[currentObjektIndex] && (
                                 <span className="block text-[8px] sm:text-[10px] text-blue-500 mt-0.5 truncate" title={marktdatenQuelle[currentObjektIndex]}>
                                   📊 {marktdatenQuelle[currentObjektIndex]}
@@ -1341,7 +1341,7 @@ export default function OnboardingPage() {
                             <div>
                               <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vertragsart *</label>
                               <select value={einheit.mietvertragsart} onChange={(e) => updateEinheit(idx, 'mietvertragsart', e.target.value)}
-                                className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm">
+                                className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm">
                                 <option value="Standard">Standard</option>
                                 <option value="Index">Index</option>
                                 <option value="Staffel">Staffel</option>
@@ -1357,19 +1357,19 @@ export default function OnboardingPage() {
                                 <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Vertragsbeginn *</label>
                                 <input type="date" value={einheit.vertragsbeginn}
                                   onChange={(e) => updateEinheit(idx, 'vertragsbeginn', e.target.value)}
-                                  className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
+                                  className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
                               </div>
                               <div>
                                 <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Letzte Erhöhung</label>
                                 <input type="date" value={einheit.letzte_mieterhoehung}
                                   onChange={(e) => updateEinheit(idx, 'letzte_mieterhoehung', e.target.value)}
-                                  className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
+                                  className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
                               </div>
                               <div className="xs:col-span-2 sm:col-span-2">
                                 <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe Erhöhung (€)</label>
                                 <input type="text" inputMode="decimal" value={einheit.hoehe_mieterhoehung}
                                   onChange={(e) => updateEinheit(idx, 'hoehe_mieterhoehung', e.target.value)}
-                                  className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="50" />
+                                  className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="50" />
                               </div>
                             </div>
                           </div>
@@ -1398,13 +1398,13 @@ export default function OnboardingPage() {
                                           <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Datum</label>
                                           <input type="date" value={einheit.datum_558}
                                             onChange={(e) => updateEinheit(idx, 'datum_558', e.target.value)}
-                                            className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
+                                            className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
                                         </div>
                                         <div>
                                           <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe (€)</label>
                                           <input type="text" inputMode="decimal" value={einheit.hoehe_558}
                                             onChange={(e) => updateEinheit(idx, 'hoehe_558', e.target.value)}
-                                            className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="30" />
+                                            className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="30" />
                                         </div>
                                       </div>
                                     </div>
@@ -1418,19 +1418,19 @@ export default function OnboardingPage() {
                                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Datum</label>
                                         <input type="date" value={einheit.datum_559}
                                           onChange={(e) => updateEinheit(idx, 'datum_559', e.target.value)}
-                                          className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
+                                          className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" />
                                       </div>
                                       <div>
                                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Art</label>
                                         <input type="text" value={einheit.art_modernisierung_559}
                                           onChange={(e) => updateEinheit(idx, 'art_modernisierung_559', e.target.value)}
-                                          className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Dämmung" />
+                                          className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="Dämmung" />
                                       </div>
                                       <div>
                                         <label className="block text-[10px] sm:text-xs text-slate-500 mb-1">Höhe (€/M)</label>
                                         <input type="text" inputMode="decimal" value={einheit.hoehe_559}
                                           onChange={(e) => updateEinheit(idx, 'hoehe_559', e.target.value)}
-                                          className="glass-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="25" />
+                                          className="ob-input w-full px-2 sm:px-3 py-2.5 rounded-lg text-xs sm:text-sm" placeholder="25" />
                                       </div>
                                     </div>
                                   </div>
@@ -1514,7 +1514,7 @@ export default function OnboardingPage() {
           {error && <div className="mt-2 sm:mt-4 p-2 sm:p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-[10px] sm:text-sm flex-shrink-0">{error}</div>}
 
           {/* Navigation - Fixed at bottom */}
-          <div className="flex justify-between gap-2 mt-2 sm:mt-6 pt-2 sm:pt-6 border-t border-slate-200 flex-shrink-0">
+          <div className="flex justify-between gap-2 mt-2 pt-2 border-t border-slate-200 flex-shrink-0">
             <button onClick={goBack} disabled={isFirstStep}
               className="flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 text-slate-600 hover:bg-slate-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed text-xs sm:text-base active:scale-95 transition-transform">
               <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
