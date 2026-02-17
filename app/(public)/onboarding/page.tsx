@@ -1012,20 +1012,21 @@ export default function OnboardingPage() {
               </div>
 
               {objektSubStep === 1 && (
-                <div className="flex-1 flex flex-col justify-between min-h-0">
-                  <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
-                    <div className="col-span-1 xs:col-span-2">
-                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Straße *</label>
-                      <input type="text" value={currentObjekt.strasse} onChange={(e) => updateObjekt('strasse', e.target.value)}
-                        className={`ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base ${duplicateObjektNr ? 'border-amber-400 border-2' : ''}`}
-                        placeholder="Musterstraße 1" />
-                      {duplicateObjektNr && (
-                        <div className="flex items-center gap-1 mt-1.5 text-amber-700 text-xs">
-                          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-                          <span>Bereits bei Objekt {duplicateObjektNr}</span>
-                        </div>
-                      )}
-                    </div>
+                <div className="flex-1 overflow-y-auto space-y-4 sm:space-y-5 min-h-0">
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Straße *</label>
+                    <input type="text" value={currentObjekt.strasse} onChange={(e) => updateObjekt('strasse', e.target.value)}
+                      className={`ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base ${duplicateObjektNr ? 'border-amber-400 border-2' : ''}`}
+                      placeholder="Musterstraße 1" />
+                    {duplicateObjektNr && (
+                      <div className="flex items-center gap-1 mt-1.5 text-amber-700 text-xs">
+                        <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>Bereits bei Objekt {duplicateObjektNr}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">PLZ *</label>
                       <input type="text" value={currentObjekt.plz} onChange={(e) => updateObjekt('plz', e.target.value)}
@@ -1036,8 +1037,11 @@ export default function OnboardingPage() {
                       <input type="text" value={currentObjekt.ort} onChange={(e) => updateObjekt('ort', e.target.value)}
                         className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="München" />
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Typ</label>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gebäudetyp</label>
                       <select value={currentObjekt.gebaeudetyp} onChange={(e) => updateObjekt('gebaeudetyp', e.target.value)}
                         className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                         {GEBAEUDETYPEN.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -1050,8 +1054,25 @@ export default function OnboardingPage() {
                     </div>
                   </div>
 
-                  {/* Anzahl Einheiten - Push to bottom */}
-                  <div className="mt-auto pt-4 p-3 sm:p-4 rounded-xl" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Heizungsart</label>
+                      <select value={currentObjekt.heizungsart} onChange={(e) => updateObjekt('heizungsart', e.target.value)}
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
+                        <option value="">Auswählen...</option>
+                        {HEIZUNGSARTEN.map((h) => <option key={h} value={h}>{h}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Geschosse</label>
+                      <input type="text" inputMode="numeric" value={currentObjekt.geschosse} onChange={(e) => updateObjekt('geschosse', e.target.value)}
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="5" />
+                    </div>
+                  </div>
+
+                  {/* Anzahl Einheiten */}
+                  <div className="p-3 sm:p-4 rounded-xl" style={{ backgroundColor: COLORS.blueBone.lightest }}>
+                    <span className="block text-xs font-medium text-slate-600 mb-2">Einheiten im Objekt</span>
                     <div className="grid grid-cols-3 gap-3 sm:gap-4">
                       <div>
                         <label className="block text-xs text-slate-500 mb-1">Wohnen</label>
@@ -1077,58 +1098,53 @@ export default function OnboardingPage() {
               )}
 
               {objektSubStep === 2 && (
-                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
-                  <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kernsanierung (Jahr)</label>
-                    <input type="text" inputMode="numeric" value={currentObjekt.kernsanierung_jahr} onChange={(e) => updateObjekt('kernsanierung_jahr', e.target.value)}
-                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="2015" />
+                <div className="flex-1 overflow-y-auto space-y-4 sm:space-y-5 min-h-0">
+                  {/* Flächen */}
+                  <div className="grid grid-cols-1 xs:grid-cols-3 gap-3 sm:gap-4">
+                    <div>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Wohnfläche (m²)</label>
+                      <input type="text" inputMode="decimal" value={currentObjekt.wohnflaeche} onChange={(e) => updateObjekt('wohnflaeche', e.target.value)}
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="850" />
+                    </div>
+                    <div>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gewerbefläche (m²)</label>
+                      <input type="text" inputMode="decimal" value={currentObjekt.gewerbeflaeche} onChange={(e) => updateObjekt('gewerbeflaeche', e.target.value)}
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="200" />
+                    </div>
+                    <div>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Grundstück (m²)</label>
+                      <input type="text" inputMode="decimal" value={currentObjekt.grundstueck} onChange={(e) => updateObjekt('grundstueck', e.target.value)}
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="500" />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Geschosse</label>
-                    <input type="text" inputMode="numeric" value={currentObjekt.geschosse} onChange={(e) => updateObjekt('geschosse', e.target.value)}
-                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="5" />
-                  </div>
-                  <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Denkmalschutz</label>
-                    <select value={currentObjekt.denkmalschutz} onChange={(e) => updateObjekt('denkmalschutz', e.target.value)}
-                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
-                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Aufzug</label>
-                    <select value={currentObjekt.aufzug} onChange={(e) => updateObjekt('aufzug', e.target.value)}
-                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
-                      {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
-                  </div>
-                  <div className="col-span-1 xs:col-span-2">
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Heizungsart</label>
-                    <select value={currentObjekt.heizungsart} onChange={(e) => updateObjekt('heizungsart', e.target.value)}
-                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
-                      <option value="">Auswählen...</option>
-                      {HEIZUNGSARTEN.map((h) => <option key={h} value={h}>{h}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Wohnfläche (m²)</label>
-                    <input type="text" inputMode="decimal" value={currentObjekt.wohnflaeche} onChange={(e) => updateObjekt('wohnflaeche', e.target.value)}
-                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="850" />
-                  </div>
-                  <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Gewerbefläche (m²)</label>
-                    <input type="text" inputMode="decimal" value={currentObjekt.gewerbeflaeche} onChange={(e) => updateObjekt('gewerbeflaeche', e.target.value)}
-                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="200" />
-                  </div>
-                  <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Grundstück (m²)</label>
-                    <input type="text" inputMode="decimal" value={currentObjekt.grundstueck} onChange={(e) => updateObjekt('grundstueck', e.target.value)}
-                      className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="500" />
+
+                  {/* Gebäude-Details */}
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kernsanierung (Jahr)</label>
+                      <input type="text" inputMode="numeric" value={currentObjekt.kernsanierung_jahr} onChange={(e) => updateObjekt('kernsanierung_jahr', e.target.value)}
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="2015" />
+                    </div>
+                    <div>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Denkmalschutz</label>
+                      <select value={currentObjekt.denkmalschutz} onChange={(e) => updateObjekt('denkmalschutz', e.target.value)}
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
+                        {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Aufzug</label>
+                      <select value={currentObjekt.aufzug} onChange={(e) => updateObjekt('aufzug', e.target.value)}
+                        className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
+                        {BOOLEAN_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                    </div>
                   </div>
                 </div>
               )}
 
               {objektSubStep === 3 && (
+                <div className="flex-1 overflow-y-auto min-h-0">
                 <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Kaufpreis *</label>
@@ -1174,9 +1190,11 @@ export default function OnboardingPage() {
                       className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="Für AfA" />
                   </div>
                 </div>
+                </div>
               )}
 
               {objektSubStep === 4 && (
+                <div className="flex-1 overflow-y-auto min-h-0">
                 <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Leerstandsquote (%)</label>
@@ -1224,9 +1242,11 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                 </div>
+                </div>
               )}
 
               {objektSubStep === 5 && (
+                <div className="flex-1 overflow-y-auto min-h-0">
                 <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">WEG aufgeteilt</label>
@@ -1318,6 +1338,7 @@ export default function OnboardingPage() {
                       </div>
                     </div>
                   </div>
+                </div>
                 </div>
               )}
 
