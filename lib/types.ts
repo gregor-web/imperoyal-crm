@@ -47,7 +47,7 @@ export const OPTIONS = {
     'Portfolio-Umschichtung',
   ] as const,
   risikoprofil: ['Konservativ', 'Core', 'Core+', 'Value-Add', 'Opportunistisch'] as const,
-  laender: ['Deutschland', 'Österreich', 'Schweiz'] as const,
+  laender: ['Deutschland'] as const,
   // Ankaufsprofil-spezifische Optionen
   lagepraeferenz: [
     'A-Lage',

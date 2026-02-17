@@ -741,8 +741,6 @@ export default function OnboardingPage() {
                   <select value={formData.land} onChange={(e) => updateMandant('land', e.target.value)}
                     className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                     <option value="Deutschland">Deutschland</option>
-                    <option value="Österreich">Österreich</option>
-                    <option value="Schweiz">Schweiz</option>
                   </select>
                 </div>
               </div>
