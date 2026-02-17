@@ -15,9 +15,9 @@ function SkeletonCard() {
       <div className="p-4 space-y-3">
         {[...Array(3)].map((_, i) => (
           <div key={i} className="flex items-center gap-4">
-            <div className="h-4 flex-1 bg-[#EDF1F5] rounded" />
-            <div className="h-4 w-20 bg-[#EDF1F5] rounded" />
-            <div className="h-4 w-24 bg-[#EDF1F5] rounded" />
+            <div className="h-4 flex-1 bg-[#162636] rounded" />
+            <div className="h-4 w-20 bg-[#162636] rounded" />
+            <div className="h-4 w-24 bg-[#162636] rounded" />
           </div>
         ))}
       </div>
@@ -31,16 +31,16 @@ export default function Loading() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="h-7 w-28 bg-[#EDF1F5] rounded-lg" />
-          <div className="h-4 w-56 bg-[#EDF1F5] rounded mt-2" />
+          <div className="h-7 w-28 bg-[#162636] rounded-lg" />
+          <div className="h-4 w-56 bg-[#162636] rounded mt-2" />
         </div>
-        <div className="h-10 w-36 bg-[#EDF1F5] rounded-lg" />
+        <div className="h-10 w-36 bg-[#162636] rounded-lg" />
       </div>
 
       {/* Search Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="h-11 flex-1 bg-[#EDF1F5] rounded-lg" />
-        <div className="h-11 w-40 bg-[#EDF1F5] rounded-lg" />
+        <div className="h-11 flex-1 bg-[#162636] rounded-lg" />
+        <div className="h-11 w-40 bg-[#162636] rounded-lg" />
       </div>
 
       {/* Grouped Cards */}

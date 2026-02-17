@@ -68,8 +68,8 @@ export function QuickAddMandant({ isOpen, onClose }: QuickAddMandantProps) {
       {success ? (
         <div className="space-y-4">
           <div className="flex items-center justify-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <Check className="w-8 h-8 text-green-600" />
+            <div className="w-16 h-16 bg-[#34C759]/12 rounded-full flex items-center justify-center">
+              <Check className="w-8 h-8 text-[#34C759]" />
             </div>
           </div>
 
@@ -78,16 +78,16 @@ export function QuickAddMandant({ isOpen, onClose }: QuickAddMandantProps) {
           </h3>
 
           {success.emailSent ? (
-            <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <Mail className="w-5 h-5 text-green-600 flex-shrink-0" />
+            <div className="flex items-center gap-3 p-4 bg-[#34C759]/08 border border-green-200 rounded-lg">
+              <Mail className="w-5 h-5 text-[#34C759] flex-shrink-0" />
               <p className="text-sm text-green-800">
                 Die Zugangsdaten wurden per E-Mail an <strong>{email}</strong> gesendet.
               </p>
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+              <div className="flex items-center gap-3 p-4 bg-[#FF9500]/08 border border-amber-200 rounded-lg">
+                <AlertCircle className="w-5 h-5 text-[#FF9500] flex-shrink-0" />
                 <p className="text-sm text-amber-800">
                   E-Mail-Versand fehlgeschlagen. Bitte teilen Sie das Passwort manuell mit.
                 </p>

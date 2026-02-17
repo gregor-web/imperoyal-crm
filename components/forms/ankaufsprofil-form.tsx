@@ -45,7 +45,7 @@ function MultiSelectChips({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-[#1E2A3A] mb-2">{label}</label>
+      <label className="block text-sm font-medium text-[#EDF1F5] mb-2">{label}</label>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => (
           <button
@@ -55,7 +55,7 @@ function MultiSelectChips({
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               selected.includes(option)
                 ? 'bg-[#1E2A3A] text-white'
-                : 'bg-[#EDF1F5] text-[#1E2A3A] hover:bg-[#D5DEE6]'
+                : 'bg-[#162636] text-[#EDF1F5] hover:bg-[#253546]'
             }`}
           >
             {option}
@@ -79,17 +79,17 @@ function Section({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border border-[#D5DEE6] rounded-lg overflow-hidden">
+    <div className="border border-white/[0.08] rounded-lg overflow-hidden">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 bg-[#EDF1F5] flex items-center justify-between text-left hover:bg-[#D5DEE6] transition-colors"
+        className="w-full px-4 py-3 bg-[#162636] flex items-center justify-between text-left hover:bg-[#253546] transition-colors"
       >
-        <span className="font-semibold text-[#1E2A3A]">{title}</span>
+        <span className="font-semibold text-[#EDF1F5]">{title}</span>
         {isOpen ? (
-          <ChevronUp className="w-5 h-5 text-[#5B7A9D]" />
+          <ChevronUp className="w-5 h-5 text-[#7A9BBD]" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-[#5B7A9D]" />
+          <ChevronDown className="w-5 h-5 text-[#7A9BBD]" />
         )}
       </button>
       {isOpen && <div className="p-4 space-y-4">{children}</div>}
@@ -162,14 +162,14 @@ export function AnkaufsprofilForm({
       <Section title="2.1 Allgemeine Ankaufsparameter" defaultOpen={!compact}>
         {/* Kaufinteresse aktiv */}
         <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-[#1E2A3A]">Kaufinteresse aktiv?</label>
+          <label className="text-sm font-medium text-[#EDF1F5]">Kaufinteresse aktiv?</label>
           <div className="flex gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
                 checked={kaufinteresseAktiv === true}
                 onChange={() => setValue('kaufinteresse_aktiv', true)}
-                className="w-4 h-4 text-[#5B7A9D]"
+                className="w-4 h-4 text-[#7A9BBD]"
               />
               <span className="text-sm">Ja</span>
             </label>
@@ -178,7 +178,7 @@ export function AnkaufsprofilForm({
                 type="radio"
                 checked={kaufinteresseAktiv === false}
                 onChange={() => setValue('kaufinteresse_aktiv', false)}
-                className="w-4 h-4 text-[#5B7A9D]"
+                className="w-4 h-4 text-[#7A9BBD]"
               />
               <span className="text-sm">Nein</span>
             </label>
@@ -198,13 +198,13 @@ export function AnkaufsprofilForm({
       <Section title="2.2 Standortprofil" defaultOpen={!compact}>
         {/* Regionen */}
         <div>
-          <label className="block text-sm font-medium text-[#1E2A3A] mb-1">
+          <label className="block text-sm font-medium text-[#EDF1F5] mb-1">
             Bevorzugte Städte/Regionen
           </label>
           <textarea
             {...register('regionen')}
             rows={2}
-            className="glass-input w-full px-4 py-2.5 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]"
+            className="glass-input w-full px-4 py-2.5 rounded-lg text-[#EDF1F5] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#7A9BBD]"
             placeholder="z.B. München, Berlin, Hamburg, Rhein-Main-Gebiet..."
           />
         </div>
@@ -360,7 +360,7 @@ export function AnkaufsprofilForm({
         {/* Ausgeschlossene Partner */}
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <label className="text-sm font-medium text-[#1E2A3A]">
+            <label className="text-sm font-medium text-[#EDF1F5]">
               Ausgeschlossene Partner / Makler?
             </label>
             <div className="flex gap-4">
@@ -369,7 +369,7 @@ export function AnkaufsprofilForm({
                   type="radio"
                   checked={ausgeschlossenePartner === true}
                   onChange={() => setValue('ausgeschlossene_partner', true)}
-                  className="w-4 h-4 text-[#5B7A9D]"
+                  className="w-4 h-4 text-[#7A9BBD]"
                 />
                 <span className="text-sm">Ja</span>
               </label>
@@ -378,7 +378,7 @@ export function AnkaufsprofilForm({
                   type="radio"
                   checked={ausgeschlossenePartner === false}
                   onChange={() => setValue('ausgeschlossene_partner', false)}
-                  className="w-4 h-4 text-[#5B7A9D]"
+                  className="w-4 h-4 text-[#7A9BBD]"
                 />
                 <span className="text-sm">Nein</span>
               </label>
@@ -387,13 +387,13 @@ export function AnkaufsprofilForm({
 
           {ausgeschlossenePartner && (
             <div>
-              <label className="block text-sm font-medium text-[#1E2A3A] mb-1">
+              <label className="block text-sm font-medium text-[#EDF1F5] mb-1">
                 Liste ausgeschlossener Partner
               </label>
               <textarea
                 {...register('ausgeschlossene_partner_liste')}
                 rows={2}
-                className="glass-input w-full px-4 py-2.5 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]"
+                className="glass-input w-full px-4 py-2.5 rounded-lg text-[#EDF1F5] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#7A9BBD]"
                 placeholder="Namen der ausgeschlossenen Partner/Makler..."
               />
             </div>
@@ -402,13 +402,13 @@ export function AnkaufsprofilForm({
 
         {/* Besondere Bedingungen */}
         <div>
-          <label className="block text-sm font-medium text-[#1E2A3A] mb-1">
+          <label className="block text-sm font-medium text-[#EDF1F5] mb-1">
             Besondere Bedingungen / Präferenzen
           </label>
           <textarea
             {...register('sonstiges')}
             rows={3}
-            className="glass-input w-full px-4 py-2.5 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]"
+            className="glass-input w-full px-4 py-2.5 rounded-lg text-[#EDF1F5] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#7A9BBD]"
             placeholder="Weitere Kriterien oder Anmerkungen..."
           />
         </div>
@@ -424,7 +424,7 @@ export function AnkaufsprofilForm({
       </Section>
 
       {/* Actions */}
-      <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-[#D5DEE6]">
+      <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-white/[0.08]">
         {onCancel && (
           <Button type="button" variant="secondary" onClick={onCancel} className="w-full sm:w-auto">
             Abbrechen

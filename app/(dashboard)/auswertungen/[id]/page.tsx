@@ -30,12 +30,12 @@ function SectionBox({ number, title, badge, children }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-[#D5DEE6] overflow-hidden shadow-sm">
-      <div className="flex items-center gap-3 px-4 py-3 bg-[#EDF1F5]/80 border-b border-[#D5DEE6]">
+    <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
+      <div className="flex items-center gap-3 px-4 py-3 bg-[#162636]/80 border-b border-white/[0.08]">
         <span className="w-7 h-7 rounded-full bg-[#2A3F54] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
           {number}
         </span>
-        <h3 className="text-sm font-bold text-[#1E2A3A]">{title}</h3>
+        <h3 className="text-sm font-bold text-[#EDF1F5]">{title}</h3>
         {badge && <div className="ml-auto">{badge}</div>}
       </div>
       <div className="p-4">{children}</div>
@@ -50,8 +50,8 @@ function DataRow({ label, value, bold, valueClass }: {
   valueClass?: string;
 }) {
   return (
-    <div className={`flex justify-between items-center py-2 ${bold ? 'border-t border-[#D5DEE6] mt-2 pt-3' : 'border-b border-[#D5DEE6]'}`}>
-      <span className={`text-[#4A6A8D] text-sm ${bold ? 'font-semibold' : ''}`}>{label}</span>
+    <div className={`flex justify-between items-center py-2 ${bold ? 'border-t border-white/[0.08] mt-2 pt-3' : 'border-b border-white/[0.08]'}`}>
+      <span className={`text-[#6B8AAD] text-sm ${bold ? 'font-semibold' : ''}`}>{label}</span>
       <span className={`text-sm font-medium flex-shrink-0 ${valueClass || (bold ? 'font-bold' : '')}`}>{value}</span>
     </div>
   );
@@ -61,8 +61,8 @@ function InfoBox({ children, variant = 'default' }: {
   children: React.ReactNode;
   variant?: 'default' | 'success' | 'warning' | 'info';
 }) {
-  const bgMap = { default: 'bg-[#EDF1F5]', success: 'bg-green-50', warning: 'bg-amber-50', info: 'bg-[#5B7A9D]/08' };
-  const borderMap = { default: 'border-[#D5DEE6]', success: 'border-green-200', warning: 'border-amber-200', info: 'border-[#D5DEE6]' };
+  const bgMap = { default: 'bg-[#162636]', success: 'bg-[#34C759]/08', warning: 'bg-[#FF9500]/08', info: 'bg-[#7A9BBD]/10' };
+  const borderMap = { default: 'border-white/[0.08]', success: 'border-green-200', warning: 'border-amber-200', info: 'border-white/[0.08]' };
   return (
     <div className={`${bgMap[variant]} ${borderMap[variant]} border rounded-lg p-3 mt-3`}>
       {children}
@@ -77,7 +77,7 @@ function ProgressBar({ value, max = 100, color = 'bg-[#2A3F54]' }: {
 }) {
   const pct = Math.min(100, Math.max(0, (value / max) * 100));
   return (
-    <div className="w-full h-2 bg-[#D5DEE6] rounded-full overflow-hidden">
+    <div className="w-full h-2 bg-[#253546] rounded-full overflow-hidden">
       <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
     </div>
   );
@@ -86,7 +86,7 @@ function ProgressBar({ value, max = 100, color = 'bg-[#2A3F54]' }: {
 function TrendArrow({ value }: { value: number }) {
   if (value > 0.5) {
     return (
-      <span className="text-green-600 text-xs font-bold flex items-center gap-1">
+      <span className="text-[#34C759] text-xs font-bold flex items-center gap-1">
         <ArrowUpRight className="w-3 h-3" />+{value.toFixed(1)}%
       </span>
     );
@@ -99,14 +99,14 @@ function TrendArrow({ value }: { value: number }) {
     );
   }
   return (
-    <span className="text-[#9EAFC0] text-xs font-bold flex items-center gap-1">
+    <span className="text-[#6B8AAD] text-xs font-bold flex items-center gap-1">
       <Minus className="w-3 h-3" />{value.toFixed(1)}%
     </span>
   );
 }
 
 function TrafficLight({ status }: { status: 'green' | 'yellow' | 'red' }) {
-  const colorMap = { green: 'bg-green-500', yellow: 'bg-yellow-500', red: 'bg-red-500' };
+  const colorMap = { green: 'bg-[#34C759]/080', yellow: 'bg-yellow-500', red: 'bg-red-500' };
   return <span className={`inline-block w-3 h-3 rounded-full ${colorMap[status]} ring-2 ring-white`} />;
 }
 
@@ -177,14 +177,14 @@ export default async function AuswertungDetailPage({ params }: Props) {
       {/* ===== HEADER ===== */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Link href="/auswertungen" className="p-2 hover:bg-[#EDF1F5] rounded-lg">
-            <ArrowLeft className="w-5 h-5 text-[#4A6A8D]" />
+          <Link href="/auswertungen" className="p-2 hover:bg-[#162636] rounded-lg">
+            <ArrowLeft className="w-5 h-5 text-[#6B8AAD]" />
           </Link>
           <div>
-            <h1 className="text-lg sm:text-2xl font-bold text-[#1E2A3A]">
+            <h1 className="text-lg sm:text-2xl font-bold text-[#EDF1F5]">
               {objekt?.strasse as string}, {objekt?.plz as string} {objekt?.ort as string}
             </h1>
-            <p className="text-sm text-[#5B7A9D]">
+            <p className="text-sm text-[#7A9BBD]">
               {mandant?.name || 'Unbekannter Mandant'} · {formatDate(auswertung.created_at)}
             </p>
           </div>
@@ -209,12 +209,12 @@ export default async function AuswertungDetailPage({ params }: Props) {
       </div>
 
       {/* ===== LAGEPLAN ===== */}
-      <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-[#D5DEE6] overflow-hidden shadow-sm">
-        <div className="flex items-center gap-3 px-4 py-3 bg-[#EDF1F5]/80 border-b border-[#D5DEE6]">
-          <MapPin className="w-5 h-5 text-[#2A3F54]" />
+      <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
+        <div className="flex items-center gap-3 px-4 py-3 bg-[#162636]/80 border-b border-white/[0.08]">
+          <MapPin className="w-5 h-5 text-[#3D5167]" />
           <div>
-            <h3 className="text-sm font-bold text-[#1E2A3A]">Lageplan</h3>
-            <p className="text-xs text-[#5B7A9D]">{objekt?.strasse as string}, {objekt?.plz as string} {objekt?.ort as string}</p>
+            <h3 className="text-sm font-bold text-[#EDF1F5]">Lageplan</h3>
+            <p className="text-xs text-[#7A9BBD]">{objekt?.strasse as string}, {objekt?.plz as string} {objekt?.ort as string}</p>
           </div>
         </div>
         <div className="p-3">
@@ -223,55 +223,55 @@ export default async function AuswertungDetailPage({ params }: Props) {
       </div>
 
       {/* ===== KEY METRICS BAR ===== */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-[#D5DEE6] rounded-xl overflow-hidden border border-[#D5DEE6]">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-px bg-[#253546] rounded-xl overflow-hidden border border-white/[0.08]">
         <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
-          <p className="text-xs text-[#5B7A9D]">Verkehrswert*</p>
-          <p className="text-lg font-bold text-[#1E2A3A]">{formatCurrency(verkehrswertGeschaetzt)}</p>
+          <p className="text-xs text-[#7A9BBD]">Verkehrswert*</p>
+          <p className="text-lg font-bold text-[#EDF1F5]">{formatCurrency(verkehrswertGeschaetzt)}</p>
           {gesamtflaeche > 0 && (
-            <p className="text-xs text-[#2A3F54] font-semibold">({formatCurrency(verkehrswertProQm)}/m²)</p>
+            <p className="text-xs text-[#3D5167] font-semibold">({formatCurrency(verkehrswertProQm)}/m²)</p>
           )}
         </div>
         <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
-          <p className="text-xs text-[#5B7A9D]">EK-Puffer</p>
-          <p className={`text-lg font-bold ${abbezahlteSumme >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <p className="text-xs text-[#7A9BBD]">EK-Puffer</p>
+          <p className={`text-lg font-bold ${abbezahlteSumme >= 0 ? 'text-[#34C759]' : 'text-red-600'}`}>
             {formatCurrency(abbezahlteSumme)}
           </p>
-          <p className="text-[10px] text-[#9EAFC0]">VW − Restschuld</p>
+          <p className="text-[10px] text-[#6B8AAD]">VW − Restschuld</p>
         </div>
         <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
-          <p className="text-xs text-[#5B7A9D]">Rendite</p>
-          <p className="text-lg font-bold text-[#1E2A3A]">{formatPercent(rendite?.rendite_ist)}</p>
-          <p className="text-[10px] text-green-600">
+          <p className="text-xs text-[#7A9BBD]">Rendite</p>
+          <p className="text-lg font-bold text-[#EDF1F5]">{formatPercent(rendite?.rendite_ist)}</p>
+          <p className="text-[10px] text-[#34C759]">
             +{formatPercent(rendite_nach_steuer - (rendite?.rendite_ist || 0))} n. AfA
           </p>
         </div>
         <div className="bg-white/80 backdrop-blur-sm p-4 text-center">
-          <p className="text-xs text-[#5B7A9D]">AfA-Ersparnis</p>
-          <p className="text-lg font-bold text-green-600">{formatCurrency(steuerersparnis)}/J.</p>
-          <p className="text-[10px] text-[#9EAFC0]">bei 42% Grenzsteuersatz</p>
+          <p className="text-xs text-[#7A9BBD]">AfA-Ersparnis</p>
+          <p className="text-lg font-bold text-[#34C759]">{formatCurrency(steuerersparnis)}/J.</p>
+          <p className="text-[10px] text-[#6B8AAD]">bei 42% Grenzsteuersatz</p>
         </div>
         <div className="bg-white/80 backdrop-blur-sm p-4 text-center col-span-2 md:col-span-1">
-          <p className="text-xs text-[#5B7A9D] mb-1">Empfehlung</p>
+          <p className="text-xs text-[#7A9BBD] mb-1">Empfehlung</p>
           {auswertung.empfehlung ? (
             <EmpfehlungBadge empfehlung={auswertung.empfehlung} />
           ) : (
-            <span className="text-[#9EAFC0]">-</span>
+            <span className="text-[#6B8AAD]">-</span>
           )}
         </div>
       </div>
 
       {/* ===== BELEIHUNGSWERT ===== */}
-      <div className="bg-[#EDF1F5] backdrop-blur-sm rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center border border-[#D5DEE6]">
+      <div className="bg-[#162636] backdrop-blur-sm rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center border border-white/[0.08]">
         <div className="flex-shrink-0">
-          <p className="text-xs text-[#2A3F54] font-bold">Beleihungswert (70% d. EK)</p>
-          <p className="text-xl font-bold text-[#1E2A3A]">{formatCurrency(beleihungswert)}</p>
+          <p className="text-xs text-[#3D5167] font-bold">Beleihungswert (70% d. EK)</p>
+          <p className="text-xl font-bold text-[#EDF1F5]">{formatCurrency(beleihungswert)}</p>
         </div>
-        <div className="md:border-l md:border-[#D5DEE6] md:pl-4 text-xs text-[#4A6A8D]">
+        <div className="md:border-l md:border-white/[0.08] md:pl-4 text-xs text-[#6B8AAD]">
           <p>
             Abbezahlte Summe (VW − Restschuld): {formatCurrency(abbezahlteSumme)}.
             Der Beleihungswert (60–80%, hier 70%) zeigt die verfügbare Sicherheit für Refinanzierungen.
           </p>
-          <p className="text-[10px] text-[#9EAFC0] italic mt-1">Quelle: Berechnung nach Bankenstandard (BelWertV)</p>
+          <p className="text-[10px] text-[#6B8AAD] italic mt-1">Quelle: Berechnung nach Bankenstandard (BelWertV)</p>
         </div>
       </div>
 
@@ -279,41 +279,41 @@ export default async function AuswertungDetailPage({ params }: Props) {
       {marktdaten && (
         <div className="bg-purple-50/50 backdrop-blur-sm rounded-xl p-4 border border-purple-200">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-[#1E2A3A]">Aktuelle Marktdaten</h3>
-            <span className="text-xs text-[#5B7A9D]">Standort: {marktdaten.standort}</span>
+            <h3 className="text-sm font-bold text-[#EDF1F5]">Aktuelle Marktdaten</h3>
+            <span className="text-xs text-[#7A9BBD]">Standort: {marktdaten.standort}</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             {/* Spalte 1 */}
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-[#4A6A8D]">Vergleichsmiete Wohnen</span>
+                <span className="text-[#6B8AAD]">Vergleichsmiete Wohnen</span>
                 <span className="font-semibold">{marktdaten.vergleichsmiete_wohnen.wert} €/m²</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#4A6A8D]">Vergleichsmiete Gewerbe</span>
+                <span className="text-[#6B8AAD]">Vergleichsmiete Gewerbe</span>
                 <span className="font-semibold">{marktdaten.vergleichsmiete_gewerbe.wert} €/m²</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#4A6A8D]">Kaufpreisfaktor</span>
+                <span className="text-[#6B8AAD]">Kaufpreisfaktor</span>
                 <span className="font-semibold">{marktdaten.kaufpreisfaktor_region.wert}x</span>
               </div>
             </div>
             {/* Spalte 2 */}
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-[#4A6A8D]">Kappungsgrenze</span>
-                <span className={`font-semibold ${marktdaten.kappungsgrenze.vorhanden ? 'text-red-600' : 'text-green-600'}`}>
+                <span className="text-[#6B8AAD]">Kappungsgrenze</span>
+                <span className={`font-semibold ${marktdaten.kappungsgrenze.vorhanden ? 'text-red-600' : 'text-[#34C759]'}`}>
                   {marktdaten.kappungsgrenze.prozent}% {marktdaten.kappungsgrenze.vorhanden ? '(angespannt)' : ''}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#4A6A8D]">Milieuschutz</span>
-                <span className={`font-semibold ${marktdaten.milieuschutzgebiet.vorhanden ? 'text-red-600' : 'text-green-600'}`}>
+                <span className="text-[#6B8AAD]">Milieuschutz</span>
+                <span className={`font-semibold ${marktdaten.milieuschutzgebiet.vorhanden ? 'text-red-600' : 'text-[#34C759]'}`}>
                   {marktdaten.milieuschutzgebiet.vorhanden ? 'Ja' : 'Nein'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#4A6A8D]">Akt. Bauzinsen</span>
+                <span className="text-[#6B8AAD]">Akt. Bauzinsen</span>
                 <span className="font-semibold">
                   {marktdaten.aktuelle_bauzinsen.wert}% ({marktdaten.aktuelle_bauzinsen.zinsbindung})
                 </span>
@@ -321,22 +321,22 @@ export default async function AuswertungDetailPage({ params }: Props) {
             </div>
             {/* Spalte 3: Prognose */}
             <div className="space-y-2">
-              <p className="text-xs font-bold text-[#1E2A3A]">Preisprognose p.a.</p>
+              <p className="text-xs font-bold text-[#EDF1F5]">Preisprognose p.a.</p>
               <div className="flex justify-between items-center">
-                <span className="text-[#4A6A8D]">0–3 Jahre</span>
+                <span className="text-[#6B8AAD]">0–3 Jahre</span>
                 <TrendArrow value={marktdaten.preisprognose.kurz_0_3_jahre} />
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[#4A6A8D]">3–7 Jahre</span>
+                <span className="text-[#6B8AAD]">3–7 Jahre</span>
                 <TrendArrow value={marktdaten.preisprognose.mittel_3_7_jahre} />
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[#4A6A8D]">7+ Jahre</span>
+                <span className="text-[#6B8AAD]">7+ Jahre</span>
                 <TrendArrow value={marktdaten.preisprognose.lang_7_plus_jahre} />
               </div>
             </div>
           </div>
-          <p className="text-[10px] text-[#9EAFC0] italic mt-3">
+          <p className="text-[10px] text-[#6B8AAD] italic mt-3">
             Quelle: Aktuelle Marktanalyse, Stand: {new Date(marktdaten.abfrage_datum).toLocaleDateString('de-DE')}
           </p>
         </div>
@@ -356,11 +356,11 @@ export default async function AuswertungDetailPage({ params }: Props) {
           />
           <DataRow label="Anfangsrendite" value={formatPercent(rendite?.rendite_ist)} bold />
           <InfoBox>
-            <p className="text-xs text-[#4A6A8D]">
+            <p className="text-xs text-[#6B8AAD]">
               • EK-Quote: {((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100).toFixed(0)}%{' '}
               {(fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) >= 0.3 ? '(konservativ)' : '(gehebelt)'}
             </p>
-            <p className="text-xs text-[#4A6A8D]">
+            <p className="text-xs text-[#6B8AAD]">
               • Zinsniveau: {(fin?.zinssatz || 0) <= 3.5 ? 'günstig' : (fin?.zinssatz || 0) <= 4.5 ? 'marktüblich' : 'erhöht'}
             </p>
           </InfoBox>
@@ -374,17 +374,17 @@ export default async function AuswertungDetailPage({ params }: Props) {
             label="Mietpotenzial"
             value={`+${formatCurrency(miet?.potenzial_jahr)}`}
             bold
-            valueClass="text-green-600 font-bold"
+            valueClass="text-[#34C759] font-bold"
           />
           {miet?.miete_ist_jahr && miet.potenzial_jahr ? (
-            <p className="text-xs text-[#5B7A9D] text-right mt-1">
+            <p className="text-xs text-[#7A9BBD] text-right mt-1">
               +{((miet.potenzial_jahr / miet.miete_ist_jahr) * 100).toFixed(1)}% Steigerung möglich
             </p>
           ) : null}
           <InfoBox>
-            <p className="text-xs text-[#4A6A8D]">• IST: Tatsächliche Mieteinnahmen lt. Mandant</p>
-            <p className="text-xs text-[#4A6A8D]">• SOLL: Marktmiete bei Neuvermietung</p>
-            <p className="text-[10px] text-[#9EAFC0] italic mt-1">
+            <p className="text-xs text-[#6B8AAD]">• IST: Tatsächliche Mieteinnahmen lt. Mandant</p>
+            <p className="text-xs text-[#6B8AAD]">• SOLL: Marktmiete bei Neuvermietung</p>
+            <p className="text-[10px] text-[#6B8AAD] italic mt-1">
               Quelle: {marktdaten?.vergleichsmiete_wohnen?.quelle || `Mietspiegel ${(objekt?.ort as string) || 'Region'}`}
             </p>
           </InfoBox>
@@ -399,16 +399,16 @@ export default async function AuswertungDetailPage({ params }: Props) {
             label="Cashflow IST"
             value={formatCurrency(cashflow?.cashflow_ist_jahr)}
             bold
-            valueClass={`font-bold ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
+            valueClass={`font-bold ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'text-[#34C759]' : 'text-red-600'}`}
           />
           <DataRow
             label="Cashflow optimiert"
             value={formatCurrency(cashflow?.cashflow_opt_jahr)}
-            valueClass={`font-bold ${(cashflow?.cashflow_opt_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
+            valueClass={`font-bold ${(cashflow?.cashflow_opt_jahr || 0) >= 0 ? 'text-[#34C759]' : 'text-red-600'}`}
           />
           <InfoBox>
-            <p className="text-xs text-[#4A6A8D]">• Cashflow = Miete − Kapitaldienst − Kosten</p>
-            <p className={`text-xs ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <p className="text-xs text-[#6B8AAD]">• Cashflow = Miete − Kapitaldienst − Kosten</p>
+            <p className={`text-xs ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'text-[#34C759]' : 'text-red-600'}`}>
               • Status: {(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'Objekt trägt sich selbst' : 'Unterdeckung – Zuschuss erforderlich'}
             </p>
           </InfoBox>
@@ -428,11 +428,11 @@ export default async function AuswertungDetailPage({ params }: Props) {
             {[
               { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: 'bg-[#2A3F54]' },
               { label: 'Verwaltung', value: kosten?.verwaltung || 0, color: 'bg-purple-500' },
-              { label: 'Nicht umlf. BK', value: kosten?.betriebskosten_nicht_umlage || 0, color: 'bg-amber-500' },
+              { label: 'Nicht umlf. BK', value: kosten?.betriebskosten_nicht_umlage || 0, color: 'bg-[#FF9500]/080' },
               { label: 'Rücklagen', value: kosten?.ruecklagen || 0, color: 'bg-emerald-500' },
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="text-xs text-[#4A6A8D] w-20 flex-shrink-0">{item.label}</span>
+                <span className="text-xs text-[#6B8AAD] w-20 flex-shrink-0">{item.label}</span>
                 <div className="flex-1">
                   <ProgressBar value={item.value} max={kosten?.kosten_gesamt || 1} color={item.color} />
                 </div>
@@ -445,20 +445,20 @@ export default async function AuswertungDetailPage({ params }: Props) {
           <DataRow label="Gesamt" value={formatCurrency(kosten?.kosten_gesamt)} bold />
           <div className="mt-3">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs text-[#4A6A8D]">Kostenquote</span>
-              <span className={`text-xs font-bold ${kosten?.bewertung === 'gesund' ? 'text-green-600' : kosten?.bewertung === 'durchschnittlich' ? 'text-amber-600' : 'text-red-600'}`}>
+              <span className="text-xs text-[#6B8AAD]">Kostenquote</span>
+              <span className={`text-xs font-bold ${kosten?.bewertung === 'gesund' ? 'text-[#34C759]' : kosten?.bewertung === 'durchschnittlich' ? 'text-[#FF9500]' : 'text-red-600'}`}>
                 {formatPercent(kosten?.kostenquote)} – {kosten?.bewertung}
               </span>
             </div>
             <ProgressBar
               value={kosten?.kostenquote || 0}
               max={50}
-              color={kosten?.bewertung === 'gesund' ? 'bg-green-500' : kosten?.bewertung === 'durchschnittlich' ? 'bg-amber-500' : 'bg-red-500'}
+              color={kosten?.bewertung === 'gesund' ? 'bg-[#34C759]/080' : kosten?.bewertung === 'durchschnittlich' ? 'bg-[#FF9500]/080' : 'bg-red-500'}
             />
-            <div className="flex justify-between text-[10px] text-[#9EAFC0] mt-1">
+            <div className="flex justify-between text-[10px] text-[#6B8AAD] mt-1">
               <span>0%</span>
               <span className="text-green-500">25%</span>
-              <span className="text-amber-500">35%</span>
+              <span className="text-[#FF9500]">35%</span>
               <span className="text-red-500">50%</span>
             </div>
           </div>
@@ -478,7 +478,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
         <div className="overflow-x-auto -mx-4">
           <table className="min-w-full text-xs">
             <thead>
-              <tr className="bg-[#EDF1F5] text-[#5B7A9D] font-semibold">
+              <tr className="bg-[#162636] text-[#7A9BBD] font-semibold">
                 <th className="px-3 py-2 text-center">#</th>
                 <th className="px-3 py-2 text-left">Nutzung</th>
                 <th className="px-3 py-2 text-right">Fläche</th>
@@ -493,7 +493,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
               {einheiten.map((e, i) => {
                 const euroPerSqm = e.flaeche > 0 ? e.kaltmiete_ist / e.flaeche : 0;
                 return (
-                  <tr key={i} className={i % 2 === 1 ? 'bg-[#EDF1F5]/50' : ''}>
+                  <tr key={i} className={i % 2 === 1 ? 'bg-[#162636]/50' : ''}>
                     <td className="px-3 py-2 text-center">{e.position}</td>
                     <td className="px-3 py-2">{e.nutzung}</td>
                     <td className="px-3 py-2 text-right">{e.flaeche} m²</td>
@@ -501,7 +501,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
                     <td className="px-3 py-2 text-right">{euroPerSqm.toFixed(2)} €</td>
                     <td className="px-3 py-2 text-right">{e.vergleichsmiete || '-'} €</td>
                     <td className="px-3 py-2 text-right">{formatCurrency(e.kaltmiete_soll)}</td>
-                    <td className={`px-3 py-2 text-right font-semibold ${e.potenzial > 0 ? 'text-green-600' : 'text-[#9EAFC0]'}`}>
+                    <td className={`px-3 py-2 text-right font-semibold ${e.potenzial > 0 ? 'text-[#34C759]' : 'text-[#6B8AAD]'}`}>
                       {e.potenzial > 0 ? `+${formatCurrency(e.potenzial)}` : '-'}
                     </td>
                   </tr>
@@ -509,7 +509,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
               })}
             </tbody>
             <tfoot>
-              <tr className="bg-[#EDF1F5] font-bold border-t border-[#D5DEE6]">
+              <tr className="bg-[#162636] font-bold border-t border-white/[0.08]">
                 <td className="px-3 py-2"></td>
                 <td className="px-3 py-2">GESAMT</td>
                 <td className="px-3 py-2"></td>
@@ -517,19 +517,19 @@ export default async function AuswertungDetailPage({ params }: Props) {
                 <td className="px-3 py-2"></td>
                 <td className="px-3 py-2"></td>
                 <td className="px-3 py-2 text-right">{formatCurrency(miet?.miete_soll_monat)}</td>
-                <td className="px-3 py-2 text-right text-green-600">+{formatCurrency(miet?.potenzial_monat)}</td>
+                <td className="px-3 py-2 text-right text-[#34C759]">+{formatCurrency(miet?.potenzial_monat)}</td>
               </tr>
             </tfoot>
           </table>
         </div>
         <InfoBox>
-          <p className="text-xs text-[#4A6A8D]">
+          <p className="text-xs text-[#6B8AAD]">
             • §558 BGB: Miete darf innerhalb von 3 Jahren um max. {(objekt?.milieuschutz as boolean) ? '15%' : '20%'} erhöht werden.
           </p>
-          <p className="text-xs text-[#4A6A8D]">
+          <p className="text-xs text-[#6B8AAD]">
             {`• "Sofort" = Erhöhung jetzt möglich. Sperrfrist: 15 Monate nach letzter Erhöhung.`}
           </p>
-          <p className="text-xs text-[#4A6A8D]">
+          <p className="text-xs text-[#6B8AAD]">
             • Gewerbe/Stellplatz: Freie Mietvertragsregelungen, keine gesetzliche Kappung.
           </p>
         </InfoBox>
@@ -542,14 +542,14 @@ export default async function AuswertungDetailPage({ params }: Props) {
           <div className="space-y-4">
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-xs text-[#5B7A9D]">IST</span>
-                <span className={`text-sm font-bold ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="text-xs text-[#7A9BBD]">IST</span>
+                <span className={`text-sm font-bold ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'text-[#34C759]' : 'text-red-600'}`}>
                   {formatCurrency(cashflow?.cashflow_ist_jahr)}
                 </span>
               </div>
-              <div className="h-5 bg-[#EDF1F5] rounded overflow-hidden">
+              <div className="h-5 bg-[#162636] rounded overflow-hidden">
                 <div
-                  className={`h-full rounded ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                  className={`h-full rounded ${(cashflow?.cashflow_ist_jahr || 0) >= 0 ? 'bg-[#34C759]/080' : 'bg-red-500'}`}
                   style={{
                     width: `${Math.min(100, Math.abs(cashflow?.cashflow_ist_jahr || 0) / Math.max(Math.abs(cashflow?.cashflow_ist_jahr || 1), Math.abs(cashflow?.cashflow_opt_jahr || 1)) * 100)}%`,
                   }}
@@ -558,12 +558,12 @@ export default async function AuswertungDetailPage({ params }: Props) {
             </div>
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-xs text-green-600 font-bold">OPTIMIERT</span>
-                <span className={`text-sm font-bold ${(cashflow?.cashflow_opt_jahr || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="text-xs text-[#34C759] font-bold">OPTIMIERT</span>
+                <span className={`text-sm font-bold ${(cashflow?.cashflow_opt_jahr || 0) >= 0 ? 'text-[#34C759]' : 'text-red-600'}`}>
                   {formatCurrency(cashflow?.cashflow_opt_jahr)}
                 </span>
               </div>
-              <div className="h-5 bg-[#EDF1F5] rounded overflow-hidden">
+              <div className="h-5 bg-[#162636] rounded overflow-hidden">
                 <div
                   className={`h-full rounded ${(cashflow?.cashflow_opt_jahr || 0) >= 0 ? 'bg-green-600' : 'bg-red-500'}`}
                   style={{
@@ -572,8 +572,8 @@ export default async function AuswertungDetailPage({ params }: Props) {
                 />
               </div>
             </div>
-            <div className="bg-green-50 rounded-lg p-3 text-center border border-green-200">
-              <p className="text-lg font-bold text-green-600">
+            <div className="bg-[#34C759]/08 rounded-lg p-3 text-center border border-green-200">
+              <p className="text-lg font-bold text-[#34C759]">
                 Potenzial: +{formatCurrency((cashflow?.cashflow_opt_jahr || 0) - (cashflow?.cashflow_ist_jahr || 0))} p.a.
               </p>
             </div>
@@ -595,20 +595,20 @@ export default async function AuswertungDetailPage({ params }: Props) {
               const barColors = ['#94a3b8', '#7a8c9d', '#5a6c7d', '#4a5c6d', '#3a4c5d'];
               return (
                 <div key={i} className="flex flex-col items-center flex-1 max-w-16">
-                  <span className="text-[10px] font-bold text-[#1E2A3A] mb-1">{formatCurrency(item.value)}</span>
+                  <span className="text-[10px] font-bold text-[#EDF1F5] mb-1">{formatCurrency(item.value)}</span>
                   {item.pct !== null && (
-                    <span className="text-[10px] font-bold text-green-600">+{item.pct.toFixed(0)}%</span>
+                    <span className="text-[10px] font-bold text-[#34C759]">+{item.pct.toFixed(0)}%</span>
                   )}
                   <div
                     className="w-full rounded-t"
                     style={{ height: `${heightPct}%`, backgroundColor: barColors[i], minHeight: 24 }}
                   />
-                  <span className="text-[10px] text-[#5B7A9D] mt-1">{item.label}</span>
+                  <span className="text-[10px] text-[#7A9BBD] mt-1">{item.label}</span>
                 </div>
               );
             })}
           </div>
-          <p className="text-[10px] text-[#9EAFC0] italic text-center">
+          <p className="text-[10px] text-[#6B8AAD] italic text-center">
             Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Hist. Durchschnitt (2,5% p.a.)'}
           </p>
         </SectionBox>
@@ -619,17 +619,17 @@ export default async function AuswertungDetailPage({ params }: Props) {
         {/* Section 8: CAPEX & §559 */}
         <SectionBox number={8} title="CAPEX & §559 BGB">
           <DataRow label="CAPEX geplant" value={formatCurrency(mod559?.capex_betrag)} />
-          <div className="bg-[#EDF1F5] rounded-xl p-4 mt-3 text-center border border-[#D5DEE6]">
-            <p className="text-xs text-[#2A3F54] font-bold">§559 Modernisierungsumlage</p>
-            <p className="text-2xl font-bold text-[#1E2A3A] my-1">
+          <div className="bg-[#162636] rounded-xl p-4 mt-3 text-center border border-white/[0.08]">
+            <p className="text-xs text-[#3D5167] font-bold">§559 Modernisierungsumlage</p>
+            <p className="text-2xl font-bold text-[#EDF1F5] my-1">
               {formatCurrency(mod559?.umlage_nach_kappung)} p.a.
             </p>
-            <p className="text-xs text-[#5B7A9D]">Gekappt nach §559 Abs. 3a BGB</p>
+            <p className="text-xs text-[#7A9BBD]">Gekappt nach §559 Abs. 3a BGB</p>
           </div>
           <InfoBox>
-            <p className="text-xs font-semibold text-[#4A6A8D] mb-1">Kappungsgrenzen §559 Abs. 3a BGB:</p>
-            <p className="text-xs text-[#4A6A8D]">{'• Kaltmiete < 7€/m²: max. 2€/m² in 6 Jahren'}</p>
-            <p className="text-xs text-[#4A6A8D]">{'• Kaltmiete ≥ 7€/m²: max. 3€/m² in 6 Jahren'}</p>
+            <p className="text-xs font-semibold text-[#6B8AAD] mb-1">Kappungsgrenzen §559 Abs. 3a BGB:</p>
+            <p className="text-xs text-[#6B8AAD]">{'• Kaltmiete < 7€/m²: max. 2€/m² in 6 Jahren'}</p>
+            <p className="text-xs text-[#6B8AAD]">{'• Kaltmiete ≥ 7€/m²: max. 3€/m² in 6 Jahren'}</p>
           </InfoBox>
         </SectionBox>
 
@@ -641,19 +641,19 @@ export default async function AuswertungDetailPage({ params }: Props) {
             label="Potenzial"
             value={`+${formatCurrency(weg?.weg_gewinn)}`}
             bold
-            valueClass="text-green-600 font-bold"
+            valueClass="text-[#34C759] font-bold"
           />
           {weg?.bereits_aufgeteilt && (
             <Badge variant="info" className="mt-2">Bereits aufgeteilt</Badge>
           )}
           {weg?.genehmigung_erforderlich && (
-            <div className="bg-amber-50 rounded-lg p-2 mt-2 text-center border border-amber-200">
-              <span className="text-xs font-bold text-amber-600">Genehmigung nötig</span>
+            <div className="bg-[#FF9500]/08 rounded-lg p-2 mt-2 text-center border border-amber-200">
+              <span className="text-xs font-bold text-[#FF9500]">Genehmigung nötig</span>
             </div>
           )}
           <InfoBox>
-            <p className="text-xs text-[#4A6A8D]">• WEG-Aufteilung: +15% Wertsteigerung durch Einzelverkauf</p>
-            <p className="text-xs text-[#4A6A8D]">
+            <p className="text-xs text-[#6B8AAD]">• WEG-Aufteilung: +15% Wertsteigerung durch Einzelverkauf</p>
+            <p className="text-xs text-[#6B8AAD]">
               • Status: {weg?.bereits_aufgeteilt ? 'Bereits aufgeteilt' : 'Noch nicht aufgeteilt'}
             </p>
           </InfoBox>
@@ -664,14 +664,14 @@ export default async function AuswertungDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Section 10: AfA & Steuervorteile */}
         <SectionBox number={10} title="AfA & Steuervorteile">
-          <div className="bg-green-50 rounded-lg p-4 mb-4 text-center border border-green-200">
-            <p className="text-xs text-green-600 font-bold mb-1">Jährlicher Steuervorteil</p>
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(steuerersparnis)}</p>
-            <p className="text-xs text-[#5B7A9D]">bei 42% Grenzsteuersatz</p>
+          <div className="bg-[#34C759]/08 rounded-lg p-4 mb-4 text-center border border-green-200">
+            <p className="text-xs text-[#34C759] font-bold mb-1">Jährlicher Steuervorteil</p>
+            <p className="text-2xl font-bold text-[#34C759]">{formatCurrency(steuerersparnis)}</p>
+            <p className="text-xs text-[#7A9BBD]">bei 42% Grenzsteuersatz</p>
           </div>
           <div className="mb-3">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs text-[#4A6A8D]">Restnutzungsdauer</span>
+              <span className="text-xs text-[#6B8AAD]">Restnutzungsdauer</span>
               <span className="text-xs font-bold">{afa?.rnd} von 80 Jahren</span>
             </div>
             <ProgressBar value={afa?.rnd || 0} max={80} color="bg-[#2A3F54]" />
@@ -680,8 +680,8 @@ export default async function AuswertungDetailPage({ params }: Props) {
           <DataRow label="AfA-Satz" value={afa?.rnd ? `${(100 / afa.rnd).toFixed(2)}%` : '-'} />
           <DataRow label="AfA-Betrag p.a." value={formatCurrency(afa?.afa_jahr)} />
           <InfoBox>
-            <p className="text-xs text-[#4A6A8D]">• AfA = Absetzung für Abnutzung (§7 EStG)</p>
-            <p className="text-xs text-[#4A6A8D]">
+            <p className="text-xs text-[#6B8AAD]">• AfA = Absetzung für Abnutzung (§7 EStG)</p>
+            <p className="text-xs text-[#6B8AAD]">
               • Basis: {formatCurrency(afa?.gebaeude_wert)} Gebäudewert (80% KP)
             </p>
           </InfoBox>
@@ -692,22 +692,22 @@ export default async function AuswertungDetailPage({ params }: Props) {
           <div className="space-y-4 mb-4">
             {[
               { label: 'Brutto-Rendite IST', value: rendite?.rendite_ist || 0, color: 'bg-[#9EAFC0]' },
-              { label: 'Brutto-Rendite OPT', value: rendite?.rendite_opt || 0, color: 'bg-green-500' },
+              { label: 'Brutto-Rendite OPT', value: rendite?.rendite_opt || 0, color: 'bg-[#34C759]/080' },
               { label: 'Nach AfA (eff.)', value: rendite_nach_steuer, color: 'bg-[#1E2A3A]' },
               { label: 'EK-Rendite IST', value: rendite?.eigenkapitalrendite_ist || 0, color: 'bg-[#2A3F54]' },
             ].map((item, i) => (
               <div key={i}>
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-[#4A6A8D]">{item.label}</span>
+                  <span className="text-xs text-[#6B8AAD]">{item.label}</span>
                   <span className="text-xs font-bold">{formatPercent(item.value)}</span>
                 </div>
                 <ProgressBar value={item.value} max={15} color={item.color} />
               </div>
             ))}
           </div>
-          <div className="bg-[#EDF1F5] rounded-xl p-3 text-center border border-[#D5DEE6]">
-            <p className="text-xs text-[#2A3F54] font-bold">EK-Rendite optimiert</p>
-            <p className="text-xl font-bold text-[#1E2A3A]">{formatPercent(rendite?.eigenkapitalrendite_opt)}</p>
+          <div className="bg-[#162636] rounded-xl p-3 text-center border border-white/[0.08]">
+            <p className="text-xs text-[#3D5167] font-bold">EK-Rendite optimiert</p>
+            <p className="text-xl font-bold text-[#EDF1F5]">{formatPercent(rendite?.eigenkapitalrendite_opt)}</p>
           </div>
         </SectionBox>
       </div>
@@ -730,29 +730,29 @@ export default async function AuswertungDetailPage({ params }: Props) {
               const increment = i > 0 ? item.value - arr[i - 1].value : 0;
               return (
                 <div key={i} className="flex-1 flex flex-col items-center">
-                  <span className="text-xs font-bold text-[#1E2A3A]">{formatCurrency(item.value)}</span>
+                  <span className="text-xs font-bold text-[#EDF1F5]">{formatCurrency(item.value)}</span>
                   {i > 0 && increment > 0 && (
-                    <span className="text-[10px] font-bold text-green-600">+{formatCurrency(increment)}</span>
+                    <span className="text-[10px] font-bold text-[#34C759]">+{formatCurrency(increment)}</span>
                   )}
-                  <div className="w-full bg-green-100 rounded-t mt-1" style={{ height: `${heightPct}px` }}>
+                  <div className="w-full bg-[#34C759]/12 rounded-t mt-1" style={{ height: `${heightPct}px` }}>
                     <div className="w-full h-full bg-gradient-to-t from-green-500 to-green-300 rounded-t" />
                   </div>
-                  <span className="text-[10px] text-[#5B7A9D] mt-1">{item.label}</span>
+                  <span className="text-[10px] text-[#7A9BBD] mt-1">{item.label}</span>
                 </div>
               );
             })}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4 bg-green-50 rounded-lg p-4 mt-4 border border-green-200">
+        <div className="grid grid-cols-2 gap-4 bg-[#34C759]/08 rounded-lg p-4 mt-4 border border-green-200">
           <div className="text-center">
-            <p className="text-xs text-[#5B7A9D]">Wertzuwachs 10J</p>
-            <p className="text-lg font-bold text-green-600">
+            <p className="text-xs text-[#7A9BBD]">Wertzuwachs 10J</p>
+            <p className="text-lg font-bold text-[#34C759]">
               +{formatCurrency((wert?.jahr_10 || 0) - (wert?.heute || 0))}
             </p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-[#5B7A9D]">Rendite p.a.</p>
-            <p className="text-lg font-bold text-green-600">
+            <p className="text-xs text-[#7A9BBD]">Rendite p.a.</p>
+            <p className="text-lg font-bold text-[#34C759]">
               +{(wert?.heute && wert?.jahr_10)
                 ? (((wert.jahr_10 / wert.heute) ** (1 / 10) - 1) * 100).toFixed(1)
                 : '2.5'}%
@@ -762,32 +762,32 @@ export default async function AuswertungDetailPage({ params }: Props) {
       </SectionBox>
 
       {/* ===== WERTSTEIGERNDE MASSNAHMEN ZUSAMMENFASSUNG ===== */}
-      <div className="bg-green-50/50 backdrop-blur-sm rounded-xl p-5 border border-green-200">
-        <h3 className="text-base font-bold text-green-700 mb-4">
+      <div className="bg-[#34C759]/08/50 backdrop-blur-sm rounded-xl p-5 border border-green-200">
+        <h3 className="text-base font-bold text-[#34C759] mb-4">
           Zusammenfassung: Wertsteigernde Maßnahmen
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-xs text-[#5B7A9D] mb-1">Mieterhöhungspotenzial</p>
-            <p className="text-xl font-bold text-green-600">+{formatCurrency(miet?.potenzial_jahr)}/Jahr</p>
-            <p className="text-[10px] text-[#9EAFC0] mt-1">durch Anpassung auf Marktmiete</p>
+          <div className="bg-[#1E2A3A] rounded-lg p-4">
+            <p className="text-xs text-[#7A9BBD] mb-1">Mieterhöhungspotenzial</p>
+            <p className="text-xl font-bold text-[#34C759]">+{formatCurrency(miet?.potenzial_jahr)}/Jahr</p>
+            <p className="text-[10px] text-[#6B8AAD] mt-1">durch Anpassung auf Marktmiete</p>
           </div>
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-xs text-[#5B7A9D] mb-1">WEG-Aufteilung</p>
-            <p className={`text-xl font-bold ${weg?.bereits_aufgeteilt ? 'text-[#9EAFC0]' : 'text-green-600'}`}>
+          <div className="bg-[#1E2A3A] rounded-lg p-4">
+            <p className="text-xs text-[#7A9BBD] mb-1">WEG-Aufteilung</p>
+            <p className={`text-xl font-bold ${weg?.bereits_aufgeteilt ? 'text-[#6B8AAD]' : 'text-[#34C759]'}`}>
               {weg?.bereits_aufgeteilt ? 'Bereits aufgeteilt' : `+${formatCurrency(weg?.weg_gewinn)}`}
             </p>
-            <p className="text-[10px] text-[#9EAFC0] mt-1">Einmaliger Wertzuwachs</p>
+            <p className="text-[10px] text-[#6B8AAD] mt-1">Einmaliger Wertzuwachs</p>
           </div>
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-xs text-[#5B7A9D] mb-1">AfA-Steuerersparnis</p>
-            <p className="text-xl font-bold text-[#1E2A3A]">+{formatCurrency(steuerersparnis)}/Jahr</p>
-            <p className="text-[10px] text-[#9EAFC0] mt-1">bei 42% Grenzsteuersatz</p>
+          <div className="bg-[#1E2A3A] rounded-lg p-4">
+            <p className="text-xs text-[#7A9BBD] mb-1">AfA-Steuerersparnis</p>
+            <p className="text-xl font-bold text-[#EDF1F5]">+{formatCurrency(steuerersparnis)}/Jahr</p>
+            <p className="text-[10px] text-[#6B8AAD] mt-1">bei 42% Grenzsteuersatz</p>
           </div>
         </div>
-        <div className="bg-white rounded-lg p-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <span className="font-bold text-[#1E2A3A]">Gesamtpotenzial (jährlich wiederkehrend):</span>
-          <span className="text-xl font-bold text-green-600">
+        <div className="bg-[#1E2A3A] rounded-lg p-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+          <span className="font-bold text-[#EDF1F5]">Gesamtpotenzial (jährlich wiederkehrend):</span>
+          <span className="text-xl font-bold text-[#34C759]">
             +{formatCurrency((miet?.potenzial_jahr || 0) + steuerersparnis)}/Jahr
           </span>
         </div>
@@ -796,16 +796,16 @@ export default async function AuswertungDetailPage({ params }: Props) {
       {/* ===== SECTION 13: Handlungsempfehlung ===== */}
       <SectionBox number={13} title="Handlungsempfehlung">
         {/* Empfehlung Badge */}
-        <div className="bg-[#EDF1F5] rounded-xl p-6 mb-4 text-center border border-[#D5DEE6]">
-          <p className="text-xs text-[#5B7A9D] mb-1">Unsere Empfehlung</p>
-          <p className="text-3xl font-bold text-[#1E2A3A]">{auswertung.empfehlung || '-'}</p>
+        <div className="bg-[#162636] rounded-xl p-6 mb-4 text-center border border-white/[0.08]">
+          <p className="text-xs text-[#7A9BBD] mb-1">Unsere Empfehlung</p>
+          <p className="text-3xl font-bold text-[#EDF1F5]">{auswertung.empfehlung || '-'}</p>
         </div>
 
         {/* Begründung */}
         {auswertung.empfehlung_begruendung && (
           <div className="mb-4">
-            <h4 className="text-sm font-bold text-[#1E2A3A] mb-2">Begründung</h4>
-            <p className="text-sm text-[#1E2A3A] leading-relaxed">{auswertung.empfehlung_begruendung}</p>
+            <h4 className="text-sm font-bold text-[#EDF1F5] mb-2">Begründung</h4>
+            <p className="text-sm text-[#EDF1F5] leading-relaxed">{auswertung.empfehlung_begruendung}</p>
           </div>
         )}
 
@@ -813,7 +813,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
         {auswertung.empfehlung_handlungsschritte &&
           (auswertung.empfehlung_handlungsschritte as Array<string | { schritt: string; zeitrahmen: string }>).length > 0 && (
           <div className="mb-4">
-            <h4 className="text-sm font-bold text-[#1E2A3A] mb-3">Empfohlene Handlungsschritte</h4>
+            <h4 className="text-sm font-bold text-[#EDF1F5] mb-3">Empfohlene Handlungsschritte</h4>
             <div className="space-y-2">
               {(auswertung.empfehlung_handlungsschritte as Array<string | { schritt: string; zeitrahmen: string }>).map(
                 (schritt, i) => {
@@ -821,13 +821,13 @@ export default async function AuswertungDetailPage({ params }: Props) {
                   const text = isObject ? schritt.schritt : schritt;
                   const zeitrahmen = isObject ? schritt.zeitrahmen : null;
                   return (
-                    <div key={i} className="flex items-start gap-3 bg-[#EDF1F5] rounded-lg p-3">
+                    <div key={i} className="flex items-start gap-3 bg-[#162636] rounded-lg p-3">
                       <span className="w-6 h-6 rounded-full bg-[#2A3F54] text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
                         {i + 1}
                       </span>
-                      <span className="flex-1 text-sm text-[#1E2A3A]">{text}</span>
+                      <span className="flex-1 text-sm text-[#EDF1F5]">{text}</span>
                       {zeitrahmen && (
-                        <span className="text-xs text-green-600 font-semibold flex-shrink-0">{zeitrahmen}</span>
+                        <span className="text-xs text-[#34C759] font-semibold flex-shrink-0">{zeitrahmen}</span>
                       )}
                     </div>
                   );
@@ -842,10 +842,10 @@ export default async function AuswertungDetailPage({ params }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {auswertung.empfehlung_chancen && (
               <div>
-                <h4 className="text-sm font-bold text-green-700 mb-2">Chancen</h4>
+                <h4 className="text-sm font-bold text-[#34C759] mb-2">Chancen</h4>
                 <ul className="space-y-2">
                   {(auswertung.empfehlung_chancen as string[]).map((c, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-[#1E2A3A]">
+                    <li key={i} className="flex items-start gap-2 text-sm text-[#EDF1F5]">
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
                       {c}
                     </li>
@@ -858,8 +858,8 @@ export default async function AuswertungDetailPage({ params }: Props) {
                 <h4 className="text-sm font-bold text-amber-700 mb-2">Risiken</h4>
                 <ul className="space-y-2">
                   {(auswertung.empfehlung_risiken as string[]).map((r, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-[#1E2A3A]">
-                      <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <li key={i} className="flex items-start gap-2 text-sm text-[#EDF1F5]">
+                      <AlertTriangle className="w-4 h-4 text-[#FF9500] flex-shrink-0 mt-0.5" />
                       {r}
                     </li>
                   ))}
@@ -871,89 +871,89 @@ export default async function AuswertungDetailPage({ params }: Props) {
 
         {/* Fazit */}
         {auswertung.empfehlung_fazit && (
-          <div className="bg-[#EDF1F5] rounded-lg p-4 border-l-4 border-[#2A3F54]">
-            <h4 className="text-sm font-bold text-[#1E2A3A] mb-1">Fazit</h4>
-            <p className="text-sm text-[#1E2A3A] leading-relaxed">{auswertung.empfehlung_fazit}</p>
+          <div className="bg-[#162636] rounded-lg p-4 border-l-4 border-[#2A3F54]">
+            <h4 className="text-sm font-bold text-[#EDF1F5] mb-1">Fazit</h4>
+            <p className="text-sm text-[#EDF1F5] leading-relaxed">{auswertung.empfehlung_fazit}</p>
           </div>
         )}
       </SectionBox>
 
       {/* ===== ERGÄNZENDE ERLÄUTERUNGEN ===== */}
       {erlaeuterungen && (
-        <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-[#D5DEE6] overflow-hidden shadow-sm">
-          <div className="px-4 py-3 bg-[#EDF1F5]/80 border-b border-[#D5DEE6]">
-            <h3 className="text-sm font-bold text-[#1E2A3A]">Ergänzende Erläuterungen</h3>
+        <div className="bg-white/70 backdrop-blur-sm rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
+          <div className="px-4 py-3 bg-[#162636]/80 border-b border-white/[0.08]">
+            <h3 className="text-sm font-bold text-[#EDF1F5]">Ergänzende Erläuterungen</h3>
           </div>
-          <div className="p-4 space-y-4 text-sm text-[#1E2A3A]">
+          <div className="p-4 space-y-4 text-sm text-[#EDF1F5]">
             {erlaeuterungen.finanzierungsprofil && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Finanzierungsprofil</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">Finanzierungsprofil</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.finanzierungsprofil}</p>
               </div>
             )}
             {erlaeuterungen.ertragsprofil && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Ertragsprofil</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">Ertragsprofil</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.ertragsprofil}</p>
               </div>
             )}
             {erlaeuterungen.mietanalyse && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Mietanalyse</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">Mietanalyse</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.mietanalyse}</p>
               </div>
             )}
             {erlaeuterungen.kostenstruktur && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Kostenstruktur</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">Kostenstruktur</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.kostenstruktur}</p>
               </div>
             )}
             {erlaeuterungen.cashflow && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Cashflow</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">Cashflow</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.cashflow}</p>
               </div>
             )}
             {erlaeuterungen.roi && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Rendite</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">Rendite</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.roi}</p>
               </div>
             )}
             {erlaeuterungen.weg_potenzial && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">WEG-Potenzial</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">WEG-Potenzial</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.weg_potenzial}</p>
               </div>
             )}
             {erlaeuterungen.rnd_afa && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">AfA & Steuervorteile</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">AfA & Steuervorteile</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.rnd_afa}</p>
               </div>
             )}
             {erlaeuterungen.capex_559 && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">CAPEX & §559</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">CAPEX & §559</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.capex_559}</p>
               </div>
             )}
             {erlaeuterungen.wertentwicklung && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Wertentwicklung</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">Wertentwicklung</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.wertentwicklung}</p>
               </div>
             )}
             {erlaeuterungen.exit && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Exit-Szenarien</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">Exit-Szenarien</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.exit}</p>
               </div>
             )}
             {erlaeuterungen.handlungsempfehlung && (
               <div>
-                <h4 className="text-xs font-bold text-[#2A3F54] mb-1">Handlungsempfehlung</h4>
+                <h4 className="text-xs font-bold text-[#3D5167] mb-1">Handlungsempfehlung</h4>
                 <p className="text-xs leading-relaxed">{erlaeuterungen.handlungsempfehlung}</p>
               </div>
             )}
@@ -962,9 +962,9 @@ export default async function AuswertungDetailPage({ params }: Props) {
       )}
 
       {/* ===== HAFTUNGSAUSSCHLUSS ===== */}
-      <div className="bg-[#EDF1F5] rounded-xl p-5 border border-[#D5DEE6]">
-        <h3 className="text-sm font-bold text-[#1E2A3A] mb-3">Haftungsausschluss</h3>
-        <div className="text-xs text-[#4A6A8D] space-y-2 leading-relaxed">
+      <div className="bg-[#162636] rounded-xl p-5 border border-white/[0.08]">
+        <h3 className="text-sm font-bold text-[#EDF1F5] mb-3">Haftungsausschluss</h3>
+        <div className="text-xs text-[#6B8AAD] space-y-2 leading-relaxed">
           <p>
             Die vorliegende Analyse dient ausschließlich der Einschätzung des Optimierungspotenzials und
             stellt kein Gutachten im Sinne des geltenden deutschen Rechts dar. Sie basiert auf den Angaben
@@ -982,7 +982,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
       </div>
 
       {/* Metadaten */}
-      <p className="text-xs text-[#9EAFC0] text-center">
+      <p className="text-xs text-[#6B8AAD] text-center">
         Auswertung erstellt am {formatDate(auswertung.created_at)} · Imperoyal Immobilien | Vertraulich
       </p>
     </div>

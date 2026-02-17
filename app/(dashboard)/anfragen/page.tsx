@@ -72,8 +72,8 @@ export default async function AnfragenPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A] tracking-[-0.02em]">Auswertungsanfragen</h1>
-        <p className="text-sm sm:text-base text-[#4A6A8D] mt-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5] tracking-[-0.02em]">Auswertungsanfragen</h1>
+        <p className="text-sm sm:text-base text-[#6B8AAD] mt-1">
           Anfragen von Mandanten zur Objektauswertung
         </p>
       </div>
@@ -82,45 +82,45 @@ export default async function AnfragenPage() {
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <Card>
           <div className="flex items-center gap-4">
-            <div className="w-11 h-11 bg-[#FF9500]/10 rounded-xl flex items-center justify-center">
-              <Clock className="w-5 h-5 text-[#B36200]" />
+            <div className="w-11 h-11 bg-[#FF9500]/15 rounded-xl flex items-center justify-center">
+              <Clock className="w-5 h-5 text-[#FF9500]" />
             </div>
             <div>
-              <p className="text-[11px] font-semibold text-[#5B7A9D] uppercase tracking-[0.05em]">Unbezahlt</p>
-              <p className="text-2xl font-bold text-[#1E2A3A] tracking-[-0.02em]">{offeneAnfragen.length}</p>
+              <p className="text-[11px] font-semibold text-[#7A9BBD] uppercase tracking-[0.05em]">Unbezahlt</p>
+              <p className="text-2xl font-bold text-[#EDF1F5] tracking-[-0.02em]">{offeneAnfragen.length}</p>
             </div>
           </div>
         </Card>
         <Card>
           <div className="flex items-center gap-4">
-            <div className="w-11 h-11 bg-[#34C759]/10 rounded-xl flex items-center justify-center">
-              <CreditCard className="w-5 h-5 text-[#1A8A3A]" />
+            <div className="w-11 h-11 bg-[#34C759]/15 rounded-xl flex items-center justify-center">
+              <CreditCard className="w-5 h-5 text-[#34C759]" />
             </div>
             <div>
-              <p className="text-[11px] font-semibold text-[#5B7A9D] uppercase tracking-[0.05em]">Bezahlt & bereit</p>
-              <p className="text-2xl font-bold text-[#1E2A3A] tracking-[-0.02em]">{bezahlteAnfragen.length}</p>
+              <p className="text-[11px] font-semibold text-[#7A9BBD] uppercase tracking-[0.05em]">Bezahlt & bereit</p>
+              <p className="text-2xl font-bold text-[#EDF1F5] tracking-[-0.02em]">{bezahlteAnfragen.length}</p>
             </div>
           </div>
         </Card>
         <Card>
           <div className="flex items-center gap-4">
-            <div className="w-11 h-11 bg-[#5B7A9D]/12 rounded-xl flex items-center justify-center">
-              <Heart className="w-5 h-5 text-[#4A6A8D]" />
+            <div className="w-11 h-11 bg-[#7A9BBD]/15 rounded-xl flex items-center justify-center">
+              <Heart className="w-5 h-5 text-[#6B8AAD]" />
             </div>
             <div>
-              <p className="text-[11px] font-semibold text-[#5B7A9D] uppercase tracking-[0.05em]">Kaufinteressen</p>
-              <p className="text-2xl font-bold text-[#1E2A3A] tracking-[-0.02em]">{neueInteressen.length}</p>
+              <p className="text-[11px] font-semibold text-[#7A9BBD] uppercase tracking-[0.05em]">Kaufinteressen</p>
+              <p className="text-2xl font-bold text-[#EDF1F5] tracking-[-0.02em]">{neueInteressen.length}</p>
             </div>
           </div>
         </Card>
         <Card>
           <div className="flex items-center gap-4">
-            <div className="w-11 h-11 bg-[#34C759]/10 rounded-xl flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-[#1A8A3A]" />
+            <div className="w-11 h-11 bg-[#34C759]/15 rounded-xl flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-[#34C759]" />
             </div>
             <div>
-              <p className="text-[11px] font-semibold text-[#5B7A9D] uppercase tracking-[0.05em]">Fertig</p>
-              <p className="text-2xl font-bold text-[#1E2A3A] tracking-[-0.02em]">{fertigeAnfragen.length + bearbeiteteInteressen.length}</p>
+              <p className="text-[11px] font-semibold text-[#7A9BBD] uppercase tracking-[0.05em]">Fertig</p>
+              <p className="text-2xl font-bold text-[#EDF1F5] tracking-[-0.02em]">{fertigeAnfragen.length + bearbeiteteInteressen.length}</p>
             </div>
           </div>
         </Card>
@@ -150,15 +150,15 @@ export default async function AnfragenPage() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{objekt?.strasse}</p>
-                        <p className="text-sm text-[#5B7A9D]">{objekt?.plz} {objekt?.ort}</p>
+                        <p className="text-sm text-[#7A9BBD]">{objekt?.plz} {objekt?.ort}</p>
                       </div>
                     </TableCell>
                     <TableCell>{mandant?.name || '-'}</TableCell>
                     <TableCell>{formatCurrency(objekt?.kaufpreis)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1.5">
-                          <CreditCard className="w-3.5 h-3.5 text-[#1A8A3A]" />
-                        <span className="text-sm text-[#1A8A3A]">{formatDate(anfrage.paid_at)}</span>
+                          <CreditCard className="w-3.5 h-3.5 text-[#34C759]" />
+                        <span className="text-sm text-[#34C759]">{formatDate(anfrage.paid_at)}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -213,7 +213,7 @@ export default async function AnfragenPage() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{objekt?.strasse}</p>
-                        <p className="text-sm text-[#5B7A9D]">{objekt?.plz} {objekt?.ort}</p>
+                        <p className="text-sm text-[#7A9BBD]">{objekt?.plz} {objekt?.ort}</p>
                       </div>
                     </TableCell>
                     <TableCell>{mandant?.name || '-'}</TableCell>
@@ -264,29 +264,29 @@ export default async function AnfragenPage() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{kaeufer?.ansprechpartner || kaeufer?.name}</p>
-                        <p className="text-sm text-[#5B7A9D]">{kaeufer?.name}</p>
+                        <p className="text-sm text-[#7A9BBD]">{kaeufer?.name}</p>
                         {ankaufsprofil && (
-                          <p className="text-xs text-[#5B7A9D]">Profil: {ankaufsprofil.name}</p>
+                          <p className="text-xs text-[#7A9BBD]">Profil: {ankaufsprofil.name}</p>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
                         <p className="font-medium">{objekt?.strasse}</p>
-                        <p className="text-sm text-[#5B7A9D]">{objekt?.plz} {objekt?.ort}</p>
+                        <p className="text-sm text-[#7A9BBD]">{objekt?.plz} {objekt?.ort}</p>
                       </div>
                     </TableCell>
                     <TableCell>{formatCurrency(objekt?.kaufpreis)}</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
                         {kaeufer?.email && (
-                          <a href={`mailto:${kaeufer.email}`} className="flex items-center gap-1 text-sm text-[#5B7A9D] hover:underline">
+                          <a href={`mailto:${kaeufer.email}`} className="flex items-center gap-1 text-sm text-[#7A9BBD] hover:underline">
                             <Mail className="w-3 h-3" />
                             {kaeufer.email}
                           </a>
                         )}
                         {kaeufer?.telefon && (
-                          <a href={`tel:${kaeufer.telefon}`} className="flex items-center gap-1 text-sm text-[#4A6A8D]">
+                          <a href={`tel:${kaeufer.telefon}`} className="flex items-center gap-1 text-sm text-[#6B8AAD]">
                             <Phone className="w-3 h-3" />
                             {kaeufer.telefon}
                           </a>
@@ -339,7 +339,7 @@ export default async function AnfragenPage() {
                     <TableCell>
                       <div>
                         <p className="font-medium">{objekt?.strasse}</p>
-                        <p className="text-sm text-[#5B7A9D]">{objekt?.plz} {objekt?.ort}</p>
+                        <p className="text-sm text-[#7A9BBD]">{objekt?.plz} {objekt?.ort}</p>
                       </div>
                     </TableCell>
                     <TableCell>{mandant?.name || '-'}</TableCell>

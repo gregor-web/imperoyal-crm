@@ -156,11 +156,11 @@ export function Sidebar({ userRole, userName, isOpen, onClose }: SidebarProps) {
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 min-h-[44px] ${
                   isActive
-                    ? 'bg-[#3D5167] text-white shadow-[0_2px_8px_rgba(0,0,0,0.20)]'
+                    ? 'bg-[#5B7A9D] text-white shadow-[0_2px_8px_rgba(0,0,0,0.30)]'
                     : 'text-white/50 hover:bg-white/[0.06] hover:text-white/85'
                 }`}
               >
-                <span className={`flex-shrink-0 ${isActive ? 'text-[#B8C5D1]' : 'text-white/40'}`}>{item.icon}</span>
+                <span className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-white/40'}`}>{item.icon}</span>
                 <span className="text-[13px] font-medium">{item.label}</span>
                 {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto text-white/30" />}
               </Link>

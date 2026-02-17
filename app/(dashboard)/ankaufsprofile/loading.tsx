@@ -1,9 +1,9 @@
-﻿function SkeletonRow({ cols }: { cols: number }) {
+function SkeletonRow({ cols }: { cols: number }) {
   return (
     <tr>
       {[...Array(cols)].map((_, i) => (
         <td key={i} className="px-3 py-3 sm:px-4 sm:py-4">
-          <div className="h-4 bg-[#EDF1F5] rounded w-3/4" />
+          <div className="h-4 bg-[#162636] rounded w-3/4" />
         </td>
       ))}
     </tr>
@@ -16,15 +16,15 @@ export default function Loading() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="h-7 w-44 bg-[#EDF1F5] rounded-lg" />
-          <div className="h-4 w-56 bg-[#EDF1F5] rounded mt-2" />
+          <div className="h-7 w-44 bg-[#162636] rounded-lg" />
+          <div className="h-4 w-56 bg-[#162636] rounded mt-2" />
         </div>
-        <div className="h-10 w-36 bg-[#EDF1F5] rounded-lg" />
+        <div className="h-10 w-36 bg-[#162636] rounded-lg" />
       </div>
 
       {/* Search Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="h-11 flex-1 bg-[#EDF1F5] rounded-lg" />
+        <div className="h-11 flex-1 bg-[#162636] rounded-lg" />
       </div>
 
       {/* Table */}
@@ -32,10 +32,10 @@ export default function Loading() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#D5DEE6]">
+              <tr className="border-b border-white/[0.08]">
                 {['Name', 'Mandant', 'Volumen', 'Assetklassen', 'Min. Rendite', ''].map((_, i) => (
                   <th key={i} className="px-3 py-2 sm:px-4 sm:py-3 text-left">
-                    <div className="h-3 w-20 bg-[#D5DEE6] rounded" />
+                    <div className="h-3 w-20 bg-[#253546] rounded" />
                   </th>
                 ))}
               </tr>

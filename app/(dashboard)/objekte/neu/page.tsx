@@ -105,7 +105,7 @@ function NeuObjektContent() {
   if (!dataLoaded) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#5B7A9D]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#7A9BBD]" />
       </div>
     );
   }
@@ -113,12 +113,12 @@ function NeuObjektContent() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/objekte" className="p-2 hover:bg-[#EDF1F5] rounded-lg">
-          <ArrowLeft className="w-5 h-5 text-[#5B7A9D]" />
+        <Link href="/objekte" className="p-2 hover:bg-[#162636] rounded-lg">
+          <ArrowLeft className="w-5 h-5 text-[#7A9BBD]" />
         </Link>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Neues Objekt</h1>
-          <p className="text-[#4A6A8D] mt-1">Schritt für Schritt zum neuen Objekt</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5]">Neues Objekt</h1>
+          <p className="text-[#6B8AAD] mt-1">Schritt für Schritt zum neuen Objekt</p>
         </div>
       </div>
 
@@ -138,7 +138,7 @@ function NeuObjektContent() {
             options={mandanten.map((m) => ({ value: m.id, label: m.name }))}
             placeholder="Zuerst Mandant auswählen..."
           />
-          <p className="text-sm text-[#5B7A9D] mt-2">
+          <p className="text-sm text-[#7A9BBD] mt-2">
             Wählen Sie den Mandanten, für den dieses Objekt erstellt werden soll.
           </p>
         </Card>
@@ -163,7 +163,7 @@ export default function NeuObjektPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#5B7A9D]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#7A9BBD]" />
       </div>
     }>
       <NeuObjektContent />

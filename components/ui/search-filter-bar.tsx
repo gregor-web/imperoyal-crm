@@ -48,7 +48,7 @@ export function SearchFilterBar({ placeholder = 'Suchen...', filters = [] }: Sea
       {/* Search Input */}
       <div className="relative flex-1" style={{ position: 'relative' }}>
         <Search
-          className="w-4 h-4 text-[#9EAFC0]"
+          className="w-4 h-4 text-[#6B8AAD]"
           style={{
             position: 'absolute',
             left: '12px',
@@ -63,7 +63,7 @@ export function SearchFilterBar({ placeholder = 'Suchen...', filters = [] }: Sea
           placeholder={placeholder}
           defaultValue={currentSearch}
           onChange={(e) => updateParams('q', e.target.value)}
-          className="glass-input w-full rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] text-sm"
+          className="glass-input w-full rounded-lg text-[#EDF1F5] placeholder-[#9EAFC0] text-sm"
           style={{ paddingLeft: '36px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px' }}
         />
       </div>
@@ -74,7 +74,7 @@ export function SearchFilterBar({ placeholder = 'Suchen...', filters = [] }: Sea
           key={filter.key}
           value={searchParams.get(filter.key) || ''}
           onChange={(e) => updateParams(filter.key, e.target.value)}
-          className="glass-input px-4 py-2.5 rounded-lg text-[#1E2A3A] text-sm min-w-[160px]"
+          className="glass-input px-4 py-2.5 rounded-lg text-[#EDF1F5] text-sm min-w-[160px]"
         >
           <option value="">{filter.label}</option>
           {filter.options.map((opt) => (

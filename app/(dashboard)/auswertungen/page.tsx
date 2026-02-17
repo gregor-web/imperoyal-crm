@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Card } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
@@ -77,8 +77,8 @@ export default async function AuswertungenPage({ searchParams }: PageProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Auswertungen</h1>
-        <p className="text-sm sm:text-base text-[#4A6A8D] mt-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5]">Auswertungen</h1>
+        <p className="text-sm sm:text-base text-[#6B8AAD] mt-1">
           {isAdmin ? `${totalItems} Analysen im System` : 'Ihre Immobilien-Analysen'}
         </p>
       </div>
@@ -134,7 +134,7 @@ export default async function AuswertungenPage({ searchParams }: PageProps) {
                       {objekt ? (
                         <div>
                           <p className="font-medium">{objekt.strasse}</p>
-                          <p className="text-sm text-[#5B7A9D]">{objekt.plz} {objekt.ort}</p>
+                          <p className="text-sm text-[#7A9BBD]">{objekt.plz} {objekt.ort}</p>
                         </div>
                       ) : (
                         '-'
@@ -156,7 +156,7 @@ export default async function AuswertungenPage({ searchParams }: PageProps) {
                     <TableCell>
                       <Link
                         href={`/auswertungen/${auswertung.id}`}
-                        className="text-[#5B7A9D] hover:text-[#4A6A8D] text-sm font-medium"
+                        className="text-[#7A9BBD] hover:text-[#6B8AAD] text-sm font-medium"
                       >
                         Ansehen
                       </Link>

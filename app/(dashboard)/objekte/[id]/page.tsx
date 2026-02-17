@@ -70,12 +70,12 @@ export default async function ObjektDetailPage({ params }: Props) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3 sm:gap-4">
-          <Link href="/objekte" className="p-2 hover:bg-[#EDF1F5] rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-[#4A6A8D]" />
+          <Link href="/objekte" className="p-2 hover:bg-[#162636] rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-[#6B8AAD]" />
           </Link>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">{objekt.strasse}</h1>
-            <p className="text-sm sm:text-base text-[#4A6A8D]">{objekt.plz} {objekt.ort}</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5]">{objekt.strasse}</h1>
+            <p className="text-sm sm:text-base text-[#6B8AAD]">{objekt.plz} {objekt.ort}</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2 items-center ml-11 sm:ml-0">
@@ -91,12 +91,12 @@ export default async function ObjektDetailPage({ params }: Props) {
             istBezahlt ? (
               <AuswertenButton objektId={id} />
             ) : aktiveAnfrage ? (
-              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+              <div className="flex items-center gap-2 text-[#FF9500] bg-[#FF9500]/08 px-3 py-2 rounded-lg">
                 <Clock className="w-4 h-4" />
                 <span className="text-sm font-medium">Noch nicht bezahlt</span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-[#5B7A9D] bg-[#EDF1F5] px-3 py-2 rounded-lg">
+              <div className="flex items-center gap-2 text-[#7A9BBD] bg-[#162636] px-3 py-2 rounded-lg">
                 <Clock className="w-4 h-4" />
                 <span className="text-sm font-medium">Keine Anfrage</span>
               </div>
@@ -104,12 +104,12 @@ export default async function ObjektDetailPage({ params }: Props) {
           ) : aktiveAnfrage ? (
             // Mandant: Anfrage existiert
             aktiveAnfrage.payment_status === 'pending' ? (
-              <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+              <div className="flex items-center gap-2 text-[#FF9500] bg-[#FF9500]/08 px-3 py-2 rounded-lg">
                 <Clock className="w-4 h-4" />
                 <span className="text-sm font-medium">Zahlung ausstehend</span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-[#5B7A9D] bg-[#5B7A9D]/08 px-3 py-2 rounded-lg">
+              <div className="flex items-center gap-2 text-[#7A9BBD] bg-[#7A9BBD]/10 px-3 py-2 rounded-lg">
                 <Clock className="w-4 h-4" />
                 <span className="text-sm font-medium">Wird bearbeitet</span>
               </div>
@@ -164,39 +164,39 @@ export default async function ObjektDetailPage({ params }: Props) {
         <Card title="Objektdaten" className="lg:col-span-2">
           <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 text-sm">
             <div>
-              <p className="text-[#5B7A9D]">Gebäudetyp</p>
+              <p className="text-[#7A9BBD]">Gebäudetyp</p>
               <p className="font-medium">{objekt.gebaeudetyp || '-'}</p>
             </div>
             <div>
-              <p className="text-[#5B7A9D]">Baujahr</p>
+              <p className="text-[#7A9BBD]">Baujahr</p>
               <p className="font-medium">{objekt.baujahr || '-'}</p>
             </div>
             <div>
-              <p className="text-[#5B7A9D]">Heizung</p>
+              <p className="text-[#7A9BBD]">Heizung</p>
               <p className="font-medium">{objekt.heizungsart || '-'}</p>
             </div>
             <div>
-              <p className="text-[#5B7A9D]">Wohnfläche</p>
+              <p className="text-[#7A9BBD]">Wohnfläche</p>
               <p className="font-medium">{formatArea(objekt.wohnflaeche)}</p>
             </div>
             <div>
-              <p className="text-[#5B7A9D]">Gewerbefläche</p>
+              <p className="text-[#7A9BBD]">Gewerbefläche</p>
               <p className="font-medium">{formatArea(objekt.gewerbeflaeche)}</p>
             </div>
             <div>
-              <p className="text-[#5B7A9D]">Grundstück</p>
+              <p className="text-[#7A9BBD]">Grundstück</p>
               <p className="font-medium">{formatArea(objekt.grundstueck)}</p>
             </div>
             <div>
-              <p className="text-[#5B7A9D]">Denkmalschutz</p>
+              <p className="text-[#7A9BBD]">Denkmalschutz</p>
               <p className="font-medium">{formatBoolean(objekt.denkmalschutz)}</p>
             </div>
             <div>
-              <p className="text-[#5B7A9D]">Aufzug</p>
+              <p className="text-[#7A9BBD]">Aufzug</p>
               <p className="font-medium">{formatBoolean(objekt.aufzug)}</p>
             </div>
             <div>
-              <p className="text-[#5B7A9D]">WEG aufgeteilt</p>
+              <p className="text-[#7A9BBD]">WEG aufgeteilt</p>
               <p className="font-medium">{formatBoolean(objekt.weg_aufgeteilt)}</p>
             </div>
           </div>
@@ -206,24 +206,24 @@ export default async function ObjektDetailPage({ params }: Props) {
         <Card title="Finanzierung">
           <div className="space-y-3 text-sm">
             <div className="flex justify-between gap-2">
-              <span className="text-[#5B7A9D]">Kaufpreis</span>
+              <span className="text-[#7A9BBD]">Kaufpreis</span>
               <span className="font-medium flex-shrink-0">{formatCurrency(objekt.kaufpreis)}</span>
             </div>
             <div className="flex justify-between gap-2">
-              <span className="text-[#5B7A9D]">Eigenkapital</span>
+              <span className="text-[#7A9BBD]">Eigenkapital</span>
               <span className="font-medium flex-shrink-0">{formatPercent(objekt.eigenkapital_prozent)}</span>
             </div>
             <div className="flex justify-between gap-2">
-              <span className="text-[#5B7A9D]">Zinssatz</span>
+              <span className="text-[#7A9BBD]">Zinssatz</span>
               <span className="font-medium flex-shrink-0">{formatPercent(objekt.zinssatz)}</span>
             </div>
             <div className="flex justify-between gap-2">
-              <span className="text-[#5B7A9D]">Tilgung</span>
+              <span className="text-[#7A9BBD]">Tilgung</span>
               <span className="font-medium flex-shrink-0">{formatPercent(objekt.tilgung)}</span>
             </div>
             {objekt.darlehensstand && (
               <div className="flex justify-between gap-2 pt-2 border-t">
-                <span className="text-[#5B7A9D]">Darlehensstand</span>
+                <span className="text-[#7A9BBD]">Darlehensstand</span>
                 <span className="font-medium flex-shrink-0">{formatCurrency(objekt.darlehensstand)}</span>
               </div>
             )}
@@ -282,7 +282,7 @@ export default async function ObjektDetailPage({ params }: Props) {
       </Card>
 
       {/* Metadaten */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-sm text-[#5B7A9D]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-sm text-[#7A9BBD]">
         <span>
           Mandant: {(objekt.mandanten as { name: string })?.name || '-'}
         </span>

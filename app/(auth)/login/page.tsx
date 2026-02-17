@@ -36,7 +36,7 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-sm">
-      <div className="bg-white rounded-2xl p-7 sm:p-8" style={{boxShadow: '0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.07)'}}>
+      <div className="bg-[#1E2A3A] rounded-2xl p-7 sm:p-8" style={{boxShadow: '0 8px 32px rgba(0,0,0,0.50), 0 1px 4px rgba(0,0,0,0.30)', border: '1px solid rgba(255,255,255,0.07)'}}>
         {/* Logo & Title */}
         <div className="text-center mb-7">
           <Image
@@ -47,7 +47,7 @@ export default function LoginPage() {
             className="h-12 w-auto mx-auto mb-3"
             priority
           />
-          <p className="text-[13px] text-[#6E6E73]">
+          <p className="text-[13px] text-[#9EAFC0]">
             Optimierungsprotokoll-System
           </p>
         </div>
@@ -57,7 +57,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-[13px] font-medium text-[#1D1D1F] mb-1.5"
+              className="block text-[13px] font-medium text-[#EDF1F5] mb-1.5"
             >
               E-Mail
             </label>
@@ -67,7 +67,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3.5 py-2.5 rounded-[10px] text-[14px] text-[#1D1D1F]"
+              className="w-full px-3.5 py-2.5 rounded-[10px] text-[14px] text-[#EDF1F5]"
               placeholder="name@beispiel.de"
             />
           </div>
@@ -75,7 +75,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-[13px] font-medium text-[#1D1D1F] mb-1.5"
+              className="block text-[13px] font-medium text-[#EDF1F5] mb-1.5"
             >
               Passwort
             </label>
@@ -91,7 +91,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="bg-[#FFF2F2] border border-[#FF3B30]/20 text-[#C0392B] px-3.5 py-2.5 rounded-[10px] text-[13px]">
+            <div className="bg-[#FFF2F2] border border-[#FF3B30]/20 text-[#FF3B30] px-3.5 py-2.5 rounded-[10px] text-[13px]">
               {error}
             </div>
           )}
@@ -99,7 +99,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#5B7A9D] hover:bg-[#6B8AAD] active:bg-[#4A6A8D] text-white py-2.5 px-4 rounded-[10px] text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]/40 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px] transition-colors duration-150 tracking-[-0.01em]"
+            className="w-full bg-[#5B7A9D] hover:bg-[#6B8AAD] active:bg-[#4A6A8D] text-white py-2.5 px-4 rounded-[10px] text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#7A9BBD]/40 focus:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px] transition-colors duration-150 tracking-[-0.01em]"
           >
             {loading ? 'Anmelden…' : 'Anmelden'}
           </button>
@@ -126,7 +126,7 @@ export default function LoginPage() {
               router.refresh();
             }}
             disabled={loading}
-            className="w-full bg-[#1E2A3A] hover:bg-[#2A3F54] text-white py-2 px-4 rounded-[10px] text-[13px] font-medium focus:outline-none disabled:opacity-40 transition-colors duration-150"
+            className="w-full bg-[#1E2A3A] hover:bg-[#3D5167] text-white py-2 px-4 rounded-[10px] text-[13px] font-medium focus:outline-none disabled:opacity-40 transition-colors duration-150"
           >
             {loading ? 'Anmelden…' : 'Admin Login (Demo)'}
           </button>
@@ -169,7 +169,7 @@ export default function LoginPage() {
               router.refresh();
             }}
             disabled={loading}
-            className="w-full bg-white hover:bg-[#F5F5F7] border border-black/10 text-[#1D1D1F] py-2 px-4 rounded-[10px] text-[13px] font-medium focus:outline-none disabled:opacity-40 transition-colors duration-150"
+            className="w-full bg-[#1E2A3A] hover:bg-[#F5F5F7] border border-black/10 text-[#EDF1F5] py-2 px-4 rounded-[10px] text-[13px] font-medium focus:outline-none disabled:opacity-40 transition-colors duration-150"
           >
             {loading ? 'Anmelden…' : 'Kunden Login (Demo)'}
           </button>
@@ -179,7 +179,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <a
             href="/reset-password"
-            className="text-[13px] text-[#5B7A9D] hover:text-[#4A6A8D] transition-colors"
+            className="text-[13px] text-[#7A9BBD] hover:text-[#6B8AAD] transition-colors"
           >
             Passwort vergessen?
           </a>

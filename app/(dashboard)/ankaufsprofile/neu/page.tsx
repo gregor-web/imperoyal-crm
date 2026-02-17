@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -172,8 +172,8 @@ export default function NeuesAnkaufsprofilPage() {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6 sm:mb-8">
-              <h2 className="text-xl font-semibold text-[#1E2A3A]">Wie soll Ihr Ankaufsprofil heißen?</h2>
-              <p className="text-[#4A6A8D] mt-2">Geben Sie einen aussagekräftigen Namen für Ihr Profil ein</p>
+              <h2 className="text-xl font-semibold text-[#EDF1F5]">Wie soll Ihr Ankaufsprofil heißen?</h2>
+              <p className="text-[#6B8AAD] mt-2">Geben Sie einen aussagekräftigen Namen für Ihr Profil ein</p>
             </div>
 
             {isAdmin && mandanten.length > 0 && (
@@ -200,8 +200,8 @@ export default function NeuesAnkaufsprofilPage() {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6 sm:mb-8">
-              <h2 className="text-xl font-semibold text-[#1E2A3A]">Welches Investitionsvolumen?</h2>
-              <p className="text-[#4A6A8D] mt-2">Definieren Sie Ihre Preisspanne für Ankäufe</p>
+              <h2 className="text-xl font-semibold text-[#EDF1F5]">Welches Investitionsvolumen?</h2>
+              <p className="text-[#6B8AAD] mt-2">Definieren Sie Ihre Preisspanne für Ankäufe</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -213,7 +213,7 @@ export default function NeuesAnkaufsprofilPage() {
                   value={formData.min_volumen || ''}
                   onChange={(e) => updateFormData('min_volumen', e.target.value ? Number(e.target.value) : null)}
                 />
-                <p className="text-xs text-[#5B7A9D] mt-1">
+                <p className="text-xs text-[#7A9BBD] mt-1">
                   {formData.min_volumen ? formatCurrency(formData.min_volumen) : 'Keine Untergrenze'}
                 </p>
               </div>
@@ -225,7 +225,7 @@ export default function NeuesAnkaufsprofilPage() {
                   value={formData.max_volumen || ''}
                   onChange={(e) => updateFormData('max_volumen', e.target.value ? Number(e.target.value) : null)}
                 />
-                <p className="text-xs text-[#5B7A9D] mt-1">
+                <p className="text-xs text-[#7A9BBD] mt-1">
                   {formData.max_volumen ? formatCurrency(formData.max_volumen) : 'Keine Obergrenze'}
                 </p>
               </div>
@@ -233,7 +233,7 @@ export default function NeuesAnkaufsprofilPage() {
 
             {/* Quick select buttons */}
             <div>
-              <label className="block text-sm font-medium text-[#1E2A3A] mb-2">Schnellauswahl</label>
+              <label className="block text-sm font-medium text-[#EDF1F5] mb-2">Schnellauswahl</label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { label: '1-5 Mio.', min: 1000000, max: 5000000 },
@@ -252,7 +252,7 @@ export default function NeuesAnkaufsprofilPage() {
                     className={`px-3 sm:px-4 py-2 rounded-[10px] text-xs sm:text-sm font-medium transition-colors min-h-[40px] ${
                       formData.min_volumen === range.min && formData.max_volumen === range.max
                         ? 'bg-[#5B7A9D] text-white'
-                        : 'bg-[#EDF1F5] text-[#1E2A3A] hover:bg-[#D5DEE6]'
+                        : 'bg-[#162636] text-[#EDF1F5] hover:bg-[#253546]'
                     }`}
                   >
                     {range.label}
@@ -267,8 +267,8 @@ export default function NeuesAnkaufsprofilPage() {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6 sm:mb-8">
-              <h2 className="text-xl font-semibold text-[#1E2A3A]">Welche Assetklassen?</h2>
-              <p className="text-[#4A6A8D] mt-2">Wählen Sie alle relevanten Immobilientypen aus</p>
+              <h2 className="text-xl font-semibold text-[#EDF1F5]">Welche Assetklassen?</h2>
+              <p className="text-[#6B8AAD] mt-2">Wählen Sie alle relevanten Immobilientypen aus</p>
             </div>
 
             <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3">
@@ -281,8 +281,8 @@ export default function NeuesAnkaufsprofilPage() {
                     onClick={() => toggleAssetklasse(assetklasse)}
                     className={`p-4 rounded-xl text-sm font-medium transition-all border-2 ${
                       isSelected
-                        ? 'bg-[#5B7A9D]/12 border-[#5B7A9D] text-[#4A6A8D]'
-                        : 'bg-white border-[#D5DEE6] text-[#1E2A3A] hover:border-[#B8C5D1] hover:bg-[#EDF1F5]'
+                        ? 'bg-[#7A9BBD]/15 border-[#5B7A9D] text-[#6B8AAD]'
+                        : 'bg-[#1E2A3A] border-white/[0.08] text-[#EDF1F5] hover:border-white/[0.12] hover:bg-[#162636]'
                     }`}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -294,7 +294,7 @@ export default function NeuesAnkaufsprofilPage() {
               })}
             </div>
 
-            <p className="text-center text-sm text-[#5B7A9D]">
+            <p className="text-center text-sm text-[#7A9BBD]">
               {formData.assetklassen.length} von {OPTIONS.assetklassen.length} ausgewählt
             </p>
           </div>
@@ -304,8 +304,8 @@ export default function NeuesAnkaufsprofilPage() {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6 sm:mb-8">
-              <h2 className="text-xl font-semibold text-[#1E2A3A]">Standort & Renditeerwartung</h2>
-              <p className="text-[#4A6A8D] mt-2">Definieren Sie Ihre geografischen und finanziellen Kriterien</p>
+              <h2 className="text-xl font-semibold text-[#EDF1F5]">Standort & Renditeerwartung</h2>
+              <p className="text-[#6B8AAD] mt-2">Definieren Sie Ihre geografischen und finanziellen Kriterien</p>
             </div>
 
             <Input
@@ -326,48 +326,48 @@ export default function NeuesAnkaufsprofilPage() {
             />
 
             <div>
-              <label className="block text-sm font-medium text-[#1E2A3A] mb-1">
+              <label className="block text-sm font-medium text-[#EDF1F5] mb-1">
                 Sonstige Anforderungen
               </label>
               <textarea
                 value={formData.sonstiges}
                 onChange={(e) => updateFormData('sonstiges', e.target.value)}
                 rows={3}
-                className="glass-input w-full px-4 py-2.5 rounded-lg text-[#1E2A3A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="glass-input w-full px-4 py-2.5 rounded-lg text-[#EDF1F5] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Weitere Kriterien oder Anmerkungen..."
               />
             </div>
 
             {/* Summary */}
-            <div className="mt-8 p-4 bg-[#EDF1F5] rounded-xl">
-              <h3 className="text-sm font-semibold text-[#1E2A3A] mb-3">Zusammenfassung</h3>
+            <div className="mt-8 p-4 bg-[#162636] rounded-xl">
+              <h3 className="text-sm font-semibold text-[#EDF1F5] mb-3">Zusammenfassung</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex flex-wrap justify-between gap-1">
-                  <span className="text-[#4A6A8D]">Profilname:</span>
-                  <span className="font-medium text-[#1E2A3A] truncate max-w-[180px] sm:max-w-[250px]">{formData.name}</span>
+                  <span className="text-[#6B8AAD]">Profilname:</span>
+                  <span className="font-medium text-[#EDF1F5] truncate max-w-[180px] sm:max-w-[250px]">{formData.name}</span>
                 </div>
                 <div className="flex flex-wrap justify-between gap-1">
-                  <span className="text-[#4A6A8D] flex-shrink-0">Volumen:</span>
-                  <span className="font-medium text-[#1E2A3A] text-right">
+                  <span className="text-[#6B8AAD] flex-shrink-0">Volumen:</span>
+                  <span className="font-medium text-[#EDF1F5] text-right">
                     {formData.min_volumen || formData.max_volumen
                       ? `${formData.min_volumen ? formatCurrency(formData.min_volumen) : '∞'} - ${formData.max_volumen ? formatCurrency(formData.max_volumen) : '∞'}`
                       : 'Keine Einschränkung'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#4A6A8D]">Assetklassen:</span>
-                  <span className="font-medium text-[#1E2A3A]">{formData.assetklassen.length} ausgewählt</span>
+                  <span className="text-[#6B8AAD]">Assetklassen:</span>
+                  <span className="font-medium text-[#EDF1F5]">{formData.assetklassen.length} ausgewählt</span>
                 </div>
                 {formData.regionen && (
                   <div className="flex justify-between">
-                    <span className="text-[#4A6A8D]">Regionen:</span>
-                    <span className="font-medium text-[#1E2A3A] truncate max-w-[140px] sm:max-w-[200px]">{formData.regionen}</span>
+                    <span className="text-[#6B8AAD]">Regionen:</span>
+                    <span className="font-medium text-[#EDF1F5] truncate max-w-[140px] sm:max-w-[200px]">{formData.regionen}</span>
                   </div>
                 )}
                 {formData.rendite_min && (
                   <div className="flex justify-between">
-                    <span className="text-[#4A6A8D]">Mindestrendite:</span>
-                    <span className="font-medium text-[#1E2A3A]">{formData.rendite_min}%</span>
+                    <span className="text-[#6B8AAD]">Mindestrendite:</span>
+                    <span className="font-medium text-[#EDF1F5]">{formData.rendite_min}%</span>
                   </div>
                 )}
               </div>
@@ -384,12 +384,12 @@ export default function NeuesAnkaufsprofilPage() {
     <div className="max-w-2xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/ankaufsprofile" className="p-2 hover:bg-[#EDF1F5] rounded-lg">
-          <ArrowLeft className="w-5 h-5 text-[#5B7A9D]" />
+        <Link href="/ankaufsprofile" className="p-2 hover:bg-[#162636] rounded-lg">
+          <ArrowLeft className="w-5 h-5 text-[#7A9BBD]" />
         </Link>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Neues Ankaufsprofil</h1>
-          <p className="text-[#4A6A8D] mt-1">Schritt {currentStep} von {STEPS.length}</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5]">Neues Ankaufsprofil</h1>
+          <p className="text-[#6B8AAD] mt-1">Schritt {currentStep} von {STEPS.length}</p>
         </div>
       </div>
 
@@ -407,22 +407,22 @@ export default function NeuesAnkaufsprofilPage() {
                   <div
                     className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors ${
                       isCompleted
-                        ? 'bg-green-500 text-white'
+                        ? 'bg-[#34C759]/080 text-white'
                         : isCurrent
                         ? 'bg-[#5B7A9D] text-white'
-                        : 'bg-[#D5DEE6] text-[#5B7A9D]'
+                        : 'bg-[#253546] text-[#7A9BBD]'
                     }`}
                   >
                     {isCompleted ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
                   </div>
-                  <span className={`text-[10px] sm:text-xs mt-1 max-w-[60px] sm:max-w-none text-center truncate ${isCurrent ? 'text-[#5B7A9D] font-medium' : 'text-[#5B7A9D]'}`}>
+                  <span className={`text-[10px] sm:text-xs mt-1 max-w-[60px] sm:max-w-none text-center truncate ${isCurrent ? 'text-[#7A9BBD] font-medium' : 'text-[#7A9BBD]'}`}>
                     {step.title}
                   </span>
                 </div>
                 {index < STEPS.length - 1 && (
                   <div
                     className={`h-1 mx-1 sm:mx-2 rounded flex-shrink-0 ${
-                      currentStep > step.id ? 'bg-[#5B7A9D]/40' : 'bg-[#D5DEE6]'
+                      currentStep > step.id ? 'bg-[#5B7A9D]/40' : 'bg-[#253546]'
                     }`}
                     style={{ minWidth: '20px', width: '100%', maxWidth: '40px' }}
                   />

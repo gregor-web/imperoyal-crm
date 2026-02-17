@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { formatCurrency, formatDate } from '@/lib/formatters';
@@ -87,10 +87,10 @@ export default async function DashboardPage() {
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#1E2A3A] tracking-[-0.02em]">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#EDF1F5] tracking-[-0.02em]">
           Willkommen{profile?.name ? `, ${profile.name}` : ''}
         </h1>
-        <p className="text-[#4A6A8D] mt-1">
+        <p className="text-[#6B8AAD] mt-1">
           {isAdmin
             ? 'Übersicht über Mandanten, Anfragen und Auswertungen.'
             : 'Ihr persönliches Immobilien-Dashboard.'}
@@ -145,25 +145,25 @@ async function AdminDashboardContent() {
     <>
       {/* Quick Actions */}
       <div className="glass-card rounded-2xl p-4 sm:p-5">
-        <h2 className="text-[13px] font-semibold text-[#4A6A8D] uppercase tracking-[0.05em] mb-3">Schnellaktionen</h2>
+        <h2 className="text-[13px] font-semibold text-[#6B8AAD] uppercase tracking-[0.05em] mb-3">Schnellaktionen</h2>
         <div className="flex flex-col sm:flex-row flex-wrap gap-2">
           <Link
             href="/mandanten/neu"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5B7A9D] text-white rounded-[10px] hover:bg-[#6B8AAD] transition-colors text-[13px] font-medium min-h-[44px] shadow-[0_1px_2px_rgba(30,42,58,0.20)]"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5B7A9D] text-white rounded-[10px] hover:bg-[#7A9BBD] transition-colors text-[13px] font-medium min-h-[44px] shadow-[0_1px_2px_rgba(0,0,0,0.30)]"
           >
             <Plus className="w-4 h-4" />
             Mandanten anlegen
           </Link>
           <Link
             href="/objekte/neu"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5B7A9D] text-white rounded-[10px] hover:bg-[#6B8AAD] transition-colors text-[13px] font-medium min-h-[44px] shadow-[0_1px_2px_rgba(30,42,58,0.20)]"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5B7A9D] text-white rounded-[10px] hover:bg-[#7A9BBD] transition-colors text-[13px] font-medium min-h-[44px] shadow-[0_1px_2px_rgba(0,0,0,0.30)]"
           >
             <Plus className="w-4 h-4" />
             Objekt anlegen
           </Link>
           <Link
             href="/anfragen"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-[#B8C5D1] text-[#1E2A3A] rounded-[10px] hover:bg-[#EDF1F5] hover:border-[#5B7A9D] transition-colors text-[13px] font-medium min-h-[44px]"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#253546] border border-white/[0.12] text-[#EDF1F5] rounded-[10px] hover:bg-[#2A3F54] hover:border-[#5B7A9D] transition-colors text-[13px] font-medium min-h-[44px]"
           >
             <FileBarChart className="w-4 h-4" />
             Anfragen bearbeiten
@@ -193,14 +193,14 @@ async function AdminDashboardContent() {
                 const objekt = anfrage.objekte as { strasse: string; plz: string; ort: string; kaufpreis: number } | null;
                 const mandant = anfrage.mandanten as { name: string } | null;
                 return (
-                  <div key={anfrage.id} className="flex items-center justify-between p-3 rounded-lg bg-amber-50/50 border border-amber-100">
+                  <div key={anfrage.id} className="flex items-center justify-between p-3 rounded-lg bg-[#FF9500]/08 border border-[#FF9500]/20">
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-[#1E2A3A] truncate">{objekt?.strasse}</p>
-                      <p className="text-sm text-[#5B7A9D]">{mandant?.name} · {formatCurrency(objekt?.kaufpreis)}</p>
+                      <p className="font-medium text-[#EDF1F5] truncate">{objekt?.strasse}</p>
+                      <p className="text-sm text-[#7A9BBD]">{mandant?.name} · {formatCurrency(objekt?.kaufpreis)}</p>
                     </div>
                     <div className="flex items-center gap-2 ml-3">
-                      <Clock className="w-4 h-4 text-amber-500" />
-                      <span className="text-xs text-[#9EAFC0] whitespace-nowrap">
+                      <Clock className="w-4 h-4 text-[#FF9500]" />
+                      <span className="text-xs text-[#6B8AAD] whitespace-nowrap">
                         {formatDate(anfrage.created_at)}
                       </span>
                     </div>
@@ -209,8 +209,8 @@ async function AdminDashboardContent() {
               })}
             </div>
           ) : (
-            <div className="text-center py-6 text-[#9EAFC0]">
-              <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-400" />
+            <div className="text-center py-6 text-[#6B8AAD]">
+              <CheckCircle className="w-8 h-8 mx-auto mb-2 text-[#34C759]" />
               <p className="text-sm">Keine offenen Anfragen</p>
             </div>
           )}
@@ -236,15 +236,15 @@ async function AdminDashboardContent() {
                 const objekt = interesse.objekt as { strasse: string; plz: string; ort: string } | null;
                 const kaeufer = interesse.kaeufer as { name: string } | null;
                 return (
-                  <div key={interesse.id} className="flex items-center justify-between p-3 rounded-lg bg-pink-50/50 border border-pink-100">
+                  <div key={interesse.id} className="flex items-center justify-between p-3 rounded-lg bg-[#FF3B30]/08 border border-[#FF3B30]/20">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <Heart className="w-4 h-4 text-pink-500 shrink-0" />
-                        <p className="font-medium text-[#1E2A3A] truncate">{kaeufer?.name}</p>
+                        <p className="font-medium text-[#EDF1F5] truncate">{kaeufer?.name}</p>
                       </div>
-                      <p className="text-sm text-[#5B7A9D] ml-6">interessiert an {objekt?.strasse}</p>
+                      <p className="text-sm text-[#7A9BBD] ml-6">interessiert an {objekt?.strasse}</p>
                     </div>
-                    <span className="text-xs text-[#9EAFC0] whitespace-nowrap ml-3">
+                    <span className="text-xs text-[#6B8AAD] whitespace-nowrap ml-3">
                       {formatDate(interesse.created_at)}
                     </span>
                   </div>
@@ -252,8 +252,8 @@ async function AdminDashboardContent() {
               })}
             </div>
           ) : (
-            <div className="text-center py-6 text-[#9EAFC0]">
-              <Heart className="w-8 h-8 mx-auto mb-2 text-[#D5DEE6]" />
+            <div className="text-center py-6 text-[#6B8AAD]">
+              <Heart className="w-8 h-8 mx-auto mb-2 text-[#3D5167]" />
               <p className="text-sm">Keine neuen Kaufinteressen</p>
             </div>
           )}
@@ -280,17 +280,17 @@ async function AdminDashboardContent() {
                 <Link
                   key={a.id}
                   href={`/auswertungen/${a.id}`}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-[#EDF1F5] transition-colors min-h-[44px]"
+                  className="flex items-center justify-between p-3 rounded-lg hover:bg-[#162636] transition-colors min-h-[44px]"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-[#1E2A3A] truncate">{objekt?.strasse || 'Unbekannt'}</p>
-                    <p className="text-sm text-[#5B7A9D]">
+                    <p className="font-medium text-[#EDF1F5] truncate">{objekt?.strasse || 'Unbekannt'}</p>
+                    <p className="text-sm text-[#7A9BBD]">
                       {mandant?.name} · {objekt?.plz} {objekt?.ort}
                     </p>
                   </div>
                   <div className="text-right ml-3">
                     {a.empfehlung && <EmpfehlungBadge empfehlung={a.empfehlung} />}
-                    <p className="text-xs text-[#9EAFC0] mt-1">
+                    <p className="text-xs text-[#6B8AAD] mt-1">
                       {new Date(a.created_at).toLocaleDateString('de-DE')}
                     </p>
                   </div>
@@ -341,12 +341,12 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
 
   const statusIcon = (status: string) => {
     switch (status) {
-      case 'offen': return <Clock className="w-4 h-4 text-amber-500" />;
-      case 'bezahlt': return <CreditCard className="w-4 h-4 text-[#5B7A9D]" />;
-      case 'in_bearbeitung': return <Clock className="w-4 h-4 text-[#5B7A9D]" />;
+      case 'offen': return <Clock className="w-4 h-4 text-[#FF9500]" />;
+      case 'bezahlt': return <CreditCard className="w-4 h-4 text-[#7A9BBD]" />;
+      case 'in_bearbeitung': return <Clock className="w-4 h-4 text-[#7A9BBD]" />;
       case 'fertig': return <CheckCircle className="w-4 h-4 text-green-500" />;
       case 'versendet': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      default: return <Clock className="w-4 h-4 text-[#9EAFC0]" />;
+      default: return <Clock className="w-4 h-4 text-[#6B8AAD]" />;
     }
   };
 
@@ -365,42 +365,42 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
     <>
       {/* Quick Actions für Mandant */}
       <div className="glass-card rounded-2xl p-4 sm:p-5">
-        <h2 className="text-[13px] font-semibold text-[#4A6A8D] uppercase tracking-[0.05em] mb-3">Was möchten Sie tun?</h2>
+        <h2 className="text-[13px] font-semibold text-[#6B8AAD] uppercase tracking-[0.05em] mb-3">Was möchten Sie tun?</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <Link
             href="/objekte/neu"
-            className="flex items-center gap-3 p-4 rounded-xl border border-[#D5DEE6] hover:border-[#5B7A9D] hover:bg-white transition-all min-h-[44px] group"
+            className="flex items-center gap-3 p-4 rounded-xl border border-white/[0.08] hover:border-[#5B7A9D] hover:bg-[#1E2A3A] transition-all min-h-[44px] group"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#5B7A9D]/12 flex items-center justify-center shrink-0 text-[#4A6A8D] group-hover:bg-[#5B7A9D]/20 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-[#7A9BBD]/15 flex items-center justify-center shrink-0 text-[#6B8AAD] group-hover:bg-[#5B7A9D]/20 transition-colors">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-semibold text-[#1E2A3A] text-[13px]">Objekt hinzufügen</p>
-              <p className="text-[12px] text-[#5B7A9D]">Neue Immobilie erfassen</p>
+              <p className="font-semibold text-[#EDF1F5] text-[13px]">Objekt hinzufügen</p>
+              <p className="text-[12px] text-[#7A9BBD]">Neue Immobilie erfassen</p>
             </div>
           </Link>
           <Link
             href="/objekte"
-            className="flex items-center gap-3 p-4 rounded-xl border border-[#D5DEE6] hover:border-[#5B7A9D] hover:bg-white transition-all min-h-[44px] group"
+            className="flex items-center gap-3 p-4 rounded-xl border border-white/[0.08] hover:border-[#5B7A9D] hover:bg-[#1E2A3A] transition-all min-h-[44px] group"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#34C759]/10 flex items-center justify-center shrink-0 text-[#1A8A3A] group-hover:bg-[#34C759]/15 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-[#34C759]/15 flex items-center justify-center shrink-0 text-[#34C759] group-hover:bg-[#34C759]/15 transition-colors">
               <FileBarChart className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-semibold text-[#1E2A3A] text-[13px]">Auswertung anfragen</p>
-              <p className="text-[12px] text-[#5B7A9D]">Objekt analysieren lassen</p>
+              <p className="font-semibold text-[#EDF1F5] text-[13px]">Auswertung anfragen</p>
+              <p className="text-[12px] text-[#7A9BBD]">Objekt analysieren lassen</p>
             </div>
           </Link>
           <Link
             href="/ankaufsprofile/neu"
-            className="flex items-center gap-3 p-4 rounded-xl border border-[#D5DEE6] hover:border-[#5B7A9D] hover:bg-white transition-all min-h-[44px] group"
+            className="flex items-center gap-3 p-4 rounded-xl border border-white/[0.08] hover:border-[#5B7A9D] hover:bg-[#1E2A3A] transition-all min-h-[44px] group"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#1E2A3A]/08 flex items-center justify-center shrink-0 text-[#2A3F54] group-hover:bg-[#1E2A3A]/12 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-[#1E2A3A]/08 flex items-center justify-center shrink-0 text-[#3D5167] group-hover:bg-[#1E2A3A]/12 transition-colors">
               <Plus className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-semibold text-[#1E2A3A] text-[13px]">Ankaufsprofil</p>
-              <p className="text-[12px] text-[#5B7A9D]">Kaufkriterien hinterlegen</p>
+              <p className="font-semibold text-[#EDF1F5] text-[13px]">Ankaufsprofil</p>
+              <p className="text-[12px] text-[#7A9BBD]">Kaufkriterien hinterlegen</p>
             </div>
           </Link>
         </div>
@@ -423,20 +423,20 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
             {anfragen.map((anfrage) => {
               const objekt = anfrage.objekte as { id: string; strasse: string; plz: string; ort: string } | null;
               return (
-                <div key={anfrage.id} className="flex items-center justify-between p-3 rounded-lg bg-[#EDF1F5]/50">
+                <div key={anfrage.id} className="flex items-center justify-between p-3 rounded-lg bg-[#162636]/50">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     {statusIcon(anfrage.status)}
                     <div className="min-w-0">
-                      <p className="font-medium text-[#1E2A3A] text-sm truncate">{objekt?.strasse}</p>
-                      <p className="text-xs text-[#5B7A9D]">{objekt?.plz} {objekt?.ort}</p>
+                      <p className="font-medium text-[#EDF1F5] text-sm truncate">{objekt?.strasse}</p>
+                      <p className="text-xs text-[#7A9BBD]">{objekt?.plz} {objekt?.ort}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 ml-3">
                     <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      anfrage.status === 'offen' ? 'bg-amber-100 text-amber-700' :
-                      anfrage.status === 'fertig' || anfrage.status === 'versendet' ? 'bg-green-100 text-green-700' :
-                      anfrage.status === 'bezahlt' ? 'bg-[#5B7A9D]/12 text-[#4A6A8D]' :
-                      'bg-[#D5DEE6] text-[#1E2A3A]'
+                      anfrage.status === 'offen' ? 'bg-[#FF9500]/15 text-amber-700' :
+                      anfrage.status === 'fertig' || anfrage.status === 'versendet' ? 'bg-[#34C759]/12 text-[#34C759]' :
+                      anfrage.status === 'bezahlt' ? 'bg-[#7A9BBD]/15 text-[#6B8AAD]' :
+                      'bg-[#253546] text-[#EDF1F5]'
                     }`}>
                       {statusLabel(anfrage.status)}
                     </span>
@@ -468,16 +468,16 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
                 <Link
                   key={objekt.id}
                   href={`/objekte/${objekt.id}`}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-[#EDF1F5] transition-colors"
+                  className="flex items-center justify-between p-3 rounded-lg hover:bg-[#162636] transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <Building2 className="w-4 h-4 text-[#5B7A9D] shrink-0" />
+                    <Building2 className="w-4 h-4 text-[#7A9BBD] shrink-0" />
                     <div className="min-w-0">
-                      <p className="font-medium text-[#1E2A3A] text-sm truncate">{objekt.strasse}</p>
-                      <p className="text-xs text-[#5B7A9D]">{objekt.plz} {objekt.ort}</p>
+                      <p className="font-medium text-[#EDF1F5] text-sm truncate">{objekt.strasse}</p>
+                      <p className="text-xs text-[#7A9BBD]">{objekt.plz} {objekt.ort}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-[#1E2A3A] whitespace-nowrap ml-3">
+                  <span className="text-sm font-medium text-[#EDF1F5] whitespace-nowrap ml-3">
                     {formatCurrency(objekt.kaufpreis)}
                   </span>
                 </Link>
@@ -485,8 +485,8 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
             </div>
           ) : (
             <div className="text-center py-6">
-              <Building2 className="w-8 h-8 mx-auto mb-2 text-[#D5DEE6]" />
-              <p className="text-sm text-[#9EAFC0] mb-3">Noch keine Objekte erfasst</p>
+              <Building2 className="w-8 h-8 mx-auto mb-2 text-[#3D5167]" />
+              <p className="text-sm text-[#6B8AAD] mb-3">Noch keine Objekte erfasst</p>
               <Link href="/objekte/neu">
                 <Button size="sm">
                   <Plus className="w-4 h-4 mr-1" />
@@ -514,11 +514,11 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
               {auswertungen.map((a) => {
                 const objekt = a.objekte as unknown as { strasse: string; plz: string; ort: string } | null;
                 return (
-                  <div key={a.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-[#EDF1F5] transition-colors">
+                  <div key={a.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-[#162636] transition-colors">
                     <Link href={`/auswertungen/${a.id}`} className="flex items-center gap-3 min-w-0 flex-1">
                       <div className="min-w-0">
-                        <p className="font-medium text-[#1E2A3A] text-sm truncate">{objekt?.strasse}</p>
-                        <p className="text-xs text-[#5B7A9D]">
+                        <p className="font-medium text-[#EDF1F5] text-sm truncate">{objekt?.strasse}</p>
+                        <p className="text-xs text-[#7A9BBD]">
                           {new Date(a.created_at).toLocaleDateString('de-DE')}
                         </p>
                       </div>
@@ -527,14 +527,14 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
                       {a.empfehlung && <EmpfehlungBadge empfehlung={a.empfehlung} />}
                       <div className="flex gap-1">
                         <Link href={`/auswertungen/${a.id}`}>
-                          <button className="p-1.5 rounded hover:bg-[#D5DEE6] transition-colors" title="Ansehen">
-                            <Eye className="w-3.5 h-3.5 text-[#5B7A9D]" />
+                          <button className="p-1.5 rounded hover:bg-[#253546] transition-colors" title="Ansehen">
+                            <Eye className="w-3.5 h-3.5 text-[#7A9BBD]" />
                           </button>
                         </Link>
                         {a.pdf_url && (
                           <a href={a.pdf_url} target="_blank" rel="noopener noreferrer">
-                            <button className="p-1.5 rounded hover:bg-[#D5DEE6] transition-colors" title="PDF herunterladen">
-                              <Download className="w-3.5 h-3.5 text-[#5B7A9D]" />
+                            <button className="p-1.5 rounded hover:bg-[#253546] transition-colors" title="PDF herunterladen">
+                              <Download className="w-3.5 h-3.5 text-[#7A9BBD]" />
                             </button>
                           </a>
                         )}
@@ -546,9 +546,9 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
             </div>
           ) : (
             <div className="text-center py-6">
-              <FileBarChart className="w-8 h-8 mx-auto mb-2 text-[#D5DEE6]" />
-              <p className="text-sm text-[#9EAFC0]">Noch keine Auswertungen</p>
-              <p className="text-xs text-[#B8C5D1] mt-1">Fordern Sie eine Analyse für eines Ihrer Objekte an</p>
+              <FileBarChart className="w-8 h-8 mx-auto mb-2 text-[#3D5167]" />
+              <p className="text-sm text-[#6B8AAD]">Noch keine Auswertungen</p>
+              <p className="text-xs text-[#4A6A8D] mt-1">Fordern Sie eine Analyse für eines Ihrer Objekte an</p>
             </div>
           )}
         </Card>

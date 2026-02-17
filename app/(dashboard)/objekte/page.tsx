@@ -109,8 +109,8 @@ export default async function ObjektePage({ searchParams }: PageProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Objekte</h1>
-          <p className="text-sm sm:text-base text-[#4A6A8D] mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5]">Objekte</h1>
+          <p className="text-sm sm:text-base text-[#6B8AAD] mt-1">
             {isAdmin
               ? `${totalItems} Objekte von ${totalMandanten} Mandanten`
               : `${totalItems} Objekte`}
@@ -151,30 +151,30 @@ export default async function ObjektePage({ searchParams }: PageProps) {
               return (
                 <Card key={mandantId} className="overflow-hidden">
                   {/* Mandant Header */}
-                  <div className="px-4 sm:px-5 py-3.5 border-b border-[#D5DEE6] bg-[#EDF1F5]/60">
+                  <div className="px-4 sm:px-5 py-3.5 border-b border-white/[0.08] bg-[#162636]/60">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-[#5B7A9D]/12 rounded-xl flex items-center justify-center">
-                          <User className="w-4 h-4 text-[#4A6A8D]" />
+                        <div className="w-8 h-8 bg-[#7A9BBD]/15 rounded-xl flex items-center justify-center">
+                          <User className="w-4 h-4 text-[#6B8AAD]" />
                         </div>
                         <div>
                           <Link
                             href={`/mandanten/${mandantId}`}
-                            className="text-[15px] font-semibold text-[#1E2A3A] hover:text-[#5B7A9D] transition-colors"
+                            className="text-[15px] font-semibold text-[#EDF1F5] hover:text-[#7A9BBD] transition-colors"
                           >
                             {group.mandantName}
                           </Link>
-                          <p className="text-[#5B7A9D] text-[12px]">
+                          <p className="text-[#7A9BBD] text-[12px]">
                             {group.objekte.length} {group.objekte.length === 1 ? 'Objekt' : 'Objekte'}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 ml-11 sm:ml-0">
-                        <Building2 className="w-4 h-4 text-[#9EAFC0] hidden sm:block" />
-                        <span className="text-[#1E2A3A] font-semibold text-sm">
+                        <Building2 className="w-4 h-4 text-[#6B8AAD] hidden sm:block" />
+                        <span className="text-[#EDF1F5] font-semibold text-sm">
                           {formatCurrency(group.objekte.reduce((sum, o) => sum + (o.kaufpreis || 0), 0))}
                         </span>
-                        <span className="text-[#5B7A9D] text-[12px]">Gesamtwert</span>
+                        <span className="text-[#7A9BBD] text-[12px]">Gesamtwert</span>
                       </div>
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export default async function ObjektePage({ searchParams }: PageProps) {
                           <TableCell>
                             <div>
                               <p className="font-medium">{objekt.strasse}</p>
-                              <p className="text-sm text-[#5B7A9D]">{objekt.plz} {objekt.ort}</p>
+                              <p className="text-sm text-[#7A9BBD]">{objekt.plz} {objekt.ort}</p>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -211,7 +211,7 @@ export default async function ObjektePage({ searchParams }: PageProps) {
                           <TableCell>
                             <Link
                               href={`/objekte/${objekt.id}`}
-                              className="text-[#5B7A9D] hover:text-[#4A6A8D] text-sm font-medium"
+                              className="text-[#7A9BBD] hover:text-[#6B8AAD] text-sm font-medium"
                             >
                               Details
                             </Link>
@@ -224,7 +224,7 @@ export default async function ObjektePage({ searchParams }: PageProps) {
               );
             })
           ) : (
-            <Card className="p-6 sm:p-8 text-center text-[#5B7A9D]">
+            <Card className="p-6 sm:p-8 text-center text-[#7A9BBD]">
               {searchQuery || filterTyp ? 'Keine Objekte mit diesen Filtern gefunden' : 'Keine Objekte vorhanden'}
             </Card>
           )}
@@ -251,7 +251,7 @@ export default async function ObjektePage({ searchParams }: PageProps) {
                     <TableCell>
                       <div>
                         <p className="font-medium">{objekt.strasse}</p>
-                        <p className="text-sm text-[#5B7A9D]">{objekt.plz} {objekt.ort}</p>
+                        <p className="text-sm text-[#7A9BBD]">{objekt.plz} {objekt.ort}</p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -265,7 +265,7 @@ export default async function ObjektePage({ searchParams }: PageProps) {
                     <TableCell>
                       <Link
                         href={`/objekte/${objekt.id}`}
-                        className="text-[#5B7A9D] hover:text-[#4A6A8D] text-sm font-medium"
+                        className="text-[#7A9BBD] hover:text-[#6B8AAD] text-sm font-medium"
                       >
                         Details
                       </Link>

@@ -44,29 +44,29 @@ export function Pagination({ totalItems, pageSize = 20 }: PaginationProps) {
 
   return (
     <div className="flex items-center justify-between px-4 py-3 sm:px-0">
-      <div className="text-sm text-[#5B7A9D]">
+      <div className="text-sm text-[#7A9BBD]">
         {totalItems} Einträge · Seite {currentPage} von {totalPages}
       </div>
       <div className="flex items-center gap-1">
         <button
           onClick={() => goToPage(currentPage - 1)}
           disabled={currentPage <= 1}
-          className="p-2 rounded-lg text-[#5B7A9D] hover:bg-[#EDF1F5] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg text-[#7A9BBD] hover:bg-[#253546] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Vorherige Seite"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
         {pages.map((p, i) =>
           p === 'ellipsis' ? (
-            <span key={`e${i}`} className="px-2 text-[#9EAFC0]">…</span>
+            <span key={`e${i}`} className="px-2 text-[#6B8AAD]">…</span>
           ) : (
             <button
               key={p}
               onClick={() => goToPage(p)}
               className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-colors ${
                 p === currentPage
-                  ? 'bg-[#1E2A3A] text-white'
-                  : 'text-[#5B7A9D] hover:bg-[#EDF1F5]'
+                  ? 'bg-[#5B7A9D] text-white'
+                  : 'text-[#7A9BBD] hover:bg-[#253546]'
               }`}
             >
               {p}
@@ -76,7 +76,7 @@ export function Pagination({ totalItems, pageSize = 20 }: PaginationProps) {
         <button
           onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage >= totalPages}
-          className="p-2 rounded-lg text-[#5B7A9D] hover:bg-[#EDF1F5] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg text-[#7A9BBD] hover:bg-[#253546] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Nächste Seite"
         >
           <ChevronRight className="w-4 h-4" />

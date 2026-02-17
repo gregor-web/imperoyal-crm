@@ -112,7 +112,7 @@ export default function EditObjektPage() {
     return (
       <div className="text-center py-12">
         <p className="text-red-600">{error || 'Objekt nicht gefunden'}</p>
-        <Link href="/objekte" className="text-[#5B7A9D] hover:underline mt-4 inline-block">
+        <Link href="/objekte" className="text-[#7A9BBD] hover:underline mt-4 inline-block">
           Zurück zur Liste
         </Link>
       </div>
@@ -122,12 +122,12 @@ export default function EditObjektPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-3 sm:gap-4 mb-6">
-        <Link href={`/objekte/${id}`} className="p-2 hover:bg-[#EDF1F5] rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
-          <ArrowLeft className="w-5 h-5 text-[#4A6A8D]" />
+        <Link href={`/objekte/${id}`} className="p-2 hover:bg-[#162636] rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
+          <ArrowLeft className="w-5 h-5 text-[#6B8AAD]" />
         </Link>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Objekt bearbeiten</h1>
-          <p className="text-[#4A6A8D] mt-1">{objekt.strasse}</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5]">Objekt bearbeiten</h1>
+          <p className="text-[#6B8AAD] mt-1">{objekt.strasse}</p>
         </div>
       </div>
 
@@ -144,7 +144,7 @@ export default function EditObjektPage() {
           className={`px-4 py-2 min-h-[44px] rounded-[10px] font-medium transition-colors ${
             activeTab === 'objekt'
               ? 'bg-[#5B7A9D] text-white'
-              : 'bg-[#EDF1F5] text-[#1E2A3A] hover:bg-[#D5DEE6]'
+              : 'bg-[#162636] text-[#EDF1F5] hover:bg-[#253546]'
           }`}
         >
           Objektdaten
@@ -154,7 +154,7 @@ export default function EditObjektPage() {
           className={`px-4 py-2 min-h-[44px] rounded-[10px] font-medium transition-colors ${
             activeTab === 'einheiten'
               ? 'bg-[#5B7A9D] text-white'
-              : 'bg-[#EDF1F5] text-[#1E2A3A] hover:bg-[#D5DEE6]'
+              : 'bg-[#162636] text-[#EDF1F5] hover:bg-[#253546]'
           }`}
         >
           Einheiten ({einheiten.length})

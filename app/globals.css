@@ -1,39 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  /* ─── Imperoyal Design System ────────────────────────── */
+  /* ─── Imperoyal Dark Design System ────────────────────────── */
 
   /* Surfaces */
-  --background:       #EDF1F5;
-  --surface:          #FFFFFF;
-  --surface-elevated: #FFFFFF;
-  --surface-grouped:  #EDF1F5;
+  --background:       #0F1A25;
+  --surface:          #1E2A3A;
+  --surface-elevated: #253546;
+  --surface-grouped:  #162636;
 
   /* Text */
-  --foreground:       #1E2A3A;
-  --text-secondary:   #4A6A8D;
-  --text-tertiary:    #9EAFC0;
+  --foreground:       #EDF1F5;
+  --text-secondary:   #9EAFC0;
+  --text-tertiary:    #6B8AAD;
 
-  /* Accent – Growth Blue */
-  --accent:           #5B7A9D;
-  --accent-hover:     #6B8AAD;
-  --accent-light:     rgba(91, 122, 157, 0.10);
+  /* Accent – Growth Blue (aufgehellt für dunklen Hintergrund) */
+  --accent:           #7A9BBD;
+  --accent-hover:     #8AADC9;
+  --accent-light:     rgba(122, 155, 189, 0.15);
 
   /* Borders */
-  --border:           rgba(30, 42, 58, 0.08);
-  --border-strong:    rgba(30, 42, 58, 0.15);
+  --border:           rgba(255, 255, 255, 0.07);
+  --border-strong:    rgba(255, 255, 255, 0.12);
 
-  /* Sidebar – Royal Navy */
-  --sidebar-bg:       #1E2A3A;
+  /* Sidebar – etwas heller als Haupt-BG */
+  --sidebar-bg:       #162230;
   --sidebar-hover:    rgba(255,255,255,0.06);
-  --sidebar-active:   #3D5167;
+  --sidebar-active:   #5B7A9D;
 
   /* Shadows */
-  --shadow-xs:   0 1px 2px rgba(30,42,58,0.06);
-  --shadow-sm:   0 2px 8px rgba(30,42,58,0.08), 0 1px 2px rgba(30,42,58,0.04);
-  --shadow-md:   0 4px 16px rgba(30,42,58,0.10), 0 2px 4px rgba(30,42,58,0.06);
-  --shadow-lg:   0 8px 32px rgba(30,42,58,0.12), 0 4px 8px rgba(30,42,58,0.06);
-  --shadow-xl:   0 24px 48px rgba(30,42,58,0.14), 0 8px 16px rgba(30,42,58,0.08);
+  --shadow-xs:   0 1px 2px rgba(0,0,0,0.30);
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.20);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.40), 0 2px 4px rgba(0,0,0,0.20);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.45), 0 4px 8px rgba(0,0,0,0.25);
+  --shadow-xl:   0 24px 48px rgba(0,0,0,0.50), 0 8px 16px rgba(0,0,0,0.30);
 
   /* Brand Color Aliases */
   --royal-navy-dark:     #1E2A3A;
@@ -41,7 +41,7 @@
   --royal-navy-light:    #3D5167;
   --growth-blue-dark:    #4A6A8D;
   --growth-blue-base:    #5B7A9D;
-  --growth-blue-light:   #6B8AAD;
+  --growth-blue-light:   #7A9BBD;
   --blue-bone-dark:      #9EAFC0;
   --blue-bone-base:      #B8C5D1;
   --blue-bone-light:     #D5DEE6;
@@ -68,31 +68,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Card (Apple Material) ───────────────────────────────── */
+/* ─── Card (Dark Surface) ───────────────────────────────── */
 .glass-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.30), 0 0 0 0.5px rgba(255,255,255,0.04);
 }
 
 /* ─── Sidebar ─────────────────────────────────────────────── */
 .glass-sidebar {
   background: var(--sidebar-bg);
-  border-right: 1px solid rgba(255,255,255,0.06);
+  border-right: 1px solid rgba(255,255,255,0.05);
 }
 
 /* ─── Input Base ──────────────────────────────────────────── */
 .glass-input {
-  background: var(--surface);
+  background: var(--surface-grouped);
   border: 1.5px solid var(--border-strong);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .glass-input:focus {
-  background: var(--surface);
+  background: var(--surface-grouped);
   border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(91, 122, 157, 0.20);
+  box-shadow: 0 0 0 3px rgba(122, 155, 189, 0.20);
 }
 
 /* ─── Form Input Defaults ─────────────────────────────────── */
@@ -104,7 +104,7 @@ input[type="date"],
 input[type="tel"],
 textarea,
 select {
-  background: var(--surface);
+  background: var(--surface-grouped);
   border: 1.5px solid var(--border-strong);
   border-radius: 10px;
   padding: 0.625rem 0.875rem;
@@ -151,7 +151,7 @@ textarea:focus,
 select:focus {
   border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(91, 122, 157, 0.20);
+  box-shadow: 0 0 0 3px rgba(122, 155, 189, 0.20);
 }
 
 input::placeholder,
@@ -166,7 +166,7 @@ textarea::placeholder {
 
 /* ─── Login Background ────────────────────────────────────── */
 .login-bg {
-  background: #EDF1F5;
+  background: #0F1A25;
 }
 
 /* ─── Table ───────────────────────────────────────────────── */
@@ -184,7 +184,7 @@ textarea::placeholder {
 }
 
 .glass-table tr:hover {
-  background: rgba(91, 122, 157, 0.06);
+  background: rgba(122, 155, 189, 0.06);
 }
 
 /* ─── Button Variants ─────────────────────────────────────── */
@@ -201,7 +201,7 @@ textarea::placeholder {
 }
 
 .btn-secondary {
-  background: var(--surface);
+  background: var(--surface-elevated);
   border: 1.5px solid var(--border-strong);
   color: var(--foreground);
   transition: background 0.15s ease, border-color 0.15s ease;
@@ -224,22 +224,22 @@ textarea::placeholder {
 }
 
 .badge-green {
-  background: rgba(52, 199, 89, 0.12);
-  color: #1A8A3A;
+  background: rgba(52, 199, 89, 0.15);
+  color: #34C759;
 }
 
 .badge-red {
-  background: rgba(255, 59, 48, 0.10);
-  color: #C0392B;
+  background: rgba(255, 59, 48, 0.15);
+  color: #FF3B30;
 }
 
 .badge-yellow {
-  background: rgba(255, 149, 0, 0.10);
-  color: #B36200;
+  background: rgba(255, 149, 0, 0.15);
+  color: #FF9500;
 }
 
 .badge-blue {
-  background: rgba(91, 122, 157, 0.12);
+  background: rgba(122, 155, 189, 0.15);
   color: var(--accent);
 }
 
@@ -254,12 +254,12 @@ textarea::placeholder {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.18);
+  background: rgba(255,255,255,0.12);
   border-radius: 100px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,0.30);
+  background: rgba(255,255,255,0.22);
 }
 
 /* ─── Safe area / Mobile ──────────────────────────────────── */

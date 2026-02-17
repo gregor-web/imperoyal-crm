@@ -7,11 +7,11 @@ interface BadgeProps {
 
 export function Badge({ children, variant = 'default', size = 'md', className = '' }: BadgeProps) {
   const variants = {
-    default: 'bg-[#D5DEE6] text-[#2A3F54]',
-    success: 'bg-[#34C759]/12 text-[#1A8A3A]',
-    warning: 'bg-[#FF9500]/10 text-[#B36200]',
-    danger: 'bg-[#FF3B30]/10 text-[#C0392B]',
-    info: 'bg-[#5B7A9D]/12 text-[#4A6A8D]',
+    default: 'bg-white/[0.08] text-[#EDF1F5]',
+    success: 'bg-[#34C759]/15 text-[#34C759]',
+    warning: 'bg-[#FF9500]/15 text-[#FF9500]',
+    danger: 'bg-[#FF3B30]/15 text-[#FF3B30]',
+    info: 'bg-[#7A9BBD]/15 text-[#6B8AAD]',
   };
 
   const sizes = {

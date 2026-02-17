@@ -48,19 +48,19 @@ export default function NeuMandantPage() {
       <div className="max-w-2xl mx-auto">
         <Card title="Mandant erstellt" className="text-center">
           <div className="space-y-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 bg-[#34C759]/12 rounded-full flex items-center justify-center mx-auto">
+              <svg className="w-8 h-8 text-[#34C759]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-[#1E2A3A]">Mandant erfolgreich erstellt!</h2>
-            <p className="text-[#4A6A8D]">
+            <h2 className="text-xl font-semibold text-[#EDF1F5]">Mandant erfolgreich erstellt!</h2>
+            <p className="text-[#6B8AAD]">
               Das temporäre Passwort für den Mandanten lautet:
             </p>
-            <div className="bg-[#EDF1F5] rounded-lg p-4 font-mono text-lg">
+            <div className="bg-[#162636] rounded-lg p-4 font-mono text-lg">
               {createdPassword}
             </div>
-            <p className="text-sm text-amber-600">
+            <p className="text-sm text-[#FF9500]">
               Bitte notieren Sie dieses Passwort und teilen Sie es dem Mandanten mit.
               Es wird nicht erneut angezeigt.
             </p>
@@ -79,8 +79,8 @@ export default function NeuMandantPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">Neuer Mandant</h1>
-        <p className="text-[#4A6A8D] mt-1">Erstellen Sie einen neuen Mandanten</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5]">Neuer Mandant</h1>
+        <p className="text-[#6B8AAD] mt-1">Erstellen Sie einen neuen Mandanten</p>
       </div>
 
       {error && (

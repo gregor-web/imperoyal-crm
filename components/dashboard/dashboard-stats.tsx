@@ -214,11 +214,11 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   const colorClasses = {
-    blue:   { bg: 'bg-[#5B7A9D]/12', icon: 'text-[#4A6A8D]' },
-    green:  { bg: 'bg-[#34C759]/10', icon: 'text-[#1A8A3A]' },
-    amber:  { bg: 'bg-[#FF9500]/10', icon: 'text-[#B36200]' },
-    purple: { bg: 'bg-[#1E2A3A]/10', icon: 'text-[#2A3F54]' },
-    red:    { bg: 'bg-[#FF3B30]/10', icon: 'text-[#C0392B]' },
+    blue:   { bg: 'bg-[#7A9BBD]/15', icon: 'text-[#6B8AAD]' },
+    green:  { bg: 'bg-[#34C759]/15', icon: 'text-[#34C759]' },
+    amber:  { bg: 'bg-[#FF9500]/15', icon: 'text-[#FF9500]' },
+    purple: { bg: 'bg-[#EDF1F5]/08', icon: 'text-[#3D5167]' },
+    red:    { bg: 'bg-[#FF3B30]/15', icon: 'text-[#FF3B30]' },
   };
 
   const { bg, icon: iconColor } = colorClasses[color];
@@ -227,9 +227,9 @@ function StatCard({
     <div className="glass-card rounded-2xl p-4 sm:p-5">
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold text-[#4A6A8D] uppercase tracking-[0.05em]">{title}</p>
-          <p className="text-2xl sm:text-3xl font-bold text-[#1E2A3A] mt-1.5 truncate tracking-[-0.02em]">{value}</p>
-          <p className="text-[13px] text-[#5B7A9D] mt-1">{subtitle}</p>
+          <p className="text-[11px] font-semibold text-[#6B8AAD] uppercase tracking-[0.05em]">{title}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-[#EDF1F5] mt-1.5 truncate tracking-[-0.02em]">{value}</p>
+          <p className="text-[13px] text-[#7A9BBD] mt-1">{subtitle}</p>
         </div>
         <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center flex-shrink-0 ml-3 ${iconColor}`}>
           {icon}

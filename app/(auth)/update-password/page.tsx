@@ -59,13 +59,13 @@ export default function UpdatePasswordPage() {
     return (
       <div className="w-full max-w-md">
         <div className="glass-card rounded-2xl p-6 sm:p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-green-600" />
+          <div className="w-16 h-16 bg-[#34C759]/12 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-[#34C759]" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A] mb-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5] mb-2">
             Passwort aktualisiert
           </h1>
-          <p className="text-[#4A6A8D] mb-6">
+          <p className="text-[#6B8AAD] mb-6">
             Ihr Passwort wurde erfolgreich geändert. Sie können sich jetzt mit
             Ihrem neuen Passwort anmelden.
           </p>
@@ -87,10 +87,10 @@ export default function UpdatePasswordPage() {
           <div className="w-16 h-16 bg-[#1E2A3A] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1E2A3A]">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#EDF1F5]">
             Neues Passwort festlegen
           </h1>
-          <p className="text-[#4A6A8D] mt-2">
+          <p className="text-[#6B8AAD] mt-2">
             Geben Sie Ihr neues Passwort ein.
           </p>
         </div>
@@ -105,7 +105,7 @@ export default function UpdatePasswordPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-[#1E2A3A] mb-1"
+              className="block text-sm font-medium text-[#EDF1F5] mb-1"
             >
               Neues Passwort
             </label>
@@ -116,7 +116,7 @@ export default function UpdatePasswordPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
-              className="glass-input w-full px-4 py-3 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]"
+              className="glass-input w-full px-4 py-3 rounded-lg text-[#EDF1F5] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#7A9BBD]"
               placeholder="Mindestens 8 Zeichen (Groß-/Kleinbuchstaben + Zahlen)"
             />
           </div>
@@ -124,7 +124,7 @@ export default function UpdatePasswordPage() {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-[#1E2A3A] mb-1"
+              className="block text-sm font-medium text-[#EDF1F5] mb-1"
             >
               Passwort bestätigen
             </label>
@@ -135,7 +135,7 @@ export default function UpdatePasswordPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={8}
-              className="glass-input w-full px-4 py-3 rounded-lg text-[#1E2A3A] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D]"
+              className="glass-input w-full px-4 py-3 rounded-lg text-[#EDF1F5] placeholder-[#9EAFC0] focus:outline-none focus:ring-2 focus:ring-[#7A9BBD]"
               placeholder="Passwort wiederholen"
             />
           </div>
@@ -143,7 +143,7 @@ export default function UpdatePasswordPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-[#1E2A3A] to-[#2A3F54] text-white py-3 px-4 rounded-lg font-medium hover:from-[#2A3F54] hover:to-[#3D5167] focus:outline-none focus:ring-2 focus:ring-[#5B7A9D] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full bg-gradient-to-r from-[#1E2A3A] to-[#2A3F54] text-white py-3 px-4 rounded-lg font-medium hover:from-[#2A3F54] hover:to-[#3D5167] focus:outline-none focus:ring-2 focus:ring-[#7A9BBD] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isLoading ? 'Wird gespeichert...' : 'Passwort speichern'}
           </button>
