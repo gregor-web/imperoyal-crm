@@ -44,7 +44,7 @@ export default function LoginPage() {
             alt="Imperoyal Immobilien"
             width={160}
             height={44}
-            className="h-12 w-auto mx-auto mb-3"
+            className="h-12 w-auto mx-auto mb-3 brightness-0 invert"
             priority
           />
           <p className="text-[13px] text-[#9EAFC0]">
