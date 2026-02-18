@@ -733,7 +733,189 @@ export function AuswertungPDF({
 
   return (
     <Document>
-      {/* ==================== PAGE 1 ==================== */}
+      {/* ==================== DECKBLATT ==================== */}
+      <Page size="A4" style={{
+        padding: 0,
+        fontFamily: 'Helvetica',
+        backgroundColor: '#ffffff',
+      }}>
+        {/* Dunkelblauer Header-Bereich */}
+        <View style={{
+          backgroundColor: colors.primary,
+          paddingTop: 50,
+          paddingBottom: 35,
+          paddingHorizontal: 50,
+        }}>
+          {/* Logo */}
+          <View style={{ marginBottom: 30 }}>
+            {logoUrl ? (
+              <Image src={logoUrl} style={{ width: 180, height: 45, objectFit: 'contain' }} />
+            ) : (
+              <Text style={{ fontSize: 22, fontFamily: 'Helvetica-Bold', color: '#ffffff', letterSpacing: 1 }}>
+                Imperoyal Immobilien
+              </Text>
+            )}
+          </View>
+
+          {/* Haupttitel */}
+          <Text style={{
+            fontSize: 28,
+            fontFamily: 'Helvetica-Bold',
+            color: '#ffffff',
+            letterSpacing: 1.5,
+            marginBottom: 6,
+          }}>
+            Optimierungsprotokoll
+          </Text>
+          <View style={{ width: 60, height: 2, backgroundColor: colors.warning, marginBottom: 16 }} />
+          <Text style={{ fontSize: 11, color: colors.blueBone, lineHeight: 1.5 }}>
+            Immobilien-Analyse und Handlungsempfehlung
+          </Text>
+        </View>
+
+        {/* Karte */}
+        {mapUrl && (
+          <View style={{ position: 'relative', width: '100%', height: 200 }}>
+            <Image
+              src={mapUrl}
+              style={{ width: '100%', height: 200, objectFit: 'cover' }}
+            />
+            {/* Fadenkreuz */}
+            <Svg
+              viewBox="0 0 500 200"
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 200 }}
+            >
+              <Circle cx="250" cy="100" r="6" fill="none" stroke="#cc0000" strokeWidth="1" />
+              <Line x1="238" y1="100" x2="262" y2="100" stroke="#cc0000" strokeWidth="1" />
+              <Line x1="250" y1="88" x2="250" y2="112" stroke="#cc0000" strokeWidth="1" />
+            </Svg>
+            {/* Nordpfeil */}
+            <View style={{ position: 'absolute', top: 8, right: 10, alignItems: 'center', width: 20 }}>
+              <Text style={{ fontSize: 12, color: '#333', marginBottom: -2 }}>↑</Text>
+              <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#333' }}>N</Text>
+            </View>
+            {/* Maßstab */}
+            <View style={{ position: 'absolute', bottom: 8, right: 10, backgroundColor: '#ffffffdd', paddingHorizontal: 6, paddingVertical: 3, borderRadius: 2 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                <Text style={{ fontSize: 5.5, color: '#333', marginRight: 3 }}>0</Text>
+                <View style={{ flexDirection: 'row', marginBottom: 1 }}>
+                  <View style={{ width: 36, height: 4, backgroundColor: '#333' }} />
+                  <View style={{ width: 36, height: 4, backgroundColor: '#fff', borderWidth: 0.5, borderColor: '#333' }} />
+                </View>
+                <Text style={{ fontSize: 5.5, color: '#333', marginLeft: 3 }}>25 m</Text>
+              </View>
+            </View>
+            {/* Copyright */}
+            <View style={{ position: 'absolute', bottom: 3, left: 3, backgroundColor: '#ffffffcc', paddingHorizontal: 4, paddingVertical: 1.5 }}>
+              <Text style={{ fontSize: 5, color: '#555' }}>
+                © Bundesamt für Kartographie und Geodäsie {new Date().getFullYear()}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* Objekt- und Mandanteninfos */}
+        <View style={{ paddingHorizontal: 50, paddingTop: 30 }}>
+          {/* Objektdaten */}
+          <View style={{
+            backgroundColor: '#f8fafc',
+            borderRadius: 6,
+            padding: 20,
+            marginBottom: 20,
+            borderLeftWidth: 4,
+            borderLeftColor: colors.primary,
+          }}>
+            <Text style={{ fontSize: 8, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+              Objekt
+            </Text>
+            <Text style={{ fontSize: 18, fontFamily: 'Helvetica-Bold', color: colors.primary, marginBottom: 4 }}>
+              {objekt.strasse}
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.text }}>
+              {objekt.plz} {objekt.ort}
+            </Text>
+            <View style={{ flexDirection: 'row', marginTop: 12, gap: 20 }}>
+              {objekt.gebaeudetyp && (
+                <View>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Typ</Text>
+                  <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: colors.text }}>{objekt.gebaeudetyp}</Text>
+                </View>
+              )}
+              {objekt.baujahr && (
+                <View>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Baujahr</Text>
+                  <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: colors.text }}>{objekt.baujahr}</Text>
+                </View>
+              )}
+              {einheitenGesamt > 0 && (
+                <View>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Einheiten</Text>
+                  <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: colors.text }}>{einheitenGesamt}</Text>
+                </View>
+              )}
+              {gesamtflaeche > 0 && (
+                <View>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Gesamtfläche</Text>
+                  <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: colors.text }}>{gesamtflaeche.toLocaleString('de-DE')} m²</Text>
+                </View>
+              )}
+              {kaufpreis > 0 && (
+                <View>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Kaufpreis</Text>
+                  <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: colors.text }}>{formatCurrency(kaufpreis)}</Text>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* Mandant und Datum */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View>
+              <Text style={{ fontSize: 8, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
+                Erstellt für
+              </Text>
+              <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.text }}>
+                {mandant.name}
+              </Text>
+              {mandant.ansprechpartner && (
+                <Text style={{ fontSize: 9, color: colors.textMuted, marginTop: 2 }}>
+                  z.Hd. {mandant.anrede ? `${mandant.anrede} ` : ''}{mandant.ansprechpartner}
+                </Text>
+              )}
+            </View>
+            <View style={{ textAlign: 'right' }}>
+              <Text style={{ fontSize: 8, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
+                Datum
+              </Text>
+              <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.text }}>
+                {new Date(created_at).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Footer auf Deckblatt */}
+        <View style={{
+          position: 'absolute',
+          bottom: 25,
+          left: 50,
+          right: 50,
+          borderTopWidth: 1,
+          borderTopColor: colors.borderLight,
+          paddingTop: 8,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+          <Text style={{ fontSize: 7, color: colors.textLight }}>
+            Imperoyal Immobilien · Vertraulich
+          </Text>
+          <Text style={{ fontSize: 7, color: colors.textLight }}>
+            Seite 1
+          </Text>
+        </View>
+      </Page>
+
+      {/* ==================== PAGE 1 (Analyse) ==================== */}
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
@@ -755,82 +937,6 @@ export function AuswertungPDF({
             <Text style={styles.objektAddress}>{objekt.plz} {objekt.ort}</Text>
           </View>
         </View>
-
-        {/* Objektkarte - Lageplan (Sprengnetter-Style) */}
-        {mapUrl && (
-          <View style={{
-            marginBottom: 10 * sm.spacingMultiplier,
-          }}>
-            <View style={{ position: 'relative', width: '100%', height: 160 }}>
-              {/* Kartenbild */}
-              <Image
-                src={mapUrl}
-                style={{
-                  width: '100%',
-                  height: 160,
-                  objectFit: 'cover',
-                }}
-              />
-
-              {/* Fadenkreuz (⊕) – SVG zentriert */}
-              <Svg
-                viewBox="0 0 500 160"
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 160 }}
-              >
-                <Circle cx="250" cy="80" r="5" fill="none" stroke="#cc0000" strokeWidth="0.7" />
-                <Line x1="240" y1="80" x2="260" y2="80" stroke="#cc0000" strokeWidth="0.7" />
-                <Line x1="250" y1="70" x2="250" y2="90" stroke="#cc0000" strokeWidth="0.7" />
-              </Svg>
-
-              {/* Nordpfeil – oben rechts */}
-              <View style={{
-                position: 'absolute',
-                top: 6,
-                right: 8,
-                alignItems: 'center',
-                width: 18,
-              }}>
-                <Text style={{ fontSize: 10, color: '#333', marginBottom: -2 }}>↑</Text>
-                <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#333' }}>N</Text>
-              </View>
-
-              {/* Maßstabsbalken – unten rechts */}
-              <View style={{
-                position: 'absolute',
-                bottom: 8,
-                right: 8,
-                backgroundColor: '#ffffff',
-                paddingHorizontal: 6,
-                paddingVertical: 3,
-                borderWidth: 0.5,
-                borderColor: '#bbb',
-              }}>
-                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 0 }}>
-                  <Text style={{ fontSize: 5.5, color: '#333', marginRight: 3 }}>0</Text>
-                  <View style={{ flexDirection: 'row', marginBottom: 1 }}>
-                    <View style={{ width: 36, height: 4, backgroundColor: '#333' }} />
-                    <View style={{ width: 36, height: 4, backgroundColor: '#fff', borderWidth: 0.5, borderColor: '#333' }} />
-                  </View>
-                  <Text style={{ fontSize: 5.5, color: '#333', marginLeft: 3 }}>25 m</Text>
-                </View>
-              </View>
-
-              {/* Copyright – unten links */}
-              <View style={{
-                position: 'absolute',
-                bottom: 3,
-                left: 3,
-                backgroundColor: '#ffffffcc',
-                paddingHorizontal: 4,
-                paddingVertical: 1.5,
-              }}>
-                <Text style={{ fontSize: 5, color: '#555' }}>
-                  © Bundesamt für Kartographie und Geodäsie {new Date().getFullYear()}
-                </Text>
-              </View>
-            </View>
-          </View>
-        )}
 
         {/* Persönliche Begrüßung */}
         <View style={{
