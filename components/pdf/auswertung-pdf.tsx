@@ -16,8 +16,12 @@ import type { Berechnungen } from '@/lib/types';
 import { getZinsaenderungHinweis, getMietvertragsartZusammenfassung, MIETVERTRAGSART_HINWEISE } from '@/lib/erlaeuterungen';
 
 // ─── Font Registration ─────────────────────────────────────
+// Use file system path for server-side rendering (Vercel serverless)
+// Fallback to HTTP URL for client-side preview
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
+// On Vercel serverless, fonts must be loaded via HTTP from the deployed URL
+// process.cwd() doesn't reliably contain public/ assets on Vercel
 Font.register({
   family: 'Playfair Display',
   fonts: [
@@ -26,6 +30,9 @@ Font.register({
     { src: `${APP_URL}/fonts/PlayfairDisplay-Bold.ttf`, fontWeight: 700 },
   ],
 });
+
+// Hyphenation callback to prevent word-break issues in German text
+Font.registerHyphenationCallback((word) => [word]);
 
 // =====================================================
 // GRAFISCHE KOMPONENTEN
@@ -626,6 +633,17 @@ interface AuswertungPDFProps {
     milieuschutz?: boolean;
     weg_aufgeteilt?: boolean;
     kaufpreis?: number;
+    grundstueck?: number | null;
+    wohneinheiten?: number | null;
+    gewerbeeinheiten?: number | null;
+    geschosse?: number | null;
+    gebaeudetyp?: string | null;
+    heizungsart?: string | null;
+    denkmalschutz?: boolean | null;
+    kernsanierung_jahr?: number | null;
+    wohnflaeche?: number | null;
+    gewerbeflaeche?: number | null;
+    aufzug?: boolean | null;
   };
   mandant: {
     name: string;
@@ -849,6 +867,228 @@ export function AuswertungPDF({
             im Folgenden erhalten Sie die Analyse Ihres Objekts. Bei Fragen stehen wir Ihnen gerne zur Verfügung.
           </Text>
         </View>
+
+        {/* ─── EXPOSÉ: Objektsteckbrief ─── */}
+        <View style={{
+          backgroundColor: '#ffffff',
+          borderRadius: 6,
+          padding: 10 * sm.paddingMultiplier,
+          marginBottom: 8 * sm.spacingMultiplier,
+          borderWidth: 1,
+          borderColor: '#e2e8f0',
+        }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 * sm.spacingMultiplier, borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 6 }}>
+            <Text style={{ fontSize: 11 * sm.fontSizeMultiplier, fontWeight: 'bold', color: colors.primary, fontFamily: 'Playfair Display' }}>
+              Objektsteckbrief
+            </Text>
+            <Text style={{ fontSize: 7, color: colors.textLight, marginLeft: 'auto' }}>
+              {objekt.gebaeudetyp || 'Immobilie'} · {objekt.strasse}, {objekt.plz} {objekt.ort}
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            {/* Spalte 1: Grunddaten */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Grunddaten
+              </Text>
+              {objekt.gebaeudetyp && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Gebäudetyp</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>{objekt.gebaeudetyp}</Text>
+                </View>
+              )}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Baujahr</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>{objekt.baujahr || '–'}</Text>
+              </View>
+              {objekt.kernsanierung_jahr && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Kernsanierung</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.success }}>{objekt.kernsanierung_jahr}</Text>
+                </View>
+              )}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Geschosse</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>{objekt.geschosse || '–'}</Text>
+              </View>
+              {objekt.heizungsart && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Heizung</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>{objekt.heizungsart}</Text>
+                </View>
+              )}
+              {objekt.aufzug != null && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Aufzug</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: objekt.aufzug ? colors.success : colors.textMuted }}>{objekt.aufzug ? 'Ja' : 'Nein'}</Text>
+                </View>
+              )}
+            </View>
+
+            {/* Spalte 2: Flächen & Einheiten */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Flächen & Einheiten
+              </Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Grundstücksfläche</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>
+                  {objekt.grundstueck ? `${Number(objekt.grundstueck).toLocaleString('de-DE')} m²` : '–'}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Wohnfläche</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>
+                  {objekt.wohnflaeche ? `${Number(objekt.wohnflaeche).toLocaleString('de-DE')} m²` : '–'}
+                </Text>
+              </View>
+              {(objekt.gewerbeflaeche && Number(objekt.gewerbeflaeche) > 0) && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Gewerbefläche</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>
+                    {Number(objekt.gewerbeflaeche).toLocaleString('de-DE')} m²
+                  </Text>
+                </View>
+              )}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Gesamtfläche</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary }}>
+                  {gesamtflaeche > 0 ? `${gesamtflaeche.toLocaleString('de-DE')} m²` : '–'}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Wohneinheiten</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>{objekt.wohneinheiten || '–'}</Text>
+              </View>
+              {(objekt.gewerbeeinheiten && objekt.gewerbeeinheiten > 0) && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Gewerbeeinheiten</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>{objekt.gewerbeeinheiten}</Text>
+                </View>
+              )}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Einheiten gesamt</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primary }}>{einheitenGesamt}</Text>
+              </View>
+            </View>
+
+            {/* Spalte 3: Baulicher Zustand */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Baulicher Zustand
+              </Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Alter</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.text }}>
+                  {objekt.baujahr ? `${new Date().getFullYear() - objekt.baujahr} Jahre` : '–'}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Zustandsbewertung</Text>
+                <Text style={{
+                  fontSize: 7,
+                  fontWeight: 'bold',
+                  color: objekt.kernsanierung_jahr && (new Date().getFullYear() - objekt.kernsanierung_jahr) < 15
+                    ? colors.success
+                    : objekt.baujahr && (new Date().getFullYear() - objekt.baujahr) < 30
+                      ? colors.primary
+                      : '#f59e0b',
+                }}>
+                  {objekt.kernsanierung_jahr && (new Date().getFullYear() - objekt.kernsanierung_jahr) < 15
+                    ? 'Saniert'
+                    : objekt.baujahr && (new Date().getFullYear() - objekt.baujahr) < 30
+                      ? 'Gut'
+                      : objekt.baujahr && (new Date().getFullYear() - objekt.baujahr) < 60
+                        ? 'Durchschnittlich'
+                        : 'Modernisierungsbedarf'}
+                </Text>
+              </View>
+              {objekt.denkmalschutz && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>Denkmalschutz</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#8b5cf6' }}>Ja (erh. AfA)</Text>
+                </View>
+              )}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>WEG aufgeteilt</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: objekt.weg_aufgeteilt ? colors.success : colors.textMuted }}>
+                  {objekt.weg_aufgeteilt ? 'Ja' : 'Nein'}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
+                <Text style={{ fontSize: 7, color: colors.textMuted }}>Milieuschutz</Text>
+                <Text style={{ fontSize: 7, fontWeight: 'bold', color: objekt.milieuschutz ? '#dc2626' : colors.success }}>
+                  {objekt.milieuschutz ? 'Ja' : 'Nein'}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* ─── EXPOSÉ: Potenzialaufdeckung ─── */}
+        {(einheitenMitPotenzial > 0 || (weg && !objekt.weg_aufgeteilt) || (mod559?.umlage_jahr && mod559.umlage_jahr > 0)) && (
+          <View style={{
+            backgroundColor: '#f0fdf4',
+            borderRadius: 6,
+            padding: 10 * sm.paddingMultiplier,
+            marginBottom: 8 * sm.spacingMultiplier,
+            borderWidth: 1,
+            borderColor: '#bbf7d0',
+          }}>
+            <Text style={{ fontSize: 11 * sm.fontSizeMultiplier, fontWeight: 'bold', color: '#166534', fontFamily: 'Playfair Display', marginBottom: 6 }}>
+              Potenzialaufdeckung
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              {/* Mietpotenzial */}
+              {einheitenMitPotenzial > 0 && (
+                <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 4, padding: 8, borderWidth: 1, borderColor: '#dcfce7' }}>
+                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#166534', marginBottom: 4 }}>Mietoptimierung</Text>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a', marginBottom: 2 }}>
+                    +{formatCurrency((miet?.potenzial_jahr || 0))}/J.
+                  </Text>
+                  <Text style={{ fontSize: 7, color: '#4ade80', marginBottom: 4 }}>
+                    {einheitenMitPotenzial} von {einheitenGesamt} Einheiten unter Marktmiete
+                  </Text>
+                  <ProgressBar
+                    value={einheitenMitPotenzial}
+                    max={einheitenGesamt}
+                    color="#22c55e"
+                    bgColor="#dcfce7"
+                    height={6}
+                  />
+                </View>
+              )}
+              {/* WEG-Potenzial */}
+              {weg && !objekt.weg_aufgeteilt && (
+                <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 4, padding: 8, borderWidth: 1, borderColor: '#dcfce7' }}>
+                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#166534', marginBottom: 4 }}>WEG-Aufteilung</Text>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a', marginBottom: 2 }}>
+                    +{formatCurrency(weg.weg_gewinn || 0)}
+                  </Text>
+                  <Text style={{ fontSize: 7, color: '#4ade80', marginBottom: 2 }}>
+                    Wertzuwachs bei Aufteilung (+15%)
+                  </Text>
+                  <Text style={{ fontSize: 6, color: weg.weg_genehmigung ? '#dc2626' : '#4ade80' }}>
+                    {weg.weg_genehmigung ? '⚠ Genehmigungspflichtig (Milieu-/Umwandlungsschutz)' : '✓ Keine Genehmigungshürden'}
+                  </Text>
+                </View>
+              )}
+              {/* Modernisierungsumlage */}
+              {mod559?.umlage_jahr && mod559.umlage_jahr > 0 && (
+                <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 4, padding: 8, borderWidth: 1, borderColor: '#dcfce7' }}>
+                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#166534', marginBottom: 4 }}>§559 Modernisierung</Text>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a', marginBottom: 2 }}>
+                    +{formatCurrency(mod559.umlage_jahr)}/J.
+                  </Text>
+                  <Text style={{ fontSize: 7, color: '#4ade80' }}>
+                    Umlagefähige Mieterhöhung nach Mod.
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
 
         {/* Key Metrics Bar - Erweitert mit Verkehrswert & AfA */}
         <View style={styles.metricsBar}>

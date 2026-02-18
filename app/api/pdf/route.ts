@@ -6,6 +6,9 @@ import type { Berechnungen } from '@/lib/types';
 import fs from 'fs';
 import path from 'path';
 
+// Vercel serverless: increase max duration
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   try {
     const { auswertung_id } = await request.json();
@@ -13,6 +16,8 @@ export async function POST(request: Request) {
     if (!auswertung_id) {
       return NextResponse.json({ error: 'auswertung_id ist erforderlich' }, { status: 400 });
     }
+
+    console.log('[PDF] Starting generation for:', auswertung_id);
 
     const supabase = await createClient();
 
@@ -34,7 +39,7 @@ export async function POST(request: Request) {
       .from('auswertungen')
       .select(`
         *,
-        objekte (id, strasse, plz, ort, baujahr, milieuschutz, weg_aufgeteilt, kaufpreis),
+        objekte (id, strasse, plz, ort, baujahr, milieuschutz, weg_aufgeteilt, kaufpreis, grundstueck, wohneinheiten, gewerbeeinheiten, geschosse, gebaeudetyp, heizungsart, denkmalschutz, kernsanierung_jahr, wohnflaeche, gewerbeflaeche, aufzug),
         mandanten (name, ansprechpartner)
       `)
       .eq('id', auswertung_id)
@@ -58,6 +63,17 @@ export async function POST(request: Request) {
       milieuschutz?: boolean;
       weg_aufgeteilt?: boolean;
       kaufpreis?: number;
+      grundstueck?: number | null;
+      wohneinheiten?: number | null;
+      gewerbeeinheiten?: number | null;
+      geschosse?: number | null;
+      gebaeudetyp?: string | null;
+      heizungsart?: string | null;
+      denkmalschutz?: boolean | null;
+      kernsanierung_jahr?: number | null;
+      wohnflaeche?: number | null;
+      gewerbeflaeche?: number | null;
+      aufzug?: boolean | null;
     };
     const mandant = auswertung.mandanten as { name: string; ansprechpartner?: string | null };
     const berechnungen = auswertung.berechnungen as Berechnungen;
@@ -73,20 +89,35 @@ export async function POST(request: Request) {
     let logoUrl: string | undefined;
     try {
       const logoPath = path.join(process.cwd(), 'public', 'logo_imperoyal.png');
-      const logoBuffer = fs.readFileSync(logoPath);
-      logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+      if (fs.existsSync(logoPath)) {
+        const logoBuffer = fs.readFileSync(logoPath);
+        logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+        console.log('[PDF] Logo loaded from filesystem');
+      } else {
+        // Fallback: load from URL (Vercel might not have public/ in cwd)
+        const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const logoRes = await fetch(`${APP_URL}/logo_imperoyal.png`);
+        if (logoRes.ok) {
+          const logoBuf = Buffer.from(await logoRes.arrayBuffer());
+          logoUrl = `data:image/png;base64,${logoBuf.toString('base64')}`;
+          console.log('[PDF] Logo loaded from URL');
+        }
+      }
     } catch (logoError) {
-      console.warn('Logo not found, using text fallback:', logoError);
+      console.warn('[PDF] Logo not found, using text fallback:', logoError);
     }
 
-    // Generate topographic map image (BKG/basemap.at style like Sprengnetter)
+    // Generate topographic map image
     let mapUrl: string | undefined;
     try {
       const { fetchTopographicMap } = await import('@/lib/map-utils');
       mapUrl = await fetchTopographicMap(objekt.strasse, objekt.plz, objekt.ort) || undefined;
+      console.log('[PDF] Map loaded:', mapUrl ? 'yes' : 'no');
     } catch (mapError) {
-      console.warn('Map image could not be loaded:', mapError);
+      console.warn('[PDF] Map image could not be loaded:', mapError);
     }
+
+    console.log('[PDF] Rendering PDF buffer...');
 
     // Generate PDF buffer
     const pdfBuffer = await renderToBuffer(
@@ -107,6 +138,8 @@ export async function POST(request: Request) {
         mapUrl,
       })
     );
+
+    console.log('[PDF] Generated successfully:', pdfBuffer.length, 'bytes');
 
     // Create a clean filename: auswertung_datum_Name
     const cleanName = (mandant.name || 'Unbekannt')
@@ -129,9 +162,10 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error('PDF generation error:', error);
+    console.error('[PDF] Generation error:', error instanceof Error ? error.message : error);
+    console.error('[PDF] Stack:', error instanceof Error ? error.stack : 'no stack');
     return NextResponse.json(
-      { error: 'Fehler bei der PDF-Generierung' },
+      { error: `Fehler bei der PDF-Generierung: ${error instanceof Error ? error.message : 'Unbekannt'}` },
       { status: 500 }
     );
   }
