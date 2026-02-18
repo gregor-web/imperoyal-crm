@@ -10,6 +10,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmp
 import { formatDate, formatCurrency, formatPercent, formatBoolean, formatArea } from '@/lib/formatters';
 import { ArrowLeft, Edit, Banknote, Home, TrendingUp, Clock, CheckCircle, MapPin } from 'lucide-react';
 import { AuswertenButton } from '@/components/auswerten-button';
+import { RegenerateAuswertungButton } from '@/components/regenerate-auswertung-button';
 import { AnfrageButton } from '@/components/anfrage-button';
 import { ObjektMapCard } from '@/components/maps/objekt-map-card';
 import { VerkaufButton } from '@/components/verkauf-button';
@@ -84,12 +85,17 @@ export default async function ObjektDetailPage({ params }: Props) {
         </div>
         <div className="flex flex-wrap gap-2 items-center ml-11 sm:ml-0">
           {bestehendeAuswertung ? (
-            <Link href={`/auswertungen/${bestehendeAuswertung.id}`}>
-              <Button variant="primary">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Auswertung ansehen
-              </Button>
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link href={`/auswertungen/${bestehendeAuswertung.id}`}>
+                <Button variant="primary">
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Auswertung ansehen
+                </Button>
+              </Link>
+              {isAdmin && (
+                <RegenerateAuswertungButton objektId={id} />
+              )}
+            </div>
           ) : isAdmin ? (
             // Admin: nur auswerten wenn bezahlt
             istBezahlt ? (

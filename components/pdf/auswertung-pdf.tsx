@@ -761,25 +761,25 @@ export function AuswertungPDF({
           <View style={{
             marginBottom: 10 * sm.spacingMultiplier,
           }}>
-            <View style={{ position: 'relative', width: '100%', height: 280 }}>
+            <View style={{ position: 'relative', width: '100%', height: 160 }}>
               {/* Kartenbild */}
               <Image
                 src={mapUrl}
                 style={{
                   width: '100%',
-                  height: 280,
+                  height: 160,
                   objectFit: 'cover',
                 }}
               />
 
               {/* Fadenkreuz (⊕) – SVG zentriert */}
               <Svg
-                viewBox="0 0 500 280"
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 280 }}
+                viewBox="0 0 500 160"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 160 }}
               >
-                <Circle cx="250" cy="140" r="5" fill="none" stroke="#cc0000" strokeWidth="0.7" />
-                <Line x1="240" y1="140" x2="260" y2="140" stroke="#cc0000" strokeWidth="0.7" />
-                <Line x1="250" y1="130" x2="250" y2="150" stroke="#cc0000" strokeWidth="0.7" />
+                <Circle cx="250" cy="80" r="5" fill="none" stroke="#cc0000" strokeWidth="0.7" />
+                <Line x1="240" y1="80" x2="260" y2="80" stroke="#cc0000" strokeWidth="0.7" />
+                <Line x1="250" y1="70" x2="250" y2="90" stroke="#cc0000" strokeWidth="0.7" />
               </Svg>
 
               {/* Nordpfeil – oben rechts */}
@@ -811,7 +811,7 @@ export function AuswertungPDF({
                     <View style={{ width: 36, height: 4, backgroundColor: '#333' }} />
                     <View style={{ width: 36, height: 4, backgroundColor: '#fff', borderWidth: 0.5, borderColor: '#333' }} />
                   </View>
-                  <Text style={{ fontSize: 5.5, color: '#333', marginLeft: 3 }}>50 m</Text>
+                  <Text style={{ fontSize: 5.5, color: '#333', marginLeft: 3 }}>25 m</Text>
                 </View>
               </View>
 

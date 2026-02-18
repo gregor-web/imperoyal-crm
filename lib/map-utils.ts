@@ -33,8 +33,8 @@ async function geocodeAddress(address: string): Promise<{ lat: number; lon: numb
 function calculateBbox(
   lat: number,
   lon: number,
-  widthMeters = 350,
-  heightMeters = 180,
+  widthMeters = 150,
+  heightMeters = 80,
 ): [number, number, number, number] {
   const latOffset = heightMeters / 111320;
   const lonOffset = widthMeters / (111320 * Math.cos((lat * Math.PI) / 180));
@@ -49,8 +49,8 @@ export async function fetchTopographicMap(
   strasse: string,
   plz: string,
   ort: string,
-  width = 1600,
-  height = 600,
+  width = 800,
+  height = 350,
 ): Promise<string | null> {
   const address = `${strasse}, ${plz} ${ort}`;
 

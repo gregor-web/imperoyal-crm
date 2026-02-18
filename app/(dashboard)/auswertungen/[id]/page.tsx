@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { SendEmailButton } from '@/components/send-email-button';
 import { OptimizedPdfButton } from '@/components/optimized-pdf-button';
+import { RegenerateAuswertungButton } from '@/components/regenerate-auswertung-button';
 import { DynamicLageplanMap as LageplanMap } from '@/components/maps/lageplan-map-dynamic';
 
 interface Props {
@@ -202,6 +203,7 @@ export default async function AuswertungDetailPage({ params }: Props) {
           {(auswertung.pdf_url || isAdmin) && (
             <OptimizedPdfButton auswertungId={id} />
           )}
+          {isAdmin && <RegenerateAuswertungButton objektId={objekt?.id as string} />}
           {isAdmin && <SendEmailButton auswertungId={id} status={auswertung.status} />}
         </div>
       </div>

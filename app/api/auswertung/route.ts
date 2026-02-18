@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 403 });
     }
 
-    const { objekt_id } = await request.json();
+    const { objekt_id, force } = await request.json();
 
     if (!objekt_id) {
       return NextResponse.json({ error: 'objekt_id erforderlich' }, { status: 400 });
@@ -188,8 +188,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Ungültige Objekt-ID' }, { status: 400 });
     }
 
-    // PAYMENT CHECK: Verify there is a paid anfrage for this object
     const adminSupabase = createAdminClient();
+
+    // If force regeneration: delete old auswertung(en) for this object
+    if (force) {
+      console.log('[AUSWERTUNG] Force regeneration – deleting old auswertungen for objekt', objekt_id);
+      const { error: deleteError } = await adminSupabase
+        .from('auswertungen')
+        .delete()
+        .eq('objekt_id', objekt_id);
+      if (deleteError) {
+        console.warn('[AUSWERTUNG] Could not delete old auswertungen:', deleteError);
+      }
+    }
+
+    // PAYMENT CHECK: Verify there is a paid anfrage for this object
     const { data: bezahlteAnfrage } = await adminSupabase
       .from('anfragen')
       .select('id, payment_status')
