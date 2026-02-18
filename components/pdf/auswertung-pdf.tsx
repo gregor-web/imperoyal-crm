@@ -1320,6 +1320,36 @@ export function AuswertungPDF({
           </View>
         )}
 
+        {/* Footer */}
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
+        </View>
+      </Page>
+
+      {/* ==================== PAGE: Sektionen 1-4 ==================== */}
+      <Page size="A4" style={styles.page}>
+        {/* Fixed Header */}
+        <View fixed style={{
+          position: 'absolute',
+          top: 12,
+          left: 25,
+          right: 25,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: 6,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        }}>
+          {logoUrl ? (
+            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+          ) : (
+            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.primary }}>Imperoyal Immobilien</Text>
+          )}
+        </View>
+
         {/* Sections 1-4 */}
         <View style={styles.sectionRow}>
           {/* Section 1: Finanzierungsprofil */}
@@ -1709,6 +1739,36 @@ export function AuswertungPDF({
               );
             })()}
           </View>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
+        </View>
+      </Page>
+
+      {/* ==================== PAGE: Sektionen 6-9 ==================== */}
+      <Page size="A4" style={styles.page}>
+        {/* Fixed Header */}
+        <View fixed style={{
+          position: 'absolute',
+          top: 12,
+          left: 25,
+          right: 25,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: 6,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        }}>
+          {logoUrl ? (
+            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+          ) : (
+            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.primary }}>Imperoyal Immobilien</Text>
+          )}
         </View>
 
         {/* Section 6 & 7 */}
