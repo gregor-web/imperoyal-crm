@@ -196,6 +196,7 @@ const colors = {
 const styles = StyleSheet.create({
   page: {
     padding: 25,
+    paddingTop: 55, // Reserve space for fixed header with logo
     paddingBottom: 45, // Reserve space for footer
     fontFamily: 'Helvetica',
     fontSize: 9,
@@ -291,6 +292,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 6,
     marginBottom: 6,
+    minPresenceAhead: 80,
   },
   sectionBox: {
     flex: 1,
@@ -299,6 +301,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
+    minPresenceAhead: 60,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -917,18 +920,30 @@ export function AuswertungPDF({
 
       {/* ==================== PAGE 1 (Analyse) ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              {logoUrl ? (
-                <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
-              ) : (
-                <Text style={styles.mainTitle}>Imperoyal Immobilien - Optimierungsprotokoll</Text>
-              )}
-            </View>
-          </View>
-          <View style={styles.objektInfo}>
+        {/* Fixed Header mit zentriertem Logo - erscheint auf jeder Seite */}
+        <View fixed style={{
+          position: 'absolute',
+          top: 12,
+          left: 25,
+          right: 25,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: 6,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        }}>
+          {logoUrl ? (
+            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+          ) : (
+            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.primary }}>Imperoyal Immobilien</Text>
+          )}
+        </View>
+
+        {/* Objekt-Info unter dem fixed Header (nur auf erster Seite) */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, fontFamily: 'Helvetica-Bold' }}>Optimierungsprotokoll</Text>
+          <View style={{ textAlign: 'right' }}>
             <Text style={{ fontSize: 9, color: colors.textMuted, marginBottom: 2 }}>
               {new Date(created_at).toLocaleDateString('de-DE')}
             </Text>
@@ -2302,13 +2317,28 @@ export function AuswertungPDF({
 
       {/* ==================== PAGE 5: Ergänzende Erläuterungen ==================== */}
       <Page size="A4" style={styles.page}>
-        {/* Header mit Logo zentriert */}
-        <View style={{ marginBottom: 12, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 6 }}>
-            {logoUrl && (
-              <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
-            )}
-          </View>
+        {/* Fixed Header mit zentriertem Logo - erscheint auf jeder Seite */}
+        <View fixed style={{
+          position: 'absolute',
+          top: 12,
+          left: 25,
+          right: 25,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: 6,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        }}>
+          {logoUrl ? (
+            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+          ) : (
+            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.primary }}>Imperoyal Immobilien</Text>
+          )}
+        </View>
+
+        {/* Titel */}
+        <View style={{ marginBottom: 12 }}>
           <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary, textAlign: 'center' }}>
             Ergänzende Erläuterungen
           </Text>
