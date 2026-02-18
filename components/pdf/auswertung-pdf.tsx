@@ -673,6 +673,8 @@ export function AuswertungPDF({
   empfehlung_begruendung,
   empfehlung_prioritaet,
   empfehlung_handlungsschritte,
+  empfehlung_chancen,
+  empfehlung_risiken,
   empfehlung_fazit,
   created_at,
   logoUrl,
@@ -2481,6 +2483,34 @@ export function AuswertungPDF({
                     </View>
                   );
                 })}
+              </View>
+            )}
+
+            {/* Chancen & Risiken */}
+            {((empfehlung_chancen && empfehlung_chancen.length > 0) || (empfehlung_risiken && empfehlung_risiken.length > 0)) && (
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
+                {empfehlung_chancen && empfehlung_chancen.length > 0 && (
+                  <View style={{ flex: 1, backgroundColor: '#f0fdf4', borderRadius: 4, padding: 8 }}>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>Chancen</Text>
+                    {empfehlung_chancen.map((c, i) => (
+                      <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 2 }}>
+                        <Text style={{ fontSize: 7, color: colors.success, marginRight: 4 }}>+</Text>
+                        <Text style={{ fontSize: 7, color: colors.text, flex: 1 }}>{c}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+                {empfehlung_risiken && empfehlung_risiken.length > 0 && (
+                  <View style={{ flex: 1, backgroundColor: '#fef2f2', borderRadius: 4, padding: 8 }}>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.danger, marginBottom: 4 }}>Risiken</Text>
+                    {empfehlung_risiken.map((r, i) => (
+                      <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 2 }}>
+                        <Text style={{ fontSize: 7, color: colors.danger, marginRight: 4 }}>–</Text>
+                        <Text style={{ fontSize: 7, color: colors.text, flex: 1 }}>{r}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
             )}
 

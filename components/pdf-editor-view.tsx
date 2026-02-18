@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
-  GripVertical, Eye, EyeOff, Save, RotateCcw, Loader2, Check,
+  GripVertical, Eye, EyeOff, RotateCcw, Loader2, Check,
   ChevronUp, ChevronDown, ArrowLeft, RefreshCw, Download,
 } from 'lucide-react';
 import type { PdfSectionItem, PdfConfig } from '@/lib/types';
@@ -25,6 +25,9 @@ export function PdfEditorView({
 }: PdfEditorViewProps) {
   const router = useRouter();
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const isFirstRender = useRef(true);
 
   const [sections, setSections] = useState<PdfSectionItem[]>(
     () => initialConfig?.sections
@@ -36,10 +39,30 @@ export function PdfEditorView({
   const [error, setError] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [initialLoadDone, setInitialLoadDone] = useState(false);
+
+  // ─── Auto-save & auto-refresh on section changes (debounced 1.5s) ───
+  useEffect(() => {
+    // Skip auto-refresh on initial render
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Clear previous debounce
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      saveAndRefresh();
+    }, 1500);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sections]);
 
   // Load PDF preview on mount
   useEffect(() => {
@@ -47,6 +70,16 @@ export function PdfEditorView({
       setInitialLoadDone(true);
       loadPreview();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortRef.current) abortRef.current.abort();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (pdfUrl) window.URL.revokeObjectURL(pdfUrl);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -58,7 +91,6 @@ export function PdfEditorView({
       next[index] = { ...next[index], visible: !next[index].visible };
       return next;
     });
-    setHasChanges(true);
     setSaved(false);
   }, []);
 
@@ -69,7 +101,6 @@ export function PdfEditorView({
       [next[index - 1], next[index]] = [next[index], next[index - 1]];
       return next.map((s, i) => ({ ...s, order: i }));
     });
-    setHasChanges(true);
     setSaved(false);
   }, []);
 
@@ -80,13 +111,11 @@ export function PdfEditorView({
       [next[index], next[index + 1]] = [next[index + 1], next[index]];
       return next.map((s, i) => ({ ...s, order: i }));
     });
-    setHasChanges(true);
     setSaved(false);
   }, []);
 
   const resetToDefault = useCallback(() => {
     setSections(DEFAULT_PDF_SECTIONS.map(s => ({ ...s })));
-    setHasChanges(true);
     setSaved(false);
   }, []);
 
@@ -112,7 +141,6 @@ export function PdfEditorView({
         next.splice(targetIndex, 0, dragged);
         return next.map((s, i) => ({ ...s, order: i }));
       });
-      setHasChanges(true);
       setSaved(false);
     }
     setDraggedIndex(null);
@@ -126,7 +154,7 @@ export function PdfEditorView({
 
   // ─── Save + Load Preview ───
 
-  const saveConfig = async (): Promise<boolean> => {
+  const saveConfig = async (signal?: AbortSignal): Promise<boolean> => {
     const config: PdfConfig = {
       sections: sections.map((s, i) => ({ ...s, order: i })),
     };
@@ -134,6 +162,7 @@ export function PdfEditorView({
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pdf_config: config }),
+      signal,
     });
     if (!res.ok) {
       const data = await res.json();
@@ -142,7 +171,7 @@ export function PdfEditorView({
     return true;
   };
 
-  const loadPreview = async () => {
+  const loadPreview = async (signal?: AbortSignal) => {
     setPdfLoading(true);
     setError(null);
     try {
@@ -150,41 +179,53 @@ export function PdfEditorView({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ auswertung_id: auswertungId }),
+        signal,
       });
       if (!res.ok) throw new Error(`PDF-Fehler: ${res.status}`);
       const blob = await res.blob();
       if (blob.size === 0) throw new Error('PDF ist leer');
-      if (pdfUrl) window.URL.revokeObjectURL(pdfUrl);
-      setPdfUrl(window.URL.createObjectURL(blob));
+      setPdfUrl(prev => {
+        if (prev) window.URL.revokeObjectURL(prev);
+        return window.URL.createObjectURL(blob);
+      });
     } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       setError(err instanceof Error ? err.message : 'Fehler beim Laden');
     } finally {
       setPdfLoading(false);
     }
   };
 
-  // Save config → regenerate PDF → show preview
+  // Save config → regenerate PDF → show preview (auto-triggered)
   const saveAndRefresh = async () => {
+    // Abort any in-flight request
+    if (abortRef.current) abortRef.current.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setPdfLoading(true);
     setSaving(true);
     setError(null);
     try {
-      await saveConfig();
-      setHasChanges(false);
+      await saveConfig(controller.signal);
 
       const res = await fetch('/api/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ auswertung_id: auswertungId }),
+        signal: controller.signal,
       });
       if (!res.ok) throw new Error(`PDF-Fehler: ${res.status}`);
       const blob = await res.blob();
       if (blob.size === 0) throw new Error('PDF ist leer');
-      if (pdfUrl) window.URL.revokeObjectURL(pdfUrl);
-      setPdfUrl(window.URL.createObjectURL(blob));
+      setPdfUrl(prev => {
+        if (prev) window.URL.revokeObjectURL(prev);
+        return window.URL.createObjectURL(blob);
+      });
       setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      setTimeout(() => setSaved(false), 2000);
     } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
     } finally {
       setPdfLoading(false);
@@ -227,39 +268,38 @@ export function PdfEditorView({
               {error}
             </span>
           )}
-          {saved && (
+
+          {/* Auto-save status */}
+          {saving && (
+            <span className="text-xs text-blue-400 bg-blue-400/10 px-2.5 py-1 rounded-md flex items-center gap-1.5">
+              <Loader2 className="w-3 h-3 animate-spin" /> Speichert & aktualisiert...
+            </span>
+          )}
+          {saved && !saving && (
             <span className="text-xs text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-md flex items-center gap-1">
               <Check className="w-3 h-3" /> Gespeichert
             </span>
           )}
-          {hasChanges && !saved && (
-            <span className="text-xs text-yellow-400 bg-yellow-400/10 px-2.5 py-1 rounded-md">
-              Ungespeichert
-            </span>
-          )}
 
           <Button
-            onClick={saveAndRefresh}
-            disabled={pdfLoading || !hasChanges}
+            onClick={() => saveAndRefresh()}
+            disabled={pdfLoading}
             size="sm"
-            className="gap-1.5 bg-blue-600 hover:bg-blue-700 text-white"
+            variant="ghost"
+            className="gap-1.5 text-[#6B8AAD] hover:text-[#EDF1F5]"
+            title="Vorschau manuell aktualisieren"
           >
-            {pdfLoading
-              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              : <RefreshCw className="w-3.5 h-3.5" />
-            }
-            {pdfLoading ? 'Generiere...' : 'Speichern & Vorschau'}
+            <RefreshCw className={`w-3.5 h-3.5 ${pdfLoading ? 'animate-spin' : ''}`} />
           </Button>
 
           <Button
             onClick={downloadPdf}
             disabled={!pdfUrl || pdfLoading}
             size="sm"
-            variant="secondary"
-            className="gap-1.5"
+            className="gap-1.5 bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Download className="w-3.5 h-3.5" />
-            PDF
+            PDF herunterladen
           </Button>
         </div>
       </div>
@@ -270,9 +310,9 @@ export function PdfEditorView({
         {/* ─── LEFT: Section List ─── */}
         <div className="w-72 flex-shrink-0 bg-[#1A2535] border-r border-white/[0.08] flex flex-col overflow-hidden">
           <div className="px-3 py-2.5 border-b border-white/[0.08] bg-[#162636]/60">
-            <h2 className="text-xs font-bold text-[#EDF1F5]">Sektionen</h2>
+            <h2 className="text-xs font-bold text-[#EDF1F5]">Sektionen verschieben</h2>
             <p className="text-[10px] text-[#6B8AAD] mt-0.5">
-              {visibleCount} sichtbar{hiddenCount > 0 ? ` · ${hiddenCount} ausgeblendet` : ''} — Drag & Drop zum Verschieben
+              {visibleCount} sichtbar{hiddenCount > 0 ? ` · ${hiddenCount} ausgeblendet` : ''} — PDF aktualisiert automatisch
             </p>
           </div>
 
@@ -296,6 +336,8 @@ export function PdfEditorView({
                 `}
               >
                 <GripVertical className="w-3 h-3 text-[#3D5167] flex-shrink-0" />
+
+                <span className="text-[10px] text-[#4A6580] font-mono w-4 flex-shrink-0">{index + 1}</span>
 
                 <span className={`flex-1 text-[11px] leading-tight truncate ${section.visible ? 'text-[#EDF1F5]' : 'text-[#6B8AAD] line-through'}`}>
                   {section.label}
@@ -368,7 +410,7 @@ export function PdfEditorView({
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center">
               <p className="text-sm text-[#6B8AAD]">Vorschau konnte nicht geladen werden</p>
-              <Button onClick={loadPreview} size="sm" variant="secondary" className="gap-1.5">
+              <Button onClick={() => loadPreview()} size="sm" variant="secondary" className="gap-1.5">
                 <RefreshCw className="w-3.5 h-3.5" />
                 Erneut versuchen
               </Button>
