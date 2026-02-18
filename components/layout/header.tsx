@@ -14,9 +14,6 @@ export function Header({ onMenuToggle }: HeaderProps) {
       >
         <Menu className="w-5 h-5" />
       </button>
-      <h2 className="text-[15px] font-semibold text-[#EDF1F5] tracking-[-0.01em]">
-        Imperoyal Immobilien
-      </h2>
     </header>
   );
 }

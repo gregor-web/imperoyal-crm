@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Pagination } from '@/components/ui/pagination';
 import { formatDate, formatCurrency } from '@/lib/formatters';
+import { ObjektMapThumbnail } from '@/components/maps/objekt-map-thumbnail';
 
 interface Objekt {
   id: string;
@@ -54,27 +55,23 @@ function gradientFor(id: string) {
 // ─── Single Property Card (Grid) ─────────────────────────────────────────────
 function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?: boolean }) {
   const totalEinheiten = (objekt.wohneinheiten || 0) + (objekt.gewerbeeinheiten || 0);
-  const gradient = gradientFor(objekt.id);
 
   return (
     <Link href={`/objekte/${objekt.id}`} className="group block">
       <div className="bg-[#1E2A3A] rounded-2xl overflow-hidden border border-white/[0.07] hover:border-[#5B7A9D]/50 hover:shadow-[0_8px_32px_rgba(0,0,0,0.45)] transition-all duration-200">
-        {/* Card Image Area */}
-        <div className={`relative h-44 bg-gradient-to-br ${gradient} overflow-hidden`}>
-          {/* Background pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-4 right-4 w-32 h-32 border border-white/30 rounded-full" />
-            <div className="absolute -bottom-8 -left-8 w-40 h-40 border border-white/20 rounded-full" />
-          </div>
+        {/* Card Map Area */}
+        <div className="relative h-44 overflow-hidden">
+          <ObjektMapThumbnail
+            address={`${objekt.strasse}, ${objekt.plz} ${objekt.ort}`}
+            className="absolute inset-0 w-full h-full"
+          />
 
-          {/* Building icon centered */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Building2 className="w-16 h-16 text-white/10 group-hover:text-white/15 transition-colors" />
-          </div>
+          {/* Darkening overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
 
           {/* Price overlay bottom-left */}
-          <div className="absolute bottom-0 left-0 right-0 px-4 py-3 bg-gradient-to-t from-black/60 to-transparent">
-            <p className="text-white font-bold text-lg tracking-[-0.02em] leading-tight">
+          <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
+            <p className="text-white font-bold text-lg tracking-[-0.02em] leading-tight drop-shadow-lg">
               {formatCurrency(objekt.kaufpreis)}
             </p>
           </div>
