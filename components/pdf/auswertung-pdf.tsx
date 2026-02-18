@@ -16,18 +16,29 @@ import type { Berechnungen } from '@/lib/types';
 import { getZinsaenderungHinweis, getMietvertragsartZusammenfassung, MIETVERTRAGSART_HINWEISE } from '@/lib/erlaeuterungen';
 
 // ─── Font Registration ─────────────────────────────────────
-// Use file system path for server-side rendering (Vercel serverless)
-// Fallback to HTTP URL for client-side preview
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+import path from 'path';
+import fs from 'fs';
 
-// On Vercel serverless, fonts must be loaded via HTTP from the deployed URL
-// process.cwd() doesn't reliably contain public/ assets on Vercel
+// Load fonts from filesystem (works reliably on Vercel serverless)
+const fontsDir = path.join(process.cwd(), 'public', 'fonts');
+
+const loadFont = (filename: string): string => {
+  const filePath = path.join(fontsDir, filename);
+  if (fs.existsSync(filePath)) {
+    const buffer = fs.readFileSync(filePath);
+    return `data:font/truetype;base64,${buffer.toString('base64')}`;
+  }
+  // Fallback to URL (trim to avoid trailing spaces)
+  const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').trim();
+  return `${APP_URL}/fonts/${filename}`;
+};
+
 Font.register({
   family: 'Playfair Display',
   fonts: [
-    { src: `${APP_URL}/fonts/PlayfairDisplay-Regular.ttf`, fontWeight: 400 },
-    { src: `${APP_URL}/fonts/PlayfairDisplay-SemiBold.ttf`, fontWeight: 600 },
-    { src: `${APP_URL}/fonts/PlayfairDisplay-Bold.ttf`, fontWeight: 700 },
+    { src: loadFont('PlayfairDisplay-Regular.ttf'), fontWeight: 400 },
+    { src: loadFont('PlayfairDisplay-SemiBold.ttf'), fontWeight: 600 },
+    { src: loadFont('PlayfairDisplay-Bold.ttf'), fontWeight: 700 },
   ],
 });
 
