@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { formatDate, formatCurrency } from '@/lib/formatters';
+import { formatDate, formatDateTime, formatCurrency } from '@/lib/formatters';
 import { Eye, CheckCircle, Clock, Heart, Phone, Mail, CreditCard } from 'lucide-react';
 import { StartAnalyseButton } from '@/components/anfragen/start-analyse-button';
 
@@ -160,7 +160,7 @@ export default async function AnfragenPage() {
                     <TableCell>
                       <div className="flex items-center gap-1.5">
                           <CreditCard className="w-3.5 h-3.5 text-[#34C759]" />
-                        <span className="text-sm text-[#34C759]">{formatDate(anfrage.paid_at)}</span>
+                        <span className="text-sm text-[#34C759]">{formatDateTime(anfrage.paid_at)}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -223,7 +223,7 @@ export default async function AnfragenPage() {
                     <TableCell>
                       <Badge variant="warning">Zahlung ausstehend</Badge>
                     </TableCell>
-                    <TableCell>{formatDate(anfrage.created_at)}</TableCell>
+                    <TableCell>{formatDateTime(anfrage.created_at)}</TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
                         <Link href={`/objekte/${objekt?.id}`}>
@@ -295,7 +295,7 @@ export default async function AnfragenPage() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>{formatDate(interesse.created_at)}</TableCell>
+                    <TableCell>{formatDateTime(interesse.created_at)}</TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
                         <Link href={`/objekte/${objekt?.id}`}>
@@ -350,7 +350,7 @@ export default async function AnfragenPage() {
                         {anfrage.status === 'versendet' ? 'Versendet' : 'Fertig'}
                       </Badge>
                     </TableCell>
-                    <TableCell>{formatDate(anfrage.created_at)}</TableCell>
+                    <TableCell>{formatDateTime(anfrage.created_at)}</TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
                         <Link href={`/objekte/${objekt?.id}`}>

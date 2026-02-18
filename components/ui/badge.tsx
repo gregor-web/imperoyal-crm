@@ -60,7 +60,7 @@ export function StatusBadge({ status }: { status: 'offen' | 'bezahlt' | 'in_bear
     in_bearbeitung: 'In Bearbeitung',
     fertig: 'Fertig',
     versendet: 'Versendet',
-    erstellt: 'Eingereicht',
+    erstellt: 'Analysiert',
     abgeschlossen: 'Abgeschlossen',
   };
 

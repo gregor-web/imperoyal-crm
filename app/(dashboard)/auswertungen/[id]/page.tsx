@@ -12,9 +12,10 @@ import {
   ArrowLeft, TrendingUp, TrendingDown, Banknote, Home, AlertTriangle,
   CheckCircle, CheckCircle2, Download, Clock, Building2, Shield,
   PieChart, BarChart3, ArrowUpRight, ArrowDownRight, Minus, Info,
-  MapPin,
+  MapPin, FileBarChart,
 } from 'lucide-react';
 import { SendEmailButton } from '@/components/send-email-button';
+import { OptimizedPdfButton } from '@/components/optimized-pdf-button';
 import { DynamicLageplanMap as LageplanMap } from '@/components/maps/lageplan-map-dynamic';
 
 interface Props {
@@ -196,16 +197,18 @@ export default async function AuswertungDetailPage({ params }: Props) {
             {auswertung.status === 'abgeschlossen' ? (
               <><CheckCircle2 className="w-3 h-3" /> Abgeschlossen</>
             ) : (
-              <><Clock className="w-3 h-3" /> Eingereicht</>
+              <><FileBarChart className="w-3 h-3" /> Analysiert</>
             )}
           </Badge>
-          {auswertung.pdf_url && (
+          {auswertung.pdf_url ? (
             <a href={auswertung.pdf_url} target="_blank" rel="noopener noreferrer">
               <Button variant="secondary" className="gap-2">
                 <Download className="w-4 h-4" />PDF ansehen
               </Button>
             </a>
-          )}
+          ) : isAdmin ? (
+            <OptimizedPdfButton auswertungId={id} />
+          ) : null}
           {isAdmin && <SendEmailButton auswertungId={id} status={auswertung.status} />}
         </div>
       </div>
