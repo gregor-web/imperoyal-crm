@@ -944,9 +944,6 @@ export function AuswertungPDF({
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
           <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, fontFamily: 'Helvetica-Bold' }}>Optimierungsprotokoll</Text>
           <View style={{ textAlign: 'right' }}>
-            <Text style={{ fontSize: 9, color: colors.textMuted, marginBottom: 2 }}>
-              {new Date(created_at).toLocaleDateString('de-DE')}
-            </Text>
             <Text style={styles.objektLabel}>Objekt</Text>
             <Text style={styles.objektAddress}>{objekt.strasse}</Text>
             <Text style={styles.objektAddress}>{objekt.plz} {objekt.ort}</Text>
