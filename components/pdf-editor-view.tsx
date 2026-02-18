@@ -5,133 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   GripVertical, Eye, EyeOff, Save, RotateCcw, Loader2, Check,
-  ArrowLeft, Download, FileText,
-  Building2, Banknote, TrendingUp, PieChart, BarChart3,
-  Table2, LineChart, Wrench, Home, Calculator, Target,
-  DoorOpen, Award, BookOpen,
+  ChevronUp, ChevronDown, ArrowLeft, RefreshCw, Download,
 } from 'lucide-react';
-import type { PdfSectionItem, PdfConfig, PdfSectionId } from '@/lib/types';
+import type { PdfSectionItem, PdfConfig } from '@/lib/types';
 import { DEFAULT_PDF_SECTIONS } from '@/lib/types';
-
-// ─── Section visual metadata ───
-
-interface SectionMeta {
-  icon: React.ElementType;
-  color: string;
-  description: string;
-  pageHint: string;
-}
-
-const SECTION_META: Record<PdfSectionId, SectionMeta> = {
-  steckbrief:      { icon: Building2,   color: '#3B82F6', description: 'Objektdaten, Potenzial, Kennzahlen, Beleihung & Marktdaten', pageHint: 'Tabellen & Kennzahlen' },
-  finanzierung:    { icon: Banknote,    color: '#22C55E', description: 'Eigenkapital, Fremdkapital, Zinssatz, Tilgung, Kapitaldienst', pageHint: 'Tabelle' },
-  ertrag:          { icon: TrendingUp,  color: '#3B82F6', description: 'Mieteinnahmen IST vs. SOLL pro Nutzungsart', pageHint: 'Tabelle & Balkendiagramm' },
-  cashflow:        { icon: BarChart3,   color: '#8B5CF6', description: 'Cashflow IST & Optimiert, Einnahmen vs. Ausgaben', pageHint: 'Tabelle' },
-  kosten:          { icon: PieChart,    color: '#F59E0B', description: 'Betriebskosten, Instandhaltung, Verwaltung, Rücklagen', pageHint: 'Tabelle & Tortendiagramm' },
-  mieterhohung:    { icon: Table2,      color: '#EF4444', description: 'Mieterhöhungspotenzial pro Einheit nach §558 BGB', pageHint: 'Detailtabelle' },
-  cashflow_chart:  { icon: BarChart3,   color: '#22C55E', description: 'Visueller Vergleich: Cashflow IST vs. Optimiert', pageHint: 'Balkendiagramm' },
-  wertentwicklung: { icon: LineChart,   color: '#06B6D4', description: 'Wertprognose 3, 5, 7, 10 Jahre bei 2,5% p.a.', pageHint: 'Liniendiagramm' },
-  capex:           { icon: Wrench,      color: '#F97316', description: 'Investitionen & Modernisierungsumlage nach §559 BGB', pageHint: 'Tabelle' },
-  weg:             { icon: Home,        color: '#A855F7', description: 'WEG-Aufteilungspotenzial & Genehmigungslage', pageHint: 'Tabelle & Vergleich' },
-  afa:             { icon: Calculator,  color: '#64748B', description: 'Restnutzungsdauer, AfA-Höhe, Steuerersparnis', pageHint: 'Tabelle' },
-  roi:             { icon: Target,      color: '#10B981', description: 'ROI heute, optimiert, nach WEG-Aufteilung', pageHint: 'Balkendiagramm' },
-  exit:            { icon: DoorOpen,    color: '#EC4899', description: 'Verkaufserlös-Szenarien nach 3, 7, 10 Jahren', pageHint: 'Balkendiagramm' },
-  empfehlung:      { icon: Award,       color: '#F59E0B', description: 'KI-Empfehlung, Handlungsschritte, Chancen & Risiken', pageHint: 'Text & Analyse' },
-  erlaeuterungen:  { icon: BookOpen,    color: '#6B7280', description: 'Glossar und Erklärungen für alle Analyse-Punkte', pageHint: 'Text' },
-};
-
-// ─── Skeleton lines for visual hints ───
-
-function SkeletonContent({ type }: { type: string }) {
-  if (type.includes('Tabelle') && type.includes('Diagramm')) {
-    return (
-      <div className="flex gap-3 mt-2">
-        <div className="flex-1 space-y-1.5">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="flex gap-1">
-              <div className="h-2 bg-white/[0.06] rounded flex-[2]" />
-              <div className="h-2 bg-white/[0.04] rounded flex-1" />
-            </div>
-          ))}
-        </div>
-        <div className="w-16 h-12 bg-white/[0.04] rounded flex items-end justify-around px-1 pb-1">
-          <div className="w-2 bg-white/[0.08] rounded-t" style={{ height: '60%' }} />
-          <div className="w-2 bg-white/[0.08] rounded-t" style={{ height: '85%' }} />
-          <div className="w-2 bg-white/[0.08] rounded-t" style={{ height: '45%' }} />
-        </div>
-      </div>
-    );
-  }
-  if (type.includes('Tortendiagramm')) {
-    return (
-      <div className="flex gap-3 mt-2">
-        <div className="flex-1 space-y-1.5">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="flex gap-1">
-              <div className="h-2 bg-white/[0.06] rounded flex-[2]" />
-              <div className="h-2 bg-white/[0.04] rounded flex-1" />
-            </div>
-          ))}
-        </div>
-        <div className="w-12 h-12 rounded-full border-4 border-white/[0.08] border-t-white/[0.15]" />
-      </div>
-    );
-  }
-  if (type.includes('Balkendiagramm') || type.includes('Liniendiagramm')) {
-    return (
-      <div className="mt-2 h-14 bg-white/[0.03] rounded flex items-end justify-around px-2 pb-1.5">
-        {type.includes('Linie') ? (
-          <svg className="w-full h-10 text-white/[0.12]" viewBox="0 0 100 40">
-            <polyline
-              points="5,35 20,25 40,28 60,15 80,10 95,18"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-          </svg>
-        ) : (
-          <>
-            <div className="w-4 bg-white/[0.08] rounded-t" style={{ height: '55%' }} />
-            <div className="w-4 bg-white/[0.10] rounded-t" style={{ height: '80%' }} />
-            <div className="w-4 bg-white/[0.08] rounded-t" style={{ height: '40%' }} />
-            <div className="w-4 bg-white/[0.06] rounded-t" style={{ height: '65%' }} />
-          </>
-        )}
-      </div>
-    );
-  }
-  if (type.includes('Detailtabelle')) {
-    return (
-      <div className="mt-2 space-y-1">
-        <div className="flex gap-1">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-2 bg-white/[0.08] rounded flex-1" />
-          ))}
-        </div>
-        {[1, 2, 3, 4].map(i => (
-          <div key={i} className="flex gap-1">
-            {[1, 2, 3, 4].map(j => (
-              <div key={j} className="h-1.5 bg-white/[0.04] rounded flex-1" />
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  }
-  return (
-    <div className="mt-2 space-y-1.5">
-      {[1, 2, 3].map(i => (
-        <div key={i} className="flex gap-1">
-          <div className="h-2 bg-white/[0.06] rounded" style={{ width: `${50 + i * 15}%` }} />
-          <div className="h-2 bg-white/[0.04] rounded flex-1" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-
-// ─── Main Component ───
 
 interface PdfEditorViewProps {
   auswertungId: string;
@@ -147,7 +24,7 @@ export function PdfEditorView({
   mandantName,
 }: PdfEditorViewProps) {
   const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const [sections, setSections] = useState<PdfSectionItem[]>(
     () => initialConfig?.sections
@@ -157,55 +34,67 @@ export function PdfEditorView({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pdfDownloading, setPdfDownloading] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
 
-  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
-
+  // Load PDF preview on mount
   useEffect(() => {
-    return () => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    };
+    if (!initialLoadDone) {
+      setInitialLoadDone(true);
+      loadPreview();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ─── Section manipulation ───
 
-  const markChanged = useCallback(() => {
-    setHasChanges(true);
-    setSaved(false);
-  }, []);
-
-  const toggleVisibility = useCallback((e: React.MouseEvent, index: number) => {
-    e.stopPropagation();
+  const toggleVisibility = useCallback((index: number) => {
     setSections(prev => {
       const next = [...prev];
       next[index] = { ...next[index], visible: !next[index].visible };
       return next;
     });
-    markChanged();
-  }, [markChanged]);
+    setHasChanges(true);
+    setSaved(false);
+  }, []);
+
+  const moveUp = useCallback((index: number) => {
+    if (index === 0) return;
+    setSections(prev => {
+      const next = [...prev];
+      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+      return next.map((s, i) => ({ ...s, order: i }));
+    });
+    setHasChanges(true);
+    setSaved(false);
+  }, []);
+
+  const moveDown = useCallback((index: number) => {
+    setSections(prev => {
+      if (index >= prev.length - 1) return prev;
+      const next = [...prev];
+      [next[index], next[index + 1]] = [next[index + 1], next[index]];
+      return next.map((s, i) => ({ ...s, order: i }));
+    });
+    setHasChanges(true);
+    setSaved(false);
+  }, []);
 
   const resetToDefault = useCallback(() => {
     setSections(DEFAULT_PDF_SECTIONS.map(s => ({ ...s })));
-    markChanged();
-  }, [markChanged]);
+    setHasChanges(true);
+    setSaved(false);
+  }, []);
 
   // ─── Drag and Drop ───
 
   const handleDragStart = useCallback((e: React.DragEvent, index: number) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = 'move';
-    const el = e.currentTarget as HTMLElement;
-    const ghost = el.cloneNode(true) as HTMLElement;
-    ghost.style.opacity = '0.6';
-    ghost.style.position = 'absolute';
-    ghost.style.top = '-1000px';
-    document.body.appendChild(ghost);
-    e.dataTransfer.setDragImage(ghost, 0, 0);
-    setTimeout(() => document.body.removeChild(ghost), 0);
   }, []);
 
   const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
@@ -223,98 +112,102 @@ export function PdfEditorView({
         next.splice(targetIndex, 0, dragged);
         return next.map((s, i) => ({ ...s, order: i }));
       });
-      markChanged();
+      setHasChanges(true);
+      setSaved(false);
     }
     setDraggedIndex(null);
     setDragOverIndex(null);
-  }, [draggedIndex, markChanged]);
+  }, [draggedIndex]);
 
   const handleDragEnd = useCallback(() => {
     setDraggedIndex(null);
     setDragOverIndex(null);
   }, []);
 
-  // ─── Save config to DB ───
+  // ─── Save + Load Preview ───
 
-  const saveConfig = async () => {
-    setSaving(true);
-    setError(null);
-    try {
-      const config: PdfConfig = {
-        sections: sections.map((s, i) => ({ ...s, order: i })),
-      };
-
-      const response = await fetch(`/api/auswertung/${auswertungId}/pdf-config`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pdf_config: config }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Fehler beim Speichern');
-      }
-
-      setHasChanges(false);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
-    } finally {
-      setSaving(false);
+  const saveConfig = async (): Promise<boolean> => {
+    const config: PdfConfig = {
+      sections: sections.map((s, i) => ({ ...s, order: i })),
+    };
+    const res = await fetch(`/api/auswertung/${auswertungId}/pdf-config`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pdf_config: config }),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || 'Fehler beim Speichern');
     }
+    return true;
   };
 
-  // ─── Download PDF ───
-
-  const downloadPdf = async () => {
-    setPdfDownloading(true);
+  const loadPreview = async () => {
+    setPdfLoading(true);
     setError(null);
     try {
-      if (hasChanges) {
-        const config: PdfConfig = {
-          sections: sections.map((s, i) => ({ ...s, order: i })),
-        };
-        const saveRes = await fetch(`/api/auswertung/${auswertungId}/pdf-config`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pdf_config: config }),
-        });
-        if (!saveRes.ok) throw new Error('Fehler beim Speichern');
-        setHasChanges(false);
-      }
-
-      const response = await fetch('/api/pdf', {
+      const res = await fetch('/api/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ auswertung_id: auswertungId }),
       });
+      if (!res.ok) throw new Error(`PDF-Fehler: ${res.status}`);
+      const blob = await res.blob();
+      if (blob.size === 0) throw new Error('PDF ist leer');
+      if (pdfUrl) window.URL.revokeObjectURL(pdfUrl);
+      setPdfUrl(window.URL.createObjectURL(blob));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Fehler beim Laden');
+    } finally {
+      setPdfLoading(false);
+    }
+  };
 
-      if (!response.ok) throw new Error('Fehler bei PDF-Generierung');
+  // Save config → regenerate PDF → show preview
+  const saveAndRefresh = async () => {
+    setPdfLoading(true);
+    setSaving(true);
+    setError(null);
+    try {
+      await saveConfig();
+      setHasChanges(false);
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Auswertung-${auswertungId.slice(0, 8)}.pdf`;
-      a.click();
-      window.URL.revokeObjectURL(url);
+      const res = await fetch('/api/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ auswertung_id: auswertungId }),
+      });
+      if (!res.ok) throw new Error(`PDF-Fehler: ${res.status}`);
+      const blob = await res.blob();
+      if (blob.size === 0) throw new Error('PDF ist leer');
+      if (pdfUrl) window.URL.revokeObjectURL(pdfUrl);
+      setPdfUrl(window.URL.createObjectURL(blob));
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
     } finally {
-      setPdfDownloading(false);
+      setPdfLoading(false);
+      setSaving(false);
     }
   };
 
-  const visibleSections = sections.filter(s => s.visible);
-  const hiddenSections = sections.filter(s => !s.visible);
+  // Download current PDF
+  const downloadPdf = () => {
+    if (!pdfUrl) return;
+    const a = document.createElement('a');
+    a.href = pdfUrl;
+    a.download = `Auswertung-${auswertungId.slice(0, 8)}.pdf`;
+    a.click();
+  };
+
+  const visibleCount = sections.filter(s => s.visible).length;
+  const hiddenCount = sections.length - visibleCount;
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0B1320] flex flex-col">
       {/* ===== TOP BAR ===== */}
-      <div className="flex items-center justify-between px-5 py-3 bg-[#162636] border-b border-white/[0.08] flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-[#162636] border-b border-white/[0.08] flex-shrink-0">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push(`/auswertungen/${auswertungId}`)}
@@ -323,7 +216,7 @@ export function PdfEditorView({
             <ArrowLeft className="w-5 h-5 text-[#6B8AAD]" />
           </button>
           <div>
-            <h1 className="text-sm font-bold text-[#EDF1F5]">PDF-Layout bearbeiten</h1>
+            <h1 className="text-sm font-bold text-[#EDF1F5]">PDF-Editor</h1>
             <p className="text-xs text-[#6B8AAD]">{objektLabel} · {mandantName}</p>
           </div>
         </div>
@@ -344,167 +237,145 @@ export function PdfEditorView({
               Ungespeichert
             </span>
           )}
+
           <Button
-            onClick={resetToDefault}
-            variant="ghost"
+            onClick={saveAndRefresh}
+            disabled={pdfLoading || !hasChanges}
             size="sm"
-            className="gap-1.5 text-[#6B8AAD] hover:text-[#EDF1F5]"
+            className="gap-1.5 bg-blue-600 hover:bg-blue-700 text-white"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Zurücksetzen
+            {pdfLoading
+              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              : <RefreshCw className="w-3.5 h-3.5" />
+            }
+            {pdfLoading ? 'Generiere...' : 'Speichern & Vorschau'}
           </Button>
+
           <Button
-            onClick={saveConfig}
-            disabled={saving || !hasChanges}
+            onClick={downloadPdf}
+            disabled={!pdfUrl || pdfLoading}
             size="sm"
             variant="secondary"
             className="gap-1.5"
           >
-            {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-            Speichern
-          </Button>
-          <Button
-            onClick={downloadPdf}
-            disabled={pdfDownloading}
-            size="sm"
-            className="gap-1.5 bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            {pdfDownloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-            {pdfDownloading ? 'Generiere...' : 'PDF herunterladen'}
+            <Download className="w-3.5 h-3.5" />
+            PDF
           </Button>
         </div>
       </div>
 
-      {/* ===== VISUAL EDITOR ===== */}
-      <div ref={containerRef} className="flex-1 overflow-auto">
-        <div className="max-w-4xl mx-auto py-8 px-6">
-          {/* Cover page hint */}
-          <div className="mb-4 flex items-center gap-2 text-xs text-[#3D5167]">
-            <FileText className="w-3.5 h-3.5" />
-            <span>Deckblatt wird automatisch generiert</span>
-          </div>
+      {/* ===== SPLIT VIEW ===== */}
+      <div className="flex flex-1 overflow-hidden">
 
-          {/* Instructions */}
-          <div className="mb-6 bg-[#1A2535]/60 border border-white/[0.06] rounded-xl px-4 py-3 flex items-center gap-3">
-            <GripVertical className="w-4 h-4 text-[#3D5167]" />
-            <p className="text-xs text-[#6B8AAD]">
-              <span className="text-[#EDF1F5] font-medium">Sektionen per Drag & Drop verschieben</span>{' '}
-              — Klicke auf das Auge-Symbol um eine Sektion ein-/auszublenden
+        {/* ─── LEFT: Section List ─── */}
+        <div className="w-72 flex-shrink-0 bg-[#1A2535] border-r border-white/[0.08] flex flex-col overflow-hidden">
+          <div className="px-3 py-2.5 border-b border-white/[0.08] bg-[#162636]/60">
+            <h2 className="text-xs font-bold text-[#EDF1F5]">Sektionen</h2>
+            <p className="text-[10px] text-[#6B8AAD] mt-0.5">
+              {visibleCount} sichtbar{hiddenCount > 0 ? ` · ${hiddenCount} ausgeblendet` : ''} — Drag & Drop zum Verschieben
             </p>
           </div>
 
-          {/* ─── Sections (draggable cards) ─── */}
-          <div className="space-y-3">
-            {sections.map((section, index) => {
-              const meta = SECTION_META[section.id];
-              const Icon = meta.icon;
-              const isDragged = draggedIndex === index;
-              const isDragOver = dragOverIndex === index;
+          <div className="flex-1 overflow-y-auto p-1.5 space-y-0.5">
+            {sections.map((section, index) => (
+              <div
+                key={section.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragEnd={handleDragEnd}
+                className={`
+                  group flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all cursor-grab active:cursor-grabbing select-none
+                  ${section.visible
+                    ? 'bg-[#253546]/70 border border-white/[0.06] hover:border-white/[0.12]'
+                    : 'bg-[#1A2535]/40 border border-white/[0.03] opacity-50 hover:opacity-70'
+                  }
+                  ${dragOverIndex === index ? 'ring-2 ring-blue-500/50 bg-blue-500/10' : ''}
+                  ${draggedIndex === index ? 'opacity-20 scale-95' : ''}
+                `}
+              >
+                <GripVertical className="w-3 h-3 text-[#3D5167] flex-shrink-0" />
 
-              return (
-                <div
-                  key={section.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, index)}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDrop={(e) => handleDrop(e, index)}
-                  onDragEnd={handleDragEnd}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  className={`
-                    group relative rounded-xl border transition-all duration-200 cursor-grab active:cursor-grabbing select-none
-                    ${section.visible
-                      ? 'bg-[#1E2A3A]/90 border-white/[0.08] hover:border-white/[0.15]'
-                      : 'bg-[#141E2A]/60 border-white/[0.04] border-dashed'
-                    }
-                    ${isDragged ? 'opacity-20 scale-[0.98]' : ''}
-                    ${isDragOver ? 'ring-2 ring-blue-500/40 border-blue-500/40 scale-[1.01]' : ''}
-                  `}
-                >
-                  {isDragOver && draggedIndex !== null && draggedIndex !== index && (
-                    <div className="absolute -top-1.5 left-4 right-4 h-0.5 bg-blue-500 rounded-full" />
-                  )}
+                <span className={`flex-1 text-[11px] leading-tight truncate ${section.visible ? 'text-[#EDF1F5]' : 'text-[#6B8AAD] line-through'}`}>
+                  {section.label}
+                </span>
 
-                  <div className={`flex items-start gap-4 p-4 ${!section.visible ? 'opacity-40' : ''}`}>
-                    <div className="flex flex-col items-center gap-1 pt-0.5">
-                      <GripVertical className="w-5 h-5 text-[#3D5167] group-hover:text-[#6B8AAD] transition-colors" />
-                    </div>
-
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: `${meta.color}15` }}
-                    >
-                      <Icon className="w-5 h-5" style={{ color: meta.color }} />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className={`text-sm font-bold ${section.visible ? 'text-[#EDF1F5]' : 'text-[#6B8AAD] line-through'}`}>
-                          {section.label}
-                        </h3>
-                        <span
-                          className="text-[10px] font-medium px-1.5 py-0.5 rounded"
-                          style={{
-                            backgroundColor: `${meta.color}15`,
-                            color: meta.color,
-                          }}
-                        >
-                          {meta.pageHint}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#5A7A99] mt-0.5 leading-relaxed">
-                        {meta.description}
-                      </p>
-
-                      {section.visible && (
-                        <SkeletonContent type={meta.pageHint} />
-                      )}
-                    </div>
-
-                    <button
-                      onClick={(e) => toggleVisibility(e, index)}
-                      className={`
-                        p-2 rounded-lg transition-all flex-shrink-0
-                        ${hoveredIndex === index || !section.visible
-                          ? 'opacity-100'
-                          : 'opacity-0 group-hover:opacity-100'
-                        }
-                        ${section.visible
-                          ? 'hover:bg-white/[0.06] text-emerald-400'
-                          : 'hover:bg-white/[0.06] text-[#5A7A99]'
-                        }
-                      `}
-                      title={section.visible ? 'Sektion ausblenden' : 'Sektion einblenden'}
-                    >
-                      {section.visible ? (
-                        <Eye className="w-5 h-5" />
-                      ) : (
-                        <EyeOff className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-
-                  {!section.visible && (
-                    <div className="absolute inset-0 rounded-xl flex items-center justify-center pointer-events-none">
-                      <span className="text-xs text-[#5A7A99] bg-[#141E2A]/80 px-3 py-1 rounded-full">
-                        Ausgeblendet
-                      </span>
-                    </div>
-                  )}
+                <div className="flex items-center gap-px flex-shrink-0">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); moveUp(index); }}
+                    disabled={index === 0}
+                    className="p-0.5 hover:bg-white/[0.06] rounded disabled:opacity-20"
+                  >
+                    <ChevronUp className="w-3 h-3 text-[#6B8AAD]" />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); moveDown(index); }}
+                    disabled={index === sections.length - 1}
+                    className="p-0.5 hover:bg-white/[0.06] rounded disabled:opacity-20"
+                  >
+                    <ChevronDown className="w-3 h-3 text-[#6B8AAD]" />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleVisibility(index); }}
+                    className="p-0.5 hover:bg-white/[0.06] rounded ml-0.5"
+                    title={section.visible ? 'Ausblenden' : 'Einblenden'}
+                  >
+                    {section.visible ? (
+                      <Eye className="w-3 h-3 text-emerald-400" />
+                    ) : (
+                      <EyeOff className="w-3 h-3 text-[#6B8AAD]" />
+                    )}
+                  </button>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
-          {/* ─── Summary ─── */}
-          <div className="mt-8 mb-12 flex items-center justify-between text-xs text-[#3D5167] px-2">
-            <span>
-              {visibleSections.length} Sektionen sichtbar
-              {hiddenSections.length > 0 && ` · ${hiddenSections.length} ausgeblendet`}
-            </span>
-            <span>Deckblatt + {visibleSections.length} Sektionen = ca. {visibleSections.length + 1} Seiten</span>
+          <div className="px-3 py-2 border-t border-white/[0.08] bg-[#162636]/60">
+            <button
+              onClick={resetToDefault}
+              className="flex items-center gap-1.5 text-[11px] text-[#6B8AAD] hover:text-[#EDF1F5] transition-colors w-full justify-center py-1"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Standard wiederherstellen
+            </button>
           </div>
         </div>
+
+        {/* ─── RIGHT: PDF Preview ─── */}
+        <div className="flex-1 bg-[#0B1320] flex flex-col overflow-hidden">
+          {pdfLoading && !pdfUrl ? (
+            <div className="flex-1 flex flex-col items-center justify-center gap-3">
+              <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+              <p className="text-sm text-[#6B8AAD]">PDF wird geladen...</p>
+            </div>
+          ) : pdfUrl ? (
+            <div className="flex-1 relative">
+              {pdfLoading && (
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 bg-[#162636]/90 backdrop-blur-sm border border-white/[0.08] rounded-full px-4 py-1.5 flex items-center gap-2">
+                  <Loader2 className="w-3.5 h-3.5 text-blue-400 animate-spin" />
+                  <span className="text-xs text-[#6B8AAD]">Aktualisiere PDF...</span>
+                </div>
+              )}
+              <iframe
+                ref={iframeRef}
+                src={pdfUrl}
+                className="w-full h-full border-none"
+                title="PDF-Vorschau"
+              />
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center">
+              <p className="text-sm text-[#6B8AAD]">Vorschau konnte nicht geladen werden</p>
+              <Button onClick={loadPreview} size="sm" variant="secondary" className="gap-1.5">
+                <RefreshCw className="w-3.5 h-3.5" />
+                Erneut versuchen
+              </Button>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
