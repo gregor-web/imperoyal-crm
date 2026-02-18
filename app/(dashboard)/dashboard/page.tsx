@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
 import { EmpfehlungBadge } from '@/components/ui/badge';
+import { OptimizedPdfButton } from '@/components/optimized-pdf-button';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -16,7 +17,6 @@ import {
   Building2,
   ArrowRight,
   Heart,
-  Download,
   Eye,
   CreditCard,
 } from 'lucide-react';
@@ -533,12 +533,8 @@ async function MandantDashboardContent({ mandantId }: { mandantId?: string }) {
                             <Eye className="w-3.5 h-3.5 text-[#7A9BBD]" />
                           </button>
                         </Link>
-                        {a.pdf_url && (
-                          <a href={a.pdf_url} target="_blank" rel="noopener noreferrer">
-                            <button className="p-1.5 rounded hover:bg-[#253546] transition-colors" title="PDF herunterladen">
-                              <Download className="w-3.5 h-3.5 text-[#7A9BBD]" />
-                            </button>
-                          </a>
+                        {a.id && (
+                          <OptimizedPdfButton auswertungId={a.id} />
                         )}
                       </div>
                     </div>

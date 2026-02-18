@@ -5,12 +5,11 @@ import { createClient } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 import { Card } from '@/components/ui/card';
 import { EmpfehlungBadge, Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercent, formatDate } from '@/lib/formatters';
 import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
 import {
   ArrowLeft, TrendingUp, TrendingDown, Banknote, Home, AlertTriangle,
-  CheckCircle, CheckCircle2, Download, Clock, Building2, Shield,
+  CheckCircle, CheckCircle2, Clock, Building2, Shield,
   PieChart, BarChart3, ArrowUpRight, ArrowDownRight, Minus, Info,
   MapPin, FileBarChart,
 } from 'lucide-react';
@@ -200,15 +199,9 @@ export default async function AuswertungDetailPage({ params }: Props) {
               <><FileBarChart className="w-3 h-3" /> Analysiert</>
             )}
           </Badge>
-          {auswertung.pdf_url ? (
-            <a href={auswertung.pdf_url} target="_blank" rel="noopener noreferrer">
-              <Button variant="secondary" className="gap-2">
-                <Download className="w-4 h-4" />PDF ansehen
-              </Button>
-            </a>
-          ) : isAdmin ? (
+          {(auswertung.pdf_url || isAdmin) && (
             <OptimizedPdfButton auswertungId={id} />
-          ) : null}
+          )}
           {isAdmin && <SendEmailButton auswertungId={id} status={auswertung.status} />}
         </div>
       </div>

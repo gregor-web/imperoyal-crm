@@ -7,8 +7,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { FileBarChart, Clock, CheckCircle, Plus, Download, CreditCard, AlertCircle, TrendingUp, Zap } from 'lucide-react';
+import { FileBarChart, Clock, CheckCircle, Plus, CreditCard, AlertCircle, TrendingUp, Zap } from 'lucide-react';
 import { PaymentRetryButton } from '@/components/payment-retry-button';
+import { OptimizedPdfButton } from '@/components/optimized-pdf-button';
 import { getTierForMandant, PRICING_TIERS } from '@/lib/stripe';
 
 // Status config for display
@@ -279,13 +280,10 @@ export default async function MeineAnfragenPage() {
                           Auswertung ansehen
                         </Button>
                       </Link>
-                      {auswertungInfo.pdf_url && (
-                        <a href={auswertungInfo.pdf_url} target="_blank" rel="noopener noreferrer" className="flex-1">
-                          <Button variant="secondary" className="w-full gap-2">
-                            <Download className="w-4 h-4" />
-                            PDF herunterladen
-                          </Button>
-                        </a>
+                      {auswertungInfo && (
+                        <div className="flex-1">
+                          <OptimizedPdfButton auswertungId={auswertungInfo.id} />
+                        </div>
                       )}
                     </div>
                   )}
