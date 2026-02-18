@@ -1069,8 +1069,8 @@ export function AuswertungPDF({
                   <Text style={{ fontSize: 7, color: '#4ade80', marginBottom: 2 }}>
                     Wertzuwachs bei Aufteilung (+15%)
                   </Text>
-                  <Text style={{ fontSize: 6, color: weg.weg_genehmigung ? '#dc2626' : '#4ade80' }}>
-                    {weg.weg_genehmigung ? '⚠ Genehmigungspflichtig (Milieu-/Umwandlungsschutz)' : '✓ Keine Genehmigungshürden'}
+                  <Text style={{ fontSize: 6, color: weg.genehmigung_erforderlich ? '#dc2626' : '#4ade80' }}>
+                    {weg.genehmigung_erforderlich ? '⚠ Genehmigungspflichtig (Milieu-/Umwandlungsschutz)' : '✓ Keine Genehmigungshürden'}
                   </Text>
                 </View>
               )}
