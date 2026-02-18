@@ -49,11 +49,11 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       <div className={`relative w-full ${sizes[size]} glass-card rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[90vh] flex flex-col`}>
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/20 flex-shrink-0">
-            <h2 className="text-lg sm:text-xl font-semibold text-slate-800">{title}</h2>
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/[0.07] flex-shrink-0">
+            <h2 className="text-lg sm:text-xl font-semibold text-[#EDF1F5]">{title}</h2>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 text-[#6B8AAD] hover:text-[#EDF1F5] rounded-lg hover:bg-white/[0.06] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
               <X className="w-5 h-5" />
             </button>
@@ -92,12 +92,12 @@ export function ConfirmModal({
 }: ConfirmModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-      <p className="text-slate-600 mb-6">{message}</p>
+      <p className="text-[#9EAFC0] mb-6">{message}</p>
       <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 sm:justify-end">
         <button
           onClick={onClose}
           disabled={loading}
-          className="px-4 py-3 sm:py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors min-h-[44px] text-center"
+          className="px-4 py-3 sm:py-2 text-[#9EAFC0] hover:bg-white/[0.06] rounded-lg transition-colors min-h-[44px] text-center"
         >
           {cancelText}
         </button>

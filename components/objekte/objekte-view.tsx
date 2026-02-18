@@ -67,10 +67,10 @@ function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?:
           />
 
           {/* Darkening overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none z-[500]" />
 
           {/* Price overlay bottom-left */}
-          <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
+          <div className="absolute bottom-0 left-0 right-0 px-4 py-3 z-[501]">
             <p className="text-white font-bold text-lg tracking-[-0.02em] leading-tight drop-shadow-lg">
               {formatCurrency(objekt.kaufpreis)}
             </p>
@@ -78,7 +78,7 @@ function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?:
 
           {/* Type badge top-left */}
           {objekt.gebaeudetyp && (
-            <div className="absolute top-3 left-3">
+            <div className="absolute top-3 left-3 z-[501]">
               <span className="bg-black/40 backdrop-blur-sm text-white/90 text-[11px] font-medium px-2.5 py-1 rounded-lg border border-white/10">
                 {objekt.gebaeudetyp}
               </span>
@@ -87,7 +87,7 @@ function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?:
 
           {/* Auswertung badge top-right */}
           {hasAuswertung && (
-            <div className="absolute top-3 right-3">
+            <div className="absolute top-3 right-3 z-[501]">
               <span className="bg-[#16a34a]/80 backdrop-blur-sm text-white text-[11px] font-medium px-2.5 py-1 rounded-lg border border-[#22c55e]/30 flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" />
                 Ausgewertet
@@ -97,7 +97,7 @@ function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?:
 
           {/* Arrow top-right on hover (only when no auswertung badge) */}
           {!hasAuswertung && (
-            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-[501]">
               <div className="w-7 h-7 bg-[#5B7A9D] rounded-lg flex items-center justify-center">
                 <ArrowRight className="w-3.5 h-3.5 text-white" />
               </div>
