@@ -1566,9 +1566,40 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* ─── Seitenumbruch vor Mieterhöhungspotenzial ─── */}
+        {/* ─── Ende Seite: Sektionen 1-4, Start neue Seite für Mieterhöhungstabelle ─── */}
+
+        {/* Footer */}
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
+        </View>
+      </Page>
+
+      {/* ==================== PAGE 3: Mieterhöhungstabelle ==================== */}
+      <Page size="A4" style={styles.page}>
+        {/* Fixed Header */}
+        <View fixed style={{
+          position: 'absolute',
+          top: 12,
+          left: 25,
+          right: 25,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: 6,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        }}>
+          {logoUrl ? (
+            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+          ) : (
+            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.primary }}>Imperoyal Immobilien</Text>
+          )}
+        </View>
+
         {/* Section 5: Mieterhöhungspotenzial Table */}
-        <View style={[styles.sectionBox, { marginBottom: 6 }]} break>
+        <View style={[styles.sectionBox, { marginBottom: 6 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>5</Text>
             <Text style={styles.sectionTitle}>Mieterhöhungspotenzial (§558 gilt nur für Wohnraum)</Text>
@@ -1681,7 +1712,7 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 6 & 7 */}
-        <View style={styles.sectionRow}>
+        <View style={styles.sectionRow} wrap={false}>
           {/* Section 6: Cashflow IST vs. Optimiert */}
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
@@ -1814,8 +1845,8 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Section 8 & 9 - auf Seite 2 verschoben */}
-        <View style={styles.sectionRow}>
+        {/* Section 8 & 9 */}
+        <View style={styles.sectionRow} wrap={false}>
           {/* Section 8: CAPEX & §559 BGB */}
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
@@ -1886,9 +1917,40 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* ─── Seitenumbruch vor AfA & Exit ─── */}
+        {/* ─── Ende Seite, Start neue Seite für AfA & Exit ─── */}
+
+        {/* Footer */}
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
+        </View>
+      </Page>
+
+      {/* ==================== PAGE: AfA, ROI, Exit ==================== */}
+      <Page size="A4" style={styles.page}>
+        {/* Fixed Header */}
+        <View fixed style={{
+          position: 'absolute',
+          top: 12,
+          left: 25,
+          right: 25,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: 6,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        }}>
+          {logoUrl ? (
+            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+          ) : (
+            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.primary }}>Imperoyal Immobilien</Text>
+          )}
+        </View>
+
         {/* Section 10 & 11 */}
-        <View style={styles.sectionRow} break>
+        <View style={styles.sectionRow}>
           {/* Section 10: RND & AfA - Erweitert */}
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
@@ -2140,7 +2202,38 @@ export function AuswertungPDF({
           </Text>
         </View>
 
-        {/* ─── Seitenumbruch vor Zusammenfassung ─── */}
+        {/* ─── Ende Seite, Start neue Seite für Zusammenfassung & Empfehlung ─── */}
+
+        {/* Footer */}
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
+          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
+        </View>
+      </Page>
+
+      {/* ==================== PAGE: Zusammenfassung & Empfehlung ==================== */}
+      <Page size="A4" style={styles.page}>
+        {/* Fixed Header */}
+        <View fixed style={{
+          position: 'absolute',
+          top: 12,
+          left: 25,
+          right: 25,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: 6,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+        }}>
+          {logoUrl ? (
+            <Image src={logoUrl} style={{ width: 120, height: 30, objectFit: 'contain' }} />
+          ) : (
+            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: colors.primary }}>Imperoyal Immobilien</Text>
+          )}
+        </View>
+
         {/* Zusammenfassung: Wertsteigernde Maßnahmen */}
         <View style={{
           backgroundColor: colors.bgGreen,
@@ -2149,7 +2242,7 @@ export function AuswertungPDF({
           marginBottom: 12,
           borderWidth: 1,
           borderColor: colors.success,
-        }} break>
+        }}>
           <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.success, marginBottom: 10 }}>
             Zusammenfassung: Wertsteigernde Maßnahmen
           </Text>
