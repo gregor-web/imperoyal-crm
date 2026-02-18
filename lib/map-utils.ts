@@ -1,7 +1,7 @@
 /**
- * Generates a static map image using Mapbox Static Images API.
- * Clean style with buildings, streets, house numbers – no transit clutter.
- * Free tier: 50,000 requests/month.
+ * Generates a static map image using OpenStreetMap.
+ * Uses staticmap.openstreetmap.de – free, no API key required.
+ * Geocoding via Nominatim (OpenStreetMap).
  *
  * The crosshair marker (⊕) is rendered in React-PDF on top of this image.
  */
@@ -26,23 +26,17 @@ async function geocodeAddress(address: string): Promise<{ lat: number; lon: numb
 }
 
 /**
- * Fetch a static map image via Mapbox Static Images API.
- * Uses 'streets-v12' style – clean buildings, streets, house numbers.
+ * Fetch a static map image via OpenStreetMap Static Map API.
+ * Uses staticmap.openstreetmap.de – free, no API key needed.
  * Returns a base64 data URL or null on failure.
  */
 export async function fetchTopographicMap(
   strasse: string,
   plz: string,
   ort: string,
-  width = 1280,
-  height = 900,
+  width = 600,
+  height = 400,
 ): Promise<string | null> {
-  const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
-  if (!mapboxToken) {
-    console.warn('[MAP] MAPBOX_ACCESS_TOKEN not set');
-    return null;
-  }
-
   const address = `${strasse}, ${plz} ${ort}, Deutschland`;
 
   // Step 1: Geocode
@@ -53,36 +47,41 @@ export async function fetchTopographicMap(
   }
 
   const { lat, lon } = coords;
-  console.log(`[MAP] 📍 Geocoded: ${lat}, ${lon}`);
+  console.log(`[MAP] Geocoded: ${lat}, ${lon}`);
 
-  // Step 2: Mapbox Static Images API
-  // Zoom 18 = sehr nah (Gebäude + Hausnummern sichtbar)
-  // Style: streets-v12 (sauber, Gebäude, Straßen, keine prominenten Transitlinien)
-  // @2x für hohe Auflösung
-  const zoom = 18;
-  const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${lon},${lat},${zoom},0,0/${width}x${height}@2x?access_token=${mapboxToken}&attribution=false&logo=false`;
+  // Step 2: OpenStreetMap Static Map API
+  // Zoom 17 = nah genug für Gebäude + Straßennamen
+  // Max size: 1024x1024 bei staticmap.openstreetmap.de
+  const zoom = 17;
+  const clampedW = Math.min(width, 1024);
+  const clampedH = Math.min(height, 1024);
+
+  // Red marker at the location
+  const mapUrl = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lon}&zoom=${zoom}&size=${clampedW}x${clampedH}&maptype=mapnik&markers=${lat},${lon},red-pushpin`;
 
   try {
-    console.log('[MAP] 🌐 Fetching Mapbox static map...');
-    const res = await fetch(mapUrl);
+    console.log('[MAP] Fetching OSM static map...');
+    const res = await fetch(mapUrl, {
+      headers: { 'User-Agent': 'Imperoyal-System/1.0' },
+    });
 
     if (res.ok) {
       const contentType = res.headers.get('content-type') || '';
       if (contentType.includes('image')) {
         const buf = Buffer.from(await res.arrayBuffer());
         const format = contentType.includes('jpeg') ? 'jpeg' : 'png';
-        console.log(`[MAP] ✅ Mapbox map loaded: ${buf.length} bytes`);
+        console.log(`[MAP] OSM map loaded: ${buf.length} bytes`);
         return `data:image/${format};base64,${buf.toString('base64')}`;
       } else {
         const text = await res.text();
-        console.warn('[MAP] Mapbox returned non-image:', contentType, text.slice(0, 300));
+        console.warn('[MAP] OSM returned non-image:', contentType, text.slice(0, 300));
       }
     } else {
       const errText = await res.text();
-      console.warn(`[MAP] Mapbox returned status ${res.status}:`, errText.slice(0, 300));
+      console.warn(`[MAP] OSM returned status ${res.status}:`, errText.slice(0, 300));
     }
   } catch (err) {
-    console.warn('[MAP] Mapbox request failed:', err);
+    console.warn('[MAP] OSM request failed:', err);
   }
 
   return null;
