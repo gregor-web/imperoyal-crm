@@ -1469,24 +1469,9 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Footer - fixed prop ensures it appears on every page if content overflows */}
-        <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
-          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
-        </View>
-      </Page>
-
-      {/* ==================== PAGE 2 ==================== */}
-      <Page size="A4" style={styles.page}>
-        {/* Mini Header with Logo centered */}
-        <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 6 }}>
-          {logoUrl && (
-            <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
-          )}
-        </View>
+        {/* ─── Seitenumbruch vor Mieterhöhungspotenzial ─── */}
         {/* Section 5: Mieterhöhungspotenzial Table */}
-        <View style={[styles.sectionBox, { marginBottom: 6 }]}>
+        <View style={[styles.sectionBox, { marginBottom: 6 }]} break>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>5</Text>
             <Text style={styles.sectionTitle}>Mieterhöhungspotenzial (§558 gilt nur für Wohnraum)</Text>
@@ -1804,24 +1789,9 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Footer */}
-        <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
-          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
-        </View>
-      </Page>
-
-      {/* ==================== PAGE 3 ==================== */}
-      <Page size="A4" style={styles.page}>
-        {/* Mini Header with Logo centered */}
-        <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 6 }}>
-          {logoUrl && (
-            <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
-          )}
-        </View>
+        {/* ─── Seitenumbruch vor AfA & Exit ─── */}
         {/* Section 10 & 11 */}
-        <View style={styles.sectionRow}>
+        <View style={styles.sectionRow} break>
           {/* Section 10: RND & AfA - Erweitert */}
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
@@ -2073,22 +2043,7 @@ export function AuswertungPDF({
           </Text>
         </View>
 
-        {/* Footer */}
-        <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>Imperoyal Immobilien | Vertraulich</Text>
-          <Text style={styles.footerCenter}>www.imperoyal-immobilien.de</Text>
-          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
-        </View>
-      </Page>
-
-      {/* ==================== PAGE 4 ==================== */}
-      <Page size="A4" style={styles.page}>
-        {/* Mini Header with Logo centered */}
-        <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 6 }}>
-          {logoUrl && (
-            <Image src={logoUrl} style={{ width: 140, height: 35, objectFit: 'contain' }} />
-          )}
-        </View>
+        {/* ─── Seitenumbruch vor Zusammenfassung ─── */}
         {/* Zusammenfassung: Wertsteigernde Maßnahmen */}
         <View style={{
           backgroundColor: colors.bgGreen,
@@ -2097,7 +2052,7 @@ export function AuswertungPDF({
           marginBottom: 12,
           borderWidth: 1,
           borderColor: colors.success,
-        }}>
+        }} break>
           <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.success, marginBottom: 10 }}>
             Zusammenfassung: Wertsteigernde Maßnahmen
           </Text>
