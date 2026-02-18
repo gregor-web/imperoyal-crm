@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Loader2 } from 'lucide-react';
+import { FileText, Loader2 } from 'lucide-react';
 
 interface OptimizedPdfButtonProps {
   auswertungId: string;
@@ -51,17 +51,12 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
       if (blob.size === 0) throw new Error('PDF ist leer');
 
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.style.display = 'none';
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
+      window.open(url, '_blank');
 
+      // Revoke after a delay to allow the tab to load
       setTimeout(() => {
-        document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-      }, 1000);
+      }, 60000);
     } catch (err) {
       console.error('[PDF-Export] Error:', err);
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
@@ -81,9 +76,9 @@ export function OptimizedPdfButton({ auswertungId }: OptimizedPdfButtonProps) {
         {loading ? (
           <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
-          <Download className="w-4 h-4" />
+          <FileText className="w-4 h-4" />
         )}
-        {loading ? 'Generiere PDF...' : 'PDF herunterladen'}
+        {loading ? 'Generiere PDF...' : 'PDF öffnen'}
       </Button>
       {error && (
         <p className="text-red-500 text-xs mt-1">{error}</p>
