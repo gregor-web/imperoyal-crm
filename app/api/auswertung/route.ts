@@ -250,7 +250,7 @@ export async function POST(request: NextRequest) {
             'anthropic-version': '2023-06-01',
           },
           body: JSON.stringify({
-            model: 'claude-opus-4-6',
+            model: 'claude-sonnet-4-20250514',
             max_tokens: 1500,
             messages: [
               {
@@ -399,6 +399,17 @@ Antworte NUR mit einem validen JSON-Objekt (keine Erklärung davor oder danach):
             milieuschutz: objekt.milieuschutz,
             weg_aufgeteilt: objekt.weg_aufgeteilt,
             kaufpreis: objekt.kaufpreis,
+            grundstueck: objekt.grundstueck,
+            wohneinheiten: objekt.wohneinheiten,
+            gewerbeeinheiten: objekt.gewerbeeinheiten,
+            geschosse: objekt.geschosse,
+            gebaeudetyp: objekt.gebaeudetyp,
+            heizungsart: objekt.heizungsart,
+            denkmalschutz: objekt.denkmalschutz,
+            kernsanierung_jahr: objekt.kernsanierung_jahr,
+            wohnflaeche: objekt.wohnflaeche,
+            gewerbeflaeche: objekt.gewerbeflaeche,
+            aufzug: objekt.aufzug,
           },
           mandant: mandant ? {
             name: mandant.name,
