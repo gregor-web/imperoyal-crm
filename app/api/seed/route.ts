@@ -101,14 +101,14 @@ export async function POST() {
       }
     }
 
-    // Check if mandant already has objects
+    // Check if mandant already has the original seed objects
     const { data: existingObjects } = await adminClient
       .from('objekte')
       .select('id')
       .eq('mandant_id', mandantId);
 
     if (existingObjects && existingObjects.length > 0) {
-      results.push(`Mandant hat bereits ${existingObjects.length} Objekt(e)`);
+      results.push(`Mandant hat bereits ${existingObjects.length} Objekt(e) – überspringe Objekte 1 & 2`);
     } else if (mandantId) {
       // Create test objects with units
 
@@ -228,6 +228,81 @@ export async function POST() {
           results.push(`Einheiten Objekt 2 Fehler: ${units2Error.message}`);
         } else {
           results.push(`10 Einheiten für Objekt 2 erstellt`);
+        }
+      }
+    }
+
+    // Object 3: MFH in Berlin-Charlottenburg with 5 Wohneinheiten (always try to create)
+    if (mandantId) {
+      const { data: existingObj3 } = await adminClient
+        .from('objekte')
+        .select('id')
+        .eq('mandant_id', mandantId)
+        .eq('strasse', 'Kantstraße 34')
+        .single();
+
+      if (existingObj3) {
+        results.push('Objekt 3 (Kantstraße 34) existiert bereits');
+      } else {
+        const { data: objekt3, error: obj3Error } = await adminClient
+          .from('objekte')
+          .insert({
+            mandant_id: mandantId,
+            strasse: 'Kantstraße 34',
+            plz: '10625',
+            ort: 'Berlin',
+            gebaeudetyp: 'MFH',
+            baujahr: 1958,
+            wohneinheiten: 5,
+            gewerbeeinheiten: 0,
+            geschosse: 4,
+            wohnflaeche: 345,
+            heizungsart: 'Fernwärme',
+            kaufpreis: 1950000,
+            kaufdatum: '2023-06-01',
+            zinssatz: 3.8,
+            tilgung: 2,
+            eigenkapital_prozent: 30,
+            darlehensstand: 1365000,
+            betriebskosten_nicht_umlage: 6200,
+            instandhaltung: 4500,
+            verwaltung: 3000,
+            ruecklagen: 2000,
+            milieuschutz: true,
+            umwandlungsverbot: true,
+            weg_aufgeteilt: false,
+            denkmalschutz: false,
+            aufzug: false,
+            leerstandsquote: 0,
+            haltedauer: '3-7 Jahre',
+            primaeres_ziel: 'Cashflow',
+            risikoprofil: 'Core+',
+          })
+          .select()
+          .single();
+
+        if (obj3Error) {
+          results.push(`Objekt 3 Fehler: ${obj3Error.message}`);
+        } else {
+          results.push(`Objekt erstellt: ${objekt3.strasse}, Berlin (5 WE)`);
+
+          const units3 = [
+            { position: 1, nutzung: 'Wohnen', flaeche: 62, kaltmiete: 620, vergleichsmiete: 12.50, mietvertragsart: 'Standard', letzte_mieterhoehung: '2024-03-01' },
+            { position: 2, nutzung: 'Wohnen', flaeche: 78, kaltmiete: 850, vergleichsmiete: 12.50, mietvertragsart: 'Standard', letzte_mieterhoehung: '2023-09-15' },
+            { position: 3, nutzung: 'Wohnen', flaeche: 55, kaltmiete: 490, vergleichsmiete: 12.50, mietvertragsart: 'Standard', letzte_mieterhoehung: '2022-06-01' },
+            { position: 4, nutzung: 'Wohnen', flaeche: 82, kaltmiete: 920, vergleichsmiete: 12.50, mietvertragsart: 'Index', letzte_mieterhoehung: '2025-01-01' },
+            { position: 5, nutzung: 'Wohnen', flaeche: 68, kaltmiete: 710, vergleichsmiete: 12.50, mietvertragsart: 'Standard', letzte_mieterhoehung: '2024-08-01' },
+          ];
+
+          const { error: units3Error } = await adminClient
+            .from('einheiten')
+            .insert(units3.map(u => ({ ...u, objekt_id: objekt3.id })));
+
+          if (units3Error) {
+            results.push(`Einheiten Objekt 3 Fehler: ${units3Error.message}`);
+          } else {
+            results.push(`5 Wohneinheiten für Objekt 3 erstellt`);
+          }
         }
       }
     }
