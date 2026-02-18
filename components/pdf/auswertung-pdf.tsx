@@ -15,33 +15,7 @@ import {
 import type { Berechnungen } from '@/lib/types';
 import { getZinsaenderungHinweis, getMietvertragsartZusammenfassung, MIETVERTRAGSART_HINWEISE } from '@/lib/erlaeuterungen';
 
-// ─── Font Registration ─────────────────────────────────────
-import path from 'path';
-import fs from 'fs';
-
-// Load fonts from filesystem (works reliably on Vercel serverless)
-const fontsDir = path.join(process.cwd(), 'public', 'fonts');
-
-const loadFont = (filename: string): string => {
-  const filePath = path.join(fontsDir, filename);
-  if (fs.existsSync(filePath)) {
-    const buffer = fs.readFileSync(filePath);
-    return `data:font/truetype;base64,${buffer.toString('base64')}`;
-  }
-  // Fallback to URL (trim to avoid trailing spaces)
-  const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').trim();
-  return `${APP_URL}/fonts/${filename}`;
-};
-
-Font.register({
-  family: 'Playfair Display',
-  fonts: [
-    { src: loadFont('PlayfairDisplay-Regular.ttf'), fontWeight: 400 },
-    { src: loadFont('PlayfairDisplay-SemiBold.ttf'), fontWeight: 600 },
-    { src: loadFont('PlayfairDisplay-Bold.ttf'), fontWeight: 700 },
-  ],
-});
-
+// ─── Font: Helvetica (PDF-Builtin, kein externes Font-Loading nötig) ───
 // Hyphenation callback to prevent word-break issues in German text
 Font.registerHyphenationCallback((word) => [word]);
 
@@ -245,7 +219,7 @@ const styles = StyleSheet.create({
   },
   mainTitle: {
     fontSize: 16,
-    fontFamily: 'Playfair Display',
+    fontFamily: 'Helvetica-Bold',
     fontWeight: 700,
     color: colors.primary,
     marginTop: 2,
@@ -349,8 +323,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 10,
-    fontFamily: 'Playfair Display',
-    fontWeight: 600,
+    fontFamily: 'Helvetica-Bold',
+    fontWeight: 700,
     color: colors.primary,
   },
   sectionBadge: {
@@ -489,7 +463,7 @@ const styles = StyleSheet.create({
   },
   empfehlungType: {
     fontSize: 24,
-    fontFamily: 'Playfair Display',
+    fontFamily: 'Helvetica-Bold',
     fontWeight: 700,
     color: colors.primary,
     textAlign: 'center',
@@ -889,7 +863,7 @@ export function AuswertungPDF({
           borderColor: '#e2e8f0',
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 * sm.spacingMultiplier, borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 6 }}>
-            <Text style={{ fontSize: 11 * sm.fontSizeMultiplier, fontWeight: 'bold', color: colors.primary, fontFamily: 'Playfair Display' }}>
+            <Text style={{ fontSize: 11 * sm.fontSizeMultiplier, fontWeight: 'bold', color: colors.primary, fontFamily: 'Helvetica-Bold' }}>
               Objektsteckbrief
             </Text>
             <Text style={{ fontSize: 7, color: colors.textLight, marginLeft: 'auto' }}>
@@ -1047,7 +1021,7 @@ export function AuswertungPDF({
             borderWidth: 1,
             borderColor: '#bbf7d0',
           }}>
-            <Text style={{ fontSize: 11 * sm.fontSizeMultiplier, fontWeight: 'bold', color: '#166534', fontFamily: 'Playfair Display', marginBottom: 6 }}>
+            <Text style={{ fontSize: 11 * sm.fontSizeMultiplier, fontWeight: 'bold', color: '#166534', fontFamily: 'Helvetica-Bold', marginBottom: 6 }}>
               Potenzialaufdeckung
             </Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
