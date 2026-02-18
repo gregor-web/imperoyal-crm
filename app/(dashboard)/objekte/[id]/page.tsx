@@ -8,9 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { formatDate, formatCurrency, formatPercent, formatBoolean, formatArea } from '@/lib/formatters';
-import { ArrowLeft, Edit, Banknote, Home, TrendingUp, Clock, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Edit, Banknote, Home, TrendingUp, Clock, CheckCircle, MapPin } from 'lucide-react';
 import { AuswertenButton } from '@/components/auswerten-button';
 import { AnfrageButton } from '@/components/anfrage-button';
+import { ObjektMapCard } from '@/components/maps/objekt-map-card';
+import { VerkaufButton } from '@/components/verkauf-button';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -122,6 +124,9 @@ export default async function ObjektDetailPage({ params }: Props) {
               mandantId={(objekt.mandanten as { id: string })?.id || ''}
             />
           )}
+          {!isAdmin && (
+            <VerkaufButton objektId={id} initialZumVerkauf={objekt.zum_verkauf || false} />
+          )}
           <Link href={`/objekte/${id}/edit`}>
             <Button variant="secondary">
               <Edit className="w-4 h-4 mr-2" />
@@ -130,6 +135,17 @@ export default async function ObjektDetailPage({ params }: Props) {
           </Link>
         </div>
       </div>
+
+      {/* Verkaufsstatus-Banner */}
+      {objekt.zum_verkauf && (
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-[#22c55e]/10 border border-[#22c55e]/20">
+          <div className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
+          <span className="text-sm font-medium text-[#22c55e]">Dieses Objekt ist als verkaufsbereit markiert</span>
+          {objekt.zum_verkauf_seit && (
+            <span className="text-xs text-[#6B8AAD] ml-auto">seit {formatDate(objekt.zum_verkauf_seit)}</span>
+          )}
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
@@ -160,6 +176,11 @@ export default async function ObjektDetailPage({ params }: Props) {
           color="amber"
         />
       </div>
+
+      {/* Lageplan-Karte – Mandanten sehen sie erst wenn eine Auswertung existiert */}
+      {(isAdmin || bestehendeAuswertung) && objekt.strasse && objekt.ort && (
+        <ObjektMapCard strasse={objekt.strasse} plz={objekt.plz} ort={objekt.ort} />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Objektdaten */}

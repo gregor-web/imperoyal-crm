@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Building2, User, LayoutGrid, List, ArrowRight, Layers, MapPin, Hash } from 'lucide-react';
+import { Building2, User, LayoutGrid, List, ArrowRight, Layers, MapPin, Hash, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Pagination } from '@/components/ui/pagination';
@@ -34,6 +34,7 @@ interface ObjekteViewProps {
   totalItems: number;
   searchQuery: string;
   filterTyp: string;
+  auswertungObjektIds?: string[];
 }
 
 // ─── Gradient presets for card backgrounds (no image) ────────────────────────
@@ -51,7 +52,7 @@ function gradientFor(id: string) {
 }
 
 // ─── Single Property Card (Grid) ─────────────────────────────────────────────
-function ObjektCard({ objekt }: { objekt: Objekt }) {
+function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?: boolean }) {
   const totalEinheiten = (objekt.wohneinheiten || 0) + (objekt.gewerbeeinheiten || 0);
   const gradient = gradientFor(objekt.id);
 
@@ -87,12 +88,24 @@ function ObjektCard({ objekt }: { objekt: Objekt }) {
             </div>
           )}
 
-          {/* Arrow top-right on hover */}
-          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="w-7 h-7 bg-[#5B7A9D] rounded-lg flex items-center justify-center">
-              <ArrowRight className="w-3.5 h-3.5 text-white" />
+          {/* Auswertung badge top-right */}
+          {hasAuswertung && (
+            <div className="absolute top-3 right-3">
+              <span className="bg-[#16a34a]/80 backdrop-blur-sm text-white text-[11px] font-medium px-2.5 py-1 rounded-lg border border-[#22c55e]/30 flex items-center gap-1">
+                <CheckCircle className="w-3 h-3" />
+                Ausgewertet
+              </span>
             </div>
-          </div>
+          )}
+
+          {/* Arrow top-right on hover (only when no auswertung badge) */}
+          {!hasAuswertung && (
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="w-7 h-7 bg-[#5B7A9D] rounded-lg flex items-center justify-center">
+                <ArrowRight className="w-3.5 h-3.5 text-white" />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Card Body */}
@@ -133,7 +146,7 @@ function ObjektCard({ objekt }: { objekt: Objekt }) {
 }
 
 // ─── Admin Grouped Card Grid ──────────────────────────────────────────────────
-function AdminGroupedGrid({ groupedObjekte, mandantIds }: { groupedObjekte: GroupedObjekte; mandantIds: string[] }) {
+function AdminGroupedGrid({ groupedObjekte, mandantIds, auswertungObjektIds }: { groupedObjekte: GroupedObjekte; mandantIds: string[]; auswertungObjektIds: string[] }) {
   return (
     <div className="space-y-8">
       {mandantIds.map((mandantId) => {
@@ -168,7 +181,7 @@ function AdminGroupedGrid({ groupedObjekte, mandantIds }: { groupedObjekte: Grou
 
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {group.objekte.map((o) => <ObjektCard key={o.id} objekt={o} />)}
+              {group.objekte.map((o) => <ObjektCard key={o.id} objekt={o} hasAuswertung={auswertungObjektIds.includes(o.id)} />)}
             </div>
           </div>
         );
@@ -178,7 +191,7 @@ function AdminGroupedGrid({ groupedObjekte, mandantIds }: { groupedObjekte: Grou
 }
 
 // ─── Admin Grouped Table (List View) ─────────────────────────────────────────
-function AdminGroupedTable({ groupedObjekte, mandantIds }: { groupedObjekte: GroupedObjekte; mandantIds: string[] }) {
+function AdminGroupedTable({ groupedObjekte, mandantIds, auswertungObjektIds }: { groupedObjekte: GroupedObjekte; mandantIds: string[]; auswertungObjektIds: string[] }) {
   return (
     <div className="space-y-6">
       {mandantIds.map((mandantId) => {
@@ -215,6 +228,7 @@ function AdminGroupedTable({ groupedObjekte, mandantIds }: { groupedObjekte: Gro
                   <TableHead>Typ</TableHead>
                   <TableHead>Kaufpreis</TableHead>
                   <TableHead>Einheiten</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Erstellt</TableHead>
                   <TableHead className="w-24">Aktionen</TableHead>
                 </TableRow>
@@ -231,6 +245,16 @@ function AdminGroupedTable({ groupedObjekte, mandantIds }: { groupedObjekte: Gro
                     <TableCell>{objekt.gebaeudetyp && <Badge>{objekt.gebaeudetyp}</Badge>}</TableCell>
                     <TableCell className="font-medium text-[#EDF1F5]">{formatCurrency(objekt.kaufpreis)}</TableCell>
                     <TableCell className="text-[#9EAFC0]">{(objekt.wohneinheiten || 0) + (objekt.gewerbeeinheiten || 0)} Einheiten</TableCell>
+                    <TableCell>
+                      {auswertungObjektIds.includes(objekt.id) ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#22c55e] bg-[#22c55e]/10 px-2 py-1 rounded-md">
+                          <CheckCircle className="w-3 h-3" />
+                          Ausgewertet
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-[#6B8AAD]">Offen</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-[#9EAFC0]">{formatDate(objekt.created_at)}</TableCell>
                     <TableCell>
                       <Link href={`/objekte/${objekt.id}`} className="text-[#7A9BBD] hover:text-[#9EAFC0] text-sm font-medium">
@@ -257,6 +281,7 @@ export function ObjekteView({
   totalItems,
   searchQuery,
   filterTyp,
+  auswertungObjektIds = [],
 }: ObjekteViewProps) {
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const PAGE_SIZE = 20;
@@ -310,8 +335,8 @@ export function ObjekteView({
           {/* ADMIN VIEW */}
           {isAdmin && (
             view === 'grid'
-              ? <AdminGroupedGrid groupedObjekte={groupedObjekte} mandantIds={mandantIds} />
-              : <AdminGroupedTable groupedObjekte={groupedObjekte} mandantIds={mandantIds} />
+              ? <AdminGroupedGrid groupedObjekte={groupedObjekte} mandantIds={mandantIds} auswertungObjektIds={auswertungObjektIds} />
+              : <AdminGroupedTable groupedObjekte={groupedObjekte} mandantIds={mandantIds} auswertungObjektIds={auswertungObjektIds} />
           )}
 
           {/* MANDANT VIEW */}

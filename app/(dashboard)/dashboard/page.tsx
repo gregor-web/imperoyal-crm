@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
-import { formatCurrency, formatDate } from '@/lib/formatters';
+import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
 import { EmpfehlungBadge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -203,7 +203,7 @@ async function AdminDashboardContent() {
                     <div className="flex items-center gap-2 ml-3">
                       <Clock className="w-4 h-4 text-[#FF9500]" />
                       <span className="text-xs text-[#6B8AAD] whitespace-nowrap">
-                        {formatDate(anfrage.created_at)}
+                        {formatDateTime(anfrage.created_at)}
                       </span>
                     </div>
                   </div>

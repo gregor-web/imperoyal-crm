@@ -9,7 +9,8 @@ export async function middleware(request: NextRequest) {
   // Stripe webhook and public marktdaten must bypass auth
   const isStripeWebhook = pathname === '/api/stripe/webhook';
   const isPublicMarktdaten = pathname === '/api/marktdaten/public';
-  if (isStripeWebhook || isPublicMarktdaten) {
+  const isCronJob = pathname.startsWith('/api/cron/');
+  if (isStripeWebhook || isPublicMarktdaten || isCronJob) {
     return NextResponse.next();
   }
 

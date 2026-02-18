@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
-import { Loader2, CreditCard } from 'lucide-react';
+import { Loader2, FileBarChart } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AnfrageButtonProps {
@@ -106,13 +106,13 @@ export function AnfrageButton({ objektId, mandantId }: AnfrageButtonProps) {
 
   return (
     <div>
-      <Button onClick={handleAnfrage} disabled={loading} variant="secondary">
+      <Button onClick={handleAnfrage} disabled={loading} className="bg-[#22c55e] hover:bg-[#16a34a] text-white border-none shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
         {loading ? (
           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
         ) : (
-          <CreditCard className="w-4 h-4 mr-2" />
+          <FileBarChart className="w-4 h-4 mr-2" />
         )}
-        {loading ? 'Wird vorbereitet...' : 'Auswertung kaufen'}
+        {loading ? 'Wird vorbereitet...' : 'Analyse anfragen'}
       </Button>
       {error && (
         <p className="text-red-500 text-sm mt-2">{error}</p>

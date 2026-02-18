@@ -74,11 +74,28 @@ export async function POST(request: Request) {
       .select('*')
       .in('id', mandantIds);
 
+    // Verkäufer-Mandant ermitteln für Ausschlusslisten-Prüfung
+    let verkaeuferName: string | undefined;
+    if (objekt.mandant_id) {
+      const verkaeufer = (mandanten || []).find((m: Mandant) => m.id === objekt.mandant_id);
+      if (verkaeufer) {
+        verkaeuferName = verkaeufer.name;
+      } else {
+        const { data: vMandant } = await supabase
+          .from('mandanten')
+          .select('name')
+          .eq('id', objekt.mandant_id)
+          .single();
+        verkaeuferName = vMandant?.name || undefined;
+      }
+    }
+
     // Run the matching algorithm
     const matches = findePassendeKaeufer(
       objekt as Objekt,
       ankaufsprofile as Ankaufsprofil[],
-      (mandanten || []) as Mandant[]
+      (mandanten || []) as Mandant[],
+      verkaeuferName
     );
 
     return NextResponse.json({

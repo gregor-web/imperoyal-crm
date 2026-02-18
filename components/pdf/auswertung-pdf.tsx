@@ -5,6 +5,7 @@ import {
   View,
   Image,
   StyleSheet,
+  Font,
   Svg,
   Path,
   Circle,
@@ -13,6 +14,18 @@ import {
 } from '@react-pdf/renderer';
 import type { Berechnungen } from '@/lib/types';
 import { getZinsaenderungHinweis, getMietvertragsartZusammenfassung, MIETVERTRAGSART_HINWEISE } from '@/lib/erlaeuterungen';
+
+// ─── Font Registration ─────────────────────────────────────
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
+Font.register({
+  family: 'Playfair Display',
+  fonts: [
+    { src: `${APP_URL}/fonts/PlayfairDisplay-Regular.ttf`, fontWeight: 400 },
+    { src: `${APP_URL}/fonts/PlayfairDisplay-SemiBold.ttf`, fontWeight: 600 },
+    { src: `${APP_URL}/fonts/PlayfairDisplay-Bold.ttf`, fontWeight: 700 },
+  ],
+});
 
 // =====================================================
 // GRAFISCHE KOMPONENTEN
@@ -214,7 +227,8 @@ const styles = StyleSheet.create({
   },
   mainTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Playfair Display',
+    fontWeight: 700,
     color: colors.primary,
     marginTop: 2,
   },
@@ -317,7 +331,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 10,
-    fontWeight: 'bold',
+    fontFamily: 'Playfair Display',
+    fontWeight: 600,
     color: colors.primary,
   },
   sectionBadge: {
@@ -456,7 +471,8 @@ const styles = StyleSheet.create({
   },
   empfehlungType: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: 'Playfair Display',
+    fontWeight: 700,
     color: colors.primary,
     textAlign: 'center',
     marginBottom: 15,

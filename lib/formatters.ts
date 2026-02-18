@@ -55,6 +55,14 @@ export const formatDate = (d: string | Date | null | undefined): string =>
   d ? new Date(d).toLocaleDateString('de-DE') : '-';
 
 /**
+ * Format a date as German date + time string (e.g. "18.02.2026, 14:35")
+ * @param d - Date string or Date object
+ * @returns Formatted date/time string or '-' if null/undefined
+ */
+export const formatDateTime = (d: string | Date | null | undefined): string =>
+  d ? new Date(d).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+
+/**
  * Format a number with German locale (thousand separators)
  * @param val - Number to format
  * @param decimals - Number of decimal places (default: 0)

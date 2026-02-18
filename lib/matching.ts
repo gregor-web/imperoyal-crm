@@ -14,18 +14,34 @@ import type { Objekt, Ankaufsprofil, Mandant, MatchingResult } from './types';
  * - Region passt: +30 Punkte
  *
  * Max Score: 100 Punkte
+ *
+ * Ausgeschlossene Partner: Profile mit aktiver Ausschlussliste werden
+ * gefiltert, wenn der Verkäufer-Mandant auf der Liste steht.
  */
 export function findePassendeKaeufer(
   objekt: Objekt,
   ankaufsprofile: Ankaufsprofil[],
-  mandanten: Mandant[]
+  mandanten: Mandant[],
+  verkaeuferMandantName?: string
 ): MatchingResult[] {
   const kaufpreis = objekt.kaufpreis || 0;
   const gebaeudetyp = objekt.gebaeudetyp || '';
   const ort = objekt.ort || '';
 
-  // Vorfilter: Nur Profile, deren Volumenbereich grob passt (50% - 150%)
-  const relevantProfiles = ankaufsprofile.filter((profil) => {
+  // Vorfilter 1: Ausgeschlossene Partner prüfen
+  const afterExclusion = ankaufsprofile.filter((profil) => {
+    if (!profil.ausgeschlossene_partner || !profil.ausgeschlossene_partner_liste) return true;
+    if (!verkaeuferMandantName) return true;
+    const ausgeschlossen = profil.ausgeschlossene_partner_liste
+      .split(/[,;\n]+/)
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+    const verkaeufer = verkaeuferMandantName.toLowerCase();
+    return !ausgeschlossen.some((name) => verkaeufer.includes(name) || name.includes(verkaeufer));
+  });
+
+  // Vorfilter 2: Nur Profile, deren Volumenbereich grob passt (50% - 150%)
+  const relevantProfiles = afterExclusion.filter((profil) => {
     const minVol = profil.min_volumen || 0;
     const maxVol = profil.max_volumen || Infinity;
     return kaufpreis >= minVol * 0.5 && kaufpreis <= maxVol * 1.5;

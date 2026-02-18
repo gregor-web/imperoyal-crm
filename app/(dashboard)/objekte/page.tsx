@@ -65,6 +65,17 @@ export default async function ObjektePage({ searchParams }: PageProps) {
 
   const { data: objekte } = await query;
 
+  // Fetch which objects already have an Auswertung (for admin badge)
+  const objektIds = objekte?.map(o => o.id) || [];
+  let auswertungObjektIds: string[] = [];
+  if (isAdmin && objektIds.length > 0) {
+    const { data: auswertungen } = await supabase
+      .from('auswertungen')
+      .select('objekt_id')
+      .in('objekt_id', objektIds);
+    auswertungObjektIds = [...new Set((auswertungen || []).map(a => a.objekt_id))];
+  }
+
   // Group objekte by mandant for admin view
   const groupedObjekte: GroupedObjekte = {};
   if (objekte) {
@@ -133,6 +144,7 @@ export default async function ObjektePage({ searchParams }: PageProps) {
         totalItems={totalItems}
         searchQuery={searchQuery}
         filterTyp={filterTyp}
+        auswertungObjektIds={auswertungObjektIds}
       />
     </div>
   );

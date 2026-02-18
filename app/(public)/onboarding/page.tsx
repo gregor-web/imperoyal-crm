@@ -113,6 +113,7 @@ type FormData = {
   email: string;
   telefon: string;
   position: string;
+  mitarbeiter: string;
   anzahl_objekte: number;
   createAnkaufsprofil: boolean;
   ankaufsprofil: Ankaufsprofil;
@@ -283,7 +284,7 @@ export default function OnboardingPage() {
       }
     }
     return {
-      name: '', anrede: '', vorname: '', nachname: '', strasse: '', plz: '', ort: '', land: 'Deutschland', email: '', telefon: '', position: '',
+      name: '', anrede: '', vorname: '', nachname: '', strasse: '', plz: '', ort: '', land: 'Deutschland', email: '', telefon: '', position: '', mitarbeiter: '',
       anzahl_objekte: 1,
       createAnkaufsprofil: false, ankaufsprofil: createEmptyAnkaufsprofil(), objekte: [createEmptyObjekt()],
     };
@@ -358,7 +359,34 @@ export default function OnboardingPage() {
 
   const MAIN_STEPS = getMainSteps();
 
+  // Validierung: prüft ob der aktuelle Schritt alle Pflichtfelder hat
+  const isCurrentStepValid = (): boolean => {
+    if (mainStep === 1) {
+      // Kontaktdaten: Firmenname, Anrede, Vorname, Nachname, E-Mail, Straße, PLZ, Ort
+      return !!(
+        formData.name.trim() &&
+        formData.anrede.trim() &&
+        formData.vorname.trim() &&
+        formData.nachname.trim() &&
+        formData.email.trim() &&
+        formData.strasse.trim() &&
+        formData.plz.trim() &&
+        formData.ort.trim()
+      );
+    }
+    if (mainStep === 3) {
+      const obj = formData.objekte[currentObjektIndex];
+      if (!obj) return true;
+      if (objektSubStep === 1) {
+        // Basisdaten: Straße, PLZ, Ort, Kaufpreis
+        return !!(obj.strasse.trim() && obj.plz.trim() && obj.ort.trim() && obj.kaufpreis.trim());
+      }
+    }
+    return true;
+  };
+
   const goNext = () => {
+    if (!isCurrentStepValid()) return;
     if (mainStep === 1) {
       setMainStep(formData.createAnkaufsprofil ? 2 : 3);
       setAnkaufSubStep(1);
@@ -412,7 +440,7 @@ export default function OnboardingPage() {
   const isLastStep = mainStep === 4;
 
   // Update functions
-  const updateMandant = (field: keyof Pick<FormData, 'name' | 'anrede' | 'vorname' | 'nachname' | 'strasse' | 'plz' | 'ort' | 'land' | 'email' | 'telefon' | 'position'>, value: string) => {
+  const updateMandant = (field: keyof Pick<FormData, 'name' | 'anrede' | 'vorname' | 'nachname' | 'strasse' | 'plz' | 'ort' | 'land' | 'email' | 'telefon' | 'position' | 'mitarbeiter'>, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -716,6 +744,11 @@ export default function OnboardingPage() {
                   <input type="text" value={formData.position} onChange={(e) => updateMandant('position', e.target.value)}
                     className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="z.B. Geschäftsführer" />
                 </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-0.5">Anzahl Mitarbeiter</label>
+                  <input type="text" inputMode="numeric" value={formData.mitarbeiter} onChange={(e) => updateMandant('mitarbeiter', e.target.value)}
+                    className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="z.B. 15" />
+                </div>
 
                 {/* Firmenadresse */}
                 <div className="col-span-2 mt-1">
@@ -957,7 +990,7 @@ export default function OnboardingPage() {
                   <div className="flex items-center justify-between gap-2 p-3 sm:p-4 rounded-xl border border-slate-200" style={{ backgroundColor: COLORS.blueBone.lightest }}>
                     <div>
                       <p className="text-xs sm:text-sm font-medium text-slate-700">Ausgeschlossene Partner?</p>
-                      <p className="text-[10px] sm:text-xs text-slate-500">Bestimmte Makler/Vermittler ausschließen</p>
+                      <p className="text-[10px] sm:text-xs text-slate-500">Bestimmte Unternehmen beim Ankauf von Immobilien ausschließen</p>
                     </div>
                     <div className="flex gap-3">
                       <label className="flex items-center gap-1.5 cursor-pointer">
@@ -1172,7 +1205,7 @@ export default function OnboardingPage() {
                       className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="3.8" />
                   </div>
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Tilgung %</label>
+                    <label className="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Tilgung % (p.a.)</label>
                     <input type="text" inputMode="decimal" value={currentObjekt.tilgung}
                       onChange={(e) => updateObjekt('tilgung', e.target.value)}
                       className="ob-input w-full px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base" placeholder="2" />
@@ -1583,8 +1616,8 @@ export default function OnboardingPage() {
                 {loading ? null : <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               </button>
             ) : (
-              <button onClick={goNext}
-                className="flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 text-white rounded-lg text-xs sm:text-base active:scale-95 transition-transform"
+              <button onClick={goNext} disabled={!isCurrentStepValid()}
+                className="flex-1 flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 text-white rounded-lg text-xs sm:text-base active:scale-95 transition-transform disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ backgroundColor: COLORS.growthBlue.base }}>
                 Weiter <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
