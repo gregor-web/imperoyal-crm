@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 6,
     marginBottom: 6,
-    minPresenceAhead: 80,
+    minPresenceAhead: 40,
   },
   sectionBox: {
     flex: 1,
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
-    minPresenceAhead: 60,
+    minPresenceAhead: 30,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -1437,7 +1437,7 @@ export function AuswertungPDF({
                   • SOLL: Marktmiete bei Neuvermietung
                 </Text>
                 <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', marginTop: 2 }}>
-                  Quelle: {marktdaten?.vergleichsmiete_wohnen?.quelle || `Mietspiegel ${objekt.ort || 'Region'}`}
+                  Quelle: {(marktdaten?.vergleichsmiete_wohnen?.quelle && !marktdaten.vergleichsmiete_wohnen.quelle.toLowerCase().includes('keine daten') && !marktdaten.vergleichsmiete_wohnen.quelle.toLowerCase().includes('perplexity')) ? marktdaten.vergleichsmiete_wohnen.quelle : `Mietspiegel ${objekt.ort || 'Region'}`}
                 </Text>
               </View>
             </View>
@@ -1808,7 +1808,7 @@ export function AuswertungPDF({
                 ))}
               </View>
               <Text style={{ fontSize: 5, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 3 }}>
-                Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Hist. Durchschnitt (2,5% p.a.)'}
+                Quelle: {marktdaten?.preisprognose ? 'Gutachterausschuss / Immobilienmarktbericht' : 'Hist. Durchschnitt (2,5% p.a.)'}
               </Text>
             </View>
           </View>
@@ -2076,7 +2076,7 @@ export function AuswertungPDF({
               );
             })()}
             <Text style={{ fontSize: 6, color: colors.textMuted, textAlign: 'center' }}>
-              Annahme: {marktdaten?.preisprognose ? 'Dynamische Prognose lt. Marktdaten' : '2,5% p.a. Wertsteigerung'} | Quelle: {marktdaten?.preisprognose ? 'Perplexity Marktprognose' : 'Bundesbank Immobilienpreisindex'}
+              Annahme: {marktdaten?.preisprognose ? 'Dynamische Prognose lt. Marktdaten' : '2,5% p.a. Wertsteigerung'} | Quelle: {marktdaten?.preisprognose ? 'Bundesbank Immobilienpreisindex / Gutachterausschuss' : 'Bundesbank Immobilienpreisindex'}
             </Text>
           </View>
         </View>
