@@ -12,7 +12,8 @@ import {
   Line,
   G,
 } from '@react-pdf/renderer';
-import type { Berechnungen } from '@/lib/types';
+import type { Berechnungen, PdfConfig, PdfSectionId } from '@/lib/types';
+import { DEFAULT_PDF_SECTIONS } from '@/lib/types';
 import { getZinsaenderungHinweis, getMietvertragsartZusammenfassung, MIETVERTRAGSART_HINWEISE } from '@/lib/erlaeuterungen';
 
 // ─── Font: Helvetica (PDF-Builtin, kein externes Font-Loading nötig) ───
@@ -659,6 +660,8 @@ interface AuswertungPDFProps {
   mapUrl?: string;
   // Optional AI-driven style adjustments
   styleMultipliers?: StyleMultipliers;
+  // PDF section config for visibility and ordering
+  pdfConfig?: PdfConfig;
 }
 
 export function AuswertungPDF({
@@ -675,6 +678,7 @@ export function AuswertungPDF({
   logoUrl,
   mapUrl,
   styleMultipliers,
+  pdfConfig,
 }: AuswertungPDFProps) {
   // Apply style multipliers (defaults to 1 if not provided)
   const sm = styleMultipliers || {
@@ -733,6 +737,23 @@ export function AuswertungPDF({
   // Gesamtfläche berechnen
   const gesamtflaeche = einheiten?.reduce((sum, e) => sum + (e.flaeche || 0), 0) || 0;
   const verkehrswertProQm = gesamtflaeche > 0 ? verkehrswertGeschaetzt / gesamtflaeche : 0;
+
+  // PDF Section visibility helper
+  const isVisible = (id: PdfSectionId): boolean => {
+    if (!pdfConfig?.sections) return true;
+    const section = pdfConfig.sections.find(s => s.id === id);
+    return section ? section.visible : true;
+  };
+
+  const getOrder = (id: PdfSectionId): number => {
+    if (!pdfConfig?.sections) return DEFAULT_PDF_SECTIONS.findIndex(s => s.id === id);
+    const section = pdfConfig.sections.find(s => s.id === id);
+    return section ? section.order : 999;
+  };
+
+  const getMinOrder = (ids: PdfSectionId[]): number => {
+    return Math.min(...ids.map(id => getOrder(id)));
+  };
 
   return (
     <Document>
@@ -919,6 +940,7 @@ export function AuswertungPDF({
       </Page>
 
       {/* ==================== PAGE 1 (Analyse) ==================== */}
+      {isVisible('steckbrief') && (
       <Page size="A4" style={styles.page}>
         {/* Fixed Header mit zentriertem Logo - erscheint auf jeder Seite */}
         <View fixed style={{
@@ -1327,8 +1349,10 @@ export function AuswertungPDF({
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
+      )}
 
       {/* ==================== PAGE: Sektionen 1-4 ==================== */}
+      {(isVisible('finanzierung') || isVisible('ertrag') || isVisible('cashflow') || isVisible('kosten')) && (
       <Page size="A4" style={styles.page}>
         {/* Fixed Header */}
         <View fixed style={{
@@ -1351,8 +1375,10 @@ export function AuswertungPDF({
         </View>
 
         {/* Sections 1-4 */}
+        {(isVisible('finanzierung') || isVisible('ertrag')) && (
         <View style={styles.sectionRow}>
           {/* Section 1: Finanzierungsprofil */}
+          {isVisible('finanzierung') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>1</Text>
@@ -1433,8 +1459,10 @@ export function AuswertungPDF({
               })()}
             </View>
           </View>
+          )}
 
           {/* Section 2: Ertragsprofil */}
+          {isVisible('ertrag') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>2</Text>
@@ -1472,10 +1500,14 @@ export function AuswertungPDF({
               </View>
             </View>
           </View>
+          )}
         </View>
+        )}
 
+        {(isVisible('cashflow') || isVisible('kosten')) && (
         <View style={styles.sectionRow}>
           {/* Section 3: Cashflow-Analyse */}
+          {isVisible('cashflow') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>3</Text>
@@ -1520,8 +1552,10 @@ export function AuswertungPDF({
               </View>
             </View>
           </View>
+          )}
 
           {/* Section 4: Kostenstruktur */}
+          {isVisible('kosten') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>4</Text>
@@ -1594,7 +1628,9 @@ export function AuswertungPDF({
               </View>
             </View>
           </View>
+          )}
         </View>
+        )}
 
         {/* ─── Ende Seite: Sektionen 1-4, Start neue Seite für Mieterhöhungstabelle ─── */}
 
@@ -1605,8 +1641,10 @@ export function AuswertungPDF({
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
+      )}
 
       {/* ==================== PAGE 3: Mieterhöhungstabelle ==================== */}
+      {isVisible('mieterhohung') && (
       <Page size="A4" style={styles.page}>
         {/* Fixed Header */}
         <View fixed style={{
@@ -1748,8 +1786,10 @@ export function AuswertungPDF({
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
+      )}
 
       {/* ==================== PAGE: Sektionen 6-9 ==================== */}
+      {(isVisible('cashflow_chart') || isVisible('wertentwicklung') || isVisible('capex') || isVisible('weg')) && (
       <Page size="A4" style={styles.page}>
         {/* Fixed Header */}
         <View fixed style={{
@@ -1772,8 +1812,10 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 6 & 7 */}
+        {(isVisible('cashflow_chart') || isVisible('wertentwicklung')) && (
         <View style={styles.sectionRow} wrap={false}>
           {/* Section 6: Cashflow IST vs. Optimiert */}
+          {isVisible('cashflow_chart') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>6</Text>
@@ -1841,8 +1883,10 @@ export function AuswertungPDF({
               </Text>
             </View>
           </View>
+          )}
 
           {/* Section 7: Wertentwicklung */}
+          {isVisible('wertentwicklung') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>7</Text>
@@ -1903,11 +1947,15 @@ export function AuswertungPDF({
               </Text>
             </View>
           </View>
+          )}
         </View>
+        )}
 
         {/* Section 8 & 9 */}
+        {(isVisible('capex') || isVisible('weg')) && (
         <View style={styles.sectionRow} wrap={false}>
           {/* Section 8: CAPEX & §559 BGB */}
+          {isVisible('capex') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>8</Text>
@@ -1935,8 +1983,10 @@ export function AuswertungPDF({
               </View>
             </View>
           </View>
+          )}
 
           {/* Section 9: WEG-Potenzial */}
+          {isVisible('weg') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>9</Text>
@@ -1975,7 +2025,9 @@ export function AuswertungPDF({
               </View>
             </View>
           </View>
+          )}
         </View>
+        )}
 
         {/* ─── Ende Seite, Start neue Seite für AfA & Exit ─── */}
 
@@ -1986,8 +2038,10 @@ export function AuswertungPDF({
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
+      )}
 
       {/* ==================== PAGE: AfA, ROI, Exit ==================== */}
+      {(isVisible('afa') || isVisible('roi') || isVisible('exit')) && (
       <Page size="A4" style={styles.page}>
         {/* Fixed Header */}
         <View fixed style={{
@@ -2010,8 +2064,10 @@ export function AuswertungPDF({
         </View>
 
         {/* Section 10 & 11 */}
+        {(isVisible('afa') || isVisible('roi')) && (
         <View style={styles.sectionRow}>
           {/* Section 10: RND & AfA - Erweitert */}
+          {isVisible('afa') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>10</Text>
@@ -2058,8 +2114,10 @@ export function AuswertungPDF({
               </View>
             </View>
           </View>
+          )}
 
           {/* Section 11: ROI-Szenarien - Erweitert */}
+          {isVisible('roi') && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionNumber}>11</Text>
@@ -2093,9 +2151,12 @@ export function AuswertungPDF({
               </Text>
             </View>
           </View>
+          )}
         </View>
+        )}
 
         {/* Section 12: Exit-Szenarien - SVG Linien-Chart */}
+        {isVisible('exit') && (
         <View style={[styles.sectionBox, { marginBottom: 6 }]}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionNumber}>12</Text>
@@ -2202,6 +2263,7 @@ export function AuswertungPDF({
             </Text>
           </View>
         </View>
+        )}
 
         {/* Investment-Übersicht Dashboard - auf Seite 3 verschoben um Whitespace zu füllen */}
         <View style={{
@@ -2271,8 +2333,10 @@ export function AuswertungPDF({
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
+      )}
 
       {/* ==================== PAGE: Zusammenfassung & Empfehlung ==================== */}
+      {isVisible('empfehlung') && (
       <Page size="A4" style={styles.page}>
         {/* Fixed Header */}
         <View fixed style={{
@@ -2443,8 +2507,10 @@ export function AuswertungPDF({
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
+      )}
 
       {/* ==================== PAGE 5: Ergänzende Erläuterungen ==================== */}
+      {isVisible('erlaeuterungen') && (
       <Page size="A4" style={styles.page}>
         {/* Fixed Header mit zentriertem Logo - erscheint auf jeder Seite */}
         <View fixed style={{
@@ -2552,6 +2618,7 @@ export function AuswertungPDF({
           <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
         </View>
       </Page>
+      )}
     </Document>
   );
 }

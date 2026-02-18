@@ -197,6 +197,56 @@ export interface Einheit {
   updated_at: string;
 }
 
+// =====================================================
+// PDF SECTION CONFIG
+// =====================================================
+
+export type PdfSectionId =
+  | 'steckbrief'       // Objektsteckbrief + Potenzial + Metrics + Beleihung + Marktdaten
+  | 'finanzierung'     // Section 1: Finanzierungsprofil
+  | 'ertrag'           // Section 2: Ertragsprofil
+  | 'cashflow'         // Section 3: Cashflow-Analyse
+  | 'kosten'           // Section 4: Kostenstruktur
+  | 'mieterhohung'     // Section 5: Mieterhöhungstabelle §558 BGB
+  | 'cashflow_chart'   // Section 6: Cashflow IST vs. Optimiert
+  | 'wertentwicklung'  // Section 7: Wertentwicklung
+  | 'capex'            // Section 8: CAPEX & §559 BGB
+  | 'weg'              // Section 9: WEG-Potenzial
+  | 'afa'              // Section 10: AfA & Restnutzungsdauer
+  | 'roi'              // Section 11: ROI-Analyse
+  | 'exit'             // Section 12: Exit-Szenarien
+  | 'empfehlung'       // Zusammenfassung & Empfehlung
+  | 'erlaeuterungen';  // Erläuterungen / Glossar
+
+export interface PdfSectionItem {
+  id: PdfSectionId;
+  label: string;
+  visible: boolean;
+  order: number;
+}
+
+export interface PdfConfig {
+  sections: PdfSectionItem[];
+}
+
+export const DEFAULT_PDF_SECTIONS: PdfSectionItem[] = [
+  { id: 'steckbrief',      label: 'Objektsteckbrief & Marktdaten',  visible: true, order: 0 },
+  { id: 'finanzierung',    label: '1 – Finanzierungsprofil',        visible: true, order: 1 },
+  { id: 'ertrag',          label: '2 – Ertragsprofil',              visible: true, order: 2 },
+  { id: 'cashflow',        label: '3 – Cashflow-Analyse',           visible: true, order: 3 },
+  { id: 'kosten',          label: '4 – Kostenstruktur',             visible: true, order: 4 },
+  { id: 'mieterhohung',    label: '5 – Mieterhöhungen §558 BGB',   visible: true, order: 5 },
+  { id: 'cashflow_chart',  label: '6 – Cashflow IST vs. Optimiert', visible: true, order: 6 },
+  { id: 'wertentwicklung', label: '7 – Wertentwicklung',            visible: true, order: 7 },
+  { id: 'capex',           label: '8 – CAPEX & §559 BGB',          visible: true, order: 8 },
+  { id: 'weg',             label: '9 – WEG-Potenzial',             visible: true, order: 9 },
+  { id: 'afa',             label: '10 – AfA & Restnutzungsdauer',   visible: true, order: 10 },
+  { id: 'roi',             label: '11 – ROI-Analyse',               visible: true, order: 11 },
+  { id: 'exit',            label: '12 – Exit-Szenarien',            visible: true, order: 12 },
+  { id: 'empfehlung',      label: 'Zusammenfassung & Empfehlung',   visible: true, order: 13 },
+  { id: 'erlaeuterungen',  label: 'Erläuterungen / Glossar',        visible: true, order: 14 },
+];
+
 export interface Auswertung {
   id: string;
   objekt_id: string;
@@ -211,6 +261,7 @@ export interface Auswertung {
   empfehlung_risiken: string[] | null;
   erlaeuterungen: Erlaeuterungen | null;
   pdf_url: string | null;
+  pdf_config: PdfConfig | null;
   status: AuswertungStatus;
   created_at: string;
 }

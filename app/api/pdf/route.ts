@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { createClient } from '@/lib/supabase/server';
 import { AuswertungPDF } from '@/components/pdf/auswertung-pdf';
-import type { Berechnungen } from '@/lib/types';
+import type { Berechnungen, PdfConfig } from '@/lib/types';
 import fs from 'fs';
 import path from 'path';
 
@@ -136,6 +136,7 @@ export async function POST(request: Request) {
         created_at: auswertung.created_at,
         logoUrl,
         mapUrl,
+        pdfConfig: (auswertung.pdf_config as PdfConfig) || undefined,
       })
     );
 

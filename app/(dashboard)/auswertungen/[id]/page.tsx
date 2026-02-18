@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 import { Card } from '@/components/ui/card';
 import { EmpfehlungBadge, Badge } from '@/components/ui/badge';
 import { formatCurrency, formatPercent, formatDate } from '@/lib/formatters';
-import type { Berechnungen, Erlaeuterungen } from '@/lib/types';
+import type { Berechnungen, Erlaeuterungen, PdfConfig } from '@/lib/types';
 import {
   ArrowLeft, TrendingUp, TrendingDown, Banknote, Home, AlertTriangle,
   CheckCircle, CheckCircle2, Clock, Building2, Shield,
@@ -16,6 +16,7 @@ import {
 import { SendEmailButton } from '@/components/send-email-button';
 import { OptimizedPdfButton } from '@/components/optimized-pdf-button';
 import { RegenerateAuswertungButton } from '@/components/regenerate-auswertung-button';
+import { PdfSectionConfigurator } from '@/components/pdf-section-configurator';
 import { DynamicLageplanMap as LageplanMap } from '@/components/maps/lageplan-map-dynamic';
 
 interface Props {
@@ -207,6 +208,14 @@ export default async function AuswertungDetailPage({ params }: Props) {
           {isAdmin && <SendEmailButton auswertungId={id} status={auswertung.status} />}
         </div>
       </div>
+
+      {/* ===== PDF KONFIGURATOR (Admin only) ===== */}
+      {isAdmin && (
+        <PdfSectionConfigurator
+          auswertungId={id}
+          initialConfig={(auswertung.pdf_config as PdfConfig) || null}
+        />
+      )}
 
       {/* ===== LAGEPLAN ===== */}
       <div className="bg-[#1E2A3A] rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
