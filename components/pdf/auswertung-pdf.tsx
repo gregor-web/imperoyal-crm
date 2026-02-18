@@ -950,27 +950,6 @@ export function AuswertungPDF({
           </View>
         </View>
 
-        {/* Persönliche Begrüßung */}
-        <View style={{
-          backgroundColor: '#f8fafc',
-          borderRadius: 6,
-          padding: 10 * sm.paddingMultiplier,
-          marginBottom: 8 * sm.spacingMultiplier,
-          borderLeftWidth: 3,
-          borderLeftColor: colors.primary,
-        }}>
-          <Text style={{ fontSize: 10 * sm.fontSizeMultiplier, color: colors.text, lineHeight: 1.6 }}>
-            {mandant.ansprechpartner && mandant.anrede
-              ? `Sehr geehrte${mandant.anrede === 'Frau' ? '' : 'r'} ${mandant.anrede} ${mandant.ansprechpartner.split(' ').pop()},`
-              : mandant.ansprechpartner
-                ? `Sehr geehrte Damen und Herren,`
-                : `Sehr geehrte Damen und Herren der ${mandant.name},`}
-          </Text>
-          <Text style={{ fontSize: 9 * sm.fontSizeMultiplier, color: colors.textMuted, lineHeight: 1.6, marginTop: 6 * sm.spacingMultiplier }}>
-            im Folgenden erhalten Sie die Analyse Ihres Objekts. Bei Fragen stehen wir Ihnen gerne zur Verfügung.
-          </Text>
-        </View>
-
         {/* ─── EXPOSÉ: Objektsteckbrief ─── */}
         <View style={{
           backgroundColor: '#ffffff',
