@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Pagination } from '@/components/ui/pagination';
 import { formatDate, formatCurrency } from '@/lib/formatters';
-import { ObjektMapThumbnail } from '@/components/maps/objekt-map-thumbnail';
+import { DynamicObjektMapThumbnail as ObjektMapThumbnail } from '@/components/maps/objekt-map-thumbnail-dynamic';
 
 interface Objekt {
   id: string;
@@ -340,7 +340,7 @@ export function ObjekteView({
           {!isAdmin && (
             view === 'grid' ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {objekte.map((o) => <ObjektCard key={o.id} objekt={o} />)}
+                {objekte.map((o) => <ObjektCard key={o.id} objekt={o} hasAuswertung={auswertungObjektIds.includes(o.id)} />)}
               </div>
             ) : (
               <div className="bg-[#1E2A3A] rounded-2xl overflow-hidden border border-white/[0.07]">
@@ -351,6 +351,7 @@ export function ObjekteView({
                       <TableHead>Typ</TableHead>
                       <TableHead>Kaufpreis</TableHead>
                       <TableHead>Einheiten</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>Erstellt</TableHead>
                       <TableHead className="w-24">Aktionen</TableHead>
                     </TableRow>
@@ -368,6 +369,16 @@ export function ObjekteView({
                         <TableCell className="font-medium text-[#EDF1F5]">{formatCurrency(objekt.kaufpreis)}</TableCell>
                         <TableCell className="text-[#9EAFC0]">
                           {(objekt.wohneinheiten || 0) + (objekt.gewerbeeinheiten || 0)} Einheiten
+                        </TableCell>
+                        <TableCell>
+                          {auswertungObjektIds.includes(objekt.id) ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#22c55e] bg-[#22c55e]/10 px-2 py-1 rounded-md">
+                              <CheckCircle className="w-3 h-3" />
+                              Ausgewertet
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-[#6B8AAD]">Offen</span>
+                          )}
                         </TableCell>
                         <TableCell className="text-[#9EAFC0]">{formatDate(objekt.created_at)}</TableCell>
                         <TableCell>

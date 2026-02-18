@@ -65,10 +65,10 @@ export default async function ObjektePage({ searchParams }: PageProps) {
 
   const { data: objekte } = await query;
 
-  // Fetch which objects already have an Auswertung (for admin badge)
+  // Fetch which objects already have an Auswertung (for badge)
   const objektIds = objekte?.map(o => o.id) || [];
   let auswertungObjektIds: string[] = [];
-  if (isAdmin && objektIds.length > 0) {
+  if (objektIds.length > 0) {
     const { data: auswertungen } = await supabase
       .from('auswertungen')
       .select('objekt_id')
