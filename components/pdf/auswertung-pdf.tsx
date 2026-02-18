@@ -741,7 +741,7 @@ export function AuswertungPDF({
       }}>
         {/* Dunkelblauer Header-Bereich */}
         <View style={{
-          backgroundColor: '#0F1A28',
+          backgroundColor: '#2C4A6E',
           paddingTop: 50,
           paddingBottom: 35,
           paddingHorizontal: 50,
