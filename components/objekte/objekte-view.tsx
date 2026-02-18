@@ -91,7 +91,7 @@ function ObjektCard({ objekt, hasAuswertung, hasAnfrage }: { objekt: Objekt; has
             <div className="absolute top-3 right-3 z-[501]">
               <span className="bg-[#16a34a]/80 backdrop-blur-sm text-white text-[11px] font-medium px-2.5 py-1 rounded-lg border border-[#22c55e]/30 flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" />
-                Ausgewertet
+                Abgeschlossen
               </span>
             </div>
           )}
@@ -255,7 +255,7 @@ function AdminGroupedTable({ groupedObjekte, mandantIds, auswertungObjektIds, an
                       {auswertungObjektIds.includes(objekt.id) ? (
                         <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#22c55e] bg-[#22c55e]/10 px-2 py-1 rounded-md">
                           <CheckCircle className="w-3 h-3" />
-                          Ausgewertet
+                          Abgeschlossen
                         </span>
                       ) : anfrageObjektIds.includes(objekt.id) ? (
                         <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#eab308] bg-[#eab308]/10 px-2 py-1 rounded-md">
@@ -389,7 +389,7 @@ export function ObjekteView({
                           {auswertungObjektIds.includes(objekt.id) ? (
                             <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#22c55e] bg-[#22c55e]/10 px-2 py-1 rounded-md">
                               <CheckCircle className="w-3 h-3" />
-                              Ausgewertet
+                              Abgeschlossen
                             </span>
                           ) : anfrageObjektIds.includes(objekt.id) ? (
                             <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#eab308] bg-[#eab308]/10 px-2 py-1 rounded-md">

@@ -76,12 +76,13 @@ export default async function ObjektePage({ searchParams }: PageProps) {
       .in('objekt_id', objektIds);
     auswertungObjektIds = [...new Set((auswertungen || []).map(a => a.objekt_id))];
 
-    // Fetch objects with open/in-progress Anfragen (for "In Bearbeitung" badge)
+    // Fetch objects with paid Anfragen (for "In Bearbeitung" badge)
     const { data: anfragen } = await supabase
       .from('anfragen')
       .select('objekt_id')
       .in('objekt_id', objektIds)
-      .in('status', ['offen', 'bezahlt', 'in_bearbeitung']);
+      .eq('payment_status', 'paid')
+      .not('status', 'eq', 'versendet');
     anfrageObjektIds = [...new Set((anfragen || []).map(a => a.objekt_id))];
   }
 
