@@ -1027,7 +1027,7 @@ export function AuswertungPDF({
         </View>
 
         {/* ─── EXPOSÉ: Potenzialaufdeckung ─── */}
-        {(einheitenMitPotenzial > 0 || (weg && !objekt.weg_aufgeteilt) || (mod559?.umlage_jahr && mod559.umlage_jahr > 0)) && (
+        {(einheitenMitPotenzial > 0 || (weg && !objekt.weg_aufgeteilt) || (mod559?.umlage_nach_kappung && mod559.umlage_nach_kappung > 0)) && (
           <View style={{
             backgroundColor: '#f0fdf4',
             borderRadius: 6,
@@ -1075,11 +1075,11 @@ export function AuswertungPDF({
                 </View>
               )}
               {/* Modernisierungsumlage */}
-              {mod559?.umlage_jahr && mod559.umlage_jahr > 0 && (
+              {mod559?.umlage_nach_kappung && mod559.umlage_nach_kappung > 0 && (
                 <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 4, padding: 8, borderWidth: 1, borderColor: '#dcfce7' }}>
                   <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#166534', marginBottom: 4 }}>§559 Modernisierung</Text>
                   <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a', marginBottom: 2 }}>
-                    +{formatCurrency(mod559.umlage_jahr)}/J.
+                    +{formatCurrency(mod559.umlage_nach_kappung)}/J.
                   </Text>
                   <Text style={{ fontSize: 7, color: '#4ade80' }}>
                     Umlagefähige Mieterhöhung nach Mod.
