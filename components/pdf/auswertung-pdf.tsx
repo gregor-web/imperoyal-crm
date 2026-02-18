@@ -825,7 +825,7 @@ export function AuswertungPDF({
                 paddingVertical: 1.5,
               }}>
                 <Text style={{ fontSize: 5, color: '#555' }}>
-                  © OpenStreetMap contributors
+                  © Bundesamt für Kartographie und Geodäsie {new Date().getFullYear()}
                 </Text>
               </View>
             </View>

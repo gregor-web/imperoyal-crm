@@ -1,7 +1,10 @@
 /**
- * Generates a static map image from OpenStreetMap tiles.
- * No API key required. No external dependencies (no sharp needed).
- * Geocoding via Nominatim. Returns a single centered tile as PNG base64.
+ * Generates a static map image using BasemapDE WMS from the
+ * Bundesamt für Kartographie und Geodäsie (BKG).
+ * Produces a Sprengnetter-style topographic Lageplan.
+ * No API key required – free for all uses.
+ *
+ * The crosshair marker (⊕) is rendered in React-PDF on top of this image.
  */
 
 /**
@@ -23,45 +26,33 @@ async function geocodeAddress(address: string): Promise<{ lat: number; lon: numb
   return null;
 }
 
-/** Convert lat/lon to tile coordinates */
-function latLonToTile(lat: number, lon: number, zoom: number): { x: number; y: number } {
-  const n = Math.pow(2, zoom);
-  const x = Math.floor((lon + 180) / 360 * n);
-  const latRad = lat * Math.PI / 180;
-  const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
-  return { x, y };
-}
-
-/** Fetch a single OSM tile as PNG buffer */
-async function fetchTile(x: number, y: number, zoom: number): Promise<Buffer | null> {
-  const url = `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`;
-  try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Imperoyal-System/1.0' },
-    });
-    if (res.ok) {
-      return Buffer.from(await res.arrayBuffer());
-    }
-    console.warn(`[MAP] Tile ${zoom}/${x}/${y} returned ${res.status}`);
-  } catch (err) {
-    console.warn(`[MAP] Tile fetch failed:`, err);
-  }
-  return null;
+/**
+ * Calculate bounding box around a point for WMS requests.
+ * Returns [south, west, north, east] in EPSG:4326.
+ */
+function calculateBbox(
+  lat: number,
+  lon: number,
+  widthMeters = 350,
+  heightMeters = 180,
+): [number, number, number, number] {
+  const latOffset = heightMeters / 111320;
+  const lonOffset = widthMeters / (111320 * Math.cos((lat * Math.PI) / 180));
+  return [lat - latOffset, lon - lonOffset, lat + latOffset, lon + lonOffset];
 }
 
 /**
- * Fetch a static map image from OSM tiles.
- * Tries sharp for multi-tile composition. Falls back to single tile.
+ * Fetch a static BKG topographic map image.
  * Returns a base64 data URL or null on failure.
  */
 export async function fetchTopographicMap(
   strasse: string,
   plz: string,
   ort: string,
-  width = 600,
-  height = 300,
+  width = 1600,
+  height = 600,
 ): Promise<string | null> {
-  const address = `${strasse}, ${plz} ${ort}, Deutschland`;
+  const address = `${strasse}, ${plz} ${ort}`;
 
   // Step 1: Geocode
   const coords = await geocodeAddress(address);
@@ -72,75 +63,44 @@ export async function fetchTopographicMap(
 
   const { lat, lon } = coords;
   console.log(`[MAP] Geocoded: ${lat}, ${lon}`);
+  const [south, west, north, east] = calculateBbox(lat, lon);
 
-  const zoom = 17;
-  const center = latLonToTile(lat, lon, zoom);
+  // Step 2: BasemapDE WMS (BKG) – free, no API key, returns PNG directly
+  const wmsUrl = [
+    'https://sgx.geodatenzentrum.de/wms_basemapde',
+    '?SERVICE=WMS',
+    '&VERSION=1.3.0',
+    '&REQUEST=GetMap',
+    '&FORMAT=image/png',
+    '&STYLES=',
+    '&LAYERS=de_basemapde_web_raster_farbe',
+    '&CRS=EPSG:4326',
+    `&BBOX=${south},${west},${north},${east}`,
+    `&WIDTH=${width}`,
+    `&HEIGHT=${height}`,
+  ].join('');
 
-  // Try compositing multiple tiles with sharp (works locally + some hosts)
   try {
-    const sharp = (await import('sharp')).default;
+    console.log('[MAP] Fetching BasemapDE (BKG) map...');
+    const res = await fetch(wmsUrl, {
+      headers: { 'User-Agent': 'Imperoyal-System/1.0' },
+    });
 
-    // Calculate pixel offset within center tile
-    const n = Math.pow(2, zoom);
-    const latRad = lat * Math.PI / 180;
-    const px = Math.floor(((lon + 180) / 360 * n - center.x) * 256);
-    const py = Math.floor(((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n - center.y) * 256);
-
-    const tilesX = Math.ceil(width / 256) + 1;
-    const tilesY = Math.ceil(height / 256) + 1;
-    const halfTilesX = Math.floor(tilesX / 2);
-    const halfTilesY = Math.floor(tilesY / 2);
-
-    // Fetch tiles in parallel
-    const tilePromises: Promise<{ buf: Buffer | null; col: number; row: number }>[] = [];
-    for (let dy = -halfTilesY; dy <= halfTilesY; dy++) {
-      for (let dx = -halfTilesX; dx <= halfTilesX; dx++) {
-        tilePromises.push(
-          fetchTile(center.x + dx, center.y + dy, zoom).then(buf => ({
-            buf, col: dx + halfTilesX, row: dy + halfTilesY,
-          }))
-        );
+    if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('image')) {
+        const buf = Buffer.from(await res.arrayBuffer());
+        console.log(`[MAP] BKG map loaded: ${buf.length} bytes`);
+        return `data:image/png;base64,${buf.toString('base64')}`;
+      } else {
+        const text = await res.text();
+        console.warn('[MAP] BKG returned non-image:', contentType, text.slice(0, 300));
       }
+    } else {
+      console.warn(`[MAP] BKG WMS returned status ${res.status}`);
     }
-
-    const tiles = await Promise.all(tilePromises);
-    const validTiles = tiles.filter(t => t.buf !== null);
-
-    if (validTiles.length > 0) {
-      const gridW = (halfTilesX * 2 + 1) * 256;
-      const gridH = (halfTilesY * 2 + 1) * 256;
-
-      const composites = validTiles.map(t => ({
-        input: t.buf as Buffer,
-        left: t.col * 256,
-        top: t.row * 256,
-      }));
-
-      const canvas = sharp({
-        create: { width: gridW, height: gridH, channels: 3 as const, background: { r: 242, g: 239, b: 233 } },
-      }).composite(composites).png();
-
-      const offsetX = Math.max(0, Math.min(halfTilesX * 256 + px - Math.floor(width / 2), gridW - width));
-      const offsetY = Math.max(0, Math.min(halfTilesY * 256 + py - Math.floor(height / 2), gridH - height));
-
-      const cropped = await sharp(await canvas.toBuffer())
-        .extract({ left: offsetX, top: offsetY, width: Math.min(width, gridW), height: Math.min(height, gridH) })
-        .png()
-        .toBuffer();
-
-      console.log(`[MAP] Composed map with sharp: ${cropped.length} bytes`);
-      return `data:image/png;base64,${cropped.toString('base64')}`;
-    }
-  } catch (sharpErr) {
-    console.warn('[MAP] Sharp not available, falling back to single tile:', (sharpErr as Error).message);
-  }
-
-  // Fallback: Just use the center tile (256x256)
-  console.log('[MAP] Fetching single center tile as fallback...');
-  const tileBuf = await fetchTile(center.x, center.y, zoom);
-  if (tileBuf) {
-    console.log(`[MAP] Single tile: ${tileBuf.length} bytes`);
-    return `data:image/png;base64,${tileBuf.toString('base64')}`;
+  } catch (err) {
+    console.warn('[MAP] BKG WMS request failed:', err);
   }
 
   return null;
