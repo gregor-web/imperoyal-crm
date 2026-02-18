@@ -68,12 +68,21 @@ export default async function ObjektePage({ searchParams }: PageProps) {
   // Fetch which objects already have an Auswertung (for badge)
   const objektIds = objekte?.map(o => o.id) || [];
   let auswertungObjektIds: string[] = [];
+  let anfrageObjektIds: string[] = [];
   if (objektIds.length > 0) {
     const { data: auswertungen } = await supabase
       .from('auswertungen')
       .select('objekt_id')
       .in('objekt_id', objektIds);
     auswertungObjektIds = [...new Set((auswertungen || []).map(a => a.objekt_id))];
+
+    // Fetch objects with open/in-progress Anfragen (for "In Bearbeitung" badge)
+    const { data: anfragen } = await supabase
+      .from('anfragen')
+      .select('objekt_id')
+      .in('objekt_id', objektIds)
+      .in('status', ['offen', 'bezahlt', 'in_bearbeitung']);
+    anfrageObjektIds = [...new Set((anfragen || []).map(a => a.objekt_id))];
   }
 
   // Group objekte by mandant for admin view
@@ -145,6 +154,7 @@ export default async function ObjektePage({ searchParams }: PageProps) {
         searchQuery={searchQuery}
         filterTyp={filterTyp}
         auswertungObjektIds={auswertungObjektIds}
+        anfrageObjektIds={anfrageObjektIds}
       />
     </div>
   );

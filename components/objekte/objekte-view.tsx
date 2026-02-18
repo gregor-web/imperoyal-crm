@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Building2, User, LayoutGrid, List, ArrowRight, Layers, MapPin, Hash, CheckCircle } from 'lucide-react';
+import { Building2, User, LayoutGrid, List, ArrowRight, Layers, MapPin, Hash, CheckCircle, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/table';
 import { Pagination } from '@/components/ui/pagination';
@@ -36,6 +36,7 @@ interface ObjekteViewProps {
   searchQuery: string;
   filterTyp: string;
   auswertungObjektIds?: string[];
+  anfrageObjektIds?: string[];
 }
 
 // ─── Gradient presets for card backgrounds (no image) ────────────────────────
@@ -53,7 +54,7 @@ function gradientFor(id: string) {
 }
 
 // ─── Single Property Card (Grid) ─────────────────────────────────────────────
-function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?: boolean }) {
+function ObjektCard({ objekt, hasAuswertung, hasAnfrage }: { objekt: Objekt; hasAuswertung?: boolean; hasAnfrage?: boolean }) {
   const totalEinheiten = (objekt.wohneinheiten || 0) + (objekt.gewerbeeinheiten || 0);
 
   return (
@@ -85,7 +86,7 @@ function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?:
             </div>
           )}
 
-          {/* Auswertung badge top-right */}
+          {/* Status badge top-right */}
           {hasAuswertung && (
             <div className="absolute top-3 right-3 z-[501]">
               <span className="bg-[#16a34a]/80 backdrop-blur-sm text-white text-[11px] font-medium px-2.5 py-1 rounded-lg border border-[#22c55e]/30 flex items-center gap-1">
@@ -94,9 +95,17 @@ function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?:
               </span>
             </div>
           )}
+          {!hasAuswertung && hasAnfrage && (
+            <div className="absolute top-3 right-3 z-[501]">
+              <span className="bg-[#eab308]/80 backdrop-blur-sm text-white text-[11px] font-medium px-2.5 py-1 rounded-lg border border-[#eab308]/30 flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                In Bearbeitung
+              </span>
+            </div>
+          )}
 
-          {/* Arrow top-right on hover (only when no auswertung badge) */}
-          {!hasAuswertung && (
+          {/* Arrow top-right on hover (only when no status badge) */}
+          {!hasAuswertung && !hasAnfrage && (
             <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-[501]">
               <div className="w-7 h-7 bg-[#5B7A9D] rounded-lg flex items-center justify-center">
                 <ArrowRight className="w-3.5 h-3.5 text-white" />
@@ -143,7 +152,7 @@ function ObjektCard({ objekt, hasAuswertung }: { objekt: Objekt; hasAuswertung?:
 }
 
 // ─── Admin Grouped Card Grid ──────────────────────────────────────────────────
-function AdminGroupedGrid({ groupedObjekte, mandantIds, auswertungObjektIds }: { groupedObjekte: GroupedObjekte; mandantIds: string[]; auswertungObjektIds: string[] }) {
+function AdminGroupedGrid({ groupedObjekte, mandantIds, auswertungObjektIds, anfrageObjektIds }: { groupedObjekte: GroupedObjekte; mandantIds: string[]; auswertungObjektIds: string[]; anfrageObjektIds: string[] }) {
   return (
     <div className="space-y-8">
       {mandantIds.map((mandantId) => {
@@ -178,7 +187,7 @@ function AdminGroupedGrid({ groupedObjekte, mandantIds, auswertungObjektIds }: {
 
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {group.objekte.map((o) => <ObjektCard key={o.id} objekt={o} hasAuswertung={auswertungObjektIds.includes(o.id)} />)}
+              {group.objekte.map((o) => <ObjektCard key={o.id} objekt={o} hasAuswertung={auswertungObjektIds.includes(o.id)} hasAnfrage={anfrageObjektIds.includes(o.id)} />)}
             </div>
           </div>
         );
@@ -188,7 +197,7 @@ function AdminGroupedGrid({ groupedObjekte, mandantIds, auswertungObjektIds }: {
 }
 
 // ─── Admin Grouped Table (List View) ─────────────────────────────────────────
-function AdminGroupedTable({ groupedObjekte, mandantIds, auswertungObjektIds }: { groupedObjekte: GroupedObjekte; mandantIds: string[]; auswertungObjektIds: string[] }) {
+function AdminGroupedTable({ groupedObjekte, mandantIds, auswertungObjektIds, anfrageObjektIds }: { groupedObjekte: GroupedObjekte; mandantIds: string[]; auswertungObjektIds: string[]; anfrageObjektIds: string[] }) {
   return (
     <div className="space-y-6">
       {mandantIds.map((mandantId) => {
@@ -248,6 +257,11 @@ function AdminGroupedTable({ groupedObjekte, mandantIds, auswertungObjektIds }: 
                           <CheckCircle className="w-3 h-3" />
                           Ausgewertet
                         </span>
+                      ) : anfrageObjektIds.includes(objekt.id) ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#eab308] bg-[#eab308]/10 px-2 py-1 rounded-md">
+                          <Clock className="w-3 h-3" />
+                          In Bearbeitung
+                        </span>
                       ) : (
                         <span className="text-[11px] text-[#6B8AAD]">Offen</span>
                       )}
@@ -279,6 +293,7 @@ export function ObjekteView({
   searchQuery,
   filterTyp,
   auswertungObjektIds = [],
+  anfrageObjektIds = [],
 }: ObjekteViewProps) {
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const PAGE_SIZE = 20;
@@ -332,15 +347,15 @@ export function ObjekteView({
           {/* ADMIN VIEW */}
           {isAdmin && (
             view === 'grid'
-              ? <AdminGroupedGrid groupedObjekte={groupedObjekte} mandantIds={mandantIds} auswertungObjektIds={auswertungObjektIds} />
-              : <AdminGroupedTable groupedObjekte={groupedObjekte} mandantIds={mandantIds} auswertungObjektIds={auswertungObjektIds} />
+              ? <AdminGroupedGrid groupedObjekte={groupedObjekte} mandantIds={mandantIds} auswertungObjektIds={auswertungObjektIds} anfrageObjektIds={anfrageObjektIds} />
+              : <AdminGroupedTable groupedObjekte={groupedObjekte} mandantIds={mandantIds} auswertungObjektIds={auswertungObjektIds} anfrageObjektIds={anfrageObjektIds} />
           )}
 
           {/* MANDANT VIEW */}
           {!isAdmin && (
             view === 'grid' ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {objekte.map((o) => <ObjektCard key={o.id} objekt={o} hasAuswertung={auswertungObjektIds.includes(o.id)} />)}
+                {objekte.map((o) => <ObjektCard key={o.id} objekt={o} hasAuswertung={auswertungObjektIds.includes(o.id)} hasAnfrage={anfrageObjektIds.includes(o.id)} />)}
               </div>
             ) : (
               <div className="bg-[#1E2A3A] rounded-2xl overflow-hidden border border-white/[0.07]">
@@ -375,6 +390,11 @@ export function ObjekteView({
                             <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#22c55e] bg-[#22c55e]/10 px-2 py-1 rounded-md">
                               <CheckCircle className="w-3 h-3" />
                               Ausgewertet
+                            </span>
+                          ) : anfrageObjektIds.includes(objekt.id) ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#eab308] bg-[#eab308]/10 px-2 py-1 rounded-md">
+                              <Clock className="w-3 h-3" />
+                              In Bearbeitung
                             </span>
                           ) : (
                             <span className="text-[11px] text-[#6B8AAD]">Offen</span>
