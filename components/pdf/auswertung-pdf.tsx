@@ -340,6 +340,7 @@ const styles = StyleSheet.create({
   },
   sectionContent: {
     padding: 6,
+    flexGrow: 1,
   },
   row: {
     flexDirection: 'row',
@@ -1416,7 +1417,7 @@ export function AuswertungPDF({
                 <Text style={styles.value}>{formatPercent(rendite?.rendite_ist)}</Text>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • EK-Quote: {((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100).toFixed(0)}% {(fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) >= 0.3 ? '(konservativ)' : '(gehebelt)'}
                 </Text>
@@ -1497,7 +1498,7 @@ export function AuswertungPDF({
                 </Text>
               ) : null}
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • IST: Tatsächliche Mieteinnahmen lt. Mandant
                 </Text>
@@ -1549,7 +1550,7 @@ export function AuswertungPDF({
                 </Text>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • Cashflow = Miete - Kapitaldienst - Kosten
                 </Text>
@@ -1625,7 +1626,7 @@ export function AuswertungPDF({
                 </View>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • Kostenquote = Kosten / Mieteinnahmen
                 </Text>
@@ -1888,7 +1889,7 @@ export function AuswertungPDF({
                   Potenzial: +{formatCurrency((cashflow?.cashflow_opt_jahr || 0) - (cashflow?.cashflow_ist_jahr || 0))} p.a.
                 </Text>
               </View>
-              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 4 }}>
+              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 'auto' }}>
                 Quelle: Eigene Berechnung auf Basis Mandantenangaben und Marktmieten
               </Text>
             </View>
@@ -1983,7 +1984,7 @@ export function AuswertungPDF({
                 </Text>
                 <Text style={{ fontSize: 7, color: colors.textMuted }}>Gekappt nach §559 Abs. 3a BGB</Text>
               </View>
-              <View style={[styles.infoBox, { marginTop: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto' }]}>
                 <Text style={styles.infoBoxTitle}>Kappungsgrenzen §559 Abs. 3a BGB:</Text>
                 <Text style={styles.infoBoxText}>• Kaltmiete {'<'} 7€/m²: max. 2€/m² in 6 Jahren</Text>
                 <Text style={styles.infoBoxText}>• Kaltmiete ≥ 7€/m²: max. 3€/m² in 6 Jahren</Text>
@@ -2022,7 +2023,7 @@ export function AuswertungPDF({
                   </Text>
                 </View>
               )}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • WEG-Aufteilung: +15% Wertsteigerung durch Einzelverkauf
                 </Text>
@@ -2111,7 +2112,7 @@ export function AuswertungPDF({
                 <Text style={[styles.value, { color: colors.primary }]}>{formatCurrency(afa?.afa_jahr)}</Text>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • AfA = Absetzung für Abnutzung (§7 EStG)
                 </Text>
@@ -2152,7 +2153,7 @@ export function AuswertungPDF({
                 ))}
               </View>
               {/* EK-Rendite Highlight */}
-              <View style={{ backgroundColor: colors.bgBlue, borderRadius: 6, padding: 8, marginTop: 6 }}>
+              <View style={{ backgroundColor: colors.bgBlue, borderRadius: 6, padding: 8, marginTop: 'auto' }}>
                 <Text style={{ fontSize: 7, color: colors.primaryLight, fontWeight: 'bold' }}>Eigenkapitalrendite optimiert</Text>
                 <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary }}>{formatPercent(rendite?.eigenkapitalrendite_opt)}</Text>
               </View>
