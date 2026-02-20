@@ -340,6 +340,7 @@ const styles = StyleSheet.create({
   },
   sectionContent: {
     padding: 6,
+    flex: 1,
   },
   row: {
     flexDirection: 'row',
@@ -381,7 +382,7 @@ const styles = StyleSheet.create({
   // Table - Liquid Glass Style
   table: {
     marginTop: 5,
-    borderRadius: 4,
+    borderRadius: 6,
     overflow: 'hidden',
   },
   tableHeader: {
@@ -576,7 +577,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 3,
     paddingHorizontal: 8,
-    borderRadius: 4,
+    borderRadius: 6,
     marginTop: 5,
     fontSize: 8,
     fontWeight: 'bold',
@@ -1156,7 +1157,7 @@ export function AuswertungPDF({
             <View style={{ flexDirection: 'row', gap: 10 }}>
               {/* Mietpotenzial */}
               {einheitenMitPotenzial > 0 && (
-                <View style={{ flex: 1, backgroundColor: colors.cardWhite, borderRadius: 4, padding: 8, borderWidth: 1, borderColor: colors.border }}>
+                <View style={{ flex: 1, backgroundColor: colors.cardWhite, borderRadius: 6, padding: 8, borderWidth: 1, borderColor: colors.border }}>
                   <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>Mietoptimierung</Text>
                   <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.success, marginBottom: 2 }}>
                     +{formatCurrency((miet?.potenzial_jahr || 0))}/J.
@@ -1175,7 +1176,7 @@ export function AuswertungPDF({
               )}
               {/* WEG-Potenzial */}
               {weg && !objekt.weg_aufgeteilt && (
-                <View style={{ flex: 1, backgroundColor: colors.cardWhite, borderRadius: 4, padding: 8, borderWidth: 1, borderColor: colors.border }}>
+                <View style={{ flex: 1, backgroundColor: colors.cardWhite, borderRadius: 6, padding: 8, borderWidth: 1, borderColor: colors.border }}>
                   <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>WEG-Aufteilung</Text>
                   <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.success, marginBottom: 2 }}>
                     +{formatCurrency(weg.weg_gewinn || 0)}
@@ -1190,7 +1191,7 @@ export function AuswertungPDF({
               )}
               {/* Modernisierungsumlage */}
               {mod559?.umlage_nach_kappung && mod559.umlage_nach_kappung > 0 && (
-                <View style={{ flex: 1, backgroundColor: colors.cardWhite, borderRadius: 4, padding: 8, borderWidth: 1, borderColor: colors.border }}>
+                <View style={{ flex: 1, backgroundColor: colors.cardWhite, borderRadius: 6, padding: 8, borderWidth: 1, borderColor: colors.border }}>
                   <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>§559 Modernisierung</Text>
                   <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.success, marginBottom: 2 }}>
                     +{formatCurrency(mod559.umlage_nach_kappung)}/J.
@@ -1416,7 +1417,7 @@ export function AuswertungPDF({
                 <Text style={styles.value}>{formatPercent(rendite?.rendite_ist)}</Text>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • EK-Quote: {((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100).toFixed(0)}% {(fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) >= 0.3 ? '(konservativ)' : '(gehebelt)'}
                 </Text>
@@ -1431,7 +1432,7 @@ export function AuswertungPDF({
               {fin?.zinsaenderung && (() => {
                 const hinweis = getZinsaenderungHinweis(fin.zinsaenderung.zinsbindung_endet);
                 return (
-                  <View style={[styles.infoBox, { marginTop: 6, padding: 5, backgroundColor: hinweis.kannAnalysieren ? colors.warningBg : colors.bgLight }]}>
+                  <View style={[styles.infoBox, { marginTop: 6, padding: 6, backgroundColor: hinweis.kannAnalysieren ? colors.warningBg : colors.bgLight }]}>
                     <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 3 }}>
                       Zinsänderungsszenario
                     </Text>
@@ -1497,7 +1498,7 @@ export function AuswertungPDF({
                 </Text>
               ) : null}
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • IST: Tatsächliche Mieteinnahmen lt. Mandant
                 </Text>
@@ -1549,7 +1550,7 @@ export function AuswertungPDF({
                 </Text>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • Cashflow = Miete - Kapitaldienst - Kosten
                 </Text>
@@ -1625,7 +1626,7 @@ export function AuswertungPDF({
                 </View>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • Kostenquote = Kosten / Mieteinnahmen
                 </Text>
@@ -1888,7 +1889,7 @@ export function AuswertungPDF({
                   Potenzial: +{formatCurrency((cashflow?.cashflow_opt_jahr || 0) - (cashflow?.cashflow_ist_jahr || 0))} p.a.
                 </Text>
               </View>
-              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 4 }}>
+              <Text style={{ fontSize: 6, color: colors.textLight, fontStyle: 'italic', textAlign: 'center', marginTop: 'auto' }}>
                 Quelle: Eigene Berechnung auf Basis Mandantenangaben und Marktmieten
               </Text>
             </View>
@@ -1925,7 +1926,7 @@ export function AuswertungPDF({
                         width: 38,
                         height: `${heightPct}%`,
                         backgroundColor: barColors[i],
-                        borderRadius: 4,
+                        borderRadius: 6,
                         minHeight: 30,
                       }} />
                     </View>
@@ -1983,7 +1984,7 @@ export function AuswertungPDF({
                 </Text>
                 <Text style={{ fontSize: 7, color: colors.textMuted }}>Gekappt nach §559 Abs. 3a BGB</Text>
               </View>
-              <View style={styles.infoBox}>
+              <View style={[styles.infoBox, { marginTop: 'auto' }]}>
                 <Text style={styles.infoBoxTitle}>Kappungsgrenzen §559 Abs. 3a BGB:</Text>
                 <Text style={styles.infoBoxText}>• Kaltmiete {'<'} 7€/m²: max. 2€/m² in 6 Jahren</Text>
                 <Text style={styles.infoBoxText}>• Kaltmiete ≥ 7€/m²: max. 3€/m² in 6 Jahren</Text>
@@ -2022,7 +2023,7 @@ export function AuswertungPDF({
                   </Text>
                 </View>
               )}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • WEG-Aufteilung: +15% Wertsteigerung durch Einzelverkauf
                 </Text>
@@ -2085,7 +2086,7 @@ export function AuswertungPDF({
             </View>
             <View style={styles.sectionContent}>
               {/* AfA Highlight Box */}
-              <View style={{ backgroundColor: colors.successBg, borderRadius: 4, padding: 8, marginBottom: 8 }}>
+              <View style={{ backgroundColor: colors.successBg, borderRadius: 6, padding: 8, marginBottom: 8 }}>
                 <Text style={{ fontSize: 7, color: colors.success, fontWeight: 'bold', marginBottom: 3 }}>Jährlicher Steuervorteil</Text>
                 <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.success }}>{formatCurrency(afa?.steuerersparnis_42)}</Text>
                 <Text style={{ fontSize: 6, color: colors.textMuted }}>bei 42% Grenzsteuersatz</Text>
@@ -2111,7 +2112,7 @@ export function AuswertungPDF({
                 <Text style={[styles.value, { color: colors.primary }]}>{formatCurrency(afa?.afa_jahr)}</Text>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
+              <View style={[styles.infoBox, { marginTop: 'auto', padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • AfA = Absetzung für Abnutzung (§7 EStG)
                 </Text>
@@ -2135,7 +2136,7 @@ export function AuswertungPDF({
             </View>
             <View style={styles.sectionContent}>
               {/* Visuelle ROI-Balken */}
-              <View style={{ marginBottom: 10 }}>
+              <View style={{ marginBottom: 8 }}>
                 {[
                   { label: 'Brutto-Rendite IST', value: rendite?.rendite_ist || 0, color: '#9eb3c8' },
                   { label: 'Brutto-Rendite OPT', value: rendite?.rendite_opt || 0, color: colors.success },
@@ -2152,7 +2153,7 @@ export function AuswertungPDF({
                 ))}
               </View>
               {/* EK-Rendite Highlight */}
-              <View style={{ backgroundColor: colors.bgBlue, borderRadius: 4, padding: 8, marginTop: 6 }}>
+              <View style={{ backgroundColor: colors.bgBlue, borderRadius: 6, padding: 8, marginTop: 'auto' }}>
                 <Text style={{ fontSize: 7, color: colors.primaryLight, fontWeight: 'bold' }}>Eigenkapitalrendite optimiert</Text>
                 <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary }}>{formatPercent(rendite?.eigenkapitalrendite_opt)}</Text>
               </View>
@@ -2251,7 +2252,7 @@ export function AuswertungPDF({
                   </View>
 
                   {/* Summary row */}
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 8, marginTop: 8 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 6, padding: 8, marginTop: 8 }}>
                     <View style={{ alignItems: 'center' }}>
                       <Text style={{ fontSize: 6, color: colors.textMuted }}>Wertzuwachs 10J</Text>
                       <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
@@ -2291,7 +2292,7 @@ export function AuswertungPDF({
             {/* Spalte 1: Kapitalstruktur */}
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Kapitalstruktur</Text>
-              <View style={{ height: 40, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
+              <View style={{ height: 40, flexDirection: 'row', borderRadius: 6, overflow: 'hidden' }}>
                 <View style={{ flex: (fin?.eigenkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.success }} />
                 <View style={{ flex: (fin?.fremdkapital || 0) / (fin?.kaufpreis || 1), backgroundColor: colors.danger }} />
               </View>
@@ -2303,7 +2304,7 @@ export function AuswertungPDF({
             {/* Spalte 2: Cashflow-Verwendung */}
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Mietverteilung</Text>
-              <View style={{ height: 40, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
+              <View style={{ height: 40, flexDirection: 'row', borderRadius: 6, overflow: 'hidden' }}>
                 <View style={{ flex: (fin?.kapitaldienst || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#dc2626' }} />
                 <View style={{ flex: (kosten?.kosten_gesamt || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#f59e0b' }} />
                 <View style={{ flex: Math.max(0, (cashflow?.cashflow_ist_jahr || 0)) / (miet?.miete_ist_jahr || 1), backgroundColor: '#16a34a' }} />
@@ -2377,12 +2378,12 @@ export function AuswertungPDF({
           borderWidth: 1,
           borderColor: colors.success,
         }}>
-          <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.success, marginBottom: 10 }}>
+          <Text style={{ fontSize: 11, fontWeight: 'bold', color: colors.success, marginBottom: 8 }}>
             Zusammenfassung: Wertsteigernde Maßnahmen
           </Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
             {/* Spalte 1: Mietpotenzial */}
-            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 4, padding: 8 }}>
+            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 6, padding: 8 }}>
               <Text style={{ fontSize: 8, color: colors.textMuted, marginBottom: 4 }}>Mieterhöhungspotenzial</Text>
               <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.success }}>
                 +{formatCurrency(miet?.potenzial_jahr)}/Jahr
@@ -2392,7 +2393,7 @@ export function AuswertungPDF({
               </Text>
             </View>
             {/* Spalte 2: WEG-Potenzial */}
-            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 4, padding: 8 }}>
+            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 6, padding: 8 }}>
               <Text style={{ fontSize: 8, color: colors.textMuted, marginBottom: 4 }}>WEG-Aufteilung</Text>
               <Text style={{ fontSize: 14, fontWeight: 'bold', color: weg?.bereits_aufgeteilt ? colors.textMuted : colors.success }}>
                 {weg?.bereits_aufgeteilt ? 'Bereits aufgeteilt' : `+${formatCurrency(weg?.weg_gewinn)}`}
@@ -2402,7 +2403,7 @@ export function AuswertungPDF({
               </Text>
             </View>
             {/* Spalte 3: Steuerersparnis */}
-            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 4, padding: 8 }}>
+            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 6, padding: 8 }}>
               <Text style={{ fontSize: 8, color: colors.textMuted, marginBottom: 4 }}>AfA-Steuerersparnis</Text>
               <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.accent }}>
                 +{formatCurrency(steuerersparnis)}/Jahr
@@ -2413,7 +2414,7 @@ export function AuswertungPDF({
             </View>
           </View>
           {/* Gesamtpotenzial */}
-          <View style={{ marginTop: 8, backgroundColor: 'white', borderRadius: 4, padding: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View style={{ marginTop: 8, backgroundColor: 'white', borderRadius: 6, padding: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.text }}>
               Gesamtpotenzial (jährlich wiederkehrend):
             </Text>
@@ -2473,7 +2474,7 @@ export function AuswertungPDF({
                       marginBottom: 4,
                       backgroundColor: colors.bgLight,
                       padding: 6,
-                      borderRadius: 4,
+                      borderRadius: 6,
                     }}>
                       <View style={{
                         width: 18,
@@ -2498,7 +2499,7 @@ export function AuswertungPDF({
             {((empfehlung_chancen && empfehlung_chancen.length > 0) || (empfehlung_risiken && empfehlung_risiken.length > 0)) && (
               <View style={{ flexDirection: 'row', gap: 8, marginBottom: Math.round(10 * (layout?.empfehlung?.spacingMultiplier ?? 1)) }}>
                 {empfehlung_chancen && empfehlung_chancen.length > 0 && (
-                  <View style={{ flex: 1, backgroundColor: colors.bgGreen, borderRadius: 4, padding: 8 }}>
+                  <View style={{ flex: 1, backgroundColor: colors.bgGreen, borderRadius: 6, padding: 8 }}>
                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>Chancen</Text>
                     {empfehlung_chancen.map((c, i) => (
                       <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 2 }}>
@@ -2509,7 +2510,7 @@ export function AuswertungPDF({
                   </View>
                 )}
                 {empfehlung_risiken && empfehlung_risiken.length > 0 && (
-                  <View style={{ flex: 1, backgroundColor: colors.bgRed, borderRadius: 4, padding: 8 }}>
+                  <View style={{ flex: 1, backgroundColor: colors.bgRed, borderRadius: 6, padding: 8 }}>
                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.danger, marginBottom: 4 }}>Risiken</Text>
                     {empfehlung_risiken.map((r, i) => (
                       <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 2 }}>
@@ -2527,7 +2528,7 @@ export function AuswertungPDF({
               <View style={{
                 backgroundColor: colors.bgLight,
                 padding: 8,
-                borderRadius: 4,
+                borderRadius: 6,
                 borderLeftWidth: 3,
                 borderLeftColor: colors.primaryLight,
               }}>
