@@ -227,7 +227,7 @@ export function OnboardingFunnelPDF() {
           </View>
           <Text style={styles.flowArrow}>→</Text>
           <View style={styles.flowStep}>
-            <View style={[styles.flowCircle, { backgroundColor: '#8b5cf6' }]}>
+            <View style={[styles.flowCircle, { backgroundColor: '#2a4a6a' }]}>
               <Text style={styles.flowCircleText}>2</Text>
             </View>
             <Text style={styles.flowLabel}>Ankaufsprofil{'\n'}(optional)</Text>

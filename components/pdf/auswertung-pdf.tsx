@@ -72,7 +72,7 @@ const ComparisonBar = ({
   soll,
   label,
   colorIst = '#9eb3c8', // Blue Bone lighter
-  colorSoll = '#22c55e',
+  colorSoll = '#16a34a',
 }: {
   ist: number;
   soll: number;
@@ -89,13 +89,13 @@ const ComparisonBar = ({
       <View style={{ gap: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text style={{ fontSize: 6, color: '#9eb3c8', width: 20 }}>IST</Text>
-          <View style={{ flex: 1, height: 6, backgroundColor: '#e8f0f5', borderRadius: 3 }}>
+          <View style={{ flex: 1, height: 6, backgroundColor: colors.neutralBg, borderRadius: 3 }}>
             <View style={{ width: `${istWidth}%`, height: '100%', backgroundColor: colorIst, borderRadius: 3 }} />
           </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Text style={{ fontSize: 6, color: '#22c55e', width: 20 }}>SOLL</Text>
-          <View style={{ flex: 1, height: 6, backgroundColor: '#e8f0f5', borderRadius: 3 }}>
+          <Text style={{ fontSize: 6, color: '#16a34a', width: 20 }}>SOLL</Text>
+          <View style={{ flex: 1, height: 6, backgroundColor: colors.neutralBg, borderRadius: 3 }}>
             <View style={{ width: `${sollWidth}%`, height: '100%', backgroundColor: colorSoll, borderRadius: 3 }} />
           </View>
         </View>
@@ -112,9 +112,9 @@ const TrafficLight = ({
 }) => {
   const getColor = () => {
     switch(status) {
-      case 'green': return '#22c55e';
+      case 'green': return '#16a34a';
       case 'yellow': return '#eab308';
-      case 'red': return '#ef4444';
+      case 'red': return '#dc2626';
     }
   };
   return (
@@ -140,7 +140,7 @@ const TrendArrow = ({
   showValue?: boolean;
 }) => {
   const direction = value > 0.5 ? 'up' : value < -0.5 ? 'down' : 'stable';
-  const arrowColor = direction === 'up' ? '#22c55e' : direction === 'down' ? '#ef4444' : '#9eb3c8';
+  const arrowColor = direction === 'up' ? '#16a34a' : direction === 'down' ? '#dc2626' : '#9eb3c8';
   const symbol = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '●';
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
@@ -167,30 +167,27 @@ const colors = {
   text: '#1a2744',           // Royal Navy
   textMuted: '#2a4a6a',      // Dark Growth Blue (kräftiger)
   textLight: '#9eb3c8',      // Blue Bone
-  // Status colors (behalten für positive/negative Indikatoren)
-  success: '#16a34a',
-  successBg: '#dcfce7',
-  danger: '#dc2626',
-  dangerBg: '#fee2e2',
+  // Status colors – EINE Variante pro Farbe
+  success: '#16a34a',        // Grün (green-600)
+  successBg: '#f0fdf4',      // Tint Positiv
+  danger: '#dc2626',         // Rot (red-600)
+  dangerBg: '#fef2f2',       // Tint Negativ
   warning: '#d4a017',
   warningBg: '#fef9c3',
   // Accent - Royal Navy (kräftig)
-  purple: '#1a2744',
-  purpleBg: '#dce8f0',
-  // LIQUID GLASS - Frosted/translucent look
-  glassWhite: '#f8fafc',      // Frosty white background
-  glassBorder: '#bccad8',     // Darker glass edge
-  glassHighlight: '#ffffff',  // Top shine
-  glassShadow: '#a8baca',     // Darker shadow for depth
-  glassInner: '#f0f4f7',      // Inner frosted area
+  accent: '#1a2744',
+  accentBg: '#f0f4f7',
+  // Page & Card backgrounds
+  pageBg: '#f8fafc',         // Page Background einheitlich
+  cardWhite: '#ffffff',      // Karten/Boxen die sich abheben
+  neutralBg: '#f0f4f7',      // Tint Neutral / Sekundär-BG
   // Borders and backgrounds - Kräftigere Blue Bone Töne
-  border: '#bccad8',
+  border: '#dce8f0',
   borderLight: '#dce8f0',
   bgLight: '#f0f4f7',
   bgBlue: '#dce8f0',
-  bgGreen: '#f0fdf4',
-  bgYellow: '#fef9eb',
-  bgPurple: '#dce8f0',
+  bgGreen: '#f0fdf4',        // Tint Positiv
+  bgRed: '#fef2f2',          // Tint Negativ
 };
 
 // Styles - Liquid Glass Design
@@ -202,7 +199,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 9,
     color: colors.text,
-    backgroundColor: colors.glassWhite,
+    backgroundColor: colors.pageBg,
   },
   // Header
   header: {
@@ -241,7 +238,7 @@ const styles = StyleSheet.create({
   // Key Metrics Bar
   metricsBar: {
     flexDirection: 'row',
-    backgroundColor: colors.glassInner,
+    backgroundColor: colors.neutralBg,
     borderRadius: 10,
     marginBottom: 10,
     overflow: 'hidden',
@@ -297,7 +294,7 @@ const styles = StyleSheet.create({
   },
   sectionBox: {
     flex: 1,
-    backgroundColor: colors.glassWhite,
+    backgroundColor: colors.pageBg,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border,
@@ -307,7 +304,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.glassInner,
+    backgroundColor: colors.neutralBg,
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderBottomWidth: 1,
@@ -388,7 +385,7 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: colors.glassInner,
+    backgroundColor: colors.neutralBg,
     paddingVertical: 6,
     paddingHorizontal: 4,
     borderBottomWidth: 1,
@@ -406,10 +403,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderLight,
-    backgroundColor: colors.glassWhite,
+    backgroundColor: colors.pageBg,
   },
   tableRowAlt: {
-    backgroundColor: colors.glassInner,
+    backgroundColor: colors.neutralBg,
   },
   tableCell: {
     fontSize: 8,
@@ -423,7 +420,7 @@ const styles = StyleSheet.create({
   },
   tableFooter: {
     flexDirection: 'row',
-    backgroundColor: colors.glassInner,
+    backgroundColor: colors.neutralBg,
     paddingVertical: 6,
     paddingHorizontal: 4,
     fontWeight: 'bold',
@@ -432,7 +429,7 @@ const styles = StyleSheet.create({
   },
   // Info boxes
   infoBox: {
-    backgroundColor: colors.glassInner,
+    backgroundColor: colors.neutralBg,
     padding: 8,
     borderRadius: 6,
     marginTop: 6,
@@ -452,7 +449,7 @@ const styles = StyleSheet.create({
   },
   // Empfehlung page
   empfehlungContainer: {
-    backgroundColor: colors.glassInner,
+    backgroundColor: colors.neutralBg,
     borderRadius: 12,
     padding: 20,
     marginBottom: 15,
@@ -477,7 +474,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: colors.text,
     lineHeight: 1.6,
-    backgroundColor: colors.glassWhite,
+    backgroundColor: colors.pageBg,
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
@@ -490,7 +487,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: 8,
-    backgroundColor: colors.glassWhite,
+    backgroundColor: colors.pageBg,
     padding: 10,
     borderRadius: 8,
     borderWidth: 1,
@@ -519,7 +516,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   fazitBox: {
-    backgroundColor: colors.glassWhite,
+    backgroundColor: colors.pageBg,
     padding: 14,
     borderRadius: 8,
     marginTop: 15,
@@ -763,7 +760,7 @@ export function AuswertungPDF({
       <Page size="A4" style={{
         padding: 0,
         fontFamily: 'Helvetica',
-        backgroundColor: '#ffffff',
+        backgroundColor: colors.pageBg,
       }}>
         {/* Dunkelblauer Header-Bereich */}
         <View style={{
@@ -844,7 +841,7 @@ export function AuswertungPDF({
         <View style={{ paddingHorizontal: 50, paddingTop: 30 }}>
           {/* Objektdaten */}
           <View style={{
-            backgroundColor: '#f8fafc',
+            backgroundColor: colors.cardWhite,
             borderRadius: 6,
             padding: 20,
             marginBottom: 20,
@@ -976,14 +973,14 @@ export function AuswertungPDF({
 
         {/* ─── EXPOSÉ: Objektsteckbrief ─── */}
         <View style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: colors.cardWhite,
           borderRadius: 6,
           padding: 10 * sm.paddingMultiplier,
           marginBottom: 8 * sm.spacingMultiplier,
           borderWidth: 1,
-          borderColor: '#e2e8f0',
+          borderColor: colors.border,
         }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 * sm.spacingMultiplier, borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 6 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 * sm.spacingMultiplier, borderBottomWidth: 1, borderBottomColor: colors.border, paddingBottom: 6 }}>
             <Text style={{ fontSize: 11 * sm.fontSizeMultiplier, fontWeight: 'bold', color: colors.primary, fontFamily: 'Helvetica-Bold' }}>
               Objektsteckbrief
             </Text>
@@ -1113,7 +1110,7 @@ export function AuswertungPDF({
               {objekt.denkmalschutz && (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
                   <Text style={{ fontSize: 7, color: colors.textMuted }}>Denkmalschutz</Text>
-                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: '#8b5cf6' }}>Ja (erh. AfA)</Text>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.success }}>Ja (erh. AfA)</Text>
                 </View>
               )}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
@@ -1135,59 +1132,59 @@ export function AuswertungPDF({
         {/* ─── EXPOSÉ: Potenzialaufdeckung ─── */}
         {(einheitenMitPotenzial > 0 || (weg && !objekt.weg_aufgeteilt) || (mod559?.umlage_nach_kappung && mod559.umlage_nach_kappung > 0)) && (
           <View style={{
-            backgroundColor: '#f0fdf4',
+            backgroundColor: colors.bgGreen,
             borderRadius: 6,
             padding: 10 * sm.paddingMultiplier,
             marginBottom: 8 * sm.spacingMultiplier,
             borderWidth: 1,
-            borderColor: '#bbf7d0',
+            borderColor: colors.border,
           }}>
-            <Text style={{ fontSize: 11 * sm.fontSizeMultiplier, fontWeight: 'bold', color: '#166534', fontFamily: 'Helvetica-Bold', marginBottom: 6 }}>
+            <Text style={{ fontSize: 11 * sm.fontSizeMultiplier, fontWeight: 'bold', color: colors.success, fontFamily: 'Helvetica-Bold', marginBottom: 6 }}>
               Potenzialaufdeckung
             </Text>
             <View style={{ flexDirection: 'row', gap: 10 }}>
               {/* Mietpotenzial */}
               {einheitenMitPotenzial > 0 && (
-                <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 4, padding: 8, borderWidth: 1, borderColor: '#dcfce7' }}>
-                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#166534', marginBottom: 4 }}>Mietoptimierung</Text>
-                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a', marginBottom: 2 }}>
+                <View style={{ flex: 1, backgroundColor: colors.cardWhite, borderRadius: 4, padding: 8, borderWidth: 1, borderColor: colors.border }}>
+                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>Mietoptimierung</Text>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.success, marginBottom: 2 }}>
                     +{formatCurrency((miet?.potenzial_jahr || 0))}/J.
                   </Text>
-                  <Text style={{ fontSize: 7, color: '#4ade80', marginBottom: 4 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted, marginBottom: 4 }}>
                     {einheitenMitPotenzial} von {einheitenGesamt} Einheiten unter Marktmiete
                   </Text>
                   <ProgressBar
                     value={einheitenMitPotenzial}
                     max={einheitenGesamt}
-                    color="#22c55e"
-                    bgColor="#dcfce7"
+                    color={colors.success}
+                    bgColor={colors.neutralBg}
                     height={6}
                   />
                 </View>
               )}
               {/* WEG-Potenzial */}
               {weg && !objekt.weg_aufgeteilt && (
-                <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 4, padding: 8, borderWidth: 1, borderColor: '#dcfce7' }}>
-                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#166534', marginBottom: 4 }}>WEG-Aufteilung</Text>
-                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a', marginBottom: 2 }}>
+                <View style={{ flex: 1, backgroundColor: colors.cardWhite, borderRadius: 4, padding: 8, borderWidth: 1, borderColor: colors.border }}>
+                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>WEG-Aufteilung</Text>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.success, marginBottom: 2 }}>
                     +{formatCurrency(weg.weg_gewinn || 0)}
                   </Text>
-                  <Text style={{ fontSize: 7, color: '#4ade80', marginBottom: 2 }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted, marginBottom: 2 }}>
                     Wertzuwachs bei Aufteilung (+15%)
                   </Text>
-                  <Text style={{ fontSize: 6, color: weg.genehmigung_erforderlich ? '#dc2626' : '#4ade80' }}>
+                  <Text style={{ fontSize: 6, color: weg.genehmigung_erforderlich ? colors.danger : colors.success }}>
                     {weg.genehmigung_erforderlich ? '⚠ Genehmigungspflichtig (Milieu-/Umwandlungsschutz)' : '✓ Keine Genehmigungshürden'}
                   </Text>
                 </View>
               )}
               {/* Modernisierungsumlage */}
               {mod559?.umlage_nach_kappung && mod559.umlage_nach_kappung > 0 && (
-                <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 4, padding: 8, borderWidth: 1, borderColor: '#dcfce7' }}>
-                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#166534', marginBottom: 4 }}>§559 Modernisierung</Text>
-                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#16a34a', marginBottom: 2 }}>
+                <View style={{ flex: 1, backgroundColor: colors.cardWhite, borderRadius: 4, padding: 8, borderWidth: 1, borderColor: colors.border }}>
+                  <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>§559 Modernisierung</Text>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.success, marginBottom: 2 }}>
                     +{formatCurrency(mod559.umlage_nach_kappung)}/J.
                   </Text>
-                  <Text style={{ fontSize: 7, color: '#4ade80' }}>
+                  <Text style={{ fontSize: 7, color: colors.textMuted }}>
                     Umlagefähige Mieterhöhung nach Mod.
                   </Text>
                 </View>
@@ -1231,17 +1228,17 @@ export function AuswertungPDF({
         {/* Beleihungswert-Info */}
         <View style={{
           flexDirection: 'row',
-          backgroundColor: colors.bgPurple,
+          backgroundColor: colors.neutralBg,
           borderRadius: 4,
           padding: 8 * sm.paddingMultiplier,
           marginBottom: 8 * sm.spacingMultiplier,
           alignItems: 'center',
         }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 8, color: colors.purple, fontWeight: 'bold' }}>Beleihungswert (70% d. Eigenkapitals)</Text>
+            <Text style={{ fontSize: 8, color: colors.accent, fontWeight: 'bold' }}>Beleihungswert (70% d. Eigenkapitals)</Text>
             <Text style={{ fontSize: 11, color: colors.text, fontWeight: 'bold' }}>{formatCurrency(beleihungswert)}</Text>
           </View>
-          <View style={{ flex: 2, paddingLeft: 10, borderLeftWidth: 1, borderLeftColor: '#e9d5ff' }}>
+          <View style={{ flex: 2, paddingLeft: 10, borderLeftWidth: 1, borderLeftColor: colors.border }}>
             <Text style={{ fontSize: 7, color: colors.textMuted, lineHeight: 1.4 }}>
               Abbezahlte Summe (VW - Restschuld): {formatCurrency(abbezahlteSumme)}. Der Beleihungswert (60-80%, hier 70%)
               zeigt die verfügbare Sicherheit für Refinanzierungen.
@@ -1255,12 +1252,12 @@ export function AuswertungPDF({
         {/* Marktdaten Section */}
         {berechnungen?.marktdaten && (
           <View style={{
-            backgroundColor: '#faf5ff',
+            backgroundColor: colors.neutralBg,
             borderRadius: 6,
             padding: 8,
             marginBottom: 10,
             borderWidth: 1,
-            borderColor: '#e9d5ff',
+            borderColor: colors.border,
           }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
               <Text style={{ fontSize: 9, fontWeight: 'bold', color: '#1a2744' }}>
@@ -1571,7 +1568,7 @@ export function AuswertungPDF({
               <View style={{ marginBottom: 8 }}>
                 {[
                   { label: 'Instandhaltung', value: kosten?.instandhaltung || 0, color: '#2a4a6a' },
-                  { label: 'Verwaltung', value: kosten?.verwaltung || 0, color: '#8b5cf6' },
+                  { label: 'Verwaltung', value: kosten?.verwaltung || 0, color: '#9eb3c8' },
                   { label: 'Nicht umlf. BK', value: kosten?.betriebskosten_nicht_umlage || 0, color: '#f59e0b' },
                   { label: 'Rücklagen', value: kosten?.ruecklagen || 0, color: '#10b981' },
                 ].map((item, i) => (
@@ -1760,7 +1757,7 @@ export function AuswertungPDF({
               if (!hasIndex && !hasStaffel) return null;
 
               return (
-                <View wrap={false} style={[styles.infoBox, { marginTop: 4, padding: 4, backgroundColor: colors.bgYellow }]}>
+                <View wrap={false} style={[styles.infoBox, { marginTop: 4, padding: 4, backgroundColor: colors.neutralBg }]}>
                   <Text style={[styles.infoBoxTitle, { fontSize: 7 }]}>Hinweis zu Mietvertragsarten:</Text>
                   <Text style={[styles.infoBoxText, { fontSize: 6, marginBottom: 2 }]}>
                     Dieses Objekt enthält: {zusammenfassung}
@@ -1833,8 +1830,8 @@ export function AuswertungPDF({
                   ist={miet?.miete_ist_jahr || 0}
                   soll={miet?.miete_soll_jahr || 0}
                   label="Mieteinnahmen p.a."
-                  colorIst="#94a3b8"
-                  colorSoll="#22c55e"
+                  colorIst={colors.blueBone}
+                  colorSoll="#16a34a"
                 />
               </View>
               {/* Cashflow Balkendiagramm */}
@@ -2131,7 +2128,7 @@ export function AuswertungPDF({
                 {[
                   { label: 'Brutto-Rendite IST', value: rendite?.rendite_ist || 0, color: '#9eb3c8' },
                   { label: 'Brutto-Rendite OPT', value: rendite?.rendite_opt || 0, color: colors.success },
-                  { label: 'Nach AfA (eff.)', value: rendite_nach_steuer, color: colors.purple },
+                  { label: 'Nach AfA (eff.)', value: rendite_nach_steuer, color: colors.accent },
                   { label: 'EK-Rendite IST', value: rendite?.eigenkapitalrendite_ist || 0, color: colors.primaryLight },
                 ].map((item, i) => (
                   <View key={i} style={{ marginBottom: 5 }}>
@@ -2205,15 +2202,15 @@ export function AuswertungPDF({
                   {/* SVG Chart */}
                   <Svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
                     {/* Filled area under line */}
-                    <Path d={areaPath} fill="#dcfce7" />
+                    <Path d={areaPath} fill={colors.bgGreen} />
 
                     {/* Main line */}
-                    <Path d={linePath} stroke="#22c55e" strokeWidth={3} fill="none" />
+                    <Path d={linePath} stroke="#16a34a" strokeWidth={3} fill="none" />
 
                     {/* Data points */}
                     {points.map((p, i) => (
                       <G key={i}>
-                        <Circle cx={p.x} cy={p.y} r={6} fill="#22c55e" />
+                        <Circle cx={p.x} cy={p.y} r={6} fill="#16a34a" />
                         <Circle cx={p.x} cy={p.y} r={4} fill="white" />
                       </G>
                     ))}
@@ -2296,14 +2293,14 @@ export function AuswertungPDF({
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 7, color: colors.textMuted, fontWeight: 'bold', marginBottom: 4 }}>Mietverteilung</Text>
               <View style={{ height: 40, flexDirection: 'row', borderRadius: 4, overflow: 'hidden' }}>
-                <View style={{ flex: (fin?.kapitaldienst || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#ef4444' }} />
+                <View style={{ flex: (fin?.kapitaldienst || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#dc2626' }} />
                 <View style={{ flex: (kosten?.kosten_gesamt || 0) / (miet?.miete_ist_jahr || 1), backgroundColor: '#f59e0b' }} />
-                <View style={{ flex: Math.max(0, (cashflow?.cashflow_ist_jahr || 0)) / (miet?.miete_ist_jahr || 1), backgroundColor: '#22c55e' }} />
+                <View style={{ flex: Math.max(0, (cashflow?.cashflow_ist_jahr || 0)) / (miet?.miete_ist_jahr || 1), backgroundColor: '#16a34a' }} />
               </View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 3 }}>
-                <Text style={{ fontSize: 6, color: '#ef4444' }}>Kapitaldienst</Text>
+                <Text style={{ fontSize: 6, color: '#dc2626' }}>Kapitaldienst</Text>
                 <Text style={{ fontSize: 6, color: '#f59e0b' }}>Kosten</Text>
-                <Text style={{ fontSize: 6, color: '#22c55e' }}>Cashflow</Text>
+                <Text style={{ fontSize: 6, color: '#16a34a' }}>Cashflow</Text>
               </View>
             </View>
             {/* Spalte 3: Key Metrics */}
@@ -2396,7 +2393,7 @@ export function AuswertungPDF({
             {/* Spalte 3: Steuerersparnis */}
             <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 4, padding: 8 }}>
               <Text style={{ fontSize: 8, color: colors.textMuted, marginBottom: 4 }}>AfA-Steuerersparnis</Text>
-              <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.purple }}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.accent }}>
                 +{formatCurrency(steuerersparnis)}/Jahr
               </Text>
               <Text style={{ fontSize: 6, color: colors.textMuted, marginTop: 2 }}>
@@ -2490,7 +2487,7 @@ export function AuswertungPDF({
             {((empfehlung_chancen && empfehlung_chancen.length > 0) || (empfehlung_risiken && empfehlung_risiken.length > 0)) && (
               <View style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
                 {empfehlung_chancen && empfehlung_chancen.length > 0 && (
-                  <View style={{ flex: 1, backgroundColor: '#f0fdf4', borderRadius: 4, padding: 8 }}>
+                  <View style={{ flex: 1, backgroundColor: colors.bgGreen, borderRadius: 4, padding: 8 }}>
                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>Chancen</Text>
                     {empfehlung_chancen.map((c, i) => (
                       <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 2 }}>
@@ -2501,7 +2498,7 @@ export function AuswertungPDF({
                   </View>
                 )}
                 {empfehlung_risiken && empfehlung_risiken.length > 0 && (
-                  <View style={{ flex: 1, backgroundColor: '#fef2f2', borderRadius: 4, padding: 8 }}>
+                  <View style={{ flex: 1, backgroundColor: colors.bgRed, borderRadius: 4, padding: 8 }}>
                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.danger, marginBottom: 4 }}>Risiken</Text>
                     {empfehlung_risiken.map((r, i) => (
                       <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 2 }}>
