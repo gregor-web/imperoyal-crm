@@ -762,19 +762,21 @@ export function AuswertungPDF({
         fontFamily: 'Helvetica',
         backgroundColor: colors.pageBg,
       }}>
-        {/* Dunkelblauer Header-Bereich */}
+        {/* Heller Header-Bereich */}
         <View style={{
-          backgroundColor: '#3C5A7A',
+          backgroundColor: '#ffffff',
           paddingTop: 50,
           paddingBottom: 35,
           paddingHorizontal: 50,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
         }}>
           {/* Logo */}
           <View style={{ marginBottom: 30 }}>
             {logoUrl ? (
               <Image src={logoUrl} style={{ width: 180, height: 45, objectFit: 'contain' }} />
             ) : (
-              <Text style={{ fontSize: 22, fontFamily: 'Helvetica-Bold', color: '#ffffff', letterSpacing: 1 }}>
+              <Text style={{ fontSize: 22, fontFamily: 'Helvetica-Bold', color: colors.primary, letterSpacing: 1 }}>
                 Imperoyal Immobilien
               </Text>
             )}
@@ -784,14 +786,14 @@ export function AuswertungPDF({
           <Text style={{
             fontSize: 28,
             fontFamily: 'Helvetica-Bold',
-            color: '#ffffff',
+            color: colors.primary,
             letterSpacing: 1.5,
             marginBottom: 6,
           }}>
             Optimierungsprotokoll
           </Text>
-          <View style={{ width: 60, height: 2, backgroundColor: colors.warning, marginBottom: 16 }} />
-          <Text style={{ fontSize: 11, color: colors.blueBone, lineHeight: 1.5 }}>
+          <View style={{ width: 60, height: 2, backgroundColor: colors.primary, marginBottom: 16 }} />
+          <Text style={{ fontSize: 11, color: colors.textMuted, lineHeight: 1.5 }}>
             Immobilien-Analyse und Handlungsempfehlung
           </Text>
         </View>
