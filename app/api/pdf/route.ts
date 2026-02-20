@@ -3,6 +3,7 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import { createClient } from '@/lib/supabase/server';
 import { AuswertungPDF } from '@/components/pdf/auswertung-pdf';
 import type { Berechnungen, PdfConfig } from '@/lib/types';
+import { calculatePdfLayout } from '@/lib/pdf-layout-calculator';
 import fs from 'fs';
 import path from 'path';
 
@@ -119,6 +120,27 @@ export async function POST(request: Request) {
 
     console.log('[PDF] Rendering PDF buffer...');
 
+    // Pre-calculate layout adjustments based on content density
+    const mietanalyse = berechnungen?.mietanalyse;
+    const einheitenMitPotenzial = mietanalyse?.einheiten?.filter((e: { potenzial: number }) => e.potenzial > 0).length || 0;
+    const mod559 = berechnungen?.modernisierung_559;
+    const hasPotenzial = einheitenMitPotenzial > 0 || (!!berechnungen?.weg_potenzial && !objekt.weg_aufgeteilt) || (!!mod559?.umlage_nach_kappung && mod559.umlage_nach_kappung > 0);
+
+    const layoutResult = calculatePdfLayout({
+      hasMap: !!mapUrl,
+      einheitenCount: einheiten?.length || 0,
+      handlungsschritteCount: (auswertung.empfehlung_handlungsschritte as string[] | undefined)?.length || 0,
+      chancenCount: (auswertung.empfehlung_chancen as string[] | undefined)?.length || 0,
+      risikenCount: (auswertung.empfehlung_risiken as string[] | undefined)?.length || 0,
+      begruendungLength: (auswertung.empfehlung_begruendung || '').length,
+      fazitLength: (auswertung.empfehlung_fazit || '').length,
+      hasMarktdaten: !!berechnungen?.marktdaten,
+      hasPotenzialaufdeckung: hasPotenzial,
+      hasWeg: !!berechnungen?.weg_potenzial,
+      hasMod559: !!mod559,
+      hasZinsaenderung: !!berechnungen?.finanzierung?.zinsaenderung,
+    });
+
     // Generate PDF buffer
     const pdfBuffer = await renderToBuffer(
       AuswertungPDF({
@@ -137,6 +159,7 @@ export async function POST(request: Request) {
         logoUrl,
         mapUrl,
         pdfConfig: (auswertung.pdf_config as PdfConfig) || undefined,
+        layoutResult,
       })
     );
 

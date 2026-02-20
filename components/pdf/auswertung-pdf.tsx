@@ -15,6 +15,7 @@ import {
 import type { Berechnungen, PdfConfig, PdfSectionId } from '@/lib/types';
 import { DEFAULT_PDF_SECTIONS } from '@/lib/types';
 import { getZinsaenderungHinweis, getMietvertragsartZusammenfassung, MIETVERTRAGSART_HINWEISE } from '@/lib/erlaeuterungen';
+import type { PdfLayoutResult } from '@/lib/pdf-layout-calculator';
 
 // ─── Font: Helvetica (PDF-Builtin, kein externes Font-Loading nötig) ───
 // Hyphenation callback to prevent word-break issues in German text
@@ -239,8 +240,8 @@ const styles = StyleSheet.create({
   metricsBar: {
     flexDirection: 'row',
     backgroundColor: colors.neutralBg,
-    borderRadius: 10,
-    marginBottom: 10,
+    borderRadius: 8,
+    marginBottom: 8,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: colors.border,
@@ -659,6 +660,8 @@ interface AuswertungPDFProps {
   styleMultipliers?: StyleMultipliers;
   // PDF section config for visibility and ordering
   pdfConfig?: PdfConfig;
+  // Pre-calculated layout adjustments from calculatePdfLayout()
+  layoutResult?: PdfLayoutResult;
 }
 
 export function AuswertungPDF({
@@ -678,8 +681,10 @@ export function AuswertungPDF({
   mapUrl,
   styleMultipliers,
   pdfConfig,
+  layoutResult,
 }: AuswertungPDFProps) {
   // Apply style multipliers (defaults to 1 if not provided)
+  const layout = layoutResult;
   const sm = styleMultipliers || {
     spacingMultiplier: 1,
     fontSizeMultiplier: 1,
@@ -754,6 +759,10 @@ export function AuswertungPDF({
     return Math.min(...ids.map(id => getOrder(id)));
   };
 
+  // Mieterhöhung table adaptive styles (based on unit count)
+  const mietTableRowStyle = layout?.mieterhohung ? { paddingVertical: layout.mieterhohung.tableRowPaddingV } : {};
+  const mietTableCellStyle = layout?.mieterhohung ? { fontSize: layout.mieterhohung.tableFontSize } : {};
+
   return (
     <Document>
       {/* ==================== DECKBLATT ==================== */}
@@ -766,7 +775,7 @@ export function AuswertungPDF({
         <View style={{
           backgroundColor: '#ffffff',
           paddingTop: 50,
-          paddingBottom: 35,
+          paddingBottom: layout?.cover?.headerBottomPadding ?? 35,
           paddingHorizontal: 50,
           borderBottomWidth: 1,
           borderBottomColor: colors.border,
@@ -800,19 +809,19 @@ export function AuswertungPDF({
 
         {/* Karte */}
         {mapUrl && (
-          <View style={{ position: 'relative', width: '100%', height: 200 }}>
+          <View style={{ position: 'relative', width: '100%', height: layout?.cover?.mapHeight ?? 200 }}>
             <Image
               src={mapUrl}
-              style={{ width: '100%', height: 200, objectFit: 'cover' }}
+              style={{ width: '100%', height: layout?.cover?.mapHeight ?? 200, objectFit: 'cover' }}
             />
             {/* Fadenkreuz */}
             <Svg
-              viewBox="0 0 500 200"
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 200 }}
+              viewBox={`0 0 500 ${layout?.cover?.mapHeight ?? 200}`}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: layout?.cover?.mapHeight ?? 200 }}
             >
-              <Circle cx="250" cy="100" r="6" fill="none" stroke="#cc0000" strokeWidth="1" />
-              <Line x1="238" y1="100" x2="262" y2="100" stroke="#cc0000" strokeWidth="1" />
-              <Line x1="250" y1="88" x2="250" y2="112" stroke="#cc0000" strokeWidth="1" />
+              <Circle cx="250" cy={(layout?.cover?.mapHeight ?? 200) / 2} r="6" fill="none" stroke="#cc0000" strokeWidth="1" />
+              <Line x1="238" y1={(layout?.cover?.mapHeight ?? 200) / 2} x2="262" y2={(layout?.cover?.mapHeight ?? 200) / 2} stroke="#cc0000" strokeWidth="1" />
+              <Line x1="250" y1={(layout?.cover?.mapHeight ?? 200) / 2 - 12} x2="250" y2={(layout?.cover?.mapHeight ?? 200) / 2 + 12} stroke="#cc0000" strokeWidth="1" />
             </Svg>
             {/* Nordpfeil */}
             <View style={{ position: 'absolute', top: 8, right: 10, alignItems: 'center', width: 20 }}>
@@ -840,12 +849,12 @@ export function AuswertungPDF({
         )}
 
         {/* Objekt- und Mandanteninfos */}
-        <View style={{ paddingHorizontal: 50, paddingTop: 30 }}>
+        <View style={{ paddingHorizontal: 50, paddingTop: layout?.cover?.contentTopPadding ?? 30 }}>
           {/* Objektdaten */}
           <View style={{
             backgroundColor: colors.cardWhite,
             borderRadius: 6,
-            padding: 20,
+            padding: layout?.cover?.objektBoxPadding ?? 20,
             marginBottom: 20,
             borderLeftWidth: 4,
             borderLeftColor: colors.primary,
@@ -991,7 +1000,7 @@ export function AuswertungPDF({
             </Text>
           </View>
 
-          <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
             {/* Spalte 1: Grunddaten */}
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 7, fontWeight: 'bold', color: colors.primaryLight, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
@@ -1231,8 +1240,8 @@ export function AuswertungPDF({
         <View style={{
           flexDirection: 'row',
           backgroundColor: colors.neutralBg,
-          borderRadius: 4,
-          padding: 8 * sm.paddingMultiplier,
+          borderRadius: 6,
+          padding: 10 * sm.paddingMultiplier,
           marginBottom: 8 * sm.spacingMultiplier,
           alignItems: 'center',
         }}>
@@ -1256,8 +1265,8 @@ export function AuswertungPDF({
           <View style={{
             backgroundColor: colors.neutralBg,
             borderRadius: 6,
-            padding: 8,
-            marginBottom: 10,
+            padding: 10,
+            marginBottom: 8,
             borderWidth: 1,
             borderColor: colors.border,
           }}>
@@ -1269,7 +1278,7 @@ export function AuswertungPDF({
                 Standort: {berechnungen.marktdaten.standort}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flexDirection: 'row', gap: 10 }}>
               {/* Spalte 1: Mieten & Faktoren */}
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
@@ -1407,7 +1416,7 @@ export function AuswertungPDF({
                 <Text style={styles.value}>{formatPercent(rendite?.rendite_ist)}</Text>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • EK-Quote: {((fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) * 100).toFixed(0)}% {(fin?.eigenkapital || 0) / (fin?.kaufpreis || 1) >= 0.3 ? '(konservativ)' : '(gehebelt)'}
                 </Text>
@@ -1488,7 +1497,7 @@ export function AuswertungPDF({
                 </Text>
               ) : null}
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • IST: Tatsächliche Mieteinnahmen lt. Mandant
                 </Text>
@@ -1540,7 +1549,7 @@ export function AuswertungPDF({
                 </Text>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • Cashflow = Miete - Kapitaldienst - Kosten
                 </Text>
@@ -1616,7 +1625,7 @@ export function AuswertungPDF({
                 </View>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • Kostenquote = Kosten / Mieteinnahmen
                 </Text>
@@ -1695,21 +1704,21 @@ export function AuswertungPDF({
               const isGewerbe = einheit.nutzung === 'Gewerbe' || einheit.nutzung === 'Stellplatz';
               const marktMiete = einheit.nutzung === 'Gewerbe' ? 20 : einheit.nutzung === 'Stellplatz' ? '-' : 14;
               return (
-                <View key={index} wrap={false} style={[styles.tableRow, index % 2 === 1 ? styles.tableRowAlt : {}]}>
-                  <Text style={[styles.tableCell, { width: 20 }]}>{einheit.position}</Text>
-                  <Text style={[styles.tableCell, styles.tableCellLeft, { width: 50 }]}>{einheit.nutzung}</Text>
-                  <Text style={[styles.tableCell, { width: 40 }]}>{einheit.flaeche} m²</Text>
-                  <Text style={[styles.tableCell, { width: 50 }]}>{formatCurrency(einheit.kaltmiete_ist)}</Text>
-                  <Text style={[styles.tableCell, { width: 35 }]}>{euroPerSqm.toFixed(2)} €</Text>
-                  <Text style={[styles.tableCell, { width: 35 }]}>{marktMiete} €</Text>
-                  <Text style={[styles.tableCell, { width: 50 }]}>{formatCurrency(einheit.kaltmiete_soll)}</Text>
-                  <Text style={[styles.tableCell, { width: 50, color: einheit.potenzial > 0 ? colors.success : colors.textMuted }]}>
+                <View key={index} wrap={false} style={[styles.tableRow, index % 2 === 1 ? styles.tableRowAlt : {}, mietTableRowStyle]}>
+                  <Text style={[styles.tableCell, { width: 20 }, mietTableCellStyle]}>{einheit.position}</Text>
+                  <Text style={[styles.tableCell, styles.tableCellLeft, { width: 50 }, mietTableCellStyle]}>{einheit.nutzung}</Text>
+                  <Text style={[styles.tableCell, { width: 40 }, mietTableCellStyle]}>{einheit.flaeche} m²</Text>
+                  <Text style={[styles.tableCell, { width: 50 }, mietTableCellStyle]}>{formatCurrency(einheit.kaltmiete_ist)}</Text>
+                  <Text style={[styles.tableCell, { width: 35 }, mietTableCellStyle]}>{euroPerSqm.toFixed(2)} €</Text>
+                  <Text style={[styles.tableCell, { width: 35 }, mietTableCellStyle]}>{marktMiete} €</Text>
+                  <Text style={[styles.tableCell, { width: 50 }, mietTableCellStyle]}>{formatCurrency(einheit.kaltmiete_soll)}</Text>
+                  <Text style={[styles.tableCell, { width: 50, color: einheit.potenzial > 0 ? colors.success : colors.textMuted }, mietTableCellStyle]}>
                     {einheit.potenzial > 0 ? `+${formatCurrency(einheit.potenzial)}` : '-'}
                   </Text>
-                  <Text style={[styles.tableCell, { width: 50, color: isGewerbe ? colors.textMuted : mieterhoehung?.moeglich === 'Sofort' ? colors.success : colors.warning }]}>
+                  <Text style={[styles.tableCell, { width: 50, color: isGewerbe ? colors.textMuted : mieterhoehung?.moeglich === 'Sofort' ? colors.success : colors.warning }, mietTableCellStyle]}>
                     {isGewerbe ? 'n/a' : mieterhoehung?.moeglich || '-'}
                   </Text>
-                  <Text style={[styles.tableCell, { width: 45, color: isGewerbe ? colors.textMuted : colors.success }]}>
+                  <Text style={[styles.tableCell, { width: 45, color: isGewerbe ? colors.textMuted : colors.success }, mietTableCellStyle]}>
                     {isGewerbe ? 'frei' : mieterhoehung?.betrag ? `+${formatCurrency(mieterhoehung.betrag)}` : '-'}
                   </Text>
                 </View>
@@ -1734,7 +1743,7 @@ export function AuswertungPDF({
               </Text>
             </View>
             {/* Info Box - kompakter */}
-            <View wrap={false} style={[styles.infoBox, { marginTop: 4, padding: 4 }]}>
+            <View wrap={false} style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
               <Text style={[styles.infoBoxTitle, { fontSize: 7 }]}>Hinweis §558 BGB (Kappungsgrenze):</Text>
               <Text style={[styles.infoBoxText, { fontSize: 6 }]}>
                 • §558 BGB gilt nur für Wohnraum. Die Miete darf innerhalb von 3 Jahren um max. {objekt.milieuschutz ? '15%' : '20%'} erhöht werden.
@@ -1898,7 +1907,7 @@ export function AuswertungPDF({
             </View>
             <View style={[styles.sectionContent, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
               {/* Wertentwicklung als Balken - zentriert */}
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: 100, gap: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', height: Math.round(100 * (layout?.charts?.chartHeightMultiplier ?? 1)), gap: 8 }}>
                 {[
                   { label: 'Heute', value: wert?.heute || 0, pct: null },
                   { label: '+3J', value: wert?.jahr_3 || 0, pct: wert?.heute ? ((wert.jahr_3 - wert.heute) / wert.heute * 100) : 0 },
@@ -1967,7 +1976,7 @@ export function AuswertungPDF({
                 <Text style={styles.label}>CAPEX geplant</Text>
                 <Text style={styles.value}>{formatCurrency(mod559?.capex_betrag)}</Text>
               </View>
-              <View style={[styles.infoBox, { backgroundColor: colors.bgBlue, marginTop: 10 }]}>
+              <View style={[styles.infoBox, { backgroundColor: colors.bgBlue, marginTop: 8 }]}>
                 <Text style={{ fontSize: 8, color: colors.primaryLight, fontWeight: 'bold' }}>§559 Modernisierungsumlage</Text>
                 <Text style={{ fontSize: 14, fontWeight: 'bold', color: colors.primary, marginVertical: 3 }}>
                   {formatCurrency(mod559?.umlage_nach_kappung)} p.a.
@@ -2013,7 +2022,7 @@ export function AuswertungPDF({
                   </Text>
                 </View>
               )}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 5 }]}>
+              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • WEG-Aufteilung: +15% Wertsteigerung durch Einzelverkauf
                 </Text>
@@ -2102,7 +2111,7 @@ export function AuswertungPDF({
                 <Text style={[styles.value, { color: colors.primary }]}>{formatCurrency(afa?.afa_jahr)}</Text>
               </View>
               {/* Erklärung */}
-              <View style={[styles.infoBox, { marginTop: 6, padding: 4 }]}>
+              <View style={[styles.infoBox, { marginTop: 6, padding: 6 }]}>
                 <Text style={{ fontSize: 6, color: colors.textMuted, lineHeight: 1.3 }}>
                   • AfA = Absetzung für Abnutzung (§7 EStG)
                 </Text>
@@ -2143,7 +2152,7 @@ export function AuswertungPDF({
                 ))}
               </View>
               {/* EK-Rendite Highlight */}
-              <View style={{ backgroundColor: colors.bgBlue, borderRadius: 4, padding: 6, marginTop: 4 }}>
+              <View style={{ backgroundColor: colors.bgBlue, borderRadius: 4, padding: 8, marginTop: 6 }}>
                 <Text style={{ fontSize: 7, color: colors.primaryLight, fontWeight: 'bold' }}>Eigenkapitalrendite optimiert</Text>
                 <Text style={{ fontSize: 12, fontWeight: 'bold', color: colors.primary }}>{formatPercent(rendite?.eigenkapitalrendite_opt)}</Text>
               </View>
@@ -2167,7 +2176,7 @@ export function AuswertungPDF({
             {/* SVG Linien-Chart - zentriert */}
             {(() => {
               const svgWidth = 420;
-              const svgHeight = 90;
+              const svgHeight = Math.round(90 * (layout?.afaRoiExit?.chartHeightMultiplier ?? 1));
               const padding = { top: 10, right: 10, bottom: 10, left: 10 };
               const chartWidth = svgWidth - padding.left - padding.right;
               const chartHeight = svgHeight - padding.top - padding.bottom;
@@ -2242,7 +2251,7 @@ export function AuswertungPDF({
                   </View>
 
                   {/* Summary row */}
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 6, marginTop: 8 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: colors.bgGreen, borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <View style={{ alignItems: 'center' }}>
                       <Text style={{ fontSize: 6, color: colors.textMuted }}>Wertzuwachs 10J</Text>
                       <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.success }}>
@@ -2271,11 +2280,11 @@ export function AuswertungPDF({
           backgroundColor: colors.bgLight,
           borderRadius: 6,
           padding: 10,
-          marginBottom: 10,
+          marginBottom: 8,
           borderWidth: 1,
           borderColor: colors.border,
         }}>
-          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 10 }}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.primary, marginBottom: 8 }}>
             Investment-Übersicht
           </Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -2363,8 +2372,8 @@ export function AuswertungPDF({
         <View style={{
           backgroundColor: colors.bgGreen,
           borderRadius: 6,
-          padding: 12,
-          marginBottom: 12,
+          padding: Math.round(12 * (layout?.empfehlung?.paddingMultiplier ?? 1)),
+          marginBottom: Math.round(12 * (layout?.empfehlung?.spacingMultiplier ?? 1)),
           borderWidth: 1,
           borderColor: colors.success,
         }}>
@@ -2404,7 +2413,7 @@ export function AuswertungPDF({
             </View>
           </View>
           {/* Gesamtpotenzial */}
-          <View style={{ marginTop: 10, backgroundColor: 'white', borderRadius: 4, padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View style={{ marginTop: 8, backgroundColor: 'white', borderRadius: 4, padding: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.text }}>
               Gesamtpotenzial (jährlich wiederkehrend):
             </Text>
@@ -2430,8 +2439,8 @@ export function AuswertungPDF({
             <View style={{
               backgroundColor: colors.bgBlue,
               borderRadius: 6,
-              padding: 12,
-              marginBottom: 10,
+              padding: Math.round(12 * (layout?.empfehlung?.paddingMultiplier ?? 1)),
+              marginBottom: Math.round(10 * (layout?.empfehlung?.spacingMultiplier ?? 1)),
               alignItems: 'center',
             }}>
               <Text style={{ fontSize: 9, color: colors.textMuted, marginBottom: 3 }}>Unsere Empfehlung</Text>
@@ -2440,7 +2449,7 @@ export function AuswertungPDF({
 
             {/* Begründung */}
             {empfehlung_begruendung && (
-              <View style={{ marginBottom: 10 }}>
+              <View style={{ marginBottom: Math.round(10 * (layout?.empfehlung?.spacingMultiplier ?? 1)) }}>
                 <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 4 }}>Begründung</Text>
                 <Text style={{ fontSize: 8, color: colors.text, lineHeight: 1.5 }}>{empfehlung_begruendung}</Text>
               </View>
@@ -2448,7 +2457,7 @@ export function AuswertungPDF({
 
             {/* Handlungsschritte */}
             {empfehlung_handlungsschritte && empfehlung_handlungsschritte.length > 0 && (
-              <View style={{ marginBottom: 10 }}>
+              <View style={{ marginBottom: Math.round(10 * (layout?.empfehlung?.spacingMultiplier ?? 1)) }}>
                 <Text style={{ fontSize: 9, fontWeight: 'bold', color: colors.primary, marginBottom: 6 }}>
                   Empfohlene Handlungsschritte
                 </Text>
@@ -2487,7 +2496,7 @@ export function AuswertungPDF({
 
             {/* Chancen & Risiken */}
             {((empfehlung_chancen && empfehlung_chancen.length > 0) || (empfehlung_risiken && empfehlung_risiken.length > 0)) && (
-              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: Math.round(10 * (layout?.empfehlung?.spacingMultiplier ?? 1)) }}>
                 {empfehlung_chancen && empfehlung_chancen.length > 0 && (
                   <View style={{ flex: 1, backgroundColor: colors.bgGreen, borderRadius: 4, padding: 8 }}>
                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: colors.success, marginBottom: 4 }}>Chancen</Text>
@@ -2517,7 +2526,7 @@ export function AuswertungPDF({
             {empfehlung_fazit && (
               <View style={{
                 backgroundColor: colors.bgLight,
-                padding: 10,
+                padding: 8,
                 borderRadius: 4,
                 borderLeftWidth: 3,
                 borderLeftColor: colors.primaryLight,
